@@ -75,6 +75,26 @@ class BarcodeDetectorPainter extends CustomPainter {
 
       canvas.drawPoints(PointMode.points, centre, paintRed);
 
+      //Builder for Centre text
+      final ParagraphBuilder builder2 = ParagraphBuilder(
+        ParagraphStyle(
+            textAlign: TextAlign.left,
+            fontSize: 16,
+            textDirection: TextDirection.ltr),
+      );
+      builder2
+          .pushStyle(ui.TextStyle(color: Colors.red, background: background));
+      builder2.addText('${X} , ${Y}');
+      builder2.pop();
+
+      canvas.drawParagraph(
+        builder2.build()
+          ..layout(ParagraphConstraints(
+            width: right - left,
+          )),
+        Offset(X, Y),
+      );
+
       if (barcodes.length >= 2) {
         print('QRCode Value: ${barcode.value.displayValue}');
         print('QR Left: ${left}');
