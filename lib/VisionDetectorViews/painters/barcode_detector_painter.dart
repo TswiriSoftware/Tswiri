@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:ui';
 import 'dart:ui' as ui;
 
@@ -19,6 +20,11 @@ class BarcodeDetectorPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.0
       ..color = Colors.lightGreenAccent;
+
+    final Paint paintRed = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 8.0
+      ..color = Colors.red;
 
     final Paint background = Paint()..color = Color(0x99000000);
 
@@ -55,6 +61,19 @@ class BarcodeDetectorPainter extends CustomPainter {
         Rect.fromLTRB(left, top, right, bottom),
         paint,
       );
+
+      var X = (left + right) / 2;
+      var Y = (top + bottom) / 2;
+
+      var centre = [
+        new Offset(X, Y),
+        new Offset(left, top),
+        new Offset(right, top),
+        new Offset(left, bottom),
+        new Offset(right, bottom)
+      ];
+
+      canvas.drawPoints(PointMode.points, centre, paintRed);
 
       if (barcodes.length >= 2) {
         print('QRCode Value: ${barcode.value.displayValue}');
