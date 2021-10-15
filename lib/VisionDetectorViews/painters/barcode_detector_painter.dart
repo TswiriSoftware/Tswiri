@@ -26,7 +26,15 @@ class BarcodeDetectorPainter extends CustomPainter {
       ..strokeWidth = 8.0
       ..color = Colors.red;
 
+    final Paint paintBlue = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3.0
+      ..color = Colors.blue;
+
     final Paint background = Paint()..color = Color(0x99000000);
+
+    var centers = []; // Centre co-ordinates of scanned QR codes
+    var mmXY = []; //Offset With the mm value of X and Y
 
     for (final Barcode barcode in barcodes) {
       final ParagraphBuilder builder = ParagraphBuilder(
@@ -65,7 +73,8 @@ class BarcodeDetectorPainter extends CustomPainter {
       var X = (left + right) / 2;
       var Y = (top + bottom) / 2;
 
-      var centre = [
+      // Co-ordinates of points
+      var pointsOfIntrest = [
         new Offset(X, Y),
         new Offset(left, top),
         new Offset(right, top),
@@ -73,7 +82,8 @@ class BarcodeDetectorPainter extends CustomPainter {
         new Offset(right, bottom)
       ];
 
-      canvas.drawPoints(PointMode.points, centre, paintRed);
+      centers.add(new Offset(X, Y));
+      canvas.drawPoints(PointMode.points, pointsOfIntrest, paintRed);
 
       //Builder for Centre text
       final ParagraphBuilder builder2 = ParagraphBuilder(
@@ -96,12 +106,47 @@ class BarcodeDetectorPainter extends CustomPainter {
       );
 
       if (barcodes.length >= 2) {
-        print('QRCode Value: ${barcode.value.displayValue}');
-        print('QR Left: ${left}');
-        print('QR Top:${top}');
-        print('QR Right:${right}');
-        print('QR Bottom:${bottom}');
+        var mmX = 70 / (left - right).abs();
+        var mmY = 70 / (top - bottom).abs();
+        mmXY.add(Offset(mmX, mmY));
       }
+
+      //For testing purposes
+      // if (barcodes.length >= 2) {
+      //   print('QRCode Value: ${barcode.value.displayValue}');
+      //   print('QR Left: ${left}');
+      //   print('QR Top:${top}');
+      //   print('QR Right:${right}');
+      //   print('QR Bottom:${bottom}');
+      // }
+    }
+
+    if (centers.length >= 2) {
+      canvas.drawLine(centers[0], centers[1], paintBlue);
+      var dXY = centers[0] - centers[1];
+      var mmPxX = (mmXY[0].dx + mmXY[1].dx) / mmXY.length;
+      var mmPxY = (mmXY[0].dy + mmXY[1].dy) / mmXY.length;
+      var disX = (dXY.dx * mmPxX);
+      var disY = (dXY.dy * mmPxY);
+
+      final ParagraphBuilder DistanceBuilder = ParagraphBuilder(
+        ParagraphStyle(
+            textAlign: TextAlign.left,
+            fontSize: 16,
+            textDirection: TextDirection.ltr),
+      );
+      DistanceBuilder.pushStyle(
+          ui.TextStyle(color: Colors.blue, background: background));
+      DistanceBuilder.addText('${disX} , ${disY}');
+      DistanceBuilder.pop();
+
+      canvas.drawParagraph(
+        DistanceBuilder.build()
+          ..layout(ParagraphConstraints(
+            width: 1000,
+          )),
+        Offset(0, 0),
+      );
     }
   }
 
