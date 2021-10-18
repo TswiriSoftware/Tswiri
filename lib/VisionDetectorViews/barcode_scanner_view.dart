@@ -45,7 +45,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
           inputImage.inputImageData!.size,
           inputImage.inputImageData!.imageRotation);
 
-      if (barcodes.length >= 2) {
+      if (barcodes.length >= 1) {
         print(painter.absoluteImageSize);
         print(painter.rotation);
         print(painter.barcodes);

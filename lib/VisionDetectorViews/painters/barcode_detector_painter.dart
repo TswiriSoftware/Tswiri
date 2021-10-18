@@ -36,6 +36,10 @@ class BarcodeDetectorPainter extends CustomPainter {
     var centers = []; // Centre co-ordinates of scanned QR codes
     var mmXY = []; //Offset With the mm value of X and Y
 
+    DateTime _now = DateTime.now();
+    print(
+        'timestamp: ${_now.hour}:${_now.minute}:${_now.second}.${_now.millisecond}');
+
     for (final Barcode barcode in barcodes) {
       final ParagraphBuilder builder = ParagraphBuilder(
         ParagraphStyle(
@@ -112,13 +116,13 @@ class BarcodeDetectorPainter extends CustomPainter {
       }
 
       //For testing purposes
-      // if (barcodes.length >= 2) {
-      //   print('QRCode Value: ${barcode.value.displayValue}');
-      //   print('QR Left: ${left}');
-      //   print('QR Top:${top}');
-      //   print('QR Right:${right}');
-      //   print('QR Bottom:${bottom}');
-      // }
+      if (barcodes.length >= 2) {
+        print('QRCode Value:, ${barcode.value.displayValue}');
+        print('QR Left:, ${left}');
+        print('QR Top:, ${top}');
+        print('QR Right:, ${right}');
+        print('QR Bottom:, ${bottom}');
+      }
     }
 
     if (centers.length >= 2) {
@@ -139,6 +143,8 @@ class BarcodeDetectorPainter extends CustomPainter {
           ui.TextStyle(color: Colors.blue, background: background));
       DistanceBuilder.addText('${disX} , ${disY}');
       DistanceBuilder.pop();
+
+      print('${disX} , ${disY}');
 
       canvas.drawParagraph(
         DistanceBuilder.build()

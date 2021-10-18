@@ -50,25 +50,26 @@ class Home extends StatelessWidget {
                     title: const Text("Vision"),
                     children: [
                       CustomCard(
+                        //Possible use
                         'Image Label Detector',
                         ImageLabelView(),
                         featureCompleted: true,
                       ),
-                      CustomCard(
-                        'Face Detector',
-                        FaceDetectorView(),
-                        featureCompleted: true,
-                      ),
+                      // CustomCard(                    //No Use
+                      //   'Face Detector',
+                      //   FaceDetectorView(),
+                      //   featureCompleted: true,
+                      // ),
                       CustomCard(
                         'Barcode Scanner',
                         BarcodeScannerView(),
                         featureCompleted: true,
                       ),
-                      CustomCard(
-                        'Pose Detector',
-                        PoseDetectorView(),
-                        featureCompleted: true,
-                      ),
+                      // CustomCard(                    //Utterly useless
+                      //   'Pose Detector',
+                      //   PoseDetectorView(),
+                      //   featureCompleted: true,
+                      // ),
                       CustomCard(
                         'Digital Ink Recogniser',
                         DigitalInkView(),
@@ -83,11 +84,11 @@ class Home extends StatelessWidget {
                         'Object Detector',
                         ObjectDetectorView(),
                       ),
-                      CustomCard(
-                        'Remote Model Manager',
-                        RemoteModelView(),
-                        featureCompleted: true,
-                      )
+                      // CustomCard(                   //Useless
+                      //   'Remote Model Manager',
+                      //   RemoteModelView(),
+                      //   featureCompleted: true,
+                      // )
                     ],
                   ),
                   SizedBox(
