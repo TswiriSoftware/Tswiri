@@ -41,6 +41,8 @@ class _CameraViewState extends State<CameraView> {
 
     _imagePicker = ImagePicker();
     for (var i = 0; i < cameras.length; i++) {
+      print(i);
+
       if (cameras[i].lensDirection == widget.initialDirection) {
         _cameraIndex = i;
       }
@@ -232,6 +234,7 @@ class _CameraViewState extends State<CameraView> {
     final imageRotation =
         InputImageRotationMethods.fromRawValue(camera.sensorOrientation) ??
             InputImageRotation.Rotation_0deg;
+    //print(camera.sensorOrientation);
 
     final inputImageFormat =
         InputImageFormatMethods.fromRawValue(image.format.raw) ??

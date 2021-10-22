@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/services.dart';
+import 'package:hive/hive.dart';
 
-import 'NlpDetectorViews/entity_extraction_view.dart';
-import 'NlpDetectorViews/language_translator_view.dart';
-import 'NlpDetectorViews/smart_reply_view.dart';
+//import 'NlpDetectorViews/entity_extraction_view.dart';
+//import 'NlpDetectorViews/language_translator_view.dart';
+//import 'NlpDetectorViews/smart_reply_view.dart';
 import 'VisionDetectorViews/detector_views.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +16,10 @@ List<CameraDescription> cameras = [];
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
 
   cameras = await availableCameras();
   runApp(MyApp());
@@ -30,8 +36,8 @@ class MyApp extends StatelessWidget {
 }
 
 class Home extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
+  @override.Widget
+  build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Google ML Kit Demo App'),

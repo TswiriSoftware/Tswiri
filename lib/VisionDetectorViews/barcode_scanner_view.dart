@@ -40,6 +40,17 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
 
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
+      // var isPortrait =
+      //     MediaQuery.of(context).orientation == Orientation.portrait;
+      // InputImageRotation rotation;
+
+      // if (isPortrait == true) {
+      //   rotation = InputImageRotation.Rotation_90deg;
+      // } else {
+      //   rotation = InputImageRotation.Rotation_180deg;
+      // }
+      //print(inputImage.inputImageData!.size);
+
       final painter = BarcodeDetectorPainter(
           barcodes,
           inputImage.inputImageData!.size,
