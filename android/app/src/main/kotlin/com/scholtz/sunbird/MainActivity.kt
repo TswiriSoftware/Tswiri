@@ -1,4 +1,4 @@
-package com.example.flutter_google_ml_kit
+package com.scholtz.sunbird
 
 import io.flutter.embedding.android.FlutterActivity
 

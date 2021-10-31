@@ -1,9 +1,11 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'dart:ui' as ui;
 
 import 'coordinates_translator.dart';
 
@@ -19,7 +21,7 @@ class ObjectDetectorPainter extends CustomPainter {
     final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.0
-      ..color = Colors.lightGreenAccent;
+      ..color = Colors.red;
 
     final Paint background = Paint()..color = Color(0x99000000);
 

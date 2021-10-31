@@ -1,9 +1,10 @@
 import 'package:hive/hive.dart';
+part 'qrcodes.g.dart';
 
 @HiveType(typeId: 0)
-class qrcodes extends HiveObject {
+class QrCodes extends HiveObject {
   @HiveField(0)
-  late String UID;
+  late String uid;
 
   @HiveField(1)
   late DateTime createdDated;

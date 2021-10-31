@@ -7,7 +7,7 @@ class EntityExtractionView extends StatefulWidget {
 }
 
 class _EntityExtractionViewState extends State<EntityExtractionView> {
-  var _controller = TextEditingController();
+  final _controller = TextEditingController();
 
   final _languageModelManager = GoogleMlKit.nlp.entityModelManager();
 
@@ -45,9 +45,9 @@ class _EntityExtractionViewState extends State<EntityExtractionView> {
 
   Future<void> translateText() async {
     var result = await _entityExtractor.extractEntities(_controller.text);
-    result.forEach((element) {
+    for (var element in result) {
       print(element.entities);
-    });
+    }
   }
 
   @override
@@ -62,18 +62,18 @@ class _EntityExtractionViewState extends State<EntityExtractionView> {
             const SizedBox(
               height: 30,
             ),
-            const Center(child: const Text('Enter text (English)')),
+            const Center(child: Text('Enter text (English)')),
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
                     border: Border.all(
                   width: 2,
                 )),
                 child: TextField(
                   controller: _controller,
-                  decoration: InputDecoration(border: InputBorder.none),
+                  decoration: const InputDecoration(border: InputBorder.none),
                   maxLines: null,
                 ),
               ),
@@ -81,25 +81,28 @@ class _EntityExtractionViewState extends State<EntityExtractionView> {
             const SizedBox(height: 30),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               ElevatedButton(
-                  onPressed: translateText, child: Text('Extract Entities'))
+                  onPressed: translateText,
+                  child: const Text('Extract Entities'))
             ]),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ElevatedButton(
-                    onPressed: downloadModel, child: Text('Download Model')),
+                    onPressed: downloadModel,
+                    child: const Text('Download Model')),
                 ElevatedButton(
-                    onPressed: deleteModel, child: Text('Delete Model')),
+                    onPressed: deleteModel, child: const Text('Delete Model')),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
               ElevatedButton(
                   onPressed: getAvailableModels,
-                  child: Text('Get Available models')),
+                  child: const Text('Get Available models')),
               ElevatedButton(
-                  onPressed: isModelDownloaded, child: Text('Check download'))
+                  onPressed: isModelDownloaded,
+                  child: const Text('Check download'))
             ])
           ],
         ),

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'dart:ui' as ui;
@@ -12,7 +13,9 @@ import 'coordinates_translator.dart';
 class BarcodeDetectorPainter extends CustomPainter {
   BarcodeDetectorPainter(this.barcodes, this.absoluteImageSize, this.rotation);
 
-  var box = Hive.box('testBox');
+  // var path = Directory.current.path;
+
+  var box = Hive.openBox('qrCodes');
 
   final List<Barcode> barcodes;
   final Size absoluteImageSize;

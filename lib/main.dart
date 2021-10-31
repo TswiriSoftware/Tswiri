@@ -1,8 +1,11 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:firebase_core/firebase_core.dart';
+
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 //import 'NlpDetectorViews/entity_extraction_view.dart';
 //import 'NlpDetectorViews/language_translator_view.dart';
@@ -16,7 +19,8 @@ List<CameraDescription> cameras = [];
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await Hive.initFlutter();
+  await Firebase.initializeApp();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
@@ -35,12 +39,13 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// ignore: use_key_in_widget_constructors
 class Home extends StatelessWidget {
-  @override.Widget
+  @override
   build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Google ML Kit Demo App'),
+        title: const Text('Google ML Kit Demo App'),
         centerTitle: true,
         elevation: 0,
       ),
@@ -48,7 +53,7 @@ class Home extends StatelessWidget {
         child: Center(
           child: SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 //help
                 children: [
@@ -61,21 +66,23 @@ class Home extends StatelessWidget {
                         ImageLabelView(),
                         featureCompleted: true,
                       ),
-                      // CustomCard(                    //No Use
-                      //   'Face Detector',
-                      //   FaceDetectorView(),
-                      //   featureCompleted: true,
-                      // ),
+                      CustomCard(
+                        //No Use
+                        'Face Detector',
+                        FaceDetectorView(),
+                        featureCompleted: true,
+                      ),
                       CustomCard(
                         'Barcode Scanner',
                         BarcodeScannerView(),
                         featureCompleted: true,
                       ),
-                      // CustomCard(                    //Utterly useless
-                      //   'Pose Detector',
-                      //   PoseDetectorView(),
-                      //   featureCompleted: true,
-                      // ),
+                      CustomCard(
+                        //Utterly useless
+                        'Pose Detector',
+                        PoseDetectorView(),
+                        featureCompleted: true,
+                      ),
                       CustomCard(
                         'Digital Ink Recogniser',
                         DigitalInkView(),
@@ -97,7 +104,7 @@ class Home extends StatelessWidget {
                       // )
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                 ],
@@ -122,21 +129,23 @@ class CustomCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 5,
-      margin: EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 10),
       child: ListTile(
         tileColor: Theme.of(context).primaryColor,
         title: Text(
           _label,
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         onTap: () {
           if (Platform.isIOS && !featureCompleted) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: const Text(
                     'This feature has not been implemented for iOS yet')));
-          } else
+          } else {
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => _viewPage));
+          }
         },
       ),
     );
