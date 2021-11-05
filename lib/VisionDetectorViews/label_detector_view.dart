@@ -4,6 +4,8 @@ import 'camera_view.dart';
 import 'painters/label_detector_painter.dart';
 
 class ImageLabelView extends StatefulWidget {
+  const ImageLabelView({Key? key}) : super(key: key);
+
   @override
   _ImageLabelViewState createState() => _ImageLabelViewState();
 }

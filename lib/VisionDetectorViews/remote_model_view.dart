@@ -4,6 +4,8 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'toast.dart';
 
 class RemoteModelView extends StatefulWidget {
+  const RemoteModelView({Key? key}) : super(key: key);
+
   @override
   _RemoteModelViewState createState() => _RemoteModelViewState();
 }
@@ -43,7 +45,8 @@ class _RemoteModelViewState extends State<RemoteModelView> {
   }
 
   Future<void> _isModelDownloaded() async {
-    Future<String> Function() function = () async {
+    Future<String> Function() function;
+    function = () async {
       final isModelDownloaded =
           await _remoteModelManager.isModelDownloaded(_modelName);
       return isModelDownloaded ? 'exists' : 'not exists';

@@ -5,6 +5,8 @@ import 'camera_view.dart';
 import 'painters/face_detector_painter.dart';
 
 class FaceDetectorView extends StatefulWidget {
+  const FaceDetectorView({Key? key}) : super(key: key);
+
   @override
   _FaceDetectorViewState createState() => _FaceDetectorViewState();
 }

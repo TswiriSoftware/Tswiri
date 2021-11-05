@@ -4,7 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:flutter/services.dart';
-import 'package:hive/hive.dart';
+//import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 //import 'NlpDetectorViews/entity_extraction_view.dart';
@@ -26,10 +26,12 @@ Future<void> main() async {
   ]);
 
   cameras = await availableCameras();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -122,6 +124,7 @@ class CustomCard extends StatelessWidget {
   final Widget _viewPage;
   final bool featureCompleted;
 
+  // ignore: use_key_in_widget_constructors
   const CustomCard(this._label, this._viewPage,
       {this.featureCompleted = false});
 
@@ -139,9 +142,9 @@ class CustomCard extends StatelessWidget {
         ),
         onTap: () {
           if (Platform.isIOS && !featureCompleted) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: const Text(
-                    'This feature has not been implemented for iOS yet')));
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content:
+                    Text('This feature has not been implemented for iOS yet')));
           } else {
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => _viewPage));

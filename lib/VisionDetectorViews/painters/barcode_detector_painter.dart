@@ -38,7 +38,7 @@ class BarcodeDetectorPainter extends CustomPainter {
       ..strokeWidth = 3.0
       ..color = Colors.blue;
 
-    final Paint background = Paint()..color = Color(0x99000000);
+    final Paint background = Paint()..color = const Color(0x99000000);
 
     var centers = []; // Centre co-ordinates of scanned QR codes
     var mmXY = []; //Offset With the mm value of X and Y
@@ -86,11 +86,11 @@ class BarcodeDetectorPainter extends CustomPainter {
 
       // Co-ordinates of points
       var pointsOfIntrest = [
-        new Offset(X, Y),
-        new Offset(left, top),
-        new Offset(right, top),
-        new Offset(left, bottom),
-        new Offset(right, bottom)
+        Offset(X, Y),
+        Offset(left, top),
+        Offset(right, top),
+        Offset(left, bottom),
+        Offset(right, bottom)
       ];
 
       centers.add(new Offset(X, Y));

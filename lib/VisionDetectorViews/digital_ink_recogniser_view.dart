@@ -4,6 +4,8 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'toast.dart';
 
 class DigitalInkView extends StatefulWidget {
+  const DigitalInkView({Key? key}) : super(key: key);
+
   @override
   _DigitalInkViewState createState() => _DigitalInkViewState();
 }
@@ -100,7 +102,8 @@ class _DigitalInkViewState extends State<DigitalInkView> {
   }
 
   Future<void> _isModelDownloaded() async {
-    Future<String> Function() function = () async {
+    Future<String> Function() function;
+    function = () async {
       final isModelDownloaded =
           await languageModelManager.isModelDownloaded(_language);
       return isModelDownloaded ? 'exists' : 'not exists';

@@ -11,7 +11,7 @@ import '../main.dart';
 enum ScreenMode { liveFeed, gallery }
 
 class CameraView extends StatefulWidget {
-  CameraView(
+  const CameraView(
       {Key? key,
       required this.title,
       required this.customPaint,
@@ -63,7 +63,7 @@ class _CameraViewState extends State<CameraView> {
         title: Text(widget.title),
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 20.0),
+            padding: const EdgeInsets.only(right: 20.0),
             child: GestureDetector(
               onTap: _switchScreenMode,
               child: Icon(
@@ -86,7 +86,7 @@ class _CameraViewState extends State<CameraView> {
   Widget? _floatingActionButton() {
     if (_mode == ScreenMode.gallery) return null;
     if (cameras.length == 1) return null;
-    return Container(
+    return SizedBox(
         height: 70.0,
         width: 70.0,
         child: FloatingActionButton(
@@ -102,10 +102,11 @@ class _CameraViewState extends State<CameraView> {
 
   Widget _body() {
     Widget body;
-    if (_mode == ScreenMode.liveFeed)
+    if (_mode == ScreenMode.liveFeed) {
       body = _liveFeedBody();
-    else
+    } else {
       body = _galleryBody();
+    }
     return body;
   }
 
@@ -128,7 +129,7 @@ class _CameraViewState extends State<CameraView> {
   Widget _galleryBody() {
     return ListView(shrinkWrap: true, children: [
       _image != null
-          ? Container(
+          ? SizedBox(
               height: 400,
               width: 400,
               child: Stack(
@@ -185,7 +186,7 @@ class _CameraViewState extends State<CameraView> {
     final camera = cameras[_cameraIndex];
     _controller = CameraController(
       camera,
-      ResolutionPreset.medium,
+      ResolutionPreset.max,
       enableAudio: false,
     );
     _controller?.initialize().then((_) {

@@ -6,6 +6,8 @@ import 'camera_view.dart';
 import 'painters/object_detector_painter.dart';
 
 class ObjectDetectorView extends StatefulWidget {
+  const ObjectDetectorView({Key? key}) : super(key: key);
+
   @override
   _ObjectDetectorView createState() => _ObjectDetectorView();
 }
@@ -53,7 +55,7 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
     print(result);
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null &&
-        result.length > 0) {
+        result.isNotEmpty) {
       final painter = ObjectDetectorPainter(
           result,
           inputImage.inputImageData!.imageRotation,

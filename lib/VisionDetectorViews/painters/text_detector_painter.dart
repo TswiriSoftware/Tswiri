@@ -32,7 +32,7 @@ class TextDetectorPainter extends CustomPainter {
       );
       builder.pushStyle(
           ui.TextStyle(color: Colors.lightGreenAccent, background: background));
-      builder.addText('${textBlock.text}');
+      builder.addText(textBlock.text);
       builder.pop();
 
       final left =

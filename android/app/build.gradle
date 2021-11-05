@@ -70,5 +70,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.mlkit:image-labeling:17.0.5'
     implementation 'com.google.mlkit:object-detection:16.2.7'
+    implementation 'com.google.mlkit:digital-ink-recognition:17.0.0'
+
 
 }

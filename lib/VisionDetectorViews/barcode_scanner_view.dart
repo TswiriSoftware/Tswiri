@@ -4,6 +4,8 @@ import 'camera_view.dart';
 import 'painters/barcode_detector_painter.dart';
 
 class BarcodeScannerView extends StatefulWidget {
+  const BarcodeScannerView({Key? key}) : super(key: key);
+
   @override
   _BarcodeScannerViewState createState() => _BarcodeScannerViewState();
 }
@@ -56,7 +58,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
           inputImage.inputImageData!.size,
           inputImage.inputImageData!.imageRotation);
 
-      if (barcodes.length >= 1) {
+      if (barcodes.isNotEmpty) {
         print(painter.absoluteImageSize);
         print(painter.rotation);
         print(painter.barcodes);
