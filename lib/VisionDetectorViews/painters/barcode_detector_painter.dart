@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/model/qrcodes.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
+import 'dart:math';
+import 'package:vector_math/vector_math.dart' as math;
 
 import 'coordinates_translator.dart';
 
@@ -42,10 +44,8 @@ class BarcodeDetectorPainter extends CustomPainter {
 
     var centers = []; // Centre co-ordinates of scanned QR codes
     var mmXY = []; //Offset With the mm value of X and Y
-
-    DateTime _now = DateTime.now();
-    print(
-        'timestamp: ${_now.hour}:${_now.minute}:${_now.second}.${_now.millisecond}');
+    var absVectors = [];
+    var summary = [];
 
     for (final Barcode barcode in barcodes) {
       final ParagraphBuilder builder = ParagraphBuilder(
@@ -96,26 +96,7 @@ class BarcodeDetectorPainter extends CustomPainter {
       centers.add(new Offset(X, Y));
       canvas.drawPoints(PointMode.points, pointsOfIntrest, paintRed);
 
-      //Builder for Centre text
-      final ParagraphBuilder builder2 = ParagraphBuilder(
-        ParagraphStyle(
-            textAlign: TextAlign.left,
-            fontSize: 16,
-            textDirection: TextDirection.ltr),
-      );
-      builder2
-          .pushStyle(ui.TextStyle(color: Colors.red, background: background));
-      builder2.addText('${X} , ${Y}');
-      builder2.pop();
-
-      canvas.drawParagraph(
-        builder2.build()
-          ..layout(ParagraphConstraints(
-            width: right - left,
-          )),
-        Offset(X, Y),
-      );
-
+      // Z distance calculation
       if (barcodes.length >= 2) {
         var mmX = 70 / (left - right).abs();
         var mmY = 70 / (top - bottom).abs();
@@ -124,15 +105,6 @@ class BarcodeDetectorPainter extends CustomPainter {
       var pxXY = ((left - right).abs() + (top - bottom).abs()) / 2;
       var disZ = (4341 / pxXY) - 15.75;
 
-      //For testing purposes
-      if (barcodes.length >= 1) {
-        print('QRCode Value:, ${barcode.value.displayValue}');
-        print('QR Size: ${pxXY}');
-        print('QR Left:, ${left}');
-        print('QR Top:, ${top}');
-        print('QR Right:, ${right}');
-        print('QR Bottom:, ${bottom}');
-      }
       final ParagraphBuilder DistanceBuilder = ParagraphBuilder(
         ParagraphStyle(
             textAlign: TextAlign.left,
@@ -146,41 +118,71 @@ class BarcodeDetectorPainter extends CustomPainter {
 
       canvas.drawParagraph(
         DistanceBuilder.build()
-          ..layout(ParagraphConstraints(
+          ..layout(const ParagraphConstraints(
             width: 1000,
           )),
         Offset(right, bottom),
       );
+
+      int _now = DateTime.now().millisecondsSinceEpoch;
+      summary.add([barcode.value.displayValue, math.Vector2(X, Y), _now]);
     }
 
-    if (centers.length >= 2) {
-      canvas.drawLine(centers[0], centers[1], paintBlue);
-      var dXY = centers[0] - centers[1];
-      var mmPxX = (mmXY[0].dx + mmXY[1].dx) / mmXY.length;
-      var mmPxY = (mmXY[0].dy + mmXY[1].dy) / mmXY.length;
-      var disX = (dXY.dx * mmPxX);
-      var disY = (dXY.dy * mmPxY);
+    if (centers.length >= 3) {
+      print("Summary: ${summary}");
+      for (var i = 0; i < summary.length; i++) {
+        var dXY, disX, disY;
+        int _now = DateTime.now().millisecondsSinceEpoch;
 
-      final ParagraphBuilder DistanceBuilder = ParagraphBuilder(
-        ParagraphStyle(
-            textAlign: TextAlign.left,
-            fontSize: 16,
-            textDirection: TextDirection.ltr),
-      );
-      DistanceBuilder.pushStyle(
-          ui.TextStyle(color: Colors.blue, background: background));
-      DistanceBuilder.addText('${disX} , ${disY}');
-      DistanceBuilder.pop();
+        if (summary.length - 1 == i) {
+          dXY = centers[i] - centers[0];
+          disX = (dXY.dx * ((mmXY[i].dx + mmXY[0].dx) / mmXY.length));
+          disY = (dXY.dy * ((mmXY[i].dy + mmXY[0].dy) / mmXY.length));
+          var uid = "${i}_${0}";
+          if (absVectors.contains(uid)) {
+            absVectors.remove(uid);
+            absVectors.add([uid, math.Vector2(disX, disY), _now]);
+          } else {
+            absVectors.add([uid, math.Vector2(disX, disY), _now]);
+          }
+        } else {
+          dXY = centers[i] - centers[i + 1];
+          disX = (dXY.dx * ((mmXY[i].dx + mmXY[i + 1].dx) / mmXY.length));
+          disY = (dXY.dy * ((mmXY[i].dy + mmXY[i + 1].dy) / mmXY.length));
+          var uid = "${i}_${i + 1}";
 
-      print('${disX} , ${disY}');
+          if (absVectors.contains(uid)) {
+            absVectors.remove(uid);
+            absVectors.add([uid, math.Vector2(disX, disY), _now]);
+          } else {
+            absVectors.add([uid, math.Vector2(disX, disY), _now]);
+          }
+        }
+      }
 
-      canvas.drawParagraph(
-        DistanceBuilder.build()
-          ..layout(ParagraphConstraints(
-            width: 1000,
-          )),
-        Offset(0, 0),
-      );
+      print(absVectors);
+
+      // absVectors.add(math.Vector2(disX, disY));
+
+      // canvas.drawLine(centers[0], centers[1], paintBlue);
+      // final ParagraphBuilder DistanceBuilder = ParagraphBuilder(
+      //   ParagraphStyle(
+      //       textAlign: TextAlign.left,
+      //       fontSize: 16,
+      //       textDirection: TextDirection.ltr),
+      // );
+      // DistanceBuilder.pushStyle(
+      //     ui.TextStyle(color: Colors.blue, background: background));
+      // DistanceBuilder.addText('${disX} , ${disY}');
+      // DistanceBuilder.pop();
+
+      // canvas.drawParagraph(
+      //   DistanceBuilder.build()
+      //     ..layout(const ParagraphConstraints(
+      //       width: 1000,
+      //     )),
+      //   const Offset(0, 0),
+      // );
     }
   }
 

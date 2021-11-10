@@ -59,47 +59,48 @@ class Home extends StatelessWidget {
               child: Column(
                 //help
                 children: [
-                  ExpansionTile(
-                    title: const Text("Vision"),
+                  Column(
+                    //title: const Text("Vision"),
                     children: [
-                      CustomCard(
-                        //Possible use
-                        'Image Label Detector',
-                        ImageLabelView(),
-                        featureCompleted: true,
-                      ),
-                      CustomCard(
-                        //No Use
-                        'Face Detector',
-                        FaceDetectorView(),
-                        featureCompleted: true,
-                      ),
+                      // CustomCard(
+                      //   //Possible use
+                      //   'Image Label Detector',
+                      //   ImageLabelView(),
+                      //   featureCompleted: true,
+                      // ),
+                      // CustomCard(
+                      //   //No Use
+                      //   'Face Detector',
+                      //   FaceDetectorView(),
+                      //   featureCompleted: true,
+                      // ),
                       CustomCard(
                         'Barcode Scanner',
                         BarcodeScannerView(),
                         featureCompleted: true,
                       ),
-                      CustomCard(
-                        //Utterly useless
-                        'Pose Detector',
-                        PoseDetectorView(),
-                        featureCompleted: true,
-                      ),
-                      CustomCard(
-                        'Digital Ink Recogniser',
-                        DigitalInkView(),
-                        featureCompleted: true,
-                      ),
-                      CustomCard(
-                        'Text Detector',
-                        TextDetectorView(),
-                        featureCompleted: true,
-                      ),
-                      CustomCard(
-                        'Object Detector',
-                        ObjectDetectorView(),
-                      ),
-                      // CustomCard(                   //Useless
+                      // CustomCard(
+                      //   //Utterly useless
+                      //   'Pose Detector',
+                      //   PoseDetectorView(),
+                      //   featureCompleted: true,
+                      // ),
+                      // CustomCard(
+                      //   'Digital Ink Recogniser',
+                      //   DigitalInkView(),
+                      //   featureCompleted: true,
+                      // ),
+                      // CustomCard(
+                      //   'Text Detector',
+                      //   TextDetectorView(),
+                      //   featureCompleted: true,
+                      // ),
+                      // CustomCard(
+                      //   'Object Detector',
+                      //   ObjectDetectorView(),
+                      // ),
+                      // CustomCard(
+                      //   //Useless
                       //   'Remote Model Manager',
                       //   RemoteModelView(),
                       //   featureCompleted: true,

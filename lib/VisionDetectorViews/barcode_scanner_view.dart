@@ -59,9 +59,9 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
           inputImage.inputImageData!.imageRotation);
 
       if (barcodes.isNotEmpty) {
-        print(painter.absoluteImageSize);
-        print(painter.rotation);
-        print(painter.barcodes);
+        // print(painter.absoluteImageSize);
+        // print(painter.rotation);
+        // print(painter.barcodes);
       }
 
       customPaint = CustomPaint(painter: painter);

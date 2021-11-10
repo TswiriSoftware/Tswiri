@@ -186,7 +186,7 @@ class _CameraViewState extends State<CameraView> {
     final camera = cameras[_cameraIndex];
     _controller = CameraController(
       camera,
-      ResolutionPreset.max,
+      ResolutionPreset.ultraHigh,
       enableAudio: false,
     );
     _controller?.initialize().then((_) {
