@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/model/qrcodes.dart';
+import 'package:flutter_google_ml_kit/database/qrcodes.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
 import 'dart:math';
@@ -13,6 +13,7 @@ import 'package:vector_math/vector_math.dart' as math;
 import 'coordinates_translator.dart';
 
 class BarcodeDetectorPainter extends CustomPainter {
+
   BarcodeDetectorPainter(this.barcodes, this.absoluteImageSize, this.rotation);
 
   // var path = Directory.current.path;
@@ -59,7 +60,7 @@ class BarcodeDetectorPainter extends CustomPainter {
       builder.addText('${barcode.value.displayValue}');
       builder.pop();
 
-      final left = translateX(
+      final boundingBoxLeft = translateX(
           barcode.value.boundingBox!.left, rotation, size, absoluteImageSize);
       final top = translateY(
           barcode.value.boundingBox!.top, rotation, size, absoluteImageSize);
@@ -71,25 +72,25 @@ class BarcodeDetectorPainter extends CustomPainter {
       canvas.drawParagraph(
         builder.build()
           ..layout(ParagraphConstraints(
-            width: right - left,
+            width: right - boundingBoxLeft,
           )),
-        Offset(left, top),
+        Offset(boundingBoxLeft, top),
       );
 
       canvas.drawRect(
-        Rect.fromLTRB(left, top, right, bottom),
+        Rect.fromLTRB(boundingBoxLeft, top, right, bottom),
         paint,
       );
 
-      var X = (left + right) / 2;
-      var Y = (top + bottom) / 2;
+      var X = (boundingBoxLeft + right) / 2; //?
+      var Y = (top + bottom) / 2; //?
 
       // Co-ordinates of points
       var pointsOfIntrest = [
         Offset(X, Y),
-        Offset(left, top),
+        Offset(boundingBoxLeft, top),
         Offset(right, top),
-        Offset(left, bottom),
+        Offset(boundingBoxLeft, bottom),
         Offset(right, bottom)
       ];
 
@@ -98,11 +99,11 @@ class BarcodeDetectorPainter extends CustomPainter {
 
       // Z distance calculation
       if (barcodes.length >= 2) {
-        var mmX = 70 / (left - right).abs();
+        var mmX = 70 / (boundingBoxLeft - right).abs();
         var mmY = 70 / (top - bottom).abs();
         mmXY.add(Offset(mmX, mmY));
       }
-      var pxXY = ((left - right).abs() + (top - bottom).abs()) / 2;
+      var pxXY = ((boundingBoxLeft - right).abs() + (top - bottom).abs()) / 2;
       var disZ = (4341 / pxXY) - 15.75;
 
       final ParagraphBuilder DistanceBuilder = ParagraphBuilder(
