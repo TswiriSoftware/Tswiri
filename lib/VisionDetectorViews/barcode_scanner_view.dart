@@ -1,11 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/dataProcessors/barcode_database_injector.dart';
-import 'package:flutter_google_ml_kit/database/qrcodes.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'camera_view.dart';
 import 'painters/barcode_detector_painter.dart';
 

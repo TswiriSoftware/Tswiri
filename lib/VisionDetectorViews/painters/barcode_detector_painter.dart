@@ -24,11 +24,6 @@ class BarcodeDetectorPainter extends CustomPainter {
       ..strokeWidth = 8.0
       ..color = Colors.red;
 
-    final Paint paintBlue = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0
-      ..color = Colors.blue;
-
     final Paint background = Paint()..color = const Color(0x99000000);
 
     for (final Barcode barcode in barcodes) {
@@ -81,19 +76,19 @@ class BarcodeDetectorPainter extends CustomPainter {
       var pxXY = ((boundingBoxLeft - right).abs() + (top - bottom).abs()) / 2;
       var disZ = (4341 / pxXY) - 15.75;
 
-      final ParagraphBuilder DistanceBuilder = ParagraphBuilder(
+      final ParagraphBuilder distanceBuilder = ParagraphBuilder(
         ParagraphStyle(
             textAlign: TextAlign.left,
             fontSize: 16,
             textDirection: TextDirection.ltr),
       );
-      DistanceBuilder.pushStyle(
-          ui.TextStyle(color: Colors.blue, background: background));
-      DistanceBuilder.addText('${disZ}');
-      DistanceBuilder.pop();
+      distanceBuilder
+          .pushStyle(ui.TextStyle(color: Colors.blue, background: background));
+      distanceBuilder.addText('$disZ');
+      distanceBuilder.pop();
 
       canvas.drawParagraph(
-        DistanceBuilder.build()
+        distanceBuilder.build()
           ..layout(const ParagraphConstraints(
             width: 1000,
           )),

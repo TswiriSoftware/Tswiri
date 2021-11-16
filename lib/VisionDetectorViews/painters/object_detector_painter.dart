@@ -1,9 +1,5 @@
-import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui';
 import 'dart:ui' as ui;
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
@@ -23,7 +19,7 @@ class ObjectDetectorPainter extends CustomPainter {
       ..strokeWidth = 3.0
       ..color = Colors.red;
 
-    final Paint background = Paint()..color = Color(0x99000000);
+    final Paint background = Paint()..color = const Color(0x99000000);
 
     for (DetectedObject detectedObject in _objects) {
       final ParagraphBuilder builder = ParagraphBuilder(

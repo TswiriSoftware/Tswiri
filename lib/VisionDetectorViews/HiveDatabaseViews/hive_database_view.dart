@@ -40,7 +40,7 @@ class _HiveDatabaseViewState extends State<HiveDatabaseView> {
         future: loadData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else {
             List myList = snapshot.data ?? [];
             return ListView.builder(
@@ -90,7 +90,7 @@ showMyAboutDialog(BuildContext context, String message) {
     children: [
       ElevatedButton(
         style: ElevatedButton.styleFrom(
-            primary: Colors.deepOrange[500], fixedSize: Size(80, 35)),
+            primary: Colors.deepOrange[500], fixedSize: const Size(80, 35)),
         child: const Text(
           "Ok",
           style: TextStyle(fontSize: 15),

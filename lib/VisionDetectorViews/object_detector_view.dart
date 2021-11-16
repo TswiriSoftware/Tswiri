@@ -52,7 +52,7 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
     if (isBusy) return;
     isBusy = true;
     final result = await objectDetector.processImage(inputImage);
-    print(result);
+    //print(result);
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null &&
         result.isNotEmpty) {

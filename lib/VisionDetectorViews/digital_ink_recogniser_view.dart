@@ -17,12 +17,12 @@ class _DigitalInkViewState extends State<DigitalInkView> {
       GoogleMlKit.vision.digitalInkRecogniser();
   List<Offset?> _points = <Offset>[];
   String _recognisedText = '';
-  String _language = 'en-US';
+  final String _language = 'en-US';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Digital Ink Recognition')),
+      appBar: AppBar(title: const Text('Digital Ink Recognition')),
       body: SafeArea(
         child: Column(
           children: [
@@ -48,46 +48,46 @@ class _DigitalInkViewState extends State<DigitalInkView> {
             if (_recognisedText.isNotEmpty)
               Text(
                 'Candidates: $_recognisedText',
-                style: TextStyle(fontSize: 23),
+                style: const TextStyle(fontSize: 23),
               ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ElevatedButton(
-                    child: Text('Read Text'),
+                    child: const Text('Read Text'),
                     onPressed: _recogniseText,
                   ),
                   ElevatedButton(
-                    child: Text('Clear Pad'),
+                    child: const Text('Clear Pad'),
                     onPressed: _clearPad,
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ElevatedButton(
-                    child: Text('Check Model'),
+                    child: const Text('Check Model'),
                     onPressed: _isModelDownloaded,
                   ),
                   ElevatedButton(
-                    child: Text('Download'),
+                    child: const Text('Download'),
                     onPressed: _downloadModel,
                   ),
                   ElevatedButton(
-                    child: Text('Delete'),
+                    child: const Text('Delete'),
                     onPressed: _deleteModel,
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -125,7 +125,7 @@ class _DigitalInkViewState extends State<DigitalInkView> {
   Future<void> _recogniseText() async {
     showDialog(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (context) => const AlertDialog(
               title: Text('Recognising'),
             ),
         barrierDismissible: true);

@@ -52,7 +52,7 @@ class _ImageLabelViewState extends State<ImageLabelView> {
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;
     isBusy = true;
-    await Future.delayed(Duration(milliseconds: 50));
+    await Future.delayed(const Duration(milliseconds: 50));
     final labels = await imageLabeler.processImage(inputImage);
     final painter = LabelDetectorPainter(labels);
     customPaint = CustomPaint(painter: painter);

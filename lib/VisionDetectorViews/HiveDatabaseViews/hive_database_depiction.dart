@@ -26,7 +26,7 @@ class _HiveDatabaseDepictionViewState extends State<HiveDatabaseDepictionView> {
       ),
       body: Container(
         color: Colors.white,
-        child: CustomPaint(),
+        child: const CustomPaint(),
       ),
     );
   }

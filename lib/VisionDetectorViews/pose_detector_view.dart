@@ -38,6 +38,7 @@ class _PoseDetectorViewState extends State<PoseDetectorView> {
     if (isBusy) return;
     isBusy = true;
     final poses = await poseDetector.processImage(inputImage);
+    // ignore: avoid_print
     print('Found ${poses.length} poses');
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {

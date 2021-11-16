@@ -1,3 +1,5 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 import 'dart:io';
 
 import 'package:camera/camera.dart';
@@ -41,7 +43,7 @@ class _CameraViewState extends State<CameraView> {
 
     _imagePicker = ImagePicker();
     for (var i = 0; i < cameras.length; i++) {
-      print(i);
+      //print(i);
 
       if (cameras[i].lensDirection == widget.initialDirection) {
         _cameraIndex = i;
@@ -140,21 +142,21 @@ class _CameraViewState extends State<CameraView> {
                 ],
               ),
             )
-          : Icon(
+          : const Icon(
               Icons.image,
               size: 200,
             ),
       Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: ElevatedButton(
-          child: Text('From Gallery'),
+          child: const Text('From Gallery'),
           onPressed: () => _getImage(ImageSource.gallery),
         ),
       ),
       Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: ElevatedButton(
-          child: Text('Take a picture'),
+          child: const Text('Take a picture'),
           onPressed: () => _getImage(ImageSource.camera),
         ),
       ),
@@ -166,6 +168,7 @@ class _CameraViewState extends State<CameraView> {
     if (pickedFile != null) {
       _processPickedFile(pickedFile);
     } else {
+      // ignore: avoid_print
       print('No image selected.');
     }
     setState(() {});

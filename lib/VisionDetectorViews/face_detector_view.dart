@@ -13,7 +13,7 @@ class FaceDetectorView extends StatefulWidget {
 
 class _FaceDetectorViewState extends State<FaceDetectorView> {
   FaceDetector faceDetector =
-      GoogleMlKit.vision.faceDetector(FaceDetectorOptions(
+      GoogleMlKit.vision.faceDetector(const FaceDetectorOptions(
     enableContours: true,
     enableClassification: true,
   ));
@@ -42,6 +42,7 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
     if (isBusy) return;
     isBusy = true;
     final faces = await faceDetector.processImage(inputImage);
+    // ignore: avoid_print
     print('Found ${faces.length} faces');
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {

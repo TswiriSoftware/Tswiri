@@ -17,7 +17,7 @@ class _RemoteModelViewState extends State<RemoteModelView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Remote Model Manager')),
+      appBar: AppBar(title: const Text('Remote Model Manager')),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -29,15 +29,17 @@ class _RemoteModelViewState extends State<RemoteModelView> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               ElevatedButton(
-                  onPressed: _downloadModel, child: Text('Download Model')),
+                  onPressed: _downloadModel,
+                  child: const Text('Download Model')),
               ElevatedButton(
-                  onPressed: _deleteModel, child: Text('Delete Model')),
+                  onPressed: _deleteModel, child: const Text('Delete Model')),
             ],
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
             ElevatedButton(
-                onPressed: _isModelDownloaded, child: Text('Check download'))
+                onPressed: _isModelDownloaded,
+                child: const Text('Check download'))
           ])
         ],
       ),

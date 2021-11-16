@@ -7,7 +7,6 @@ import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/coordinates_t
 import 'package:flutter_google_ml_kit/database/qrcodes.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
-import 'package:vector_math/vector_math.dart';
 
 extension Ex on double {
   double toPrecision(int n) => double.parse(toStringAsFixed(n));
@@ -32,10 +31,7 @@ void injectBarcode(
   //print('Hi @Spodeo');
 
   var barcodeCenterPoints = []; // Centre co-ordinates of scanned QR codes
-  var milimeterOffsetXY = []; //Offset With the mm value of X and Y
   var qrCodeData = [];
-
-  var qrCodeVectors = [];
 
   //Method to round double values
   double dp(double val, int places) {
@@ -99,8 +95,8 @@ void injectBarcode(
       if (i < 1) {
         vectorBetweenBarcodesX = qrCodeData[i][1][0] - qrCodeData[i + 1][1][0];
         vectorBetweenBarcodesY = qrCodeData[i][1][1] - qrCodeData[i + 1][1][1];
-        print(vectorBetweenBarcodesX);
-        print(vectorBetweenBarcodesY);
+        //print(vectorBetweenBarcodesX);
+        //print(vectorBetweenBarcodesY);
 
         var x = ((qrCodeData[i][3] + qrCodeData[i + 1][3]) / 2);
         var y = ((qrCodeData[i][4] + qrCodeData[i + 1][4]) / 2);
@@ -108,7 +104,7 @@ void injectBarcode(
         disX = dp((x * vectorBetweenBarcodesX), 4);
         disY = dp((y * vectorBetweenBarcodesY), 4);
 
-        print('$disX, $disY');
+        //print('$disX, $disY');
 
         var uid = "${qrCodeData[i][0]}_${qrCodeData[i + 1][0]}";
 

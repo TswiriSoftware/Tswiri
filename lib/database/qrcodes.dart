@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:vector_math/vector_math.dart';
 part 'qrcodes.g.dart';
 
 @HiveType(typeId: 0)

@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-//TODO: Implement navigator 2.0.
+//TODO: Implement navigator 2.0 => This is acceptable for now @Spodeopieter
 
 // ignore: use_key_in_widget_constructors
 class Home extends StatelessWidget {
@@ -81,16 +81,16 @@ class Home extends StatelessWidget {
               children: [
                 Column(
                   //title: const Text("Vision"),
-                  children: [
-                    const CustomCard(
+                  children: const [
+                    CustomCard(
+                      ' Barcode Scanner',
+                      BarcodeScannerView(),
+                      featureCompleted: true,
+                    ),
+                    CustomCard(
                       //Possible use
                       ' Image Label Detector',
                       ImageLabelView(),
-                      featureCompleted: true,
-                    ),
-                    const CustomCard(
-                      ' Barcode Scanner',
-                      BarcodeScannerView(),
                       featureCompleted: true,
                     ),
                     CustomCard(
@@ -98,21 +98,21 @@ class Home extends StatelessWidget {
                       TextDetectorView(),
                       featureCompleted: true,
                     ),
-                    const CustomCard(
+                    CustomCard(
                       ' Object Detector',
                       ObjectDetectorView(),
                     ),
-                    const CustomCard(
+                    CustomCard(
                       ' Remote Model Manager',
                       RemoteModelView(),
                       featureCompleted: true,
                     ),
-                    const CustomCard(
+                    CustomCard(
                       ' Hive Database Viewer',
                       HiveDatabaseView(),
                       featureCompleted: true,
                     ),
-                    const CustomCard(
+                    CustomCard(
                       ' Hive Database 2D Viewer',
                       HiveDatabaseDepictionView(),
                       featureCompleted: true,
