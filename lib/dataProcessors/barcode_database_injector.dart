@@ -1,7 +1,17 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/coordinates_translator.dart';
+import 'package:flutter_google_ml_kit/database/qrcodes.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:vector_math/vector_math.dart' as math;
+import 'package:hive/hive.dart';
+import 'package:vector_math/vector_math.dart';
+
+extension Ex on double {
+  double toPrecision(int n) => double.parse(toStringAsFixed(n));
+}
 
 class BarcodeDatabaseInjector {
   BarcodeDatabaseInjector(this.barcodes, this.absoluteImageSize, this.rotation);
@@ -11,93 +21,147 @@ class BarcodeDatabaseInjector {
   final InputImageRotation rotation;
 }
 
-void injectBarcode(List<Barcode> barcodes, Size absoluteImageSize,
-    InputImageRotation rotation, var box) {
-  print('Hello @049er');
-  print('Hi @Spodeo');
+void injectBarcode(
+  BuildContext context,
+  List<Barcode> barcodes,
+  Size absoluteImageSize,
+  InputImageRotation rotation,
+  Box<dynamic> qrCodesBox,
+) {
+  //print('Hello @049er');
+  //print('Hi @Spodeo');
 
-  var centerOfBarcode = []; // Centre co-ordinates of scanned QR codes
-  var milimeterXYOfbarcode = []; //Offset With the mm value of X and Y
-  var absVectors = [];
-  var summary = [];
+  var barcodeCenterPoints = []; // Centre co-ordinates of scanned QR codes
+  var milimeterOffsetXY = []; //Offset With the mm value of X and Y
+  var qrCodeData = [];
 
-  @override
-  void data(Size size) {
-    var centers = []; // Centre co-ordinates of scanned QR codes
-    var mmXY = []; //Offset With the mm value of X and Y
-    var absVectors = [];
-    var summary = [];
+  var qrCodeVectors = [];
 
-//TODO@049er: implement functionality
-    for (final Barcode barcode in barcodes) {
-      final barcodeLeft = translateX(
-          barcode.value.boundingBox!.left, rotation, size, absoluteImageSize);
-      final barcodeTop = translateY(
-          barcode.value.boundingBox!.top, rotation, size, absoluteImageSize);
-      final barcodeRight = translateX(
-          barcode.value.boundingBox!.right, rotation, size, absoluteImageSize);
-      final barcodeBottom = translateY(
-          barcode.value.boundingBox!.bottom, rotation, size, absoluteImageSize);
+  //Method to round double values
+  double dp(double val, int places) {
+    num mod = pow(10.0, places);
+    return ((val * mod).round().toDouble() / mod);
+  }
 
-      var barcodeCentreX = (barcodeLeft + barcodeRight) / 2;
-      var barcodeCentreY = (barcodeTop + barcodeBottom) / 2;
+  Size size = Size(
+      MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
 
-      centers.add(Offset(barcodeCentreX, barcodeCentreY));
+  for (final Barcode barcode in barcodes) {
+    final barcodeBoundingBoxLeft = translateX(
+        barcode.value.boundingBox!.left, rotation, size, absoluteImageSize);
+    final barcodeBoundingBoxRight = translateX(
+        barcode.value.boundingBox!.right, rotation, size, absoluteImageSize);
+    final barcodeBoundingBoxTop = translateY(
+        barcode.value.boundingBox!.top, rotation, size, absoluteImageSize);
+    final barcodeBoundingBoxBottom = translateY(
+        barcode.value.boundingBox!.bottom, rotation, size, absoluteImageSize);
 
-      // Distance from camera calculation
-      if (barcodes.length >= 2) {
-        var mmBarcodeCentreX = 70 / (barcodeLeft - barcodeRight).abs();
-        var mmBarcodeCentreY = 70 / (barcodeTop - barcodeBottom).abs();
-        mmXY.add(Offset(mmBarcodeCentreX, mmBarcodeCentreY));
-      }
+    var barcodePixelDistanceX =
+        (barcodeBoundingBoxLeft + barcodeBoundingBoxRight) / 2;
+    var barcodePixelDistanceY =
+        (barcodeBoundingBoxTop + barcodeBoundingBoxBottom) / 2;
+    barcodeCenterPoints
+        .add(Offset(barcodePixelDistanceX, barcodePixelDistanceY));
 
-      var pxXY = ((barcodeLeft - barcodeRight).abs() +
-              (barcodeTop - barcodeBottom).abs()) /
-          2;
-      var distanceFromCamera =
-          (4341 / pxXY) - 15.75; //Specifically for redmi Note10S
+    var barcodeCenterPoint =
+        ((barcodeBoundingBoxLeft - barcodeBoundingBoxRight).abs() +
+                (barcodeBoundingBoxTop - barcodeBoundingBoxBottom).abs()) /
+            2;
 
+    var distanceFromCamera =
+        (4341 / barcodeCenterPoint) - 15.75; //Specifically for redmi Note10S
+
+    var barcodeCenterVector = [
+      ((barcodeBoundingBoxLeft + barcodeBoundingBoxRight) / 2),
+      ((barcodeBoundingBoxTop + barcodeBoundingBoxBottom) / 2)
+    ];
+
+    double mmX = 70 / (barcodeBoundingBoxLeft - barcodeBoundingBoxRight).abs();
+    double mmY = 70 / (barcodeBoundingBoxTop - barcodeBoundingBoxBottom).abs();
+
+    qrCodeData.add([
+      barcode.value.displayValue,
+      barcodeCenterVector,
+      distanceFromCamera,
+      mmX,
+      mmY
+    ]);
+  }
+
+  //print(qrCodeData);
+
+  if (qrCodeData.length >= 2) {
+    for (var i = 0; i < qrCodeData.length; i++) {
+      var vectorBetweenBarcodesX, vectorBetweenBarcodesY, disX, disY;
+      double;
       int _now = DateTime.now().millisecondsSinceEpoch;
-      summary.add([
-        barcode.value.displayValue, //Barcode Value
-        math.Vector2(barcodeCentreX, barcodeCentreY), //Barcode Centre
-        distanceFromCamera, //Distance from Camera in mm
-        _now //Timestamp
-      ]);
-    }
 
-    if (centers.length >= 2) {
-      print("Summary: ${summary}");
-      for (var i = 0; i < summary.length; i++) {
-        var dXY, disX, disY;
-        int _now = DateTime.now().millisecondsSinceEpoch;
+      if (i < 1) {
+        vectorBetweenBarcodesX = qrCodeData[i][1][0] - qrCodeData[i + 1][1][0];
+        vectorBetweenBarcodesY = qrCodeData[i][1][1] - qrCodeData[i + 1][1][1];
+        print(vectorBetweenBarcodesX);
+        print(vectorBetweenBarcodesY);
 
-        if (summary.length - 1 == i) {
-          dXY = centers[i] - centers[0];
-          disX = (dXY.dx * ((mmXY[i].dx + mmXY[0].dx) / mmXY.length));
-          disY = (dXY.dy * ((mmXY[i].dy + mmXY[0].dy) / mmXY.length));
-          var uid = "${i}_${0}";
-          if (absVectors.contains(uid)) {
-            absVectors.remove(uid);
-            absVectors.add([uid, math.Vector2(disX, disY), _now]);
-          } else {
-            absVectors.add([uid, math.Vector2(disX, disY), _now]);
-          }
-        } else {
-          dXY = centers[i] - centers[i + 1];
-          disX = (dXY.dx * ((mmXY[i].dx + mmXY[i + 1].dx) / mmXY.length));
-          disY = (dXY.dy * ((mmXY[i].dy + mmXY[i + 1].dy) / mmXY.length));
-          var uid = "${i}_${i + 1}";
+        var x = ((qrCodeData[i][3] + qrCodeData[i + 1][3]) / 2);
+        var y = ((qrCodeData[i][4] + qrCodeData[i + 1][4]) / 2);
 
-          if (absVectors.contains(uid)) {
-            absVectors.remove(uid);
-            absVectors.add([uid, math.Vector2(disX, disY), _now]);
-          } else {
-            absVectors.add([uid, math.Vector2(disX, disY), _now]);
-          }
-        }
+        disX = dp((x * vectorBetweenBarcodesX), 4);
+        disY = dp((y * vectorBetweenBarcodesY), 4);
+
+        print('$disX, $disY');
+
+        var uid = "${qrCodeData[i][0]}_${qrCodeData[i + 1][0]}";
+
+        var qrCodesVector =
+            QrCodes(uid: uid, vector: [disX, disY], createdDated: _now);
+
+        qrCodesBox.put(uid, qrCodesVector);
       }
-      print(absVectors);
     }
   }
 }
+
+ // for (var i = 0; i < qrCodeData.length; i++) {
+    //   var vectorBetweenBarcodes;
+    //   double disX, disY;
+    //   int _now = DateTime.now().millisecondsSinceEpoch;
+
+    //   if (qrCodeData.length - 1 == i) {
+    //     vectorBetweenBarcodes = barcodeCenterPoints[i] - barcodeCenterPoints[0];
+    //     print(vectorBetweenBarcodes);
+
+    //     disX = dp(
+    //         (vectorBetweenBarcodes.dx *
+    //             ((milimeterOffsetXY[i].dx + milimeterOffsetXY[0].dx) /
+    //                 milimeterOffsetXY.length)),
+    //         4);
+    //     disY = dp(
+    //         (vectorBetweenBarcodes.dy *
+    //             ((milimeterOffsetXY[i].dy + milimeterOffsetXY[0].dy) /
+    //                 milimeterOffsetXY.length)),
+    //         4);
+    //     var uid = "${qrCodeData[i][0]}_${qrCodeData[0][0]}";
+    //     var qrCodesVector =
+    //         QrCodes(uid: uid, vector: [disX, disY], createdDated: _now);
+    //     qrCodesBox.put(uid, qrCodesVector);
+    //   } else {
+    //     vectorBetweenBarcodes =
+    //         barcodeCenterPoints[i] - barcodeCenterPoints[i + 1];
+    //     disX = dp(
+    //         (vectorBetweenBarcodes.dx *
+    //             ((milimeterOffsetXY[i].dx + milimeterOffsetXY[0].dx) /
+    //                 milimeterOffsetXY.length)),
+    //         4);
+    //     disY = dp(
+    //         (vectorBetweenBarcodes.dy *
+    //             ((milimeterOffsetXY[i].dy + milimeterOffsetXY[0].dy) /
+    //                 milimeterOffsetXY.length)),
+    //         4);
+    //     var uid = "${qrCodeData[i][0]}_${qrCodeData[i + 1][0]}";
+
+    //     var qrCodesVector =
+    //         QrCodes(uid: uid, vector: [disX, disY], createdDated: _now);
+
+    //     qrCodesBox.put(uid, qrCodesVector);
+    //   }
+    // }

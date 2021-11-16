@@ -6,8 +6,7 @@ part of 'qrcodes.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-// ignore: camel_case_types
-class qrcodesAdapter extends TypeAdapter<QrCodes> {
+class QrCodesAdapter extends TypeAdapter<QrCodes> {
   @override
   final int typeId = 0;
 
@@ -17,18 +16,22 @@ class qrcodesAdapter extends TypeAdapter<QrCodes> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return QrCodes()
-      ..uid = fields[0] as String
-      ..createdDated = fields[1] as DateTime;
+    return QrCodes(
+      uid: fields[0] as String,
+      vector: (fields[1] as List).cast<dynamic>(),
+      createdDated: fields[2] as int,
+    );
   }
 
   @override
   void write(BinaryWriter writer, QrCodes obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.uid)
       ..writeByte(1)
+      ..write(obj.vector)
+      ..writeByte(2)
       ..write(obj.createdDated);
   }
 
@@ -38,7 +41,7 @@ class qrcodesAdapter extends TypeAdapter<QrCodes> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is qrcodesAdapter &&
+      other is QrCodesAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
