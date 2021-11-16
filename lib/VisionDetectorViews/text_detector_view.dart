@@ -5,6 +5,8 @@ import 'camera_view.dart';
 import 'painters/text_detector_painter.dart';
 
 class TextDetectorView extends StatefulWidget {
+  const TextDetectorView({Key? key}) : super(key: key);
+
   @override
   _TextDetectorViewState createState() => _TextDetectorViewState();
 }
@@ -35,6 +37,7 @@ class _TextDetectorViewState extends State<TextDetectorView> {
     if (isBusy) return;
     isBusy = true;
     final recognisedText = await textDetector.processImage(inputImage);
+    // ignore: avoid_print
     print('Found ${recognisedText.blocks.length} textBlocks');
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
