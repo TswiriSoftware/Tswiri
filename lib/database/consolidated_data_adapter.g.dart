@@ -1,38 +1,44 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'qrcodes.dart';
+part of 'consolidated_data_adapter.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class QrCodesAdapter extends TypeAdapter<QrCodes> {
+class ConsolidatedDataAdapter extends TypeAdapter<ConsolidatedData> {
   @override
-  final int typeId = 0;
+  final int typeId = 1;
 
   @override
-  QrCodes read(BinaryReader reader) {
+  ConsolidatedData read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return QrCodes(
+    return ConsolidatedData(
       uid: fields[0] as String,
-      vector: (fields[1] as List).cast<dynamic>(),
-      createdDated: fields[2] as int,
+      X: fields[1] as double,
+      Y: fields[2] as double,
+      timeStamp: fields[3] as int,
+      fixed: fields[4] as bool,
     );
   }
 
   @override
-  void write(BinaryWriter writer, QrCodes obj) {
+  void write(BinaryWriter writer, ConsolidatedData obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.uid)
       ..writeByte(1)
-      ..write(obj.vector)
+      ..write(obj.X)
       ..writeByte(2)
-      ..write(obj.createdDated);
+      ..write(obj.Y)
+      ..writeByte(3)
+      ..write(obj.timeStamp)
+      ..writeByte(4)
+      ..write(obj.fixed);
   }
 
   @override
@@ -41,7 +47,7 @@ class QrCodesAdapter extends TypeAdapter<QrCodes> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is QrCodesAdapter &&
+      other is ConsolidatedDataAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

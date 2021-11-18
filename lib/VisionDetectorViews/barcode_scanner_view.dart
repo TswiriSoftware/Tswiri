@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/dataProcessors/barcode_database_injector.dart';
+import 'package:flutter_google_ml_kit/dataProcessors/barcode_raw_data_injector.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
 import 'camera_view.dart';
@@ -42,7 +42,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     if (isBusy) return;
     isBusy = true;
     final barcodes = await barcodeScanner.processImage(inputImage);
-    var qrCodesBox = await Hive.openBox('testBox');
+    var rawDataBox = await Hive.openBox('rawDataBox');
 
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
@@ -59,7 +59,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     if (mounted) {
       setState(() {
         injectBarcode(context, barcodes, inputImage.inputImageData!.size,
-            inputImage.inputImageData!.imageRotation, qrCodesBox);
+            inputImage.inputImageData!.imageRotation, rawDataBox);
       });
     }
   }

@@ -4,13 +4,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/coordinates_translator.dart';
-import 'package:flutter_google_ml_kit/database/qrcodes.dart';
+import 'package:flutter_google_ml_kit/database/raw_data_adapter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
-
-extension Ex on double {
-  double toPrecision(int n) => double.parse(toStringAsFixed(n));
-}
 
 class BarcodeDatabaseInjector {
   BarcodeDatabaseInjector(this.barcodes, this.absoluteImageSize, this.rotation);
@@ -25,7 +21,7 @@ void injectBarcode(
   List<Barcode> barcodes,
   Size absoluteImageSize,
   InputImageRotation rotation,
-  Box<dynamic> qrCodesBox,
+  Box<dynamic> rawDataBox,
 ) {
   //print('Hello @049er');
   //print('Hi @Spodeo');
@@ -84,19 +80,16 @@ void injectBarcode(
     ]);
   }
 
-  //print(qrCodeData);
+  print(qrCodeData.length);
 
   if (qrCodeData.length >= 2) {
     for (var i = 0; i < qrCodeData.length; i++) {
       var vectorBetweenBarcodesX, vectorBetweenBarcodesY, disX, disY;
-      double;
       int _now = DateTime.now().millisecondsSinceEpoch;
 
-      if (i < 1) {
+      if (i < qrCodeData.length - 1) {
         vectorBetweenBarcodesX = qrCodeData[i][1][0] - qrCodeData[i + 1][1][0];
         vectorBetweenBarcodesY = qrCodeData[i][1][1] - qrCodeData[i + 1][1][1];
-        //print(vectorBetweenBarcodesX);
-        //print(vectorBetweenBarcodesY);
 
         var x = ((qrCodeData[i][3] + qrCodeData[i + 1][3]) / 2);
         var y = ((qrCodeData[i][4] + qrCodeData[i + 1][4]) / 2);
@@ -104,60 +97,29 @@ void injectBarcode(
         disX = dp((x * vectorBetweenBarcodesX), 4);
         disY = dp((y * vectorBetweenBarcodesY), 4);
 
-        //print('$disX, $disY');
-
         var uid = "${qrCodeData[i][0]}_${qrCodeData[i + 1][0]}";
 
         var qrCodesVector =
             QrCodes(uid: uid, vector: [disX, disY], createdDated: _now);
 
-        qrCodesBox.put(uid, qrCodesVector);
+        rawDataBox.put(uid, qrCodesVector);
+      } else {
+        vectorBetweenBarcodesX = qrCodeData[i][1][0] - qrCodeData[0][1][0];
+        vectorBetweenBarcodesY = qrCodeData[i][1][1] - qrCodeData[0][1][1];
+
+        var x = ((qrCodeData[i][3] + qrCodeData[0][3]) / 2);
+        var y = ((qrCodeData[i][4] + qrCodeData[0][4]) / 2);
+
+        disX = dp((x * vectorBetweenBarcodesX), 4);
+        disY = dp((y * vectorBetweenBarcodesY), 4);
+
+        var uid = "${qrCodeData[i][0]}_${qrCodeData[0][0]}";
+
+        var qrCodesVector =
+            QrCodes(uid: uid, vector: [disX, disY], createdDated: _now);
+
+        rawDataBox.put(uid, qrCodesVector);
       }
     }
   }
 }
-
- // for (var i = 0; i < qrCodeData.length; i++) {
-    //   var vectorBetweenBarcodes;
-    //   double disX, disY;
-    //   int _now = DateTime.now().millisecondsSinceEpoch;
-
-    //   if (qrCodeData.length - 1 == i) {
-    //     vectorBetweenBarcodes = barcodeCenterPoints[i] - barcodeCenterPoints[0];
-    //     print(vectorBetweenBarcodes);
-
-    //     disX = dp(
-    //         (vectorBetweenBarcodes.dx *
-    //             ((milimeterOffsetXY[i].dx + milimeterOffsetXY[0].dx) /
-    //                 milimeterOffsetXY.length)),
-    //         4);
-    //     disY = dp(
-    //         (vectorBetweenBarcodes.dy *
-    //             ((milimeterOffsetXY[i].dy + milimeterOffsetXY[0].dy) /
-    //                 milimeterOffsetXY.length)),
-    //         4);
-    //     var uid = "${qrCodeData[i][0]}_${qrCodeData[0][0]}";
-    //     var qrCodesVector =
-    //         QrCodes(uid: uid, vector: [disX, disY], createdDated: _now);
-    //     qrCodesBox.put(uid, qrCodesVector);
-    //   } else {
-    //     vectorBetweenBarcodes =
-    //         barcodeCenterPoints[i] - barcodeCenterPoints[i + 1];
-    //     disX = dp(
-    //         (vectorBetweenBarcodes.dx *
-    //             ((milimeterOffsetXY[i].dx + milimeterOffsetXY[0].dx) /
-    //                 milimeterOffsetXY.length)),
-    //         4);
-    //     disY = dp(
-    //         (vectorBetweenBarcodes.dy *
-    //             ((milimeterOffsetXY[i].dy + milimeterOffsetXY[0].dy) /
-    //                 milimeterOffsetXY.length)),
-    //         4);
-    //     var uid = "${qrCodeData[i][0]}_${qrCodeData[i + 1][0]}";
-
-    //     var qrCodesVector =
-    //         QrCodes(uid: uid, vector: [disX, disY], createdDated: _now);
-
-    //     qrCodesBox.put(uid, qrCodesVector);
-    //   }
-    // }

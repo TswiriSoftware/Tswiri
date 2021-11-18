@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-part 'qrcodes.g.dart';
+part 'raw_data_adapter.g.dart';
 
 @HiveType(typeId: 0)
 class QrCodes extends HiveObject {
@@ -17,6 +17,6 @@ class QrCodes extends HiveObject {
 
   @override
   String toString() {
-    return 'x: ${vector[0]} y: ${vector[1]}, $createdDated';
+    return '$uid, {${vector[0]}, ${vector[1]}}, $createdDated';
   }
 }
