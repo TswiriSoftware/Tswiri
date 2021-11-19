@@ -16,13 +16,13 @@ class HiveDatabaseConsolidationView extends StatefulWidget {
 class _HiveDatabaseConsolidationViewState
     extends State<HiveDatabaseConsolidationView> {
   List fixedPoints = ['1'];
-  var qrCodesData = [];
+  List qrCodesData = [];
   var displayList = [];
+  var consolidatedDataPoints = [];
 
   @override
   void initState() {
-    displayList.clear();
-    consolidatingData(displayList);
+    //consolidatingData(displayList);
     super.initState();
   }
 
@@ -53,9 +53,10 @@ class _HiveDatabaseConsolidationViewState
             FloatingActionButton(
               heroTag: null,
               onPressed: () async {
-                // qrCodesData.clear();
-                // displayList.clear();
-                // Hive.box('consolidatedDataBox').clear();
+                qrCodesData.clear();
+                consolidatedDataPoints.clear();
+                displayList.clear();
+                Hive.box('consolidatedDataBox').clear();
                 consolidatingData(displayList);
               },
               child: const Icon(Icons.refresh),
@@ -91,50 +92,13 @@ class _HiveDatabaseConsolidationViewState
     var rawDataBox = await Hive.openBox('rawDataBox');
     var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
 
-    for (var i = 0; i < rawDataBox.length; i++) {
-      QrCodes qrCodeData = rawDataBox.getAt(i);
-      var qrCode = qrCodeData
-          .toString()
-          .split('_')
-          .toString()
-          .replaceAll(RegExp(r'[{\[\]\}]'), '')
-          .split(',')
-          .toList();
+    consolidatedDataPoints.add(fixedPoints[0]);
+    consolidatedDataPoints.removeDuplicates();
 
-      qrCodesData.add(qrCode);
-      qrCodesData.removeDuplicates();
-      if (fixedPoints.contains(qrCode[0])) {
-        var consolidatedPoint = ConsolidatedData(
-            uid: qrCode[0], X: 0.0, Y: 0.0, timeStamp: 0, fixed: true);
-        print(consolidatedPoint.toString());
-        consolidatedDataBox.put(qrCode[0], consolidatedPoint);
-        qrCodesData.removeAt(i);
-      }
-    }
-    //print(qrCodesData.toIList());
-
-    //print(consolidatedDataBox.values.toIList());
-    // for (var i = 0; i < consolidatedDataBox.length; i++) {
-    //   //print(consolidatedDataBox.length);
-    //   ConsolidatedData fixedPoints = consolidatedDataBox.getAt(i);
-    //   for (var j = 0; j < qrCodesData.length; j++) {
-    //     if (fixedPoints.uid == qrCodesData[j][0] &&
-    //         fixedPoints.uid != qrCodesData[j][1]) {
-    //       var consolidatedPoint = ConsolidatedData(
-    //           uid: qrCodesData[j][1],
-    //           X: double.parse(qrCodesData[j][2]) + fixedPoints.X,
-    //           Y: double.parse(qrCodesData[j][2]) + fixedPoints.Y,
-    //           timeStamp: int.parse(qrCodesData[j][4]),
-    //           fixed: false);
-
-    //       consolidatedDataBox.put(qrCodesData[j][1], consolidatedPoint);
-    //     }
-    //   }
-    // }
-
-    // for (var i = 0; i < consolidatedDataBox.length; i++) {
-    //   displayList.add([consolidatedDataBox.getAt(i)]);
-    // }
+    buildQrCodesData(rawDataBox, qrCodesData);
+    addConsolidatedData(
+        qrCodesData, consolidatedDataPoints, consolidatedDataBox);
+    generatingDisplayList(consolidatedDataBox, displayList);
 
     return displayList;
   }
@@ -148,16 +112,50 @@ checkIfPointFixed(var point, var fixedPoints) {
   }
 }
 
+buildQrCodesData(Box rawDataBox, List qrCodesData) {
+  for (var i = 0; i < rawDataBox.length; i++) {
+    QrCodes qrCodeData = rawDataBox.getAt(i);
+    var qrCode = qrCodeData
+        .toString()
+        .split('_')
+        .toString()
+        .replaceAll(RegExp(r'[{\[\]\}]'), '')
+        .split(',')
+        .toList();
 
+    qrCodesData.add(qrCode);
+    qrCodesData.removeDuplicates();
+  }
+  //print(qrCodesData);
+}
 
-    // for (var i = 0; i < rawDataBox.length; i++) {
-    //   QrCodes qrCodeData = rawDataBox.getAt(i);
-    //   var qrCodeUid = qrCodeData.uid;
-    //   qrCodeUids.add(qrCodeUid); ////print(input.split('').reversed.join());
-    // }
-    // for (var i = 0; i < qrCodeUids.length; i++) {
-    //   var x = qrCodeUids[i].split('').reversed.join();
-    //   print(x);
-    //   rawDataBox.delete(x);
-    // }
-    // print(rawDataBox);
+addConsolidatedData(
+    var qrCodesData, var consolidatedDataPoints, Box consolidatedDataBox) {
+  for (var i = 0; i < qrCodesData.length; i++) {
+    if (consolidatedDataPoints.contains(qrCodesData[i][0])) {
+      var consolidatedPoint = ConsolidatedData(
+          uid: qrCodesData[i][1],
+          X: 0.0 + double.parse(qrCodesData[i][2]),
+          Y: 0.0 + double.parse(qrCodesData[i][3]),
+          timeStamp: int.parse(qrCodesData[i][4]),
+          fixed: false);
+      consolidatedDataBox.put(qrCodesData[i][1], consolidatedPoint);
+    }
+  }
+}
+
+buildingPointTree() {}
+
+generatingDisplayList(Box consolidatedDataBox, List displayList) {
+  for (var i = 0; i < consolidatedDataBox.length; i++) {
+    ConsolidatedData consolidatedPoint = consolidatedDataBox.getAt(i);
+    var point = consolidatedPoint
+        .toString()
+        .split('_')
+        .toString()
+        .replaceAll(RegExp(r'[{\[\]\}]'), '')
+        .split(',')
+        .toList();
+    displayList.add(point);
+  }
+}
