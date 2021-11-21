@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/coordinates_translator.dart';
 import 'package:flutter_google_ml_kit/database/raw_data_adapter.dart';
@@ -16,7 +15,7 @@ class BarcodeDatabaseInjector {
   final InputImageRotation rotation;
 }
 
-void injectBarcode(
+injectBarcode(
   BuildContext context,
   List<Barcode> barcodes,
   Size absoluteImageSize,
@@ -30,7 +29,7 @@ void injectBarcode(
   var qrCodeData = [];
 
   //Method to round double values
-  double dp(double val, int places) {
+  double roundDouble(double val, int places) {
     num mod = pow(10.0, places);
     return ((val * mod).round().toDouble() / mod);
   }
@@ -70,7 +69,8 @@ void injectBarcode(
 
     double mmX = 70 / (barcodeBoundingBoxLeft - barcodeBoundingBoxRight).abs();
     double mmY = 70 / (barcodeBoundingBoxTop - barcodeBoundingBoxBottom).abs();
-
+    // debugPrint(
+    //     'qrCodeData: ${barcode.value.displayValue}, ${barcodeCenterVector}, ${distanceFromCamera}, ${mmX}, ${mmY}');
     qrCodeData.add([
       barcode.value.displayValue,
       barcodeCenterVector,
@@ -79,12 +79,11 @@ void injectBarcode(
       mmY
     ]);
   }
-
-  print(qrCodeData.length);
-
+  //print(qrCodeData);
   if (qrCodeData.length >= 2) {
     for (var i = 0; i < qrCodeData.length; i++) {
-      var vectorBetweenBarcodesX, vectorBetweenBarcodesY, disX, disY;
+      var vectorBetweenBarcodesX, vectorBetweenBarcodesY;
+      double disX, disY;
       int _now = DateTime.now().millisecondsSinceEpoch;
 
       if (i < qrCodeData.length - 1) {
@@ -94,13 +93,14 @@ void injectBarcode(
         var x = ((qrCodeData[i][3] + qrCodeData[i + 1][3]) / 2);
         var y = ((qrCodeData[i][4] + qrCodeData[i + 1][4]) / 2);
 
-        disX = dp((x * vectorBetweenBarcodesX), 4);
-        disY = dp((y * vectorBetweenBarcodesY), 4);
+        disX = roundDouble((x * vectorBetweenBarcodesX), 1);
+        disY = roundDouble((y * vectorBetweenBarcodesY), 1);
 
         var uid = "${qrCodeData[i][0]}_${qrCodeData[i + 1][0]}";
+        uid.replaceAll(' ', '');
 
         var qrCodesVector =
-            QrCodes(uid: uid, vector: [disX, disY], createdDated: _now);
+            QrCodes(uid: uid, X: disX, Y: disY, createdDated: _now);
 
         rawDataBox.put(uid, qrCodesVector);
       } else {
@@ -110,13 +110,13 @@ void injectBarcode(
         var x = ((qrCodeData[i][3] + qrCodeData[0][3]) / 2);
         var y = ((qrCodeData[i][4] + qrCodeData[0][4]) / 2);
 
-        disX = dp((x * vectorBetweenBarcodesX), 4);
-        disY = dp((y * vectorBetweenBarcodesY), 4);
+        disX = roundDouble((x * vectorBetweenBarcodesX), 1);
+        disY = roundDouble((y * vectorBetweenBarcodesY), 1);
 
         var uid = "${qrCodeData[i][0]}_${qrCodeData[0][0]}";
-
+        uid.replaceAll(' ', '');
         var qrCodesVector =
-            QrCodes(uid: uid, vector: [disX, disY], createdDated: _now);
+            QrCodes(uid: uid, X: disX, Y: disY, createdDated: _now);
 
         rawDataBox.put(uid, qrCodesVector);
       }

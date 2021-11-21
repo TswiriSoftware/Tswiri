@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/dataProcessors/barcode_raw_data_injector.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import '../dataProcessors/barcode_raw_data_injector.dart';
 import 'camera_view.dart';
 import 'painters/barcode_detector_painter.dart';
 
@@ -22,7 +22,6 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
   @override
   void dispose() {
     barcodeScanner.close();
-    Hive.close();
     super.dispose();
   }
 

@@ -41,7 +41,7 @@
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
           android:name="com.google.mlkit.vision.DEPENDENCIES"
-          android:value="ica,model2,model3,ocr,face" />
+          android:value="ica" />
 
         <meta-data
             android:name="flutterEmbedding"

@@ -18,20 +18,23 @@ class QrCodesAdapter extends TypeAdapter<QrCodes> {
     };
     return QrCodes(
       uid: fields[0] as String,
-      vector: (fields[1] as List).cast<dynamic>(),
-      createdDated: fields[2] as int,
+      X: fields[1] as double,
+      Y: fields[2] as double,
+      createdDated: fields[3] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, QrCodes obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.uid)
       ..writeByte(1)
-      ..write(obj.vector)
+      ..write(obj.X)
       ..writeByte(2)
+      ..write(obj.Y)
+      ..writeByte(3)
       ..write(obj.createdDated);
   }
 
