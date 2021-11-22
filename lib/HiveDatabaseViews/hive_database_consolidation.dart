@@ -134,8 +134,12 @@ class _HiveDatabaseConsolidationViewState
     var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
     getProcessedData(processedDataBox, processedDataList);
     addFixedPoints(consolidatedDataList, fixedPoints);
+
+    var length = consolidatedDataList.length;
+
     consolidateProcessedData(
         processedDataList, consolidatedDataList, fixedPoints, currentPoints);
+
     _displayList(consolidatedDataList, displayList);
     return displayList;
   }
@@ -180,9 +184,7 @@ addFixedPoints(Map consolidatedDataList, List fixedPoints) {
 
 updatePoints(Map consolidatedDataList, Map currentPoints, List fixedPoints) {
   for (var i = 0; i < consolidatedDataList.length; i++) {
-    if (fixedPoints.contains(consolidatedDataList.keys.elementAt(i))) {
-      print('fixed point');
-    } else {
+    if (!fixedPoints.contains(consolidatedDataList.keys.elementAt(i))) {
       currentPoints.putIfAbsent(
           consolidatedDataList.keys.elementAt(i),
           () => [
@@ -191,24 +193,14 @@ updatePoints(Map consolidatedDataList, Map currentPoints, List fixedPoints) {
               ]);
     }
   }
-  print('currentPoints: ${currentPoints}');
+  print('currentPoints: ${currentPoints.toIMap()}');
 }
 
 consolidateProcessedData(List processedDataList, Map consolidatedDataList,
     List fixedPoints, Map currentPoints) {
-  List points = [];
-  for (var i = 0; i < processedDataList.length; i++) {
-    if (fixedPoints.contains(processedDataList[i][0])) {
-      print('point present');
-    } else {
-      points.add(processedDataList[i][0]);
-    }
-  }
-  print(points);
   for (var i = 0; i < 5; i++) {
     for (var i = 0; i < processedDataList.length; i++) {
-      if (points.contains(processedDataList[i][1]) &&
-          fixedPoints.contains(processedDataList[i][0]) &&
+      if (fixedPoints.contains(processedDataList[i][0]) &&
           !currentPoints.keys.contains(processedDataList[i][1])) {
         //print(consolidatedDataList.indexOf(processedDataList[i][1]));
         consolidatedDataList.putIfAbsent(
@@ -224,12 +216,38 @@ consolidateProcessedData(List processedDataList, Map consolidatedDataList,
         consolidatedDataList.putIfAbsent(
             processedDataList[i][1],
             () => [
-                  double.parse(processedDataList[i][2]) +
-                      double.parse(
-                          currentPoints[processedDataList[i][0]][0].toString()),
+                  roundDouble(
+                      double.parse(processedDataList[i][2]) +
+                          double.parse(currentPoints[processedDataList[i][0]][0]
+                              .toString()),
+                      0),
                   double.parse(processedDataList[i][3]) +
-                      double.parse(
-                          currentPoints[processedDataList[i][0]][0].toString()),
+                      roundDouble(
+                          double.parse(currentPoints[processedDataList[i][0]][1]
+                              .toString()),
+                          0),
+                  processedDataList[i][4]
+                ]);
+        updatePoints(consolidatedDataList, currentPoints, fixedPoints);
+      }
+      if (currentPoints.containsKey(processedDataList[i][1]) &&
+          !currentPoints.keys.contains(processedDataList[i][0])) {
+        print('running');
+        consolidatedDataList.putIfAbsent(
+            processedDataList[i][0],
+            () => [
+                  roundDouble(
+                      double.parse(processedDataList[i][2]) * -1 +
+                          (double.parse(currentPoints[processedDataList[i][1]]
+                                  [0]
+                              .toString())),
+                      0),
+                  roundDouble(
+                      double.parse(processedDataList[i][3]) * -1 +
+                          (double.parse(currentPoints[processedDataList[i][1]]
+                                  [1]
+                              .toString())),
+                      0),
                   processedDataList[i][4]
                 ]);
         updatePoints(consolidatedDataList, currentPoints, fixedPoints);
@@ -238,7 +256,6 @@ consolidateProcessedData(List processedDataList, Map consolidatedDataList,
   }
   print('consolidatedDataList: ${consolidatedDataList.toIMap()}');
 }
-//double.parse(currentPoints[processedDataList[i][0]][0])
 
 double roundDouble(double val, int places) {
   num mod = pow(10.0, places);
