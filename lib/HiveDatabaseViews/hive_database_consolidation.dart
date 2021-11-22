@@ -67,6 +67,13 @@ class _HiveDatabaseConsolidationViewState
             FloatingActionButton(
               heroTag: null,
               onPressed: () {
+                fixedPointsDialog(fixedPoints);
+              },
+              child: const Icon(Icons.change_circle),
+            ),
+            FloatingActionButton(
+              heroTag: null,
+              onPressed: () {
                 displayList.clear();
                 setState(() {});
               },
@@ -84,7 +91,19 @@ class _HiveDatabaseConsolidationViewState
         future: consolidatingData(displayList),
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
+            return Column(
+              children: [
+                Form(child: TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some text';
+                    }
+                    return null;
+                  },
+                )),
+                const Center(child: CircularProgressIndicator()),
+              ],
+            );
           } else {
             List myList = snapshot.data ?? [];
             return ListView.builder(
@@ -126,6 +145,45 @@ class _HiveDatabaseConsolidationViewState
     );
   }
 
+  fixedPointsDialog(List fixedPoints) {
+    String dropdownValue = fixedPoints[0];
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Pick Fixed Point'),
+          content: SingleChildScrollView(
+              child: DropdownButton(
+                  value: dropdownValue,
+                  items: <String>['1', '2', '3', '4', '5', '6', '7']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    fixedPoints.clear();
+                    fixedPoints.add(newValue);
+                    setState(() {
+                      dropdownValue = newValue!;
+                      dropdownValue = fixedPoints[0];
+                    });
+                  })),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<List> consolidatingData(List displayList) async {
     displayList.clear();
     currentPoints.clear();
@@ -140,12 +198,13 @@ class _HiveDatabaseConsolidationViewState
     consolidateProcessedData(
         processedDataList, consolidatedDataList, fixedPoints, currentPoints);
 
-    _displayList(consolidatedDataList, displayList);
+    _displayList(consolidatedDataList, displayList, consolidatedDataBox);
     return displayList;
   }
 }
 
-_displayList(Map consolidatedDataList, List displayList) {
+_displayList(
+    Map consolidatedDataList, List displayList, Box consolidatedDataBox) {
   for (var i = 0; i < consolidatedDataList.length; i++) {
     displayList.add([
       consolidatedDataList.keys.elementAt(i),
@@ -153,8 +212,19 @@ _displayList(Map consolidatedDataList, List displayList) {
       consolidatedDataList.values.elementAt(i)[1],
       consolidatedDataList.values.elementAt(i)[2]
     ]);
-  }
 
+    var data = ConsolidatedData(
+        uid: consolidatedDataList.keys.elementAt(i),
+        X: consolidatedDataList.values.elementAt(i)[0],
+        Y: consolidatedDataList.values.elementAt(i)[1],
+        timeStamp:
+            int.parse(consolidatedDataList.values.elementAt(i)[2].toString()),
+        fixed: false);
+    consolidatedDataBox.put(data.uid, data);
+  }
+  displayList.sort((a, b) => a[0].compareTo(b[0]));
+
+  print('consolidatedDataBox: ${consolidatedDataBox.toMap().toIMap()}');
   print('displayList: ${displayList.toIList()}');
 }
 
@@ -193,67 +263,75 @@ updatePoints(Map consolidatedDataList, Map currentPoints, List fixedPoints) {
               ]);
     }
   }
-  print('currentPoints: ${currentPoints.toIMap()}');
+  //print('currentPoints: ${currentPoints.toIMap()}');
 }
 
 consolidateProcessedData(List processedDataList, Map consolidatedDataList,
     List fixedPoints, Map currentPoints) {
-  for (var i = 0; i < 5; i++) {
-    for (var i = 0; i < processedDataList.length; i++) {
-      if (fixedPoints.contains(processedDataList[i][0]) &&
-          !currentPoints.keys.contains(processedDataList[i][1])) {
-        //print(consolidatedDataList.indexOf(processedDataList[i][1]));
-        consolidatedDataList.putIfAbsent(
-            processedDataList[i][1],
-            () => [
-                  roundDouble(double.parse(processedDataList[i][2]), 1),
-                  roundDouble(double.parse(processedDataList[i][3]), 1),
-                  processedDataList[i][4]
-                ]);
-        updatePoints(consolidatedDataList, currentPoints, fixedPoints);
-      }
-      if (currentPoints.containsKey(processedDataList[i][0])) {
-        consolidatedDataList.putIfAbsent(
-            processedDataList[i][1],
-            () => [
-                  roundDouble(
-                      double.parse(processedDataList[i][2]) +
-                          double.parse(currentPoints[processedDataList[i][0]][0]
-                              .toString()),
-                      0),
-                  double.parse(processedDataList[i][3]) +
-                      roundDouble(
-                          double.parse(currentPoints[processedDataList[i][0]][1]
-                              .toString()),
-                          0),
-                  processedDataList[i][4]
-                ]);
-        updatePoints(consolidatedDataList, currentPoints, fixedPoints);
-      }
-      if (currentPoints.containsKey(processedDataList[i][1]) &&
-          !currentPoints.keys.contains(processedDataList[i][0])) {
-        print('running');
-        consolidatedDataList.putIfAbsent(
-            processedDataList[i][0],
-            () => [
-                  roundDouble(
-                      double.parse(processedDataList[i][2]) * -1 +
-                          (double.parse(currentPoints[processedDataList[i][1]]
-                                  [0]
-                              .toString())),
-                      0),
-                  roundDouble(
-                      double.parse(processedDataList[i][3]) * -1 +
-                          (double.parse(currentPoints[processedDataList[i][1]]
-                                  [1]
-                              .toString())),
-                      0),
-                  processedDataList[i][4]
-                ]);
-        updatePoints(consolidatedDataList, currentPoints, fixedPoints);
-      }
+  //for (var i = 0; i < 5; i++) {
+  for (var i = 0; i < processedDataList.length; i++) {
+    if (fixedPoints.contains(processedDataList[i][0]) &&
+        !currentPoints.keys.contains(processedDataList[i][1])) {
+      //print(consolidatedDataList.indexOf(processedDataList[i][1]));
+      consolidatedDataList.putIfAbsent(
+          processedDataList[i][1],
+          () => [
+                roundDouble(double.parse(processedDataList[i][2]), 1),
+                roundDouble(double.parse(processedDataList[i][3]), 1),
+                processedDataList[i][4]
+              ]);
+      updatePoints(consolidatedDataList, currentPoints, fixedPoints);
+    }
+    if (fixedPoints.contains(processedDataList[i][1]) &&
+        !currentPoints.keys.contains(processedDataList[i][0])) {
+      consolidatedDataList.putIfAbsent(
+          processedDataList[i][0],
+          () => [
+                -roundDouble(double.parse(processedDataList[i][2]), 1),
+                -roundDouble(double.parse(processedDataList[i][3]), 1),
+                processedDataList[i][4]
+              ]);
+      updatePoints(consolidatedDataList, currentPoints, fixedPoints);
+    }
+    if (currentPoints.containsKey(processedDataList[i][0])) {
+      consolidatedDataList.putIfAbsent(
+          processedDataList[i][1],
+          () => [
+                roundDouble(
+                    double.parse(processedDataList[i][2]) +
+                        double.parse(currentPoints[processedDataList[i][0]][0]
+                            .toString()),
+                    0),
+                double.parse(processedDataList[i][3]) +
+                    roundDouble(
+                        double.parse(currentPoints[processedDataList[i][0]][1]
+                            .toString()),
+                        0),
+                processedDataList[i][4]
+              ]);
+      updatePoints(consolidatedDataList, currentPoints, fixedPoints);
+    }
+    if (currentPoints.containsKey(processedDataList[i][1]) &&
+        !currentPoints.keys.contains(processedDataList[i][0])) {
+      consolidatedDataList.putIfAbsent(
+          processedDataList[i][0],
+          () => [
+                roundDouble(
+                    double.parse(processedDataList[i][2]) * -1 +
+                        (double.parse(currentPoints[processedDataList[i][1]][0]
+                            .toString())),
+                    0),
+                roundDouble(
+                    double.parse(processedDataList[i][3]) * -1 +
+                        (double.parse(currentPoints[processedDataList[i][1]][1]
+                            .toString())),
+                    0),
+                processedDataList[i][4]
+              ]);
+      updatePoints(consolidatedDataList, currentPoints, fixedPoints);
     }
   }
+  //}
   print('consolidatedDataList: ${consolidatedDataList.toIMap()}');
 }
 

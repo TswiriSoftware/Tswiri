@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_google_ml_kit/HiveDatabaseViews/hive_views.dart';
 import 'package:flutter_google_ml_kit/database/consolidated_data_adapter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -89,34 +90,29 @@ class Home extends StatelessWidget {
                       BarcodeScannerView(),
                       featureCompleted: true,
                     ),
+                    // CustomCard(
+                    //   //Possible use
+                    //   ' Image Label Detector',
+                    //   ImageLabelView(),
+                    //   featureCompleted: true,
+                    // ),
+                    // CustomCard(
+                    //   ' Text Detector',
+                    //   TextDetectorView(),
+                    //   featureCompleted: true,
+                    // ),
+                    // CustomCard(
+                    //   ' Object Detector',
+                    //   ObjectDetectorView(),
+                    // ),
+                    // CustomCard(
+                    //   ' Remote Model Manager',
+                    //   RemoteModelView(),
+                    //   featureCompleted: true,
+                    // ),
                     CustomCard(
-                      //Possible use
-                      ' Image Label Detector',
-                      ImageLabelView(),
-                      featureCompleted: true,
-                    ),
-                    CustomCard(
-                      ' Text Detector',
-                      TextDetectorView(),
-                      featureCompleted: true,
-                    ),
-                    CustomCard(
-                      ' Object Detector',
-                      ObjectDetectorView(),
-                    ),
-                    CustomCard(
-                      ' Remote Model Manager',
-                      RemoteModelView(),
-                      featureCompleted: true,
-                    ),
-                    CustomCard(
-                      ' Hive Database Viewer',
-                      HiveDatabaseView(),
-                      featureCompleted: true,
-                    ),
-                    CustomCard(
-                      ' Hive Database Consolidation Viewer',
-                      HiveDatabaseConsolidationView(),
+                      ' Hive Database',
+                      HiveViews(),
                       featureCompleted: true,
                     ),
                   ],
