@@ -1,11 +1,9 @@
-import 'package:fast_immutable_collections/src/base/iterable_extension.dart';
 import 'package:fast_immutable_collections/src/ilist/list_extension.dart';
 import 'package:fast_immutable_collections/src/imap/map_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/dataProcessors/barcode_data_procesor.dart';
-import 'package:flutter_google_ml_kit/database/raw_data_adapter.dart';
 import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
+import '../databaseAdapters/raw_data_adapter.dart';
 
 class HiveDatabaseView extends StatefulWidget {
   const HiveDatabaseView({Key? key}) : super(key: key);
@@ -104,6 +102,7 @@ class _HiveDatabaseViewState extends State<HiveDatabaseView> {
   Future<List> loadData() async {
     var rawDataBox = await Hive.openBox('rawDataBox');
     var processedDataBox = await Hive.openBox('processedDataBox');
+
     _displayList(displayList, rawDataBox, processedDataBox);
 
     return displayList;
@@ -139,7 +138,7 @@ processRawData(Box rawDataBox, Box processedDataBox) {
         .replaceAll(' ', '')
         .split(',')
         .toList();
-    //print(vectorData);
+
     uids.add(vectorData[0].toString());
     uids.removeDuplicates();
     if (uids.contains(vectorData[1])) {
@@ -152,4 +151,5 @@ processRawData(Box rawDataBox, Box processedDataBox) {
       processedDataBox.put('${vectorData[0]}_${vectorData[1]}', qrCodesVector);
     }
   });
+  print('processedDataBox: ${processedDataBox.toMap().toIMap()}');
 }

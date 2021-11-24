@@ -1,16 +1,11 @@
-import 'dart:io';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/dataProcessors/barcode_data_procesor.dart';
-import 'package:flutter_google_ml_kit/database/consolidated_data_adapter.dart';
-import 'package:flutter_google_ml_kit/database/raw_data_adapter.dart';
-import 'package:flutter_google_ml_kit/main.dart';
 import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
-import 'package:flutter/foundation.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../databaseAdapters/consolidated_data_adapter.dart';
 
 class HiveDatabaseConsolidationView extends StatefulWidget {
   const HiveDatabaseConsolidationView({Key? key}) : super(key: key);
@@ -27,17 +22,18 @@ class _HiveDatabaseConsolidationViewState
   List processedDataList = [];
   Map<String, List> consolidatedDataList = {};
   Map<String, List> currentPoints = {};
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   @override
   void initState() {
-    displayList.clear();
     super.initState();
+    displayList.clear();
+    fixedPoints.clear();
+    _getPrefs(_prefs, fixedPoints);
   }
 
   @override
   void dispose() {
-    // Hive.close();
-    // print("hive_database_consolidation Disposed");
     super.dispose();
   }
 
@@ -152,7 +148,7 @@ class _HiveDatabaseConsolidationViewState
       barrierDismissible: false, // user must tap button!
       builder: (context) {
         return AlertDialog(
-          title: Text('Pick Fixed Point'),
+          title: const Text('Pick Fixed Point'),
           content: SingleChildScrollView(
               child: DropdownButton(
                   value: dropdownValue,
@@ -168,12 +164,12 @@ class _HiveDatabaseConsolidationViewState
                     fixedPoints.add(newValue);
                     setState(() {
                       dropdownValue = newValue!;
-                      dropdownValue = fixedPoints[0];
+                      _setPrefs(_prefs, fixedPoints);
                     });
                   })),
           actions: <Widget>[
             TextButton(
-              child: Text('Ok'),
+              child: const Text('Ok'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -192,9 +188,6 @@ class _HiveDatabaseConsolidationViewState
     var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
     getProcessedData(processedDataBox, processedDataList);
     addFixedPoints(consolidatedDataList, fixedPoints);
-
-    var length = consolidatedDataList.length;
-
     consolidateProcessedData(
         processedDataList, consolidatedDataList, fixedPoints, currentPoints);
 
@@ -272,7 +265,6 @@ consolidateProcessedData(List processedDataList, Map consolidatedDataList,
   for (var i = 0; i < processedDataList.length; i++) {
     if (fixedPoints.contains(processedDataList[i][0]) &&
         !currentPoints.keys.contains(processedDataList[i][1])) {
-      //print(consolidatedDataList.indexOf(processedDataList[i][1]));
       consolidatedDataList.putIfAbsent(
           processedDataList[i][1],
           () => [
@@ -301,12 +293,12 @@ consolidateProcessedData(List processedDataList, Map consolidatedDataList,
                     double.parse(processedDataList[i][2]) +
                         double.parse(currentPoints[processedDataList[i][0]][0]
                             .toString()),
-                    0),
+                    1),
                 double.parse(processedDataList[i][3]) +
                     roundDouble(
                         double.parse(currentPoints[processedDataList[i][0]][1]
                             .toString()),
-                        0),
+                        1),
                 processedDataList[i][4]
               ]);
       updatePoints(consolidatedDataList, currentPoints, fixedPoints);
@@ -320,22 +312,32 @@ consolidateProcessedData(List processedDataList, Map consolidatedDataList,
                     double.parse(processedDataList[i][2]) * -1 +
                         (double.parse(currentPoints[processedDataList[i][1]][0]
                             .toString())),
-                    0),
+                    1),
                 roundDouble(
                     double.parse(processedDataList[i][3]) * -1 +
                         (double.parse(currentPoints[processedDataList[i][1]][1]
                             .toString())),
-                    0),
+                    1),
                 processedDataList[i][4]
               ]);
       updatePoints(consolidatedDataList, currentPoints, fixedPoints);
     }
   }
-  //}
   print('consolidatedDataList: ${consolidatedDataList.toIMap()}');
 }
 
 double roundDouble(double val, int places) {
   num mod = pow(10.0, places);
   return ((val * mod).round().toDouble() / mod);
+}
+
+_getPrefs(Future<SharedPreferences> _prefs, List fixedPoints) async {
+  final SharedPreferences prefs = await _prefs;
+  fixedPoints.clear();
+  fixedPoints.add(prefs.getString('fixedPoints') ?? '1');
+}
+
+_setPrefs(Future<SharedPreferences> _prefs, List fixedPoints) async {
+  final SharedPreferences prefs = await _prefs;
+  prefs.setString('fixedPoints', fixedPoints[0]);
 }

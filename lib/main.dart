@@ -1,17 +1,18 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_google_ml_kit/HiveDatabaseViews/hive_views.dart';
-import 'package:flutter_google_ml_kit/database/consolidated_data_adapter.dart';
+import 'package:flutter_google_ml_kit/database/wipDatabaseViews/wip_hive_database_consolidation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'HiveDatabaseViews/hive_database_consolidation.dart';
-import 'HiveDatabaseViews/hive_raw_database_view.dart';
 import 'VisionDetectorViews/detector_views.dart';
 import 'package:flutter/material.dart';
-import 'VisionDetectorViews/object_detector_view.dart';
-import 'database/raw_data_adapter.dart';
+import 'database/databaseAdapters/consolidated_data_adapter.dart';
+import 'database/databaseAdapters/raw_data_adapter.dart';
+import 'database/databaseViews/hive_database_consolidation.dart';
+import 'database/databaseViews/hive_database_visualization.dart';
+import 'database/databaseViews/hive_raw_database_view.dart';
+import 'database/wipDatabaseViews/wip_hive_raw_database_view.dart';
 
 List<CameraDescription> cameras = [];
 
@@ -110,11 +111,19 @@ class Home extends StatelessWidget {
                     //   RemoteModelView(),
                     //   featureCompleted: true,
                     // ),
-                    CustomCard(
-                      ' Hive Database',
-                      HiveViews(),
-                      featureCompleted: true,
-                    ),
+
+                    CustomCard(' Raw Data Viewer', HiveDatabaseView(),
+                        featureCompleted: true),
+                    CustomCard(' Consolidated Data Viewer',
+                        HiveDatabaseConsolidationView(),
+                        featureCompleted: true),
+                    CustomCard(' Visual Data Viewer', databaseVisualization(),
+                        featureCompleted: true),
+                    CustomCard(' Wip Raw Data Viewer', WipHiveDatabaseView(),
+                        featureCompleted: true),
+                    CustomCard(' Wip onsolidated Data Viewer',
+                        WipHiveDatabaseConsolidationView(),
+                        featureCompleted: true),
                   ],
                 ),
                 const SizedBox(

@@ -1,11 +1,9 @@
 import 'dart:ui';
-import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/database/consolidated_data_adapter.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../dataProcessors/barcode_raw_data_injector.dart';
+
+import '../databaseAdapters/consolidated_data_adapter.dart';
 
 class databaseVisualization extends StatefulWidget {
   const databaseVisualization({Key? key}) : super(key: key);
@@ -16,6 +14,11 @@ class databaseVisualization extends StatefulWidget {
 
 class _databaseVisualizationState extends State<databaseVisualization> {
   List pointNames = [];
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,6 +105,8 @@ class OpenPainter extends CustomPainter {
 
 _getPoints(BuildContext context, List pointNames) async {
   List<Offset> points = [];
+  pointNames.clear();
+  points.clear();
 
   var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
   for (var i = 0; i < consolidatedDataBox.length; i++) {
