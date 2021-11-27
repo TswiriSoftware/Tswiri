@@ -32,7 +32,7 @@ Future<void> main() async {
   }
   final directory = await getApplicationDocumentsDirectory();
   await Hive.initFlutter(directory.path);
-  Hive.registerAdapter(QrCodesAdapter());
+  Hive.registerAdapter(RelativeQrCodesAdapter());
   Hive.registerAdapter(ConsolidatedDataAdapter());
 }
 

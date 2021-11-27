@@ -6,36 +6,42 @@ part of 'raw_data_adapter.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class QrCodesAdapter extends TypeAdapter<QrCodes> {
+class RelativeQrCodesAdapter extends TypeAdapter<RelativeQrCodes> {
   @override
   final int typeId = 0;
 
   @override
-  QrCodes read(BinaryReader reader) {
+  RelativeQrCodes read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return QrCodes(
+    return RelativeQrCodes(
       uid: fields[0] as String,
-      X: fields[1] as double,
-      Y: fields[2] as double,
-      createdDated: fields[3] as int,
+      uidStart: fields[1] as String,
+      uidEnd: fields[2] as String,
+      x: fields[3] as double,
+      y: fields[4] as double,
+      timestamp: fields[5] as int,
     );
   }
 
   @override
-  void write(BinaryWriter writer, QrCodes obj) {
+  void write(BinaryWriter writer, RelativeQrCodes obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.uid)
       ..writeByte(1)
-      ..write(obj.X)
+      ..write(obj.uidStart)
       ..writeByte(2)
-      ..write(obj.Y)
+      ..write(obj.uidEnd)
       ..writeByte(3)
-      ..write(obj.createdDated);
+      ..write(obj.x)
+      ..writeByte(4)
+      ..write(obj.y)
+      ..writeByte(5)
+      ..write(obj.timestamp);
   }
 
   @override
@@ -44,7 +50,7 @@ class QrCodesAdapter extends TypeAdapter<QrCodes> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is QrCodesAdapter &&
+      other is RelativeQrCodesAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

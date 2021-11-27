@@ -1,16 +1,10 @@
-import 'dart:io';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/dataProcessors/barcode_data_procesor.dart';
 import 'package:flutter_google_ml_kit/database/consolidated_data_adapter.dart';
 import 'package:flutter_google_ml_kit/database/raw_data_adapter.dart';
-import 'package:flutter_google_ml_kit/main.dart';
 import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
-import 'package:flutter/foundation.dart';
-import 'package:path_provider/path_provider.dart';
 
 class HiveDatabaseConsolidationView extends StatefulWidget {
   const HiveDatabaseConsolidationView({Key? key}) : super(key: key);
@@ -115,29 +109,19 @@ class _HiveDatabaseConsolidationViewState
                       .replaceAll(' ', '')
                       .split(',')
                       .toList();
-
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        child: Text(myText[0], textAlign: TextAlign.start),
-                        width: 30,
-                      ),
-                      SizedBox(
-                        child: Text(myText[1], textAlign: TextAlign.start),
-                        width: 75,
-                      ),
-                      SizedBox(
-                        child: Text(myText[2], textAlign: TextAlign.start),
-                        width: 75,
-                      ),
-                      SizedBox(
-                        child: Text(myText[3], textAlign: TextAlign.start),
-                        width: 150,
-                      ),
-                    ],
-                  );
+                  if (index == 0) {
+                    return Column(
+                      children: <Widget>[
+                        displayDataPoint(['UID', 'X', 'Y', 'Timestamp']),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        displayDataPoint(myText),
+                      ],
+                    );
+                  } else {
+                    return displayDataPoint(myText);
+                  }
                 });
           }
         },
@@ -193,12 +177,11 @@ class _HiveDatabaseConsolidationViewState
     getProcessedData(processedDataBox, processedDataList);
     addFixedPoints(consolidatedDataList, fixedPoints);
 
-    var length = consolidatedDataList.length;
-
     consolidateProcessedData(
         processedDataList, consolidatedDataList, fixedPoints, currentPoints);
 
     _displayList(consolidatedDataList, displayList, consolidatedDataBox);
+
     return displayList;
   }
 }
@@ -232,22 +215,19 @@ getProcessedData(Box processedDataBox, List processedDataList) {
   processedDataList.clear();
   var processedData = processedDataBox.toMap();
   processedData.forEach((key, value) {
-    List vectorData = value
-        .toString()
-        .replaceAll(RegExp(r'\[\]'), '')
-        .replaceAll('_', ',')
-        .replaceAll(' ', '')
-        .split(',')
-        .toList();
-    processedDataList.add(vectorData);
+    RelativeQrCodes data = value;
+    var listData = [data.uidStart, data.uidEnd, data.x, data.y, data.timestamp];
+    processedDataList.add(listData);
   });
   print('processedDataList: ${processedDataList.toIList()}');
 }
 
 addFixedPoints(Map consolidatedDataList, List fixedPoints) {
   consolidatedDataList.clear();
+  int timestamp = DateTime.now().millisecondsSinceEpoch;
   for (var i = 0; i < fixedPoints.length; i++) {
-    consolidatedDataList.putIfAbsent(fixedPoints[i], () => [0.0, 0.0, 0]);
+    consolidatedDataList.putIfAbsent(
+        fixedPoints[i], () => [0.0, 0.0, timestamp]);
   }
   print('consolidatedDataList: $consolidatedDataList');
 }
@@ -270,14 +250,14 @@ consolidateProcessedData(List processedDataList, Map consolidatedDataList,
     List fixedPoints, Map currentPoints) {
   //for (var i = 0; i < 5; i++) {
   for (var i = 0; i < processedDataList.length; i++) {
+    print(consolidatedDataList[i]);
     if (fixedPoints.contains(processedDataList[i][0]) &&
         !currentPoints.keys.contains(processedDataList[i][1])) {
-      //print(consolidatedDataList.indexOf(processedDataList[i][1]));
       consolidatedDataList.putIfAbsent(
           processedDataList[i][1],
           () => [
-                roundDouble(double.parse(processedDataList[i][2]), 1),
-                roundDouble(double.parse(processedDataList[i][3]), 1),
+                processedDataList[i][2],
+                processedDataList[i][3],
                 processedDataList[i][4]
               ]);
       updatePoints(consolidatedDataList, currentPoints, fixedPoints);
@@ -287,8 +267,8 @@ consolidateProcessedData(List processedDataList, Map consolidatedDataList,
       consolidatedDataList.putIfAbsent(
           processedDataList[i][0],
           () => [
-                -roundDouble(double.parse(processedDataList[i][2]), 1),
-                -roundDouble(double.parse(processedDataList[i][3]), 1),
+                processedDataList[i][2],
+                processedDataList[i][3],
                 processedDataList[i][4]
               ]);
       updatePoints(consolidatedDataList, currentPoints, fixedPoints);
@@ -298,11 +278,11 @@ consolidateProcessedData(List processedDataList, Map consolidatedDataList,
           processedDataList[i][1],
           () => [
                 roundDouble(
-                    double.parse(processedDataList[i][2]) +
+                    processedDataList[i][2] +
                         double.parse(currentPoints[processedDataList[i][0]][0]
                             .toString()),
                     0),
-                double.parse(processedDataList[i][3]) +
+                processedDataList[i][3] +
                     roundDouble(
                         double.parse(currentPoints[processedDataList[i][0]][1]
                             .toString()),
@@ -317,12 +297,12 @@ consolidateProcessedData(List processedDataList, Map consolidatedDataList,
           processedDataList[i][0],
           () => [
                 roundDouble(
-                    double.parse(processedDataList[i][2]) * -1 +
+                    processedDataList[i][2] +
                         (double.parse(currentPoints[processedDataList[i][1]][0]
                             .toString())),
                     0),
                 roundDouble(
-                    double.parse(processedDataList[i][3]) * -1 +
+                    processedDataList[i][3] +
                         (double.parse(currentPoints[processedDataList[i][1]][1]
                             .toString())),
                     0),
@@ -338,4 +318,30 @@ consolidateProcessedData(List processedDataList, Map consolidatedDataList,
 double roundDouble(double val, int places) {
   num mod = pow(10.0, places);
   return ((val * mod).round().toDouble() / mod);
+}
+
+displayDataPoint(var myText) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    textDirection: TextDirection.ltr,
+    children: [
+      SizedBox(
+        child: Text(myText[0], textAlign: TextAlign.center),
+        width: 30,
+      ),
+      SizedBox(
+        child: Text(myText[1], textAlign: TextAlign.center),
+        width: 75,
+      ),
+      SizedBox(
+        child: Text(myText[2], textAlign: TextAlign.center),
+        width: 75,
+      ),
+      SizedBox(
+        child: Text(myText[3], textAlign: TextAlign.center),
+        width: 115,
+      ),
+    ],
+  );
 }

@@ -68,31 +68,33 @@ class _HiveDatabaseViewState extends State<HiveDatabaseView> {
                       .split(',')
                       .toList();
 
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        child: Text(text[0], textAlign: TextAlign.start),
-                        width: 30,
-                      ),
-                      SizedBox(
-                        child: Text(text[1], textAlign: TextAlign.start),
-                        width: 30,
-                      ),
-                      SizedBox(
-                        child: Text(text[2], textAlign: TextAlign.start),
-                        width: 75,
-                      ),
-                      SizedBox(
-                        child: Text(text[3], textAlign: TextAlign.start),
-                        width: 75,
-                      ),
-                      SizedBox(
-                        child: Text(text[4], textAlign: TextAlign.start),
-                        width: 150,
-                      ),
-                    ],
+                  return Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          child: Text(text[0], textAlign: TextAlign.start),
+                          width: 30,
+                        ),
+                        SizedBox(
+                          child: Text(text[1], textAlign: TextAlign.start),
+                          width: 30,
+                        ),
+                        SizedBox(
+                          child: Text(text[2], textAlign: TextAlign.start),
+                          width: 75,
+                        ),
+                        SizedBox(
+                          child: Text(text[3], textAlign: TextAlign.start),
+                          width: 75,
+                        ),
+                        SizedBox(
+                          child: Text(text[4], textAlign: TextAlign.start),
+                          width: 150,
+                        ),
+                      ],
+                    ),
                   );
                 });
           }
@@ -112,16 +114,18 @@ class _HiveDatabaseViewState extends State<HiveDatabaseView> {
 
 _displayList(List displayList, Box rawDataBox, Box processedDataBox) {
   processRawData(rawDataBox, processedDataBox);
+
   displayList.clear();
   var processedData = processedDataBox.toMap();
   processedData.forEach((key, value) {
-    List vectorData = value
-        .toString()
-        .replaceAll(RegExp(r'\[\]'), '')
-        .replaceAll('_', ',')
-        .replaceAll(' ', '')
-        .split(',')
-        .toList();
+    RelativeQrCodes processedDataItem = value;
+    List vectorData = [
+      processedDataItem.uidStart,
+      processedDataItem.uidEnd,
+      processedDataItem.x,
+      processedDataItem.y,
+      processedDataItem.timestamp
+    ];
 
     displayList.add(vectorData);
   });
@@ -132,24 +136,22 @@ processRawData(Box rawDataBox, Box processedDataBox) {
   List uids = [];
   uids.clear();
   rawData.forEach((key, value) {
-    List vectorData = value
-        .toString()
-        .replaceAll(RegExp(r'\[\]'), '')
-        .replaceAll('_', ',')
-        .replaceAll(' ', '')
-        .split(',')
-        .toList();
+    RelativeQrCodes data = value;
+    //print(data);
     //print(vectorData);
-    uids.add(vectorData[0].toString());
+    uids.add(data.uidStart);
     uids.removeDuplicates();
-    if (uids.contains(vectorData[1])) {
+    if (uids.contains(data.uidEnd)) {
     } else {
-      var qrCodesVector = QrCodes(
-          uid: '${vectorData[0]}_${vectorData[1]}'.toString(),
-          X: double.parse(vectorData[2]),
-          Y: double.parse(vectorData[3]),
-          createdDated: int.parse(vectorData[4]));
-      processedDataBox.put('${vectorData[0]}_${vectorData[1]}', qrCodesVector);
+      var qrCodesVector = RelativeQrCodes(
+          uid: data.uid,
+          uidStart: data.uidStart,
+          uidEnd: data.uidEnd,
+          x: data.x,
+          y: data.y,
+          timestamp: data.timestamp);
+      processedDataBox.put(key, qrCodesVector);
     }
   });
+  print('processedDataBox: ${processedDataBox.toMap().toIMap()}');
 }
