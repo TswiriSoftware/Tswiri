@@ -3,7 +3,9 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_google_ml_kit/HiveDatabaseViews/hive_calibration_database_view.dart';
 import 'package:flutter_google_ml_kit/calibration/camera_calibration.dart';
+import 'package:flutter_google_ml_kit/database/calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/database/consolidated_data_adapter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -37,6 +39,7 @@ Future<void> main() async {
   await Hive.initFlutter(directory.path);
   Hive.registerAdapter(RelativeQrCodesAdapter());
   Hive.registerAdapter(ConsolidatedDataAdapter());
+  Hive.registerAdapter(CalibrationDataAdapter());
 }
 
 class MyApp extends StatelessWidget {
@@ -102,6 +105,11 @@ class Home extends StatelessWidget {
               CameraCalibration(),
               featureCompleted: true,
             ),
+            CustomCard(
+              'Calibration Data Viewer',
+              HiveCalibrationDatabaseView(),
+              featureCompleted: true,
+            ),
           ],
         ),
       ),
@@ -133,7 +141,7 @@ class CustomCard extends StatelessWidget {
           child: Text(
             _label,
             style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold),
+                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
             textAlign: TextAlign.center,
           ),
         ),
