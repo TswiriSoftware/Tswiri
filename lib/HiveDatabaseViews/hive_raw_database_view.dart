@@ -141,8 +141,7 @@ processRawData(Box rawDataBox, Box processedDataBox) {
     //print(vectorData);
     uids.add(data.uidStart);
     uids.removeDuplicates();
-    if (uids.contains(data.uidEnd)) {
-    } else {
+    if (!uids.contains(data.uidEnd)) {
       var qrCodesVector = RelativeQrCodes(
           uid: data.uid,
           uidStart: data.uidStart,

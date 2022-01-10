@@ -5,6 +5,7 @@ import 'package:flutter_google_ml_kit/database/raw_data_adapter.dart';
 import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HiveDatabaseConsolidationView extends StatefulWidget {
   const HiveDatabaseConsolidationView({Key? key}) : super(key: key);
@@ -16,6 +17,8 @@ class HiveDatabaseConsolidationView extends StatefulWidget {
 
 class _HiveDatabaseConsolidationViewState
     extends State<HiveDatabaseConsolidationView> {
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
   List displayList = [];
   List fixedPoints = ['1'];
   List processedDataList = [];
