@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
+import 'dart:async';
 import 'dart:math';
 import 'package:fast_immutable_collections/src/base/iterable_extension.dart';
 import 'package:fast_immutable_collections/src/imap/map_extension.dart';
@@ -28,6 +29,8 @@ injectCalibrationData(
   InputImageRotation rotation,
   Box<dynamic> calibrationDataBox,
 ) {
+  final _streamSubscriptions = <StreamSubscription<dynamic>>[];
+
   for (final Barcode barcode in barcodes) {
     if (barcode.value.displayValue != null &&
         barcode.value.boundingBox != null) {
@@ -41,25 +44,25 @@ injectCalibrationData(
           (barcode.value.boundingBox!.top - barcode.value.boundingBox!.bottom)
               .abs();
 
-      userAccelerometerEvents.listen((UserAccelerometerEvent event) {
-        timestamp = DateTime.now().millisecondsSinceEpoch;
-        zAcceleration = event.z;
-        CalibrationData calibrationDataInstance = CalibrationData(
-            X: disPxX,
-            Y: disPxY,
-            AccelerometerDataZ: roundDouble(zAcceleration, 6),
-            timestamp: timestamp);
+      timestamp = DateTime.now().millisecondsSinceEpoch;
 
-        if (timestamp != 0) {
+      if (timestamp != 0) {
+        userAccelerometerEvents.listen((UserAccelerometerEvent event) {
+          zAcceleration = event.z;
+          CalibrationData calibrationDataInstance = CalibrationData(
+              X: disPxX,
+              Y: disPxY,
+              AccelerometerDataZ: roundDouble(zAcceleration, 6),
+              timestamp: timestamp);
+
           calibrationDataBox.put(timestamp.toString(), calibrationDataInstance);
-        }
-      });
+        });
+      }
     } else {
       throw Exception(
           'Barcode with null displayvalue or boundingbox detected ');
     }
   }
-
   //print(calibrationDataBox.toMap().toIMap());
 }
 

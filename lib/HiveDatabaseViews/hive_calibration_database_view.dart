@@ -18,6 +18,12 @@ class HiveCalibrationDatabaseView extends StatefulWidget {
 class _HiveCalibrationDatabaseViewState
     extends State<HiveCalibrationDatabaseView> {
   var displayList = [];
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,10 +44,7 @@ class _HiveCalibrationDatabaseViewState
                 var calibrationDataBox =
                     await Hive.openBox('calibrationDataBox');
                 calibrationDataBox.clear();
-                setState(() {
-                  displayList.clear();
-                });
-
+                displayList.clear();
                 showMyAboutDialog(context, "Deleted Hive Database");
               },
               child: const Icon(Icons.delete),
@@ -56,6 +59,7 @@ class _HiveCalibrationDatabaseViewState
             return const Center(child: CircularProgressIndicator());
           } else {
             List myList = snapshot.data ?? [];
+            print(myList);
             return ListView.builder(
                 itemCount: myList.length,
                 itemBuilder: (context, index) {
@@ -72,7 +76,7 @@ class _HiveCalibrationDatabaseViewState
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(
-                          child: Text(text[0], textAlign: TextAlign.start),
+                          child: Text(text[3], textAlign: TextAlign.start),
                           width: 125,
                         ),
                         SizedBox(
@@ -98,27 +102,18 @@ class _HiveCalibrationDatabaseViewState
   }
 
   Future<List> loadData() async {
-    var calibrationDataBox = await Hive.openBox('calibrationDataBox');
-    var calibrationMap = calibrationDataBox.toMap();
-    //print(calibrationMap.toIMap());
-    _displayList(calibrationMap, displayList);
-    return displayList;
-  }
-
-  _displayList(Map calibrationMap, List displayList) {
     displayList.clear();
-    print(calibrationMap.length);
-    List uids = [];
+    var calibrationDataBox = await Hive.openBox('calibrationDataBox');
+    var calibrationMap = {};
+    calibrationMap = calibrationDataBox.toMap();
 
-    for (var i = 0; i < calibrationMap.length; i++) {
-      displayList.add([
-        calibrationMap.keys.elementAt(i),
-        calibrationMap.values.elementAt(i)
-      ]);
-    }
-    print(displayList.toIList());
+    // calibrationMap.clear();
+    // print(calibrationMap.length);
 
-    //print('consolidatedDataBox: ${consolidatedDataBox.toMap().toIMap()}');
-    // print('displayList: ${displayList.toIList()}');
+    calibrationMap.forEach((key, value) {
+      displayList.add(value);
+    });
+    // print(displayList.length);
+    return displayList;
   }
 }
