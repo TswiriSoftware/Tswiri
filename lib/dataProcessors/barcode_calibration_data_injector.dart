@@ -46,8 +46,9 @@ injectCalibrationData(
 
       timestamp = DateTime.now().millisecondsSinceEpoch;
 
+      // ----
       if (timestamp != 0) {
-        userAccelerometerEvents.listen((UserAccelerometerEvent event) {
+        var subscription = userAccelerometerEvents.listen((UserAccelerometerEvent event) {
           zAcceleration = event.z;
           CalibrationData calibrationDataInstance = CalibrationData(
               X: disPxX,
@@ -57,11 +58,17 @@ injectCalibrationData(
 
           calibrationDataBox.put(timestamp.toString(), calibrationDataInstance);
         });
+        subscription.cancel();
       }
+      // running in isolate or somewhere on its own. 
+
+
+
     } else {
       throw Exception(
           'Barcode with null displayvalue or boundingbox detected ');
     }
+    //userAccelerometerEvents.c
   }
   //print(calibrationDataBox.toMap().toIMap());
 }
