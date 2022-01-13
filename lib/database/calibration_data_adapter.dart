@@ -6,7 +6,6 @@ class CalibrationData extends HiveObject {
   CalibrationData({
     required this.X,
     required this.Y,
-    required this.AccelerometerDataZ,
     required this.timestamp,
   });
 
@@ -17,17 +16,14 @@ class CalibrationData extends HiveObject {
   late double Y;
 
   @HiveField(2)
-  late double AccelerometerDataZ;
-
-  @HiveField(3)
   late int timestamp;
 
   getList() {
-    return [X, Y, AccelerometerDataZ, timestamp];
+    return [X, Y, timestamp];
   }
 
   @override
   String toString() {
-    return '$X, $Y, $AccelerometerDataZ, $timestamp';
+    return '$X, $Y, $timestamp';
   }
 }

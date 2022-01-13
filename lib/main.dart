@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_google_ml_kit/HiveDatabaseViews/hive_accelerometer_database_view.dart';
 import 'package:flutter_google_ml_kit/HiveDatabaseViews/hive_calibration_database_view.dart';
 import 'package:flutter_google_ml_kit/calibration/camera_calibration.dart';
 import 'package:flutter_google_ml_kit/database/calibration_data_adapter.dart';
@@ -16,6 +17,7 @@ import 'HiveDatabaseViews/hive_raw_database_view.dart';
 import 'VisionDetectorViews/detector_views.dart';
 import 'package:flutter/material.dart';
 import 'VisionDetectorViews/object_detector_view.dart';
+import 'database/accelerometer_data_adapter.dart';
 import 'database/raw_data_adapter.dart';
 
 List<CameraDescription> cameras = [];
@@ -40,6 +42,7 @@ Future<void> main() async {
   Hive.registerAdapter(RelativeQrCodesAdapter());
   Hive.registerAdapter(ConsolidatedDataAdapter());
   Hive.registerAdapter(CalibrationDataAdapter());
+  Hive.registerAdapter(AccelerometerDataAdapter());
 }
 
 class MyApp extends StatelessWidget {
@@ -108,6 +111,11 @@ class Home extends StatelessWidget {
             CustomCard(
               'Calibration Data Viewer',
               HiveCalibrationDatabaseView(),
+              featureCompleted: true,
+            ),
+            CustomCard(
+              'Accelerometer Data Viewer',
+              HiveAccelerometerDatabaseView(),
               featureCompleted: true,
             ),
           ],

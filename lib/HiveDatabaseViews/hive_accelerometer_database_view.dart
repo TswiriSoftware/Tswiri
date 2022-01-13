@@ -7,16 +7,16 @@ import 'package:flutter_google_ml_kit/database/raw_data_adapter.dart';
 import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
 
-class HiveCalibrationDatabaseView extends StatefulWidget {
-  const HiveCalibrationDatabaseView({Key? key}) : super(key: key);
+class HiveAccelerometerDatabaseView extends StatefulWidget {
+  const HiveAccelerometerDatabaseView({Key? key}) : super(key: key);
 
   @override
-  _HiveCalibrationDatabaseViewState createState() =>
-      _HiveCalibrationDatabaseViewState();
+  _HiveAccelerometerDatabaseViewState createState() =>
+      _HiveAccelerometerDatabaseViewState();
 }
 
-class _HiveCalibrationDatabaseViewState
-    extends State<HiveCalibrationDatabaseView> {
+class _HiveAccelerometerDatabaseViewState
+    extends State<HiveAccelerometerDatabaseView> {
   var displayList = [];
 
   @override
@@ -80,7 +80,7 @@ class _HiveCalibrationDatabaseViewState
                       children: [
                         SizedBox(
                           child: Text(text[0], textAlign: TextAlign.start),
-                          width: 50,
+                          width: 125,
                         ),
                         SizedBox(
                           child: Text(text[1], textAlign: TextAlign.start),
@@ -88,7 +88,11 @@ class _HiveCalibrationDatabaseViewState
                         ),
                         SizedBox(
                           child: Text(text[2], textAlign: TextAlign.start),
-                          width: 150,
+                          width: 75,
+                        ),
+                        SizedBox(
+                          child: Text(text[3], textAlign: TextAlign.start),
+                          width: 75,
                         ),
                       ],
                     ),
@@ -102,22 +106,15 @@ class _HiveCalibrationDatabaseViewState
 
   Future<List> loadData() async {
     displayList.clear();
-    var calibrationDataBox = await Hive.openBox('calibrationDataBox');
     var accelerometerDataBox = await Hive.openBox('accelerometerDataBox');
     var calibrationMap = {};
-    calibrationMap = calibrationDataBox.toMap();
-
-    // calibrationMap.clear();
-    // print(calibrationMap.length);
+    calibrationMap = accelerometerDataBox.toMap();
 
     calibrationMap.forEach((key, value) {
       displayList.add(value);
     });
-    //print(accelerometerDataBox.toMap().toIMap());
     print('Accelerometer Data: ${accelerometerDataBox.length}');
-    debugPrint('${accelerometerDataBox.toMap().toIMap()}');
-    print('Calibration Data: ${calibrationDataBox.length}');
-    debugPrint('${calibrationDataBox.toMap().toIMap()}');
+    print(accelerometerDataBox.toMap().toIMap());
     return displayList;
   }
 }
