@@ -3,20 +3,21 @@ import 'package:fast_immutable_collections/src/ilist/list_extension.dart';
 import 'package:fast_immutable_collections/src/imap/map_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/dataProcessors/barcode_data_procesor.dart';
+import 'package:flutter_google_ml_kit/dataProcessors/objects.dart';
 import 'package:flutter_google_ml_kit/database/raw_data_adapter.dart';
 import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
 
-class HiveAccelerometerDatabaseView extends StatefulWidget {
-  const HiveAccelerometerDatabaseView({Key? key}) : super(key: key);
+class HiveProsessedCalibrationDatabaseView extends StatefulWidget {
+  const HiveProsessedCalibrationDatabaseView({Key? key}) : super(key: key);
 
   @override
-  _HiveAccelerometerDatabaseViewState createState() =>
-      _HiveAccelerometerDatabaseViewState();
+  _HiveProsessedCalibrationDatabaseViewState createState() =>
+      _HiveProsessedCalibrationDatabaseViewState();
 }
 
-class _HiveAccelerometerDatabaseViewState
-    extends State<HiveAccelerometerDatabaseView> {
+class _HiveProsessedCalibrationDatabaseViewState
+    extends State<HiveProsessedCalibrationDatabaseView> {
   var displayList = [];
 
   @override
@@ -28,7 +29,7 @@ class _HiveAccelerometerDatabaseViewState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hive Accelerometer Database'),
+        title: const Text('Hive Calibrated Database'),
         centerTitle: true,
         elevation: 0,
       ),
@@ -40,16 +41,7 @@ class _HiveAccelerometerDatabaseViewState
           children: [
             FloatingActionButton(
               heroTag: null,
-              onPressed: () async {
-                var calibrationDataBox =
-                    await Hive.openBox('calibrationDataBox');
-                var accelerometerDataBox =
-                    await Hive.openBox('accelerometerDataBox');
-                accelerometerDataBox.clear();
-                calibrationDataBox.clear();
-                displayList.clear();
-                showMyAboutDialog(context, "Deleted Hive Database");
-              },
+              onPressed: () async {},
               child: const Icon(Icons.delete),
             ),
           ],
@@ -80,7 +72,7 @@ class _HiveAccelerometerDatabaseViewState
                       children: [
                         SizedBox(
                           child: Text(text[0], textAlign: TextAlign.start),
-                          width: 125,
+                          width: 150,
                         ),
                         SizedBox(
                           child: Text(text[1], textAlign: TextAlign.start),
@@ -88,11 +80,7 @@ class _HiveAccelerometerDatabaseViewState
                         ),
                         SizedBox(
                           child: Text(text[2], textAlign: TextAlign.start),
-                          width: 75,
-                        ),
-                        SizedBox(
-                          child: Text(text[3], textAlign: TextAlign.start),
-                          width: 75,
+                          width: 100,
                         ),
                       ],
                     ),
@@ -106,15 +94,42 @@ class _HiveAccelerometerDatabaseViewState
 
   Future<List> loadData() async {
     displayList.clear();
+    var calibrationDataBox = await Hive.openBox('calibrationDataBox');
     var accelerometerDataBox = await Hive.openBox('accelerometerDataBox');
     var calibrationMap = {};
-    calibrationMap = accelerometerDataBox.toMap();
+    var accelerometerMap = {};
+    calibrationMap = calibrationDataBox.toMap();
+    accelerometerMap = accelerometerDataBox.toMap();
+    var accelerometerArray = [];
+
+    accelerometerMap.forEach((key, value) {
+      accelerometerArray.add(int.parse(key));
+    });
 
     calibrationMap.forEach((key, value) {
-      displayList.add(value);
+      int timestamp = int.parse(key) - 2;
+      //double qrSizeAve = 2;
+      var greater = accelerometerArray.where((e) => e >= timestamp).toList()
+        ..sort();
+
+      String accKey = greater.first.toString();
+      double imageSizeAve = (double.parse(value.toString().split(',').first) +
+              double.parse(value.toString().split(',')[1])) /
+          2;
+
+      BarcodeDistanceData barcodeDistanceData = BarcodeDistanceData(
+          timestamp,
+          imageSizeAve,
+          double.parse(accelerometerMap[accKey].toString().split(',').last));
+      displayList.add([
+        timestamp,
+        imageSizeAve,
+        double.parse(accelerometerMap[accKey].toString().split(',').last)
+      ]);
+      debugPrint(barcodeDistanceData.toString());
+      //print('$qrSizeAve : ${accelerometerMap[greater.first.toString()]}');
     });
-    print('Accelerometer Data: ${accelerometerDataBox.length}');
-    print(accelerometerDataBox.toMap().toIMap());
+
     return displayList;
   }
 }

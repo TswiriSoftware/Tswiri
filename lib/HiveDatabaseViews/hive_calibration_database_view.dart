@@ -28,7 +28,7 @@ class _HiveCalibrationDatabaseViewState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hive Database'),
+        title: const Text('Hive Calibration Database'),
         centerTitle: true,
         elevation: 0,
       ),

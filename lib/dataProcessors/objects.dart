@@ -36,3 +36,20 @@ class QrCodeVectors {
     return '$startQrCode, $endQrCode, $vector, $distanceFromCamera, $timestamp';
   }
 }
+
+class BarcodeDistanceData {
+  BarcodeDistanceData(
+    @required this.timestamp,
+    @required this.imageSize,
+    @required this.distance,
+  );
+
+  final int timestamp;
+  final double imageSize;
+  final double distance;
+
+  @override
+  String toString() {
+    return '$timestamp, $imageSize, $distance';
+  }
+}

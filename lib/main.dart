@@ -13,10 +13,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'HiveDatabaseViews/hive_database_consolidation.dart';
 import 'HiveDatabaseViews/hive_database_visualization.dart';
+import 'HiveDatabaseViews/hive_prosessed_calibration_database_view .dart';
 import 'HiveDatabaseViews/hive_raw_database_view.dart';
 import 'VisionDetectorViews/detector_views.dart';
 import 'package:flutter/material.dart';
 import 'VisionDetectorViews/object_detector_view.dart';
+import 'camera_calibration_view.dart';
 import 'database/accelerometer_data_adapter.dart';
 import 'database/raw_data_adapter.dart';
 
@@ -94,30 +96,20 @@ class Home extends StatelessWidget {
             CustomCard(
               'Barcode Scanner',
               BarcodeScannerView(),
+              Icons.camera,
               featureCompleted: true,
             ),
-            CustomCard('Raw Data Viewer', HiveDatabaseView(),
+            CustomCard('Raw Data Viewer', HiveDatabaseView(), Icons.view_array,
                 featureCompleted: true),
-            CustomCard(
-                'Consolidated Data Viewer', HiveDatabaseConsolidationView(),
+            CustomCard('Consolidated Data Viewer',
+                HiveDatabaseConsolidationView(), Icons.view_array,
                 featureCompleted: true),
-            CustomCard(' Consolidated Data Viewer', databaseVisualization(),
+            CustomCard('Consolidated Data Viewer', databaseVisualization(),
+                Icons.view_array,
                 featureCompleted: true),
-            CustomCard(
-              'Camera Calibration',
-              CameraCalibration(),
-              featureCompleted: true,
-            ),
-            CustomCard(
-              'Calibration Data Viewer',
-              HiveCalibrationDatabaseView(),
-              featureCompleted: true,
-            ),
-            CustomCard(
-              'Accelerometer Data Viewer',
-              HiveAccelerometerDatabaseView(),
-              featureCompleted: true,
-            ),
+            CustomCard('Camera Calibration Tools', CameraCalibrationView(),
+                Icons.camera_alt,
+                featureCompleted: true),
           ],
         ),
       ),
@@ -129,9 +121,10 @@ class CustomCard extends StatelessWidget {
   final String _label;
   final Widget _viewPage;
   final bool featureCompleted;
+  final IconData _icon;
 
   // ignore: use_key_in_widget_constructors
-  const CustomCard(this._label, this._viewPage,
+  const CustomCard(this._label, this._viewPage, this._icon,
       {this.featureCompleted = false});
 
   @override
@@ -146,11 +139,26 @@ class CustomCard extends StatelessWidget {
         ),
         tileColor: Theme.of(context).primaryColor,
         title: Center(
-          child: Text(
-            _label,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-            textAlign: TextAlign.center,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                _label,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  _icon,
+                  color: Colors.white,
+                  size: 36,
+                ),
+              )
+            ],
           ),
         ),
         onTap: () {
