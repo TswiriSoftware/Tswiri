@@ -1,11 +1,9 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/database/accelerometer_data_adapter.dart';
 import 'package:flutter_google_ml_kit/database/calibration_data_adapter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
-import 'package:sensors_plus/sensors_plus.dart';
 
 class BarcodeCalibrationInjector {
   BarcodeCalibrationInjector(

@@ -3,18 +3,16 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/database/consolidated_data_adapter.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../dataProcessors/barcode_raw_data_injector.dart';
 
-class databaseVisualization extends StatefulWidget {
-  const databaseVisualization({Key? key}) : super(key: key);
+class DatabaseVisualization extends StatefulWidget {
+  const DatabaseVisualization({Key? key}) : super(key: key);
 
   @override
-  _databaseVisualizationState createState() => _databaseVisualizationState();
+  _DatabaseVisualizationState createState() => _DatabaseVisualizationState();
 }
 
-class _databaseVisualizationState extends State<databaseVisualization> {
+class _DatabaseVisualizationState extends State<DatabaseVisualization> {
   List pointNames = [];
   @override
   Widget build(BuildContext context) {
