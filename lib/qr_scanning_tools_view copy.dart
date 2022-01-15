@@ -43,8 +43,8 @@ class _QrCodeScanningViewState extends State<QrCodeScanningView> {
             CustomCard('Consolidated Data Viewer',
                 HiveDatabaseConsolidationView(), Icons.view_array,
                 featureCompleted: true),
-            CustomCard(
-                'Visual Data Viewer', DatabaseVisualization(), Icons.view_array,
+            CustomCard('Visual Data Viewer', DatabaseVisualization(),
+                Icons.map_outlined,
                 featureCompleted: true),
           ],
         ),

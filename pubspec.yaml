@@ -45,9 +45,13 @@ dependencies:
   fast_immutable_collections: ^7.0.3
   shared_preferences: ^2.0.9
   sensors_plus: ^1.2.1
+  flutter_launcher_icons: ^0.9.2
 
 
-
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/ic_launcher.png"
   
 
 dev_dependencies:

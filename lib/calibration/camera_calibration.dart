@@ -5,7 +5,6 @@ import 'package:flutter_google_ml_kit/dataProcessors/barcode_calibration_data_in
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:sensors_plus/sensors_plus.dart';
-
 import '../database/accelerometer_data_adapter.dart';
 
 class CameraCalibration extends StatefulWidget {
