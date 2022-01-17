@@ -45,8 +45,10 @@ class _HiveCalibrationDatabaseViewState
                     await Hive.openBox('calibrationDataBox');
                 var accelerometerDataBox =
                     await Hive.openBox('accelerometerDataBox');
+                var matchedDataBox = await Hive.openBox('matchedDataBox');
                 accelerometerDataBox.clear();
                 calibrationDataBox.clear();
+                matchedDataBox.clear();
                 displayList.clear();
                 showMyAboutDialog(context, "Deleted Hive Database");
               },
@@ -114,10 +116,10 @@ class _HiveCalibrationDatabaseViewState
       displayList.add(value);
     });
     //print(accelerometerDataBox.toMap().toIMap());
-    print('Accelerometer Data: ${accelerometerDataBox.length}');
-    debugPrint('${accelerometerDataBox.toMap().toIMap()}');
-    print('Calibration Data: ${calibrationDataBox.length}');
-    debugPrint('${calibrationDataBox.toMap().toIMap()}');
+    // print('Accelerometer Data: ${accelerometerDataBox.length}');
+    // debugPrint('${accelerometerDataBox.toMap().toIMap()}');
+    // print('Calibration Data: ${calibrationDataBox.length}');
+    // debugPrint('${calibrationDataBox.toMap().toIMap()}');
     return displayList;
   }
 }

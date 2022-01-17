@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/HiveDatabaseViews/hive_linear_regression_database_view.dart';
 import 'HiveDatabaseViews/hive_accelerometer_database_view.dart';
 import 'HiveDatabaseViews/hive_calibration_database_view.dart';
 import 'HiveDatabaseViews/hive_prosessed_calibration_database_view .dart';
@@ -53,6 +54,12 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
             CustomCard(
               'Processed Data Viewer',
               HiveProsessedCalibrationDatabaseView(),
+              Icons.calculate,
+              featureCompleted: true,
+            ),
+            CustomCard(
+              'Processed Data Viewer',
+              HiveLinearRegressionDatabaseView(),
               Icons.calculate,
               featureCompleted: true,
             ),

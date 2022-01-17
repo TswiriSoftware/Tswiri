@@ -4,6 +4,7 @@ import 'package:fast_immutable_collections/src/imap/map_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/dataProcessors/barcode_data_procesor.dart';
 import 'package:flutter_google_ml_kit/dataProcessors/objects.dart';
+import 'package:flutter_google_ml_kit/database/matched_calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/database/raw_data_adapter.dart';
 import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
@@ -96,6 +97,8 @@ class _HiveProsessedCalibrationDatabaseViewState
     displayList.clear();
     var calibrationDataBox = await Hive.openBox('calibrationDataBox');
     var accelerometerDataBox = await Hive.openBox('accelerometerDataBox');
+    var matchedDataBox = await Hive.openBox('matchedDataBox');
+
     var calibrationMap = {};
     var accelerometerMap = {};
     calibrationMap = calibrationDataBox.toMap();
@@ -116,17 +119,24 @@ class _HiveProsessedCalibrationDatabaseViewState
       double imageSizeAve = (double.parse(value.toString().split(',').first) +
               double.parse(value.toString().split(',')[1])) /
           2;
+      double distance =
+          double.parse(accelerometerMap[accKey].toString().split(',').last);
 
-      BarcodeDistanceData barcodeDistanceData = BarcodeDistanceData(
-          timestamp,
-          imageSizeAve,
-          double.parse(accelerometerMap[accKey].toString().split(',').last));
+      BarcodeDistanceData barcodeDistanceData =
+          BarcodeDistanceData(timestamp, imageSizeAve, distance);
+
+      LinearCalibrationData data =
+          LinearCalibrationData(objectSize: imageSizeAve, distance: distance);
+      matchedDataBox.put(imageSizeAve.toString(), data);
+      //print(matchedDataBox.toMap());
+
       displayList.add([
         timestamp,
         imageSizeAve,
         double.parse(accelerometerMap[accKey].toString().split(',').last)
       ]);
-      debugPrint(barcodeDistanceData.toString());
+
+      //debugPrint(barcodeDistanceData.toString());
       //print('$qrSizeAve : ${accelerometerMap[greater.first.toString()]}');
     });
 

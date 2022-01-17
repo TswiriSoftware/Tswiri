@@ -112,6 +112,7 @@ double calaculateDistanceFormCamera(
   var distanceFromCamera =
       (4341 / barcodeCenterPoint) - 15.75; //Specifically for redmi Note10S
 
+  print(distanceFromCamera);
   //TODO: implement calibration lookup table
 
   return distanceFromCamera;

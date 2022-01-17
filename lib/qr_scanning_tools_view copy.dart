@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'HiveDatabaseViews/CalibrationRelated/hive_database_consolidation.dart';
-import 'HiveDatabaseViews/CalibrationRelated/hive_database_visualization.dart';
-import 'HiveDatabaseViews/CalibrationRelated/hive_raw_database_view.dart';
+import 'HiveDatabaseViews/QrCodeRelated/hive_database_consolidation.dart';
+import 'HiveDatabaseViews/QrCodeRelated/hive_database_visualization.dart';
+import 'HiveDatabaseViews/QrCodeRelated/hive_raw_database_view.dart';
 import 'VisionDetectorViews/barcode_scanner_view.dart';
 import 'main.dart';
 

@@ -12,6 +12,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'camera_calibration_view.dart';
 import 'database/accelerometer_data_adapter.dart';
+import 'database/matched_calibration_data_adapter.dart';
 import 'database/raw_data_adapter.dart';
 
 List<CameraDescription> cameras = [];
@@ -37,6 +38,7 @@ Future<void> main() async {
   Hive.registerAdapter(ConsolidatedDataAdapter());
   Hive.registerAdapter(CalibrationDataAdapter());
   Hive.registerAdapter(AccelerometerDataAdapter());
+  Hive.registerAdapter(LinearCalibrationDataAdapter());
 }
 
 class MyApp extends StatelessWidget {
