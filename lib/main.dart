@@ -3,15 +3,15 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_google_ml_kit/database/accelerometer_data_adapter.dart';
 import 'package:flutter_google_ml_kit/database/calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/database/consolidated_data_adapter.dart';
-import 'package:flutter_google_ml_kit/qr_scanning_tools_view%20copy.dart';
+import 'package:flutter_google_ml_kit/qr_scanning_tools_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'camera_calibration_view.dart';
-import 'database/accelerometer_data_adapter.dart';
 import 'database/matched_calibration_data_adapter.dart';
 import 'database/raw_data_adapter.dart';
 
@@ -157,23 +157,3 @@ class CustomCard extends StatelessWidget {
     );
   }
 }
-// CustomCard(
-//   //Possible use
-//   ' Image Label Detector',
-//   ImageLabelView(),
-//   featureCompleted: true,
-// ),
-// CustomCard(
-//   ' Text Detector',
-//   TextDetectorView(),
-//   featureCompleted: true,
-// ),
-// CustomCard(
-//   ' Object Detector',
-//   ObjectDetectorView(),
-// ),
-// CustomCard(
-//   ' Remote Model Manager',
-//   RemoteModelView(),
-//   featureCompleted: true,
-// ),
