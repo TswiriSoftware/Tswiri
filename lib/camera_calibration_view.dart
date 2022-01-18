@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/HiveDatabaseViews/hive_linear_regression_database_view.dart';
-import 'HiveDatabaseViews/hive_accelerometer_database_view.dart';
-import 'HiveDatabaseViews/hive_calibration_database_view.dart';
-import 'HiveDatabaseViews/hive_prosessed_calibration_database_view .dart';
+import 'HiveDatabaseViews/CalibrationRelated/hive_accelerometer_database_view.dart';
+import 'HiveDatabaseViews/CalibrationRelated/hive_calibration_database_view.dart';
+import 'HiveDatabaseViews/CalibrationRelated/hive_linear_regression_database_view.dart';
+import 'HiveDatabaseViews/CalibrationRelated/hive_prosessed_calibration_database_view .dart';
 import 'calibration/camera_calibration.dart';
 import 'main.dart';
 

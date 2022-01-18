@@ -126,7 +126,7 @@ class _HiveLinearRegressionDatabaseViewState
     double m = zS / qS;
     double b = mX - (m * mY);
 
-    debugPrint('$xArray , $yArray');
+    //debugPrint('$xArray , $yArray');
 
     debugPrint('x: $mX, y: $mY, m: $m, b: $b');
 

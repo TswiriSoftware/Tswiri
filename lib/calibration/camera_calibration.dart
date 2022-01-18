@@ -29,6 +29,7 @@ class _CameraCalibrationState extends State<CameraCalibration> {
 
   @override
   void initState() {
+    distanceMoved = 0;
     subscription =
         userAccelerometerEvents.listen((UserAccelerometerEvent event) {
       deltaT = DateTime.now().millisecondsSinceEpoch - timestamp;
@@ -126,8 +127,8 @@ class _CameraCalibrationState extends State<CameraCalibration> {
         //print(calibrationDataBox.toMap());
         //print(AccelerometerDataBox.toMap());
       });
-      print(calibrationDataBox.length);
-      print(accelerometerDataBox.length);
+      //print(calibrationDataBox.length);
+      //print(accelerometerDataBox.length);
     }
   }
 }
