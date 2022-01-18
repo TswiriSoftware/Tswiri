@@ -49,6 +49,7 @@ class _HiveAccelerometerDatabaseViewState
                 calibrationDataBox.clear();
                 displayList.clear();
                 showMyAboutDialog(context, "Deleted Hive Database");
+                setState(() {});
               },
               child: const Icon(Icons.delete),
             ),

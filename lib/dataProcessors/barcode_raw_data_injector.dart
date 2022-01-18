@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
+import 'dart:ffi';
 import 'dart:math';
 import 'package:fast_immutable_collections/src/base/iterable_extension.dart';
 import 'package:fast_immutable_collections/src/imap/map_extension.dart';
@@ -24,10 +25,19 @@ injectBarcode(
   Size absoluteImageSize,
   InputImageRotation rotation,
   Box<dynamic> rawDataBox,
+  Box<dynamic> lookuptable,
 ) {
   //var barcodeCenterPoints = []; // Centre co-ordinates of scanned QR codes
   Map<String, QrCode> qrCodes = {};
   Map<String, QrCodeVectors> QrCodeVectorsList = {};
+  List<double> imageSizes = [];
+  var lookupTable = lookuptable.toMap();
+
+  lookupTable.forEach((key, value) {
+    double test = double.parse(key);
+    imageSizes.add(test);
+  });
+
   //Method to round double values
 
   for (final Barcode barcode in barcodes) {
@@ -45,7 +55,9 @@ injectBarcode(
 
       qrCode.distanceFromCamera = calaculateDistanceFormCamera(
           barcode.value.boundingBox!,
-          barcodeCenterPoint); //Specifically for redmi Note10S
+          barcodeCenterPoint,
+          lookupTable,
+          imageSizes); //Specifically for redmi Note10S
 
       qrCodes.putIfAbsent(qrCode.displayValue, () => qrCode);
     } else {
@@ -76,6 +88,7 @@ injectBarcode(
           var aveDistanceFromCamera =
               (QrCodeStart.distanceFromCamera + QrCodeEnd.distanceFromCamera) /
                   2;
+
           QrCodeVectors qrCodeVector = QrCodeVectors(
               QrCodeStart.displayValue,
               QrCodeEnd.displayValue,
@@ -103,14 +116,23 @@ injectBarcode(
   }
 }
 
-double calaculateDistanceFormCamera(
-    Rect boundingBox, Point barcodeCenterPoint) {
-  var barcodeCenterPoint = ((boundingBox.left - boundingBox.right).abs() +
+double calaculateDistanceFormCamera(Rect boundingBox, Point barcodeCenterPoint,
+    var lookupTable, List<double> imageSizes) {
+  double imageSize = (((boundingBox.left - boundingBox.right).abs() +
           (boundingBox.top - boundingBox.bottom).abs()) /
-      2;
+      2);
 
-  var distanceFromCamera =
-      (4341 / barcodeCenterPoint) - 15.75; //Specifically for redmi Note10S
+  //var greater = imageSizes.where((snapshot) => snapshot >= imageSize).toList();
+  var greaterThan = imageSizes.where((element) => element >= imageSize).toList()
+    ..sort();
+  // filteredList = myList
+  //     .where((snapshot) => snapshot.views > 0)
+  //     .toList();
+
+  String imageSizeKey = greaterThan.first.toString();
+
+  double distanceFromCamera =
+      double.parse(lookupTable[imageSizeKey].toString().split(',').last);
 
   print(distanceFromCamera);
   //TODO: implement calibration lookup table

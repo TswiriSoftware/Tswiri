@@ -42,6 +42,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     isBusy = true;
     final barcodes = await barcodeScanner.processImage(inputImage);
     var rawDataBox = await Hive.openBox('rawDataBox');
+    var lookupTable = await Hive.openBox('matchedDataBox');
 
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
@@ -58,7 +59,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     if (mounted) {
       setState(() {
         injectBarcode(context, barcodes, inputImage.inputImageData!.size,
-            inputImage.inputImageData!.imageRotation, rawDataBox);
+            inputImage.inputImageData!.imageRotation, rawDataBox, lookupTable);
       });
     }
   }

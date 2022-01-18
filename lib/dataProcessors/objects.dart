@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class QrCode {
   QrCode(@required this.displayValue, @required this.barcodeCenterVector,
@@ -52,4 +53,21 @@ class BarcodeDistanceData {
   String toString() {
     return '$timestamp, $imageSize, $distance';
   }
+}
+
+class LinearEquationObject {
+  LinearEquationObject(@required this.m, @required this.c);
+
+  final double m;
+  final double c;
+
+  @override
+  String toString() {
+    return 'y = $m*x + $c';
+  }
+}
+
+class dataPoints {
+  dataPoints(@required this.offset);
+  final Offset offset;
 }

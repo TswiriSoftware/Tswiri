@@ -51,6 +51,7 @@ class _HiveCalibrationDatabaseViewState
                 matchedDataBox.clear();
                 displayList.clear();
                 showMyAboutDialog(context, "Deleted Hive Database");
+                setState(() {});
               },
               child: const Icon(Icons.delete),
             ),

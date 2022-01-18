@@ -3,22 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
-class LinearEquationObject {
-  LinearEquationObject(@required this.m, @required this.c);
-
-  final double m;
-  final double c;
-
-  @override
-  String toString() {
-    return 'y = $m*x + $c';
-  }
-}
-
-class dataPoints {
-  dataPoints(@required this.offset);
-  final Offset offset;
-}
+import 'objects.dart';
 
 List<Offset> listOfPoints(Box matchedDataBox) {
   List<Offset> points = [];
@@ -36,6 +21,15 @@ List<Offset> listOfPoints(Box matchedDataBox) {
 double calculateLinearEquation(LinearEquationObject linearEquation, x) {
   double y = linearEquation.m * x + linearEquation.c;
   return y;
+}
+
+void generateLookupTable(Box matchedDataBox) {
+  var matchedDataMap = matchedDataBox.toMap();
+
+  matchedDataMap.forEach((key, value) {
+    double imageSize = double.parse(value.toString().split(',').last);
+    double distancemm = double.parse(value.toString().split(',').first);
+  });
 }
 
 LinearEquationObject linearRegression(Box matchedDataBox) {
