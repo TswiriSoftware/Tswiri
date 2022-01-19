@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/database/consolidated_data_adapter.dart';
-import 'package:flutter_google_ml_kit/database/raw_data_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/raw_data_adapter.dart';
 import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';

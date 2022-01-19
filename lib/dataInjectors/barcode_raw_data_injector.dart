@@ -1,11 +1,7 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
-
-import 'dart:ffi';
 import 'dart:math';
-import 'package:fast_immutable_collections/src/base/iterable_extension.dart';
-import 'package:fast_immutable_collections/src/imap/map_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/database/raw_data_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/raw_data_adapter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
 
@@ -112,7 +108,7 @@ injectBarcode(
           timestamp: value.timestamp);
       rawDataBox.put(key, _qrCodeVectors);
     });
-    print('rawDataBox: ${rawDataBox.toMap().toIMap()}');
+    print('rawDataBox: ${rawDataBox.toMap()}');
   }
 }
 

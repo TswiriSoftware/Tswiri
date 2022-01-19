@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'HiveDatabaseViews/QrCodeRelated/hive_database_consolidation.dart';
-import 'HiveDatabaseViews/QrCodeRelated/hive_database_visualization.dart';
-import 'HiveDatabaseViews/QrCodeRelated/hive_raw_database_view.dart';
-import 'VisionDetectorViews/barcode_scanner_view.dart';
-import 'main.dart';
+import 'package:flutter_google_ml_kit/HiveDatabaseViews/QrCodeRelated/hive_database_consolidation.dart';
+import 'package:flutter_google_ml_kit/HiveDatabaseViews/QrCodeRelated/hive_database_visualization.dart';
+import 'package:flutter_google_ml_kit/HiveDatabaseViews/QrCodeRelated/hive_raw_database_view.dart';
+import 'package:flutter_google_ml_kit/VisionDetectorViews/barcode_scanner_view.dart';
+import '../../main.dart';
 
 class QrCodeScanningView extends StatefulWidget {
   const QrCodeScanningView({Key? key}) : super(key: key);
