@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/database/consolidated_data_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class DatabaseVisualization extends StatefulWidget {

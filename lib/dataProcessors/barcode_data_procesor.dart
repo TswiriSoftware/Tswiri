@@ -1,8 +1,5 @@
 // ignore_for_file: implementation_imports
 
-import 'package:fast_immutable_collections/src/ilist/list_extension.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_google_ml_kit/database/raw_data_adapter.dart';
 import 'package:hive/hive.dart';
 
 processData(Box rawDataBox, Box processedDataBox) async {}
