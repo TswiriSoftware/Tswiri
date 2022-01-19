@@ -136,8 +136,6 @@ processRawData(Box rawDataBox, Box processedDataBox) {
   uids.clear();
   rawData.forEach((key, value) {
     RelativeQrCodes data = value;
-    //print(data);
-    //print(vectorData);
     uids.add(data.uidStart);
     uids.removeDuplicates();
     if (!uids.contains(data.uidEnd)) {
