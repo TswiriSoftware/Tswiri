@@ -1,30 +1,27 @@
-import 'dart:io';
+import 'dart:typed_data';
 
-import 'package:flutter/material.dart' as material;
-import 'package:flutter_google_ml_kit/navigation/qrCodeGeneration/pdf_viewer_page.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
+import 'dart:io';
+import 'dart:typed_data';
 
-reportView(context) async {
-  final Document pdf = Document();
+import 'package:pdf/widgets.dart' as pw;
 
-  pdf.addPage(Page(
+Future<Uint8List> generatePDF() {
+  final document = Document();
+
+  document.addPage(pw.Page(
       pageFormat: PdfPageFormat.a4,
-      build: (Context context) {
-        return Center(
-          child: Text("PDF Demo"),
-        ); // Center
+      build: (pw.Context context) {
+        return pw.Center(
+          child: pw.BarcodeWidget(
+            color: PdfColor.fromHex("#000000"),
+            barcode: pw.Barcode.qrCode(),
+            data: "My data",
+          ),
+        ); // Center);
       }));
 
-  final String dir = (await getApplicationDocumentsDirectory()).path;
-  final String path = '$dir/report.pdf';
-  final File file = File(path);
-  await file.writeAsBytes(await pdf.save());
-
-  material.Navigator.of(context).push(
-    material.MaterialPageRoute(
-      builder: (_) => PdfViewerPage(path: path),
-    ),
-  );
+  return document.save();
 }

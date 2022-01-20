@@ -14,6 +14,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'databaseAdapters/matched_calibration_data_adapter.dart';
 import 'databaseAdapters/raw_data_adapter.dart';
+import 'navigation/qrCodeGeneration/qr_code_generation_view.dart';
 import 'navigation/scanning/qr_scanning_tools_view.dart';
 
 List<CameraDescription> cameras = [];
@@ -94,6 +95,9 @@ class Home extends StatelessWidget {
                 Icons.camera_alt,
                 featureCompleted: true),
             CustomCard('Qr Code Navigation Tools', QrCodeNavigationView(),
+                Icons.qr_code_2,
+                featureCompleted: true),
+            CustomCard('Qr Code Generator Tools', QrCodeGenerationView(),
                 Icons.qr_code_2,
                 featureCompleted: true),
           ],
