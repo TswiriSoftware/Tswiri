@@ -46,6 +46,8 @@ dependencies:
   shared_preferences: ^2.0.9
   sensors_plus: ^1.2.1
   flutter_launcher_icons: ^0.9.2
+  pdf: ^3.6.5
+  flutter_full_pdf_viewer: ^1.0.6
 
 
 flutter_icons:

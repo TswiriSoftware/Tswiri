@@ -20,7 +20,7 @@ class _HiveDatabaseConsolidationViewState
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   List displayList = [];
-  List fixedPoints = ['5'];
+  List fixedPoints = ['1'];
   List processedDataList = [];
   Map<String, List> consolidatedDataList = {};
   Map<String, List> currentPoints = {};
