@@ -55,18 +55,6 @@ class BarcodeDistanceData {
   }
 }
 
-class LinearEquationObject {
-  LinearEquationObject(@required this.m, @required this.c);
-
-  final double m;
-  final double c;
-
-  @override
-  String toString() {
-    return 'y = $m*x + $c';
-  }
-}
-
 class dataPoints {
   dataPoints(@required this.offset);
   final Offset offset;
