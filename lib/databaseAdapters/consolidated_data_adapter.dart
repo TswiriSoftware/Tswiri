@@ -7,7 +7,6 @@ class ConsolidatedData extends HiveObject {
       {required this.uid,
       required this.X,
       required this.Y,
-      required this.timeStamp,
       required this.fixed});
 
   @HiveField(0)
@@ -20,9 +19,6 @@ class ConsolidatedData extends HiveObject {
   late double Y;
 
   @HiveField(3)
-  late int timeStamp;
-
-  @HiveField(4)
   late bool fixed;
 
   getList() {

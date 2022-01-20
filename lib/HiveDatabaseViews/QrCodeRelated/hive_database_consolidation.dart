@@ -6,7 +6,6 @@ import 'package:flutter_google_ml_kit/objects/2d_point.dart';
 import 'package:flutter_google_ml_kit/objects/2d_vector.dart';
 import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HiveDatabaseConsolidationView extends StatefulWidget {
@@ -67,13 +66,6 @@ class _HiveDatabaseConsolidationViewState
             FloatingActionButton(
               heroTag: null,
               onPressed: () {
-                fixedPointsDialog(fixedPoints);
-              },
-              child: const Icon(Icons.change_circle),
-            ),
-            FloatingActionButton(
-              heroTag: null,
-              onPressed: () {
                 displayList.clear();
                 setState(() {});
               },
@@ -119,7 +111,7 @@ class _HiveDatabaseConsolidationViewState
                   if (index == 0) {
                     return Column(
                       children: <Widget>[
-                        displayDataPoint(['UID', 'X', 'Y']),
+                        displayDataPoint(['UID', 'X', 'Y', 'Fixed']),
                         SizedBox(
                           height: 5,
                         ),
@@ -136,45 +128,6 @@ class _HiveDatabaseConsolidationViewState
     );
   }
 
-  fixedPointsDialog(List fixedPoints) {
-    String dropdownValue = fixedPoints[0];
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Pick Fixed Point'),
-          content: SingleChildScrollView(
-              child: DropdownButton(
-                  value: dropdownValue,
-                  items: <String>['1', '2', '3', '4', '5', '6', '7']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    fixedPoints.clear();
-                    fixedPoints.add(newValue);
-                    setState(() {
-                      dropdownValue = newValue!;
-                      dropdownValue = fixedPoints[0];
-                    });
-                  })),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Ok'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<List> consolidatingData(List displayList) async {
     var processedDataBox = await Hive.openBox('processedDataBox');
     var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
@@ -183,9 +136,10 @@ class _HiveDatabaseConsolidationViewState
       print(
           '${element.startQrCode}, ${element.endQrCode}, ${element.X}, ${element.Y}');
     });
-    consolidatedData.update('1', (value) => Point2D('1', 0, 0),
-        ifAbsent: () => Point2D('1', 0, 0)); //This is the Fixed Point
-    consolidateProcessedData(processedDataList, consolidatedData);
+    consolidatedData.update('1', (value) => Point2D('1', 0, 0, true),
+        ifAbsent: () => Point2D('1', 0, 0, true)); //This is the Fixed Point
+    consolidateProcessedData(
+        processedDataList, consolidatedData, consolidatedDataBox);
     return _displayList(consolidatedData, displayList);
   }
 }
@@ -193,7 +147,7 @@ class _HiveDatabaseConsolidationViewState
 List _displayList(Map<String, Point2D> consolidatedData, List displayList) {
   displayList.clear();
   consolidatedData.forEach((key, value) {
-    displayList.add([value.name, value.X, value.Y]);
+    displayList.add([value.name, value.X, value.Y, value.Fixed]);
   });
   displayList.sort((a, b) => a[0].compareTo(b[0]));
   print(displayList);
@@ -211,17 +165,17 @@ List<Vector2D> processedData(Box processedDataBox) {
   return processedDataList;
 }
 
-consolidateProcessedData(
-    List<Vector2D> processedDataList, Map<String, Point2D> consolidatedData) {
+consolidateProcessedData(List<Vector2D> processedDataList,
+    Map<String, Point2D> consolidatedData, Box consolidatedDataBox) {
   for (var i = 0; i < processedDataList.length; i++) {
     if (consolidatedData.containsKey(processedDataList[i].startQrCode)) {
       String name = processedDataList[i].endQrCode;
-      double X = consolidatedData[processedDataList[i].startQrCode]!.X +
-          processedDataList[i].X;
-      double Y = consolidatedData[processedDataList[i].startQrCode]!.Y +
-          processedDataList[i].Y;
+      double x1 = consolidatedData[processedDataList[i].startQrCode]!.X;
+      double x2 = processedDataList[i].X;
+      double y1 = consolidatedData[processedDataList[i].startQrCode]!.Y;
+      double y2 = processedDataList[i].Y;
 
-      Point2D point = Point2D(name, X, Y);
+      Point2D point = Point2D(name, (x1 + x2), (y1 + y2), false);
       consolidatedData.update(
         name,
         (value) => point,
@@ -229,13 +183,12 @@ consolidateProcessedData(
       );
     } else if (consolidatedData.containsKey(processedDataList[i].endQrCode)) {
       String name = processedDataList[i].startQrCode;
-      double X =
-          consolidatedData[processedDataList[i].endQrCode.toString()]!.X +
-              (-processedDataList[i].X);
-      double Y = consolidatedData[processedDataList[i].endQrCode]!.Y +
-          (-processedDataList[i].Y);
+      double x1 = consolidatedData[processedDataList[i].endQrCode]!.X;
+      double x2 = -processedDataList[i].X;
+      double y1 = consolidatedData[processedDataList[i].endQrCode]!.Y;
+      double y2 = -processedDataList[i].Y;
 
-      Point2D point = Point2D(name, X, Y);
+      Point2D point = Point2D(name, (x1 + x2), (y1 + y2), false);
       consolidatedData.update(
         name,
         (value) => point,
@@ -243,6 +196,12 @@ consolidateProcessedData(
       );
     }
   }
+  consolidatedData.forEach((key, value) {
+    consolidatedDataBox.put(
+        value.name,
+        ConsolidatedData(
+            uid: value.name, X: value.X, Y: value.Y, fixed: value.Fixed));
+  });
 }
 
 double roundDouble(double val, int places) {
@@ -258,7 +217,7 @@ displayDataPoint(var myText) {
     children: [
       SizedBox(
         child: Text(myText[0], textAlign: TextAlign.center),
-        width: 100,
+        width: 50,
       ),
       SizedBox(
         child: Text(myText[1], textAlign: TextAlign.center),
@@ -266,6 +225,10 @@ displayDataPoint(var myText) {
       ),
       SizedBox(
         child: Text(myText[2], textAlign: TextAlign.center),
+        width: 100,
+      ),
+      SizedBox(
+        child: Text(myText[3], textAlign: TextAlign.center),
         width: 100,
       ),
     ],
