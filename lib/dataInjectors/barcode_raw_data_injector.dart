@@ -78,8 +78,8 @@ injectBarcode(
           Point point = Point(
               QrCodeStart.barcodeCenterVector.x * -1 -
                   QrCodeEnd.barcodeCenterVector.x * -1,
-              QrCodeStart.barcodeCenterVector.y -
-                  QrCodeEnd.barcodeCenterVector.y);
+              QrCodeStart.barcodeCenterVector.y * -1 -
+                  QrCodeEnd.barcodeCenterVector.y * -1);
 
           var aveDistanceFromCamera =
               (QrCodeStart.distanceFromCamera + QrCodeEnd.distanceFromCamera) /
@@ -118,21 +118,15 @@ double calaculateDistanceFormCamera(Rect boundingBox, Point barcodeCenterPoint,
           (boundingBox.top - boundingBox.bottom).abs()) /
       2);
 
-  //var greater = imageSizes.where((snapshot) => snapshot >= imageSize).toList();
   var greaterThan = imageSizes.where((element) => element >= imageSize).toList()
     ..sort();
-  // filteredList = myList
-  //     .where((snapshot) => snapshot.views > 0)
-  //     .toList();
 
   String imageSizeKey = greaterThan.first.toString();
 
   double distanceFromCamera =
       double.parse(lookupTable[imageSizeKey].toString().split(',').last);
 
-  print(distanceFromCamera);
-  //TODO: implement calibration lookup table
-
+  //print(distanceFromCamera);
   return distanceFromCamera;
 }
 
