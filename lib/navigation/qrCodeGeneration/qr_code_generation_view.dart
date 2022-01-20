@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/navigation/qrCodeGeneration/pdf_creator.dart';
 import 'package:flutter_google_ml_kit/navigation/qrCodeGeneration/pdf_viewer_page.dart';
 import 'package:flutter_google_ml_kit/navigation/qrCodeNavigation/qr_code_navigation.dart';
 import '../../main.dart';
@@ -31,8 +32,14 @@ class _QrCodeGenerationViewState extends State<QrCodeGenerationView> {
           // ignore: prefer_const_literals_to_create_immutables
           children: [
             CustomCard(
-              'Qr Code 1 - 6',
-              PdfViewerPage,
+              'Pdf Viewer',
+              PdfViewerPage(path: 'report.pdf'),
+              Icons.camera,
+              featureCompleted: true,
+            ),
+            CustomCard(
+              'Pdf Creator',
+              PDFCreator(),
               Icons.camera,
               featureCompleted: true,
             ),
