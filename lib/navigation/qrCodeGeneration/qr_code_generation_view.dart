@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/examples/1_6.dart';
-import 'package:flutter_google_ml_kit/navigation/qrCodeGeneration/qr_code_viewer.dart';
+import 'package:flutter_google_ml_kit/navigation/qrCodeGeneration/QrCodeGenerator.dart';
 import 'package:flutter_google_ml_kit/navigation/qrCodeNavigation/qr_code_navigation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:printing/printing.dart';
@@ -30,31 +29,52 @@ class _QrCodeGenerationViewState extends State<QrCodeGenerationView> {
           padding: EdgeInsets.all(16),
           mainAxisSpacing: 8,
           crossAxisSpacing: 16,
-          crossAxisCount: 2,
+          crossAxisCount: 1,
           // ignore: prefer_const_literals_to_create_immutables
+
           children: [
-            PdfPreview(
-        maxPageWidth: 700,
-        build: (format) => generatePDF()),
-        //actions: actions,
-        //onPrinted: _showPrintedToast,
-        //onShared: _showSharedToast,
-            
-            // CustomCard(
-            //   'Pdf Viewer',
-            //   Calendar(),
-            //   Icons.camera,
-            //   featureCompleted: true,
-            // ),
-            // CustomCard(
-            //   'Pdf Creator',
-            //   PDFCreator(),
-            //   Icons.camera,
-            //   featureCompleted: true,
-            // ),
+            CustomCardQrCode([1, 2, 3, 4, 5, 6]),
+            CustomCardQrCode([7, 8, 9, 10, 11, 12]),
+            CustomCardQrCode([13, 14, 15, 16, 17, 18]),
+            CustomCardQrCode([19, 20, 21, 22, 23, 24]),
           ],
         ),
       ),
+    );
+  }
+}
+
+class CustomCardQrCode extends StatelessWidget {
+  final List<int> range;
+
+  // ignore: use_key_in_widget_constructors
+  const CustomCardQrCode(this.range);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 400,
+      width: 300,
+      child: Card(
+          elevation: 8,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ListTile(
+                tileColor: Theme.of(context).primaryColor,
+                title: Text(
+                  '${range.first} - ${range.last}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              Container(
+                height: 295,
+                child: PdfPreview(
+                    maxPageWidth: 200, build: (format) => generatePDF(range)),
+              )
+            ],
+          )),
     );
   }
 }
