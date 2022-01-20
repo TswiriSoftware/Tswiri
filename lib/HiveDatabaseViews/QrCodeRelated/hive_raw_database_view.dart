@@ -2,6 +2,7 @@ import 'package:fast_immutable_collections/src/ilist/list_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/raw_data_adapter.dart';
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 
 import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
@@ -115,8 +116,9 @@ _displayList(List displayList, Box rawDataBox, Box processedDataBox) {
   processRawData(rawDataBox, processedDataBox);
 
   displayList.clear();
-  var processedData = processedDataBox.toMap();
-  processedData.forEach((key, value) {
+  var rawDataMap = rawDataBox.toMap();
+  print('rawData: ${rawDataBox.toMap().toIMap()}');
+  rawDataMap.forEach((key, value) {
     RelativeQrCodes processedDataItem = value;
     List vectorData = [
       processedDataItem.uidStart,

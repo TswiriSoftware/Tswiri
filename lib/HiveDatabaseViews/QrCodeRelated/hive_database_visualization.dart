@@ -12,6 +12,17 @@ class DatabaseVisualization extends StatefulWidget {
 
 class _DatabaseVisualizationState extends State<DatabaseVisualization> {
   List pointNames = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +34,11 @@ class _DatabaseVisualizationState extends State<DatabaseVisualization> {
             children: [
               FloatingActionButton(
                 heroTag: null,
-                onPressed: () {
+                onPressed: () async {
+                  pointNames.clear();
+                  var consolidatedDataBox =
+                      await Hive.openBox('consolidatedDataBox');
+                  consolidatedDataBox.clear();
                   setState(() {});
                 },
                 child: const Icon(Icons.refresh),
@@ -67,7 +82,7 @@ class _DatabaseVisualizationState extends State<DatabaseVisualization> {
 class OpenPainter extends CustomPainter {
   OpenPainter({required this.dataPoints, required this.pointNames});
   var dataPoints;
-  var pointNames;
+  var pointNames = [];
 
   @override
   paint(Canvas canvas, Size size) {
@@ -100,15 +115,16 @@ _getPoints(BuildContext context, List pointNames) async {
   List<Offset> points = [];
 
   var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
-  print(consolidatedDataBox.toMap());
+  double width = MediaQuery.of(context).size.width;
+  double height = MediaQuery.of(context).size.height;
+  //print(consolidatedDataBox.toMap());
   for (var i = 0; i < consolidatedDataBox.length; i++) {
     ConsolidatedData data = consolidatedDataBox.getAt(i);
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
 
-    points.add(Offset((data.X / 2) + (width / 2), (data.Y / 2) + (height / 2)));
+    points.add(Offset((data.X / 4) + (width / 4), (data.Y / 4) + (height / 4)));
     pointNames.add(data.uid);
   }
+  print('$height,  $width');
   print(points);
   return points;
 }

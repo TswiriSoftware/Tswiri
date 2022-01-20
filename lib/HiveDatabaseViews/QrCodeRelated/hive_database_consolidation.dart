@@ -2,6 +2,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/raw_data_adapter.dart';
+import 'package:flutter_google_ml_kit/objects/2d_point.dart';
+import 'package:flutter_google_ml_kit/objects/2d_vector.dart';
 import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
@@ -21,9 +23,10 @@ class _HiveDatabaseConsolidationViewState
 
   List displayList = [];
   List fixedPoints = ['1'];
-  List processedDataList = [];
+  List<Vector2D> processedDataList = [];
   Map<String, List> consolidatedDataList = {};
   Map<String, List> currentPoints = {};
+  Map<String, Point2D> consolidatedData = {};
 
   @override
   void initState() {
@@ -112,10 +115,11 @@ class _HiveDatabaseConsolidationViewState
                       .replaceAll(' ', '')
                       .split(',')
                       .toList();
+                  print(myText);
                   if (index == 0) {
                     return Column(
                       children: <Widget>[
-                        displayDataPoint(['UID', 'X', 'Y', 'Timestamp']),
+                        displayDataPoint(['UID', 'X', 'Y']),
                         SizedBox(
                           height: 5,
                         ),
@@ -172,150 +176,73 @@ class _HiveDatabaseConsolidationViewState
   }
 
   Future<List> consolidatingData(List displayList) async {
-    displayList.clear();
-    currentPoints.clear();
-
     var processedDataBox = await Hive.openBox('processedDataBox');
     var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
-    getProcessedData(processedDataBox, processedDataList);
-    addFixedPoints(consolidatedDataList, fixedPoints);
-
-    consolidateProcessedData(
-        processedDataList, consolidatedDataList, fixedPoints, currentPoints);
-
-    _displayList(consolidatedDataList, displayList, consolidatedDataBox);
-
-    return displayList;
+    List<Vector2D> processedDataList = processedData(processedDataBox);
+    processedDataList.forEach((element) {
+      print(
+          '${element.startQrCode}, ${element.endQrCode}, ${element.X}, ${element.Y}');
+    });
+    consolidatedData.update('1', (value) => Point2D('1', 0, 0),
+        ifAbsent: () => Point2D('1', 0, 0)); //This is the Fixed Point
+    consolidateProcessedData(processedDataList, consolidatedData);
+    return _displayList(consolidatedData, displayList);
   }
 }
 
-_displayList(
-    Map consolidatedDataList, List displayList, Box consolidatedDataBox) {
-  for (var i = 0; i < consolidatedDataList.length; i++) {
-    displayList.add([
-      consolidatedDataList.keys.elementAt(i),
-      consolidatedDataList.values.elementAt(i)[0],
-      consolidatedDataList.values.elementAt(i)[1],
-      consolidatedDataList.values.elementAt(i)[2]
-    ]);
-
-    var data = ConsolidatedData(
-        uid: consolidatedDataList.keys.elementAt(i),
-        X: consolidatedDataList.values.elementAt(i)[0],
-        Y: consolidatedDataList.values.elementAt(i)[1],
-        timeStamp:
-            int.parse(consolidatedDataList.values.elementAt(i)[2].toString()),
-        fixed: false);
-    consolidatedDataBox.put(data.uid, data);
-  }
+List _displayList(Map<String, Point2D> consolidatedData, List displayList) {
+  displayList.clear();
+  consolidatedData.forEach((key, value) {
+    displayList.add([value.name, value.X, value.Y]);
+  });
   displayList.sort((a, b) => a[0].compareTo(b[0]));
-
-  print('consolidatedDataBox: ${consolidatedDataBox.toMap().toIMap()}');
-  print('displayList: ${displayList.toIList()}');
+  print(displayList);
+  return displayList;
 }
 
-getProcessedData(Box processedDataBox, List processedDataList) {
-  processedDataList.clear();
+List<Vector2D> processedData(Box processedDataBox) {
+  List<Vector2D> processedDataList = [];
   var processedData = processedDataBox.toMap();
   processedData.forEach((key, value) {
     RelativeQrCodes data = value;
-    var listData = [data.uidStart, data.uidEnd, data.x, data.y, data.timestamp];
+    Vector2D listData = Vector2D(data.uidStart, data.uidEnd, data.x, data.y);
     processedDataList.add(listData);
   });
-  print('processedDataList: ${processedDataList.toIList()}');
+  return processedDataList;
 }
 
-addFixedPoints(Map consolidatedDataList, List fixedPoints) {
-  consolidatedDataList.clear();
-  int timestamp = DateTime.now().millisecondsSinceEpoch;
-  for (var i = 0; i < fixedPoints.length; i++) {
-    consolidatedDataList.putIfAbsent(
-        fixedPoints[i], () => [0.0, 0.0, timestamp]);
-  }
-  print('consolidatedDataList: $consolidatedDataList');
-}
-
-updatePoints(Map consolidatedDataList, Map currentPoints, List fixedPoints) {
-  for (var i = 0; i < consolidatedDataList.length; i++) {
-    if (!fixedPoints.contains(consolidatedDataList.keys.elementAt(i))) {
-      currentPoints.putIfAbsent(
-          consolidatedDataList.keys.elementAt(i),
-          () => [
-                consolidatedDataList.values.elementAt(i)[0],
-                consolidatedDataList.values.elementAt(i)[1]
-              ]);
-    }
-  }
-  //print('currentPoints: ${currentPoints.toIMap()}');
-}
-
-consolidateProcessedData(List processedDataList, Map consolidatedDataList,
-    List fixedPoints, Map currentPoints) {
-  //for (var i = 0; i < 5; i++) {
+consolidateProcessedData(
+    List<Vector2D> processedDataList, Map<String, Point2D> consolidatedData) {
   for (var i = 0; i < processedDataList.length; i++) {
-    print(consolidatedDataList[i]);
-    if (fixedPoints.contains(processedDataList[i][0]) &&
-        !currentPoints.keys.contains(processedDataList[i][1])) {
-      consolidatedDataList.putIfAbsent(
-          processedDataList[i][1],
-          () => [
-                processedDataList[i][2],
-                processedDataList[i][3],
-                processedDataList[i][4]
-              ]);
-      updatePoints(consolidatedDataList, currentPoints, fixedPoints);
-    }
-    if (fixedPoints.contains(processedDataList[i][1]) &&
-        !currentPoints.keys.contains(processedDataList[i][0])) {
-      consolidatedDataList.putIfAbsent(
-          processedDataList[i][0],
-          () => [
-                processedDataList[i][2],
-                processedDataList[i][3],
-                processedDataList[i][4]
-              ]);
-      updatePoints(consolidatedDataList, currentPoints, fixedPoints);
-    }
-    if (currentPoints.containsKey(processedDataList[i][0])) {
-      consolidatedDataList.putIfAbsent(
-          processedDataList[i][1],
-          () => [
-                roundDouble(
-                    processedDataList[i][2] +
-                        double.parse(currentPoints[processedDataList[i][0]][0]
-                            .toString()),
-                    0),
-                processedDataList[i][3] +
-                    roundDouble(
-                        double.parse(currentPoints[processedDataList[i][0]][1]
-                            .toString()),
-                        0),
-                processedDataList[i][4]
-              ]);
-      updatePoints(consolidatedDataList, currentPoints, fixedPoints);
-    }
-    if (currentPoints.containsKey(processedDataList[i][1]) &&
-        !currentPoints.keys.contains(processedDataList[i][0])) {
-      consolidatedDataList.putIfAbsent(
-          processedDataList[i][0],
-          () => [
-                roundDouble(
-                    processedDataList[i][2] +
-                        (double.parse(currentPoints[processedDataList[i][1]][0]
-                            .toString())),
-                    0),
-                roundDouble(
-                    processedDataList[i][3] +
-                        (double.parse(currentPoints[processedDataList[i][1]][1]
-                            .toString())),
-                    0),
-                processedDataList[i][4]
-              ]);
-      updatePoints(consolidatedDataList, currentPoints, fixedPoints);
+    if (consolidatedData.containsKey(processedDataList[i].startQrCode)) {
+      String name = processedDataList[i].endQrCode;
+      double X = consolidatedData[processedDataList[i].startQrCode]!.X +
+          processedDataList[i].X;
+      double Y = consolidatedData[processedDataList[i].startQrCode]!.Y +
+          processedDataList[i].Y;
+
+      Point2D point = Point2D(name, X, Y);
+      consolidatedData.update(
+        name,
+        (value) => point,
+        ifAbsent: () => point,
+      );
+    } else if (consolidatedData.containsKey(processedDataList[i].endQrCode)) {
+      String name = processedDataList[i].startQrCode;
+      double X =
+          consolidatedData[processedDataList[i].endQrCode.toString()]!.X +
+              (-processedDataList[i].X);
+      double Y = consolidatedData[processedDataList[i].endQrCode]!.Y +
+          (-processedDataList[i].Y);
+
+      Point2D point = Point2D(name, X, Y);
+      consolidatedData.update(
+        name,
+        (value) => point,
+        ifAbsent: () => point,
+      );
     }
   }
-  //}
-  print('consolidatedDataList: ${consolidatedDataList.toIMap()}');
 }
 
 double roundDouble(double val, int places) {
@@ -331,19 +258,15 @@ displayDataPoint(var myText) {
     children: [
       SizedBox(
         child: Text(myText[0], textAlign: TextAlign.center),
-        width: 30,
+        width: 100,
       ),
       SizedBox(
         child: Text(myText[1], textAlign: TextAlign.center),
-        width: 75,
+        width: 100,
       ),
       SizedBox(
         child: Text(myText[2], textAlign: TextAlign.center),
-        width: 75,
-      ),
-      SizedBox(
-        child: Text(myText[3], textAlign: TextAlign.center),
-        width: 115,
+        width: 100,
       ),
     ],
   );
