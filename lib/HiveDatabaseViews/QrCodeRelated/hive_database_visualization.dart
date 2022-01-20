@@ -1,6 +1,4 @@
 import 'dart:ui';
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -102,6 +100,7 @@ _getPoints(BuildContext context, List pointNames) async {
   List<Offset> points = [];
 
   var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
+  print(consolidatedDataBox.toMap());
   for (var i = 0; i < consolidatedDataBox.length; i++) {
     ConsolidatedData data = consolidatedDataBox.getAt(i);
     double width = MediaQuery.of(context).size.width;

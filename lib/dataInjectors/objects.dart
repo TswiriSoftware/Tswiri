@@ -56,7 +56,7 @@ class BarcodeDistanceData {
 }
 
 class LinearEquationObject {
-  LinearEquationObject(@required this.m, @required this.c);
+  LinearEquationObject(this.m, this.c);
 
   final double m;
   final double c;
