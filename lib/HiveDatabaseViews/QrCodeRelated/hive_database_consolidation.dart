@@ -184,9 +184,9 @@ consolidateProcessedData(List<Vector2D> processedDataList,
     } else if (consolidatedData.containsKey(processedDataList[i].endQrCode)) {
       String name = processedDataList[i].startQrCode;
       double x1 = consolidatedData[processedDataList[i].endQrCode]!.X;
-      double x2 = -processedDataList[i].X;
+      double x2 = -processedDataList[i].X; //multiply by - for correct direction
       double y1 = consolidatedData[processedDataList[i].endQrCode]!.Y;
-      double y2 = -processedDataList[i].Y;
+      double y2 = -processedDataList[i].Y; //multiply by - for correct direction
 
       Point2D point = Point2D(name, (x1 + x2), (y1 + y2), false);
       consolidatedData.update(
