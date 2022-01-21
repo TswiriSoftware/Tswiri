@@ -22,7 +22,7 @@ class _HiveDatabaseConsolidationViewState
 
   List displayList = [];
   List fixedPoints = ['1'];
-  List<Vector2D> processedDataList = [];
+  List<InterBarcodeVector> processedDataList = [];
   Map<String, List> consolidatedDataList = {};
   Map<String, List> currentPoints = {};
   Map<String, BarcodeMarker> consolidatedData = {};
@@ -133,7 +133,7 @@ class _HiveDatabaseConsolidationViewState
 
     var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
 
-    List<Vector2D> deduplicatedData = deduplicateData(processedDataBox);
+    List<InterBarcodeVector> deduplicatedData = deduplicateData(processedDataBox);
 
     consolidatedData.update('1', (value) => BarcodeMarker('1', 0, 0, true),
         ifAbsent: () => BarcodeMarker('1', 0, 0, true)); //This is the Fixed Point
@@ -153,18 +153,18 @@ List _displayList(Map<String, BarcodeMarker> consolidatedData, List displayList)
   return displayList;
 }
 
-List<Vector2D> deduplicateData(Box rawData) {
-  List<Vector2D> processedDataList = [];
+List<InterBarcodeVector> deduplicateData(Box rawData) {
+  List<InterBarcodeVector> processedDataList = [];
   var processedData = rawData.toMap();
   processedData.forEach((key, value) {
     RelativeQrCodes data = value;
-    Vector2D listData = Vector2D(data.uidStart, data.uidEnd, data.x, data.y);
+    InterBarcodeVector listData = InterBarcodeVector(data.uidStart, data.uidEnd, data.x, data.y);
     processedDataList.add(listData);
   });
   return processedDataList;
 }
 
-consolidateProcessedData(List<Vector2D> processedDataList,
+consolidateProcessedData(List<InterBarcodeVector> processedDataList,
     Map<String, BarcodeMarker> consolidatedData, Box consolidatedDataBox) {
   for (var i = 0; i < processedDataList.length; i++) {
     if (consolidatedData.containsKey(processedDataList[i].startQrCode)) {

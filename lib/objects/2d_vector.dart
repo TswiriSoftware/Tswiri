@@ -1,17 +1,18 @@
-import 'package:flutter/cupertino.dart';
 
-class Vector2D {
-  Vector2D(
+import 'dart:math';
+import 'package:vector_math/vector_math.dart';
+
+class InterBarcodeVector {
+  InterBarcodeVector(
     @required this.startQrCode,
     @required this.endQrCode,
-    @required this.X,
-    @required this.Y,
+    @required this.vector,
   );
 
   final String startQrCode;
   final String endQrCode;
-  final double X;
-  final double Y;
+  final Vector2 vector;
+
 }
 
 //TODO: convert to named

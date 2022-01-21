@@ -1,18 +1,14 @@
 import 'dart:math';
-
-import 'package:flutter/cupertino.dart';
-
+import 'package:vector_math/vector_math.dart';
 class BarcodeMarker {
   BarcodeMarker(
-    @required this.id,
-    @required this.position,
-    @required this.fixed,
+    {required final this.id,
+    required final this.position,
+    required final this.fixed,}
   );
 
   final String id;
   final bool fixed;
-  final Point position;
+  final Vector2 position;
 }
-
-//TODO: convert to named
 
