@@ -113,7 +113,7 @@ class _HiveDatabaseViewState extends State<HiveDatabaseView> {
 }
 
 _displayList(List displayList, Box rawDataBox, Box processedDataBox) {
-  processRawData(rawDataBox, processedDataBox);
+  deduplicateRawData(rawDataBox, processedDataBox);
 
   displayList.clear();
   var rawDataMap = rawDataBox.toMap();
@@ -132,24 +132,4 @@ _displayList(List displayList, Box rawDataBox, Box processedDataBox) {
   });
 }
 
-processRawData(Box rawDataBox, Box processedDataBox) {
-  var rawData = rawDataBox.toMap();
-  List uids = [];
-  uids.clear();
-  rawData.forEach((key, value) {
-    RelativeQrCodes data = value;
-    uids.add(data.uidStart);
-    uids.removeDuplicates();
-    if (!uids.contains(data.uidEnd)) {
-      var qrCodesVector = RelativeQrCodes(
-          uid: data.uid,
-          uidStart: data.uidStart,
-          uidEnd: data.uidEnd,
-          x: data.x,
-          y: data.y,
-          timestamp: data.timestamp);
-      processedDataBox.put(key, qrCodesVector);
-    }
-  });
-  print('processedDataBox: ${processedDataBox.toMap()}');
-}
+
