@@ -1,9 +1,5 @@
-import 'package:fast_immutable_collections/src/ilist/list_extension.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/raw_data_adapter.dart';
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
-
+import 'package:flutter_google_ml_kit/functions/data_manipulation/process_raw_data.dart';
 import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
 
@@ -15,7 +11,6 @@ class HiveDatabaseView extends StatefulWidget {
 }
 
 class _HiveDatabaseViewState extends State<HiveDatabaseView> {
-  var displayList = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,15 +33,9 @@ class _HiveDatabaseViewState extends State<HiveDatabaseView> {
                 processedDataBox.clear();
                 rawDataBox.clear();
                 showMyAboutDialog(context, "Deleted Hive Database");
-              },
-              child: const Icon(Icons.delete),
-            ),
-            FloatingActionButton(
-              heroTag: null,
-              onPressed: () async {
                 setState(() {});
               },
-              child: const Icon(Icons.refresh),
+              child: const Icon(Icons.delete),
             ),
           ],
         ),
@@ -68,34 +57,20 @@ class _HiveDatabaseViewState extends State<HiveDatabaseView> {
                       .split(',')
                       .toList();
 
-                  return Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          child: Text(text[0], textAlign: TextAlign.start),
-                          width: 30,
+                  if (index == 0) {
+                    return Column(
+                      children: <Widget>[
+                        displayDataPoint(
+                            ['UID 1', 'UID 2', 'X', 'Y', 'Timestamp']),
+                        const SizedBox(
+                          height: 5,
                         ),
-                        SizedBox(
-                          child: Text(text[1], textAlign: TextAlign.start),
-                          width: 30,
-                        ),
-                        SizedBox(
-                          child: Text(text[2], textAlign: TextAlign.start),
-                          width: 75,
-                        ),
-                        SizedBox(
-                          child: Text(text[3], textAlign: TextAlign.start),
-                          width: 75,
-                        ),
-                        SizedBox(
-                          child: Text(text[4], textAlign: TextAlign.start),
-                          width: 150,
-                        ),
+                        displayDataPoint(text),
                       ],
-                    ),
-                  );
+                    );
+                  } else {
+                    return displayDataPoint(text);
+                  }
                 });
           }
         },
@@ -106,30 +81,53 @@ class _HiveDatabaseViewState extends State<HiveDatabaseView> {
   Future<List> loadData() async {
     var rawDataBox = await Hive.openBox('rawDataBox');
     var processedDataBox = await Hive.openBox('processedDataBox');
-    _displayList(displayList, rawDataBox, processedDataBox);
-
-    return displayList;
+    processRawData(rawDataBox, processedDataBox);
+    return _displayList(rawDataBox);
   }
 }
 
-_displayList(List displayList, Box rawDataBox, Box processedDataBox) {
-  deduplicateRawData(rawDataBox, processedDataBox);
-
-  displayList.clear();
+List _displayList(Box rawDataBox) {
+  var displayList = [];
   var rawDataMap = rawDataBox.toMap();
-  print('rawData: ${rawDataBox.toMap().toIMap()}');
   rawDataMap.forEach((key, value) {
-    RelativeQrCodes processedDataItem = value;
     List vectorData = [
-      processedDataItem.uidStart,
-      processedDataItem.uidEnd,
-      processedDataItem.x,
-      processedDataItem.y,
-      processedDataItem.timestamp
+      value.uidStart,
+      value.uidEnd,
+      value.x,
+      value.y,
+      value.timestamp
     ];
-
     displayList.add(vectorData);
   });
+  return displayList;
 }
 
-
+displayDataPoint(var myText) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    textDirection: TextDirection.ltr,
+    children: [
+      SizedBox(
+        child: Text(myText[0], textAlign: TextAlign.center),
+        width: 35,
+      ),
+      SizedBox(
+        child: Text(myText[1], textAlign: TextAlign.center),
+        width: 35,
+      ),
+      SizedBox(
+        child: Text(myText[2], textAlign: TextAlign.center),
+        width: 50,
+      ),
+      SizedBox(
+        child: Text(myText[3], textAlign: TextAlign.center),
+        width: 50,
+      ),
+      SizedBox(
+        child: Text(myText[4], textAlign: TextAlign.center),
+        width: 125,
+      ),
+    ],
+  );
+}

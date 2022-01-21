@@ -61,8 +61,6 @@ class _DatabaseVisualizationState extends State<DatabaseVisualization> {
                 return const Center(child: CircularProgressIndicator());
               } else {
                 var dataPoints = snapshot.data;
-                print(dataPoints.runtimeType);
-                print(dataPoints);
                 return Center(
                   child: InteractiveViewer(
                     maxScale: 6,
@@ -93,7 +91,8 @@ class OpenPainter extends CustomPainter {
     canvas.drawPoints(PointMode.points, dataPoints, paint1);
     for (var i = 0; i < dataPoints.length; i++) {
       final textSpan = TextSpan(
-          text: pointNames[i], style: TextStyle(color: Colors.deepOrange[800]));
+          text: pointNames[i],
+          style: TextStyle(color: Colors.deepOrange[800], fontSize: 5));
       final textPainter = TextPainter(
         text: textSpan,
         textDirection: TextDirection.ltr,
@@ -117,15 +116,11 @@ _getPoints(BuildContext context, List pointNames) async {
   var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
   double width = MediaQuery.of(context).size.width;
   double height = MediaQuery.of(context).size.height;
-  //print(consolidatedDataBox.toMap());
   for (var i = 0; i < consolidatedDataBox.length; i++) {
     ConsolidatedData data = consolidatedDataBox.getAt(i);
-
     points
         .add(Offset((data.X / 10) + (width / 2), (data.Y / 10) + (height / 2)));
     pointNames.add(data.uid);
   }
-  print('$height,  $width');
-  print(points);
   return points;
 }

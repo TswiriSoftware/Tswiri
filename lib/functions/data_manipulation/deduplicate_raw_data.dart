@@ -1,9 +1,8 @@
 import 'package:fast_immutable_collections/src/ilist/list_extension.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/raw_data_adapter.dart';
 
-List<dynamic> deduplicateRawData(List<dynamic> rawDataBox) {
-  var rawData = rawDataBox.toMap();
+Map<String, RelativeQrCodes> deduplicateRawData(Map rawData) {
+  Map<String, RelativeQrCodes> processedData = {};
   List uids = [];
   uids.clear();
   rawData.forEach((key, value) {
@@ -18,9 +17,12 @@ List<dynamic> deduplicateRawData(List<dynamic> rawDataBox) {
           x: data.x,
           y: data.y,
           timestamp: data.timestamp);
-      processedDataBox.put(key, qrCodesVector);
+      processedData.update(
+        data.uid,
+        (value) => qrCodesVector,
+        ifAbsent: () => qrCodesVector,
+      );
     }
   });
-  print('processedDataBox: ${processedDataBox.toMap()}');
-  return processedDataBox
+  return processedData;
 }
