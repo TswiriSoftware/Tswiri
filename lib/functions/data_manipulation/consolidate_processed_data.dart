@@ -23,7 +23,7 @@ consolidateProcessedData(List<InterBarcodeVector> processedDataList,
       String id = processedDataList[i].startQrCode;
       Vector2 position =
           consolidatedData[processedDataList[i].endQrCode]!.position +
-              (processedDataList[i].vector * -1);
+              (processedDataList[i].vector);
 
       BarcodeMarker point =
           BarcodeMarker(id: id, position: position, fixed: false);

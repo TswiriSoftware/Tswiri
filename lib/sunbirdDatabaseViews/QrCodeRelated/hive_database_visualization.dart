@@ -118,8 +118,8 @@ _getPoints(BuildContext context, List pointNames) async {
   double height = MediaQuery.of(context).size.height;
   for (var i = 0; i < consolidatedDataBox.length; i++) {
     ConsolidatedData data = consolidatedDataBox.getAt(i);
-    points
-        .add(Offset((data.X / 10) + (width / 2), (data.Y / 10) + (height / 2)));
+    points.add(
+        Offset((data.X / 10) + (width / 2), (-data.Y / 10) + (height / 2)));
     pointNames.add(data.uid);
   }
   return points;

@@ -78,8 +78,8 @@ injectBarcode(
           Point point = Point(
               QrCodeStart.barcodeCenterVector.x * -1 -
                   QrCodeEnd.barcodeCenterVector.x * -1,
-              QrCodeStart.barcodeCenterVector.y * -1 -
-                  QrCodeEnd.barcodeCenterVector.y * -1);
+              QrCodeStart.barcodeCenterVector.y -
+                  QrCodeEnd.barcodeCenterVector.y);
 
           var aveDistanceFromCamera =
               (QrCodeStart.distanceFromCamera + QrCodeEnd.distanceFromCamera) /

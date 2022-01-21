@@ -15,7 +15,20 @@ class QrCodeSelectionView extends StatefulWidget {
 
 class _QrCodeSelectionViewState extends State<QrCodeSelectionView> {
   final _formKey = GlobalKey<FormState>();
+  final myController = TextEditingController();
   List validQrcodeIDs = [];
+  String selectedValue = '';
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    myController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,12 +52,18 @@ class _QrCodeSelectionViewState extends State<QrCodeSelectionView> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Valid')),
+                      const SnackBar(
+                        content: Text('Valid'),
+                        duration: Duration(milliseconds: 50),
+                      ),
                     );
+
+                    print(myController.text);
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => QrCodeNavigatorView()));
+                            builder: (context) => QrCodeNavigatorView(
+                                qrcodeID: myController.text)));
                   }
                 },
                 child: const Icon(
@@ -64,6 +83,7 @@ class _QrCodeSelectionViewState extends State<QrCodeSelectionView> {
               child: Form(
                 key: _formKey,
                 child: TextFormField(
+                  controller: myController,
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(
                           borderSide: BorderSide(
