@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/navigation/qrCodeGeneration/QrCodeGenerator.dart';
-import 'package:flutter_google_ml_kit/navigation/qrCodeNavigation/qr_code_navigation.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/qrCodeGeneration/QrCodeGenerator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:printing/printing.dart';
 import '../../main.dart';

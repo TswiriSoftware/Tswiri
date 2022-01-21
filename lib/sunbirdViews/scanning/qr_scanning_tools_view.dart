@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/HiveDatabaseViews/QrCodeRelated/hive_database_consolidation.dart';
-import 'package:flutter_google_ml_kit/HiveDatabaseViews/QrCodeRelated/hive_database_visualization.dart';
-import 'package:flutter_google_ml_kit/HiveDatabaseViews/QrCodeRelated/hive_raw_database_view.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/barcode_scanner_view.dart';
+import 'package:flutter_google_ml_kit/sunbirdDatabaseViews/QrCodeRelated/hive_database_consolidation.dart';
+import 'package:flutter_google_ml_kit/sunbirdDatabaseViews/QrCodeRelated/hive_database_visualization.dart';
+import 'package:flutter_google_ml_kit/sunbirdDatabaseViews/QrCodeRelated/hive_raw_database_view.dart';
 import '../../main.dart';
 
 class QrCodeScanningView extends StatefulWidget {
@@ -32,18 +32,19 @@ class _QrCodeScanningViewState extends State<QrCodeScanningView> {
           crossAxisCount: 2,
           // ignore: prefer_const_literals_to_create_immutables
           children: [
-            CustomCard(
+            const CustomCard(
               'Barcode Scanner',
               BarcodeScannerView(),
               Icons.camera,
               featureCompleted: true,
             ),
-            CustomCard('Raw Data Viewer', HiveDatabaseView(), Icons.view_array,
+            const CustomCard(
+                'Raw Data Viewer', HiveDatabaseView(), Icons.view_array,
                 featureCompleted: true),
-            CustomCard('Consolidated Data Viewer',
+            const CustomCard('Consolidated Data Viewer',
                 HiveDatabaseConsolidationView(), Icons.view_array,
                 featureCompleted: true),
-            CustomCard('Visual Data Viewer', DatabaseVisualization(),
+            const CustomCard('Visual Data Viewer', DatabaseVisualization(),
                 Icons.map_outlined,
                 featureCompleted: true),
           ],
