@@ -32,7 +32,7 @@ class _HiveDatabaseViewState extends State<HiveDatabaseView> {
                 var rawDataBox = await Hive.openBox('rawDataBox');
                 processedDataBox.clear();
                 rawDataBox.clear();
-                showMyAboutDialog(context, "Deleted Hive Database");
+
                 setState(() {});
               },
               child: const Icon(Icons.delete),

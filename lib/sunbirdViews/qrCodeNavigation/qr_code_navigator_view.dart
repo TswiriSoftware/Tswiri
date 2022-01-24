@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/camera_view.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/barcode_detector_painter_calibration.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/barcode_detector_painter_navigation.dart';
+import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/coordinates_translator.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/qrCodeNavigation/qr_code_navigation_view.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/qrCodeNavigation/qr_code_selection_view.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
 import 'package:vector_math/vector_math.dart';
@@ -45,18 +47,7 @@ class _QrCodeNavigatorViewState extends State<QrCodeNavigatorView> {
           padding: const EdgeInsets.all(15.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              FloatingActionButton(
-                heroTag: null,
-                onPressed: () async {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => QrCodeNavigationView()));
-                },
-                child: const Icon(Icons.check_rounded),
-              ),
-            ],
+            children: [],
           ),
         ),
         body: CameraView(
@@ -83,8 +74,8 @@ class _QrCodeNavigatorViewState extends State<QrCodeNavigatorView> {
           inputImage.inputImageData!.size,
           inputImage.inputImageData!.imageRotation,
           consolidatedData,
-          widget.qrcodeID);
-
+          widget.qrcodeID,
+          context);
       customPaint = CustomPaint(painter: painter);
     } else {
       customPaint = null;
@@ -109,3 +100,17 @@ class _QrCodeNavigatorViewState extends State<QrCodeNavigatorView> {
     return mapConsolidated;
   }
 }
+
+// _getRelativePosition(List<Barcode> barcodes, Size absoluteImageSize,
+//     InputImageRotation rotation) {
+//   for (final Barcode barcode in barcodes) {
+//     final boundingBoxLeft = translateX(
+//         barcode.value.boundingBox!.left, rotation, size, absoluteImageSize);
+//     final boundingBoxTop = translateY(
+//         barcode.value.boundingBox!.top, rotation, size, absoluteImageSize);
+//     final boundingBoxRight = translateX(
+//         barcode.value.boundingBox!.right, rotation, size, absoluteImageSize);
+//     final boundingBoxBottom = translateY(
+//         barcode.value.boundingBox!.bottom, rotation, size, absoluteImageSize);
+//   }
+// }

@@ -119,7 +119,7 @@ _getPoints(BuildContext context, List pointNames) async {
   for (var i = 0; i < consolidatedDataBox.length; i++) {
     ConsolidatedData data = consolidatedDataBox.getAt(i);
     points.add(
-        Offset((data.X / 10) + (width / 2), (-data.Y / 10) + (height / 2)));
+        Offset((data.X * 10) + (width / 2), (-data.Y * 10) + (height / 2)));
     pointNames.add(data.uid);
   }
   return points;

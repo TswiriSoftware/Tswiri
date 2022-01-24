@@ -5,10 +5,11 @@ import 'package:hive/hive.dart';
 
 class QrCode {
   QrCode(@required this.displayValue, @required this.barcodeCenterVector,
-      @required this.timestamp);
+      @required this.barcodePixelSize, @required this.timestamp);
 
   final String displayValue;
-  final Point barcodeCenterVector; //TODO: Pixels ??
+  final Offset barcodeCenterVector;
+  late double barcodePixelSize; //TODO: Pixels ??
   late double distanceFromCamera; //Unit: millimetres
   final int timestamp; //Timestamp
 
@@ -28,7 +29,7 @@ class QrCodeVectors {
 
   final String startQrCode;
   final String endQrCode;
-  final Point vector; //TODO: vector betweeb qrCodes
+  final Offset vector; //TODO: vector betweeb qrCodes
   late double distanceFromCamera; //Unit: millimetres
   final int timestamp; //Timestamp
 

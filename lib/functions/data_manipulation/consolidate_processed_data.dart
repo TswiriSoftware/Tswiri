@@ -6,41 +6,49 @@ import 'package:hive/hive.dart';
 
 consolidateProcessedData(List<InterBarcodeVector> processedDataList,
     Map<String, BarcodeMarker> consolidatedData, Box consolidatedDataBox) {
-  for (var i = 0; i < processedDataList.length; i++) {
-    if (consolidatedData.containsKey(processedDataList[i].startQrCode)) {
-      String id = processedDataList[i].endQrCode;
-      Vector2 position =
-          consolidatedData[processedDataList[i].startQrCode]!.position +
-              processedDataList[i].vector;
-      BarcodeMarker point =
-          BarcodeMarker(id: id, position: position, fixed: false);
-      consolidatedData.update(
-        id,
-        (value) => point,
-        ifAbsent: () => point,
-      );
-    } else if (consolidatedData.containsKey(processedDataList[i].endQrCode)) {
-      String id = processedDataList[i].startQrCode;
-      Vector2 position =
-          consolidatedData[processedDataList[i].endQrCode]!.position +
-              (processedDataList[i].vector);
+  print(consolidatedData.keys);
 
-      BarcodeMarker point =
-          BarcodeMarker(id: id, position: position, fixed: false);
-      consolidatedData.update(
-        id,
-        (value) => point,
-        ifAbsent: () => point,
-      );
-    }
+  for (int i = 0; i < 10; i++) {
+    processedDataList.forEach((interBarcodeVector) {
+      if (consolidatedData.containsKey(interBarcodeVector.startQrCode) &&
+          !consolidatedData.containsKey(interBarcodeVector.endQrCode)) {
+        String id = interBarcodeVector.endQrCode;
+        Vector2 position =
+            consolidatedData[interBarcodeVector.startQrCode]!.position +
+                interBarcodeVector.vector;
+
+        BarcodeMarker point =
+            BarcodeMarker(id: id, position: position, fixed: false);
+        consolidatedData.update(
+          id,
+          (value) => point,
+          ifAbsent: () => point,
+        );
+      } else if (consolidatedData.containsKey(interBarcodeVector.endQrCode) &&
+          !consolidatedData.containsKey(interBarcodeVector.startQrCode)) {
+        String id = interBarcodeVector.startQrCode;
+        Vector2 position =
+            consolidatedData[interBarcodeVector.endQrCode]!.position +
+                (-interBarcodeVector.vector);
+
+        BarcodeMarker point =
+            BarcodeMarker(id: id, position: position, fixed: false);
+        consolidatedData.update(
+          id,
+          (value) => point,
+          ifAbsent: () => point,
+        );
+      }
+    });
+
+    consolidatedData.forEach((key, value) {
+      consolidatedDataBox.put(
+          value.id,
+          ConsolidatedData(
+              uid: value.id,
+              X: value.position.x,
+              Y: value.position.y,
+              fixed: value.fixed));
+    });
   }
-  consolidatedData.forEach((key, value) {
-    consolidatedDataBox.put(
-        value.id,
-        ConsolidatedData(
-            uid: value.id,
-            X: value.position.x,
-            Y: value.position.y,
-            fixed: value.fixed));
-  });
 }

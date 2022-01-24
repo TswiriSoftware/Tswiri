@@ -132,7 +132,9 @@ class _HiveDatabaseConsolidationViewState
     List<InterBarcodeVector> deduplicatedData =
         listProcessedData(processedDataBox);
 
-    addFixedPoint(consolidatedData);
+    if (deduplicatedData.isNotEmpty) {
+      addFixedPoint(deduplicatedData.first, consolidatedData);
+    }
 
     consolidateProcessedData(
         deduplicatedData, consolidatedData, consolidatedDataBox);

@@ -6,6 +6,7 @@ import 'package:hive/hive.dart';
 List<InterBarcodeVector> listProcessedData(Box processedDataBox) {
   List<InterBarcodeVector> processedDataList = [];
   var processedData = processedDataBox.toMap();
+
   processedData.forEach((key, value) {
     RelativeQrCodes data = value;
     InterBarcodeVector listData = InterBarcodeVector(
@@ -13,6 +14,9 @@ List<InterBarcodeVector> listProcessedData(Box processedDataBox) {
         endQrCode: data.uidEnd,
         vector: Vector2(data.x, data.y));
     processedDataList.add(listData);
+    print(
+        'data: ${listData.startQrCode}, ${listData.endQrCode}, ${listData.vector}');
   });
+
   return processedDataList;
 }

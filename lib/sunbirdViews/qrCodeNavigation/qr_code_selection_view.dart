@@ -14,21 +14,10 @@ class QrCodeSelectionView extends StatefulWidget {
 }
 
 class _QrCodeSelectionViewState extends State<QrCodeSelectionView> {
-  final _formKey = GlobalKey<FormState>();
-  final myController = TextEditingController();
   List validQrcodeIDs = [];
   String selectedValue = '';
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    myController.dispose();
-    super.dispose();
-  }
+  final _formKey = GlobalKey<FormState>();
+  final myController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +46,6 @@ class _QrCodeSelectionViewState extends State<QrCodeSelectionView> {
                         duration: Duration(milliseconds: 50),
                       ),
                     );
-
                     print(myController.text);
                     Navigator.push(
                         context,

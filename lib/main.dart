@@ -96,7 +96,7 @@ class Home extends StatelessWidget {
                 Icons.camera_alt,
                 featureCompleted: true),
             CustomCard('Qr Code Navigation Tools', QrCodeNavigationView(),
-                Icons.qr_code_2,
+                Icons.qr_code_rounded,
                 featureCompleted: true),
             CustomCard('Qr Code Generator Tools', QrCodeGenerationView(),
                 Icons.qr_code_2,

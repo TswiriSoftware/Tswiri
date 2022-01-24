@@ -188,8 +188,8 @@ class _CameraViewState extends State<CameraView> {
   Future _startLiveFeed() async {
     final camera = cameras[_cameraIndex];
     _controller = CameraController(
-      camera,
-      ResolutionPreset.max,
+      cameras.first,
+      ResolutionPreset.high,
       enableAudio: false,
     );
     _controller?.initialize().then((_) {

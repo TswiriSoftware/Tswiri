@@ -40,14 +40,21 @@ injectBarcode(
     if (barcode.value.displayValue != null &&
         barcode.value.boundingBox != null) {
       int timestamp = DateTime.now().millisecondsSinceEpoch;
-      Point barcodeCenterPoint = Point(
+      double barcodePixelSize =
+          ((barcode.value.boundingBox!.left - barcode.value.boundingBox!.right)
+                      .abs() +
+                  (barcode.value.boundingBox!.top -
+                          barcode.value.boundingBox!.bottom)
+                      .abs()) /
+              2;
+      Offset barcodeCenterPoint = Offset(
           (barcode.value.boundingBox!.left + barcode.value.boundingBox!.right) /
               2,
           (barcode.value.boundingBox!.top + barcode.value.boundingBox!.bottom) /
               2);
 
-      QrCode qrCode =
-          QrCode(barcode.value.displayValue!, barcodeCenterPoint, timestamp);
+      QrCode qrCode = QrCode(barcode.value.displayValue!, barcodeCenterPoint,
+          barcodePixelSize, timestamp);
 
       qrCode.distanceFromCamera = calaculateDistanceFormCamera(
           barcode.value.boundingBox!,
@@ -75,22 +82,25 @@ injectBarcode(
             QrCodeEnd = qrCodes.values.elementAt(0);
           }
 
-          Point point = Point(
-              QrCodeStart.barcodeCenterVector.x * -1 -
-                  QrCodeEnd.barcodeCenterVector.x * -1,
-              QrCodeStart.barcodeCenterVector.y -
-                  QrCodeEnd.barcodeCenterVector.y);
-
           var aveDistanceFromCamera =
               (QrCodeStart.distanceFromCamera + QrCodeEnd.distanceFromCamera) /
                   2;
 
+          double actualOffsetDistanceQuotient = 1 /
+              ((QrCodeEnd.barcodePixelSize + QrCodeStart.barcodePixelSize) /
+                  2); //70mm assumed barcode size
+
+          Offset offsetBetweenBarcodes = (QrCodeStart.barcodeCenterVector -
+                  QrCodeEnd.barcodeCenterVector) *
+              actualOffsetDistanceQuotient;
+
           QrCodeVectors qrCodeVector = QrCodeVectors(
               QrCodeStart.displayValue,
               QrCodeEnd.displayValue,
-              point,
+              offsetBetweenBarcodes,
               aveDistanceFromCamera,
               QrCodeStart.timestamp);
+
           QrCodeVectorsList.putIfAbsent(
               '${QrCodeStart.displayValue}_${QrCodeEnd.displayValue}',
               () => qrCodeVector);
@@ -103,8 +113,8 @@ injectBarcode(
           uid: key,
           uidStart: value.startQrCode,
           uidEnd: value.endQrCode,
-          x: value.vector.x.toDouble(),
-          y: value.vector.y.toDouble(),
+          x: roundDouble(value.vector.dx, 2),
+          y: roundDouble(value.vector.dy, 2),
           timestamp: value.timestamp);
       rawDataBox.put(key, _qrCodeVectors);
     });
@@ -112,7 +122,7 @@ injectBarcode(
   }
 }
 
-double calaculateDistanceFormCamera(Rect boundingBox, Point barcodeCenterPoint,
+double calaculateDistanceFormCamera(Rect boundingBox, Offset barcodeCenterPoint,
     var lookupTable, List<double> imageSizes) {
   double imageSize = (((boundingBox.left - boundingBox.right).abs() +
           (boundingBox.top - boundingBox.bottom).abs()) /
