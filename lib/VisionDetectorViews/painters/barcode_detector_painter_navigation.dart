@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 import 'dart:ui' as ui;
 
@@ -82,9 +83,11 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
         var vector2 = consolidatedData[qrcodeID];
         vm.Vector2 guideVector = vector2! - vector1!;
         double gradient = guideVector.y / -guideVector.x;
-        print('gradient: $guideVector');
-        Offset p1 = Offset(barcodeCentreX, barcodeCentreY);
+        double unitVectorQ = sqrt(pow(vector2.x, 2) + pow(vector2.y, 2));
+        vm.Vector2 unitVector = vector2 / unitVectorQ;
+        print('guideVector: $unitVector');
 
+        Offset p1 = Offset(barcodeCentreX, barcodeCentreY);
         Offset p2 = Offset(barcodeCentreX, barcodeCentreY);
 
         if (guideVector.x < 0 && guideVector.y < 0) {
