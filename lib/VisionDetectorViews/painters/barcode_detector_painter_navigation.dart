@@ -82,35 +82,28 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
         canvas.drawCircle(screenCenterPoint, 100, paintBlue);
       }
 
-      Offset storedSelectedBarcodePosition = (Offset(
-              consolidatedData[qrcodeID]!.x, consolidatedData[qrcodeID]!.y) *
-          positionalData.barcodePixelSize);
+      Offset selectedBarcodeStoredPosition =
+          Offset(consolidatedData[qrcodeID]!.x, consolidatedData[qrcodeID]!.y);
 
       if (consolidatedData.containsKey(barcode.value.displayValue.toString()) &&
           barcode.value.displayValue != qrcodeID) {
-        Offset storedBarcodeCenterPoint = convertPixeltoRelative(
-            Offset(consolidatedData[barcode.value.displayValue]!.x,
-                consolidatedData[barcode.value.displayValue]!.y),
-            positionalData.barcodePixelSize);
+        String barcodeID = barcode.value.displayValue.toString();
 
-        Offset directionVector =
-            (storedSelectedBarcodePosition - storedBarcodeCenterPoint);
+        Offset storedBarcodePosition = Offset(
+            consolidatedData[barcode.value.displayValue]!.x,
+            consolidatedData[barcode.value.displayValue]!.y);
 
-        Offset screenAcutaulCenterPoint =
-            (screenCenterPoint - positionalData.center);
+        Offset directionalOffset =
+            (selectedBarcodeStoredPosition - storedBarcodePosition) * 100;
 
-        Offset a = storedSelectedBarcodePosition - screenAcutaulCenterPoint;
+        canvas.drawLine(positionalData.center,
+            directionalOffset + positionalData.center, paint);
 
-        print('qrCode: ${barcode.value.displayValue}');
-        print('direction: ${a.direction}');
-
-        canvas.drawLine(screenCenterPoint, a + screenCenterPoint, paint);
-
-        Rect rect =
-            Rect.fromCenter(center: screenCenterPoint, width: 200, height: 200);
-        double startAngle = a.direction - (pi / 3);
-        double sweepAngle = pi / 2;
-        canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
+        // Rect rect =
+        //     Rect.fromCenter(center: screenCenterPoint, width: 200, height: 200);
+        // double startAngle = a.direction - (pi / 3);
+        // double sweepAngle = pi / 2;
+        // canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
 
         //Code Here
       } else if (barcode.value.displayValue == qrcodeID) {
@@ -127,15 +120,16 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
     }
   }
 
+  Offset calculateRelativeBarcodePosition(
+      String barcodeID, double barcodePixelSize) {
+    return (Offset(
+            consolidatedData[barcodeID]!.x, consolidatedData[barcodeID]!.y) *
+        barcodePixelSize);
+  }
+
   @override
   bool shouldRepaint(BarcodeDetectorPainterNavigation oldDelegate) {
     return oldDelegate.absoluteImageSize != absoluteImageSize ||
         oldDelegate.barcodes != barcodes;
   }
-}
-
-Offset convertPixeltoRelative(Offset pixelOffset, double conversionRatio) {
-  Offset relativeOffset = pixelOffset * conversionRatio;
-
-  return relativeOffset;
 }
