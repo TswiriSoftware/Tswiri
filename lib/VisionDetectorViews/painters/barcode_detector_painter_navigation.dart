@@ -101,10 +101,14 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
 
         Offset a = storedSelectedBarcodePosition - screenAcutaulCenterPoint;
 
+        print('qrCode: ${barcode.value.displayValue}');
+        print('direction: ${a.direction}');
+
         canvas.drawLine(screenCenterPoint, a + screenCenterPoint, paint);
+
         Rect rect =
             Rect.fromCenter(center: screenCenterPoint, width: 200, height: 200);
-        double startAngle = directionVector.direction - (pi / 3);
+        double startAngle = a.direction - (pi / 3);
         double sweepAngle = pi / 2;
         canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
 

@@ -24,6 +24,7 @@ injectBarcode(
   Box<dynamic> lookuptable,
 ) {
   //var barcodeCenterPoints = []; // Centre co-ordinates of scanned QR codes
+  rotation = InputImageRotation.Rotation_180deg;
   Map<String, QrCode> qrCodes = {};
   Map<String, QrCodeVectors> QrCodeVectorsList = {};
   List<double> imageSizes = [];
@@ -97,7 +98,7 @@ injectBarcode(
           QrCodeVectors qrCodeVector = QrCodeVectors(
               QrCodeStart.displayValue,
               QrCodeEnd.displayValue,
-              offsetBetweenBarcodes,
+              Offset(offsetBetweenBarcodes.dx, offsetBetweenBarcodes.dy),
               aveDistanceFromCamera,
               QrCodeStart.timestamp);
 
@@ -113,8 +114,8 @@ injectBarcode(
           uid: key,
           uidStart: value.startQrCode,
           uidEnd: value.endQrCode,
-          x: roundDouble(value.vector.dx, 2),
-          y: roundDouble(value.vector.dy, 2),
+          x: value.vector.dx,
+          y: value.vector.dy,
           timestamp: value.timestamp);
       rawDataBox.put(key, _qrCodeVectors);
     });
