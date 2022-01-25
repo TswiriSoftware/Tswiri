@@ -18,13 +18,13 @@ class BarcodeDatabaseInjector {
 injectBarcode(
   BuildContext context,
   List<Barcode> barcodes,
-  Size absoluteImageSize,
-  InputImageRotation rotation,
+  InputImageData inputImageData,
   Box<dynamic> rawDataBox,
   Box<dynamic> lookuptable,
 ) {
+  Size absoluteImageSize = inputImageData.size;
+  InputImageRotation rotation = inputImageData.imageRotation;
   //var barcodeCenterPoints = []; // Centre co-ordinates of scanned QR codes
-  rotation = InputImageRotation.Rotation_180deg;
   Map<String, QrCode> qrCodes = {};
   Map<String, QrCodeVectors> QrCodeVectorsList = {};
   List<double> imageSizes = [];
@@ -48,20 +48,16 @@ injectBarcode(
                           barcode.value.boundingBox!.bottom)
                       .abs()) /
               2;
-      Offset barcodeCenterPoint = Offset(
-          (barcode.value.boundingBox!.left + barcode.value.boundingBox!.right) /
-              2,
-          (barcode.value.boundingBox!.top + barcode.value.boundingBox!.bottom) /
-              2);
+      Offset barcodeCenterPoint = calculateBarcodeCenterPoint(barcode);
 
       QrCode qrCode = QrCode(barcode.value.displayValue!, barcodeCenterPoint,
           barcodePixelSize, timestamp);
 
-      qrCode.distanceFromCamera = calaculateDistanceFormCamera(
+/*       qrCode.distanceFromCamera = calaculateDistanceFormCamera(
           barcode.value.boundingBox!,
           barcodeCenterPoint,
           lookupTable,
-          imageSizes); //Specifically for redmi Note10S
+          imageSizes);  *///Specifically for redmi Note10S
 
       qrCodes.putIfAbsent(qrCode.displayValue, () => qrCode);
     } else {
@@ -121,6 +117,14 @@ injectBarcode(
     });
     print('rawDataBox: ${rawDataBox.toMap()}');
   }
+}
+
+Offset calculateBarcodeCenterPoint(Barcode barcode) {
+  return Offset(
+        (barcode.value.boundingBox!.left + barcode.value.boundingBox!.right) /
+            2,
+        (barcode.value.boundingBox!.top + barcode.value.boundingBox!.bottom) /
+            2);
 }
 
 double calaculateDistanceFormCamera(Rect boundingBox, Offset barcodeCenterPoint,

@@ -1,4 +1,4 @@
-import 'package:flutter_google_ml_kit/functions/data_manipulation/deduplicate_raw_data.dart';
+import 'package:flutter_google_ml_kit/functions/dataManipulation/deduplicate_raw_data.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/raw_data_adapter.dart';
 import 'package:hive/hive.dart';
 

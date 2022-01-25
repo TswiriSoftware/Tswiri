@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/data_manipulation/process_raw_data.dart';
+import 'package:flutter_google_ml_kit/functions/dataManipulation/process_raw_data.dart';
 import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
 

@@ -1,7 +1,7 @@
 import 'dart:math';
-import 'package:flutter_google_ml_kit/functions/data_manipulation/add_fixed_point.dart';
-import 'package:flutter_google_ml_kit/functions/data_manipulation/consolidate_processed_data.dart';
-import 'package:flutter_google_ml_kit/functions/data_manipulation/generate_list_of_processed_data.dart';
+import 'package:flutter_google_ml_kit/functions/dataManipulation/add_fixed_point.dart';
+import 'package:flutter_google_ml_kit/functions/dataManipulation/consolidate_processed_data.dart';
+import 'package:flutter_google_ml_kit/functions/dataManipulation/generate_list_of_processed_data.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
