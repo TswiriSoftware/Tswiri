@@ -74,8 +74,7 @@ class _QrCodeNavigatorViewState extends State<QrCodeNavigatorView> {
           inputImage.inputImageData!.size,
           inputImage.inputImageData!.imageRotation,
           consolidatedData,
-          widget.qrcodeID,
-          context);
+          widget.qrcodeID);
       customPaint = CustomPaint(painter: painter);
     } else {
       customPaint = null;

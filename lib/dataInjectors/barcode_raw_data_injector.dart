@@ -90,8 +90,8 @@ injectBarcode(
               ((QrCodeEnd.barcodePixelSize + QrCodeStart.barcodePixelSize) /
                   2); //70mm assumed barcode size
 
-          Offset offsetBetweenBarcodes = (QrCodeStart.barcodeCenterVector -
-                  QrCodeEnd.barcodeCenterVector) *
+          Offset offsetBetweenBarcodes = (QrCodeEnd.barcodeCenterVector -
+                  QrCodeStart.barcodeCenterVector) *
               actualOffsetDistanceQuotient;
 
           QrCodeVectors qrCodeVector = QrCodeVectors(
