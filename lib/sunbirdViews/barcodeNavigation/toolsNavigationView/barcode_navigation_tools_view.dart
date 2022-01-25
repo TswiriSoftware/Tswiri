@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/qrCodeNavigation/qr_code_navigator_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/qrCodeNavigation/qr_code_selection_view.dart';
-import '../../main.dart';
+import '../../../main.dart';
+import '../barcode_selection_view.dart';
 
-class QrCodeNavigationView extends StatefulWidget {
-  const QrCodeNavigationView({Key? key}) : super(key: key);
+class BarcodeNavigationView extends StatefulWidget {
+  const BarcodeNavigationView({Key? key}) : super(key: key);
 
   @override
-  _QrCodeNavigationViewState createState() => _QrCodeNavigationViewState();
+  _BarcodeNavigationViewState createState() => _BarcodeNavigationViewState();
 }
 
-class _QrCodeNavigationViewState extends State<QrCodeNavigationView> {
+class _BarcodeNavigationViewState extends State<BarcodeNavigationView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +31,7 @@ class _QrCodeNavigationViewState extends State<QrCodeNavigationView> {
           children: [
             const CustomCard(
               'Qr Code Finder',
-              QrCodeSelectionView(),
+              BarcodeSelectionView(),
               Icons.camera,
               featureCompleted: true,
             ),

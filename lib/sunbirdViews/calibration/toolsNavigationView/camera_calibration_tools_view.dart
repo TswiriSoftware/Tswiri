@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/sunbirdDatabaseViews/CalibrationRelated/hive_accelerometer_database_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdDatabaseViews/CalibrationRelated/hive_calibration_database_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdDatabaseViews/CalibrationRelated/hive_linear_regression_database_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdDatabaseViews/CalibrationRelated/hive_prosessed_calibration_database_view%20.dart';
-import '../../main.dart';
-import 'camera_calibration.dart';
+import '../../../main.dart';
+import '../accelerometer_database_view.dart';
+import '../camera_calibration_view.dart';
+import '../calibration_database_view.dart';
+import '../hive_linear_regression_database_view.dart';
+import '../hive_prosessed_calibration_database_view .dart';
 
 class CameraCalibrationView extends StatefulWidget {
   const CameraCalibrationView({Key? key}) : super(key: key);
@@ -41,13 +41,13 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
             ),
             const CustomCard(
               'Calibration Data Viewer',
-              HiveCalibrationDatabaseView(),
+              CalibrationDatabaseView(),
               Icons.view_array,
               featureCompleted: true,
             ),
             const CustomCard(
               'Accelerometer Data Viewer',
-              HiveAccelerometerDatabaseView(),
+              AccelerometerDatabaseView(),
               Icons.view_array,
               featureCompleted: true,
             ),

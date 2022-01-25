@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/barcode_scanner_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdDatabaseViews/QrCodeRelated/hive_database_consolidation.dart';
-import 'package:flutter_google_ml_kit/sunbirdDatabaseViews/QrCodeRelated/hive_database_visualization.dart';
-import 'package:flutter_google_ml_kit/sunbirdDatabaseViews/QrCodeRelated/hive_raw_database_view.dart';
-import '../../main.dart';
+import '../../../main.dart';
+import '../consolidated_database_view.dart';
+import '../consolidated_database_visualization_view.dart';
+import '../raw_database_view.dart';
 
-class QrCodeScanningView extends StatefulWidget {
-  const QrCodeScanningView({Key? key}) : super(key: key);
+class BarcodeScanningView extends StatefulWidget {
+  const BarcodeScanningView({Key? key}) : super(key: key);
 
   @override
-  _QrCodeScanningViewState createState() => _QrCodeScanningViewState();
+  _BarcodeScanningViewState createState() => _BarcodeScanningViewState();
 }
 
-class _QrCodeScanningViewState extends State<QrCodeScanningView> {
+class _BarcodeScanningViewState extends State<BarcodeScanningView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

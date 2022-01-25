@@ -146,8 +146,12 @@ List _displayList(
     Map<String, BarcodeMarker> consolidatedData, List displayList) {
   displayList.clear();
   consolidatedData.forEach((key, value) {
-    displayList
-        .add([value.id, value.position.x, value.position.y, value.fixed]);
+    displayList.add([
+      value.id,
+      roundDouble(value.position.x, 5),
+      roundDouble(value.position.y, 5),
+      value.fixed
+    ]);
   });
   displayList.sort((a, b) => a[0].compareTo(b[0]));
   print(displayList);

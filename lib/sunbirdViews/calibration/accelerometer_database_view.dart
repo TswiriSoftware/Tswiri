@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
 
-class HiveAccelerometerDatabaseView extends StatefulWidget {
-  const HiveAccelerometerDatabaseView({Key? key}) : super(key: key);
+class AccelerometerDatabaseView extends StatefulWidget {
+  const AccelerometerDatabaseView({Key? key}) : super(key: key);
 
   @override
-  _HiveAccelerometerDatabaseViewState createState() =>
-      _HiveAccelerometerDatabaseViewState();
+  _AccelerometerDatabaseViewState createState() =>
+      _AccelerometerDatabaseViewState();
 }
 
-class _HiveAccelerometerDatabaseViewState
-    extends State<HiveAccelerometerDatabaseView> {
+class _AccelerometerDatabaseViewState extends State<AccelerometerDatabaseView> {
   var displayList = [];
 
   @override

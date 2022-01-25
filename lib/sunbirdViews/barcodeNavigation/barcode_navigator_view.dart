@@ -1,25 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/camera_view.dart';
-import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/barcode_detector_painter_calibration.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/barcode_detector_painter_navigation.dart';
-import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/coordinates_translator.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/qrCodeNavigation/qr_code_navigation_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/qrCodeNavigation/qr_code_selection_view.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
 import 'package:vector_math/vector_math.dart';
 
-class QrCodeNavigatorView extends StatefulWidget {
+class BarcodeNavigatorView extends StatefulWidget {
   final String qrcodeID;
-  const QrCodeNavigatorView({Key? key, required this.qrcodeID})
+  const BarcodeNavigatorView({Key? key, required this.qrcodeID})
       : super(key: key);
 
   @override
-  _QrCodeNavigatorViewState createState() => _QrCodeNavigatorViewState();
+  _BarcodeNavigatorViewState createState() => _BarcodeNavigatorViewState();
 }
 
-class _QrCodeNavigatorViewState extends State<QrCodeNavigatorView> {
+class _BarcodeNavigatorViewState extends State<BarcodeNavigatorView> {
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
 

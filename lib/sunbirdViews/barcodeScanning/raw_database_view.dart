@@ -103,30 +103,65 @@ List _displayList(Box rawDataBox) {
 }
 
 displayDataPoint(var myText) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    crossAxisAlignment: CrossAxisAlignment.start,
-    textDirection: TextDirection.ltr,
+  return Column(
     children: [
       SizedBox(
-        child: Text(myText[0], textAlign: TextAlign.center),
-        width: 35,
+        height: 3,
       ),
-      SizedBox(
-        child: Text(myText[1], textAlign: TextAlign.center),
-        width: 35,
-      ),
-      SizedBox(
-        child: Text(myText[2], textAlign: TextAlign.center),
-        width: 50,
-      ),
-      SizedBox(
-        child: Text(myText[3], textAlign: TextAlign.center),
-        width: 50,
-      ),
-      SizedBox(
-        child: Text(myText[4], textAlign: TextAlign.center),
-        width: 125,
+      Container(
+        decoration: BoxDecoration(
+            border: Border(
+                bottom: BorderSide(color: Colors.deepOrange),
+                top: BorderSide(color: Colors.deepOrange),
+                left: BorderSide(color: Colors.deepOrange),
+                right: BorderSide(color: Colors.deepOrange))),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          textDirection: TextDirection.ltr,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                  border: Border(right: BorderSide(color: Colors.deepOrange))),
+              child: SizedBox(
+                child: Text(myText[0], textAlign: TextAlign.center),
+                width: 35,
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  border: Border(right: BorderSide(color: Colors.deepOrange))),
+              child: SizedBox(
+                child: Text(myText[1], textAlign: TextAlign.center),
+                width: 35,
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  border: Border(right: BorderSide(color: Colors.deepOrange))),
+              child: SizedBox(
+                child: Text(myText[2], textAlign: TextAlign.center),
+                width: 75,
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  border: Border(right: BorderSide(color: Colors.deepOrange))),
+              child: SizedBox(
+                child: Text(myText[3], textAlign: TextAlign.center),
+                width: 75,
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  border: Border(right: BorderSide(color: Colors.deepOrange))),
+              child: SizedBox(
+                child: Text(myText[4], textAlign: TextAlign.center),
+                width: 125,
+              ),
+            ),
+          ],
+        ),
       ),
     ],
   );

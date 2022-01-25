@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/objects/barcode_marker.dart';
-import 'package:flutter_google_ml_kit/sunbirdDatabaseViews/QrCodeRelated/hive_database_consolidation.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/qrCodeNavigation/qr_code_navigation_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/qrCodeNavigation/qr_code_navigator_view.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/consolidated_database_view.dart';
 import 'package:hive/hive.dart';
 
-class QrCodeSelectionView extends StatefulWidget {
-  const QrCodeSelectionView({Key? key}) : super(key: key);
+import 'barcode_navigator_view.dart';
+
+class BarcodeSelectionView extends StatefulWidget {
+  const BarcodeSelectionView({Key? key}) : super(key: key);
 
   @override
-  _QrCodeSelectionViewState createState() => _QrCodeSelectionViewState();
+  _BarcodeSelectionViewState createState() => _BarcodeSelectionViewState();
 }
 
-class _QrCodeSelectionViewState extends State<QrCodeSelectionView> {
+class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
   List validQrcodeIDs = [];
   String selectedValue = '';
   final _formKey = GlobalKey<FormState>();
@@ -50,7 +48,7 @@ class _QrCodeSelectionViewState extends State<QrCodeSelectionView> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => QrCodeNavigatorView(
+                            builder: (context) => BarcodeNavigatorView(
                                 qrcodeID: myController.text)));
                   }
                 },

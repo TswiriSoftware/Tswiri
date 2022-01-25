@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataInjectorFunctions/raw_data_functions.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 import 'coordinates_translator.dart';
@@ -73,27 +74,29 @@ class BarcodeDetectorPainter extends CustomPainter {
 
       canvas.drawPoints(PointMode.points, pointsOfIntrest, paintRed);
 
-      var pxXY = ((boundingBoxLeft - right).abs() + (top - bottom).abs()) / 2;
-      var disZ = (4341 / pxXY) - 15.75;
+      // var pxXY = ((boundingBoxLeft - right).abs() + (top - bottom).abs()) / 2;
+      //   double distanceFromCamera = calaculateDistanceFormCamera(Rect.fromLTRB(boundingBoxLeft, top, right, bottom),
+      //     Offset(barcodeCentreX, barcodeCentreY), lookupTableMap, imageSizesLookupTable);
+      // var disZ = (4341 / pxXY) - 15.75;
 
-      final ParagraphBuilder distanceBuilder = ParagraphBuilder(
-        ParagraphStyle(
-            textAlign: TextAlign.left,
-            fontSize: 16,
-            textDirection: TextDirection.ltr),
-      );
-      distanceBuilder
-          .pushStyle(ui.TextStyle(color: Colors.blue, background: background));
-      distanceBuilder.addText('$disZ');
-      distanceBuilder.pop();
+      // final ParagraphBuilder distanceBuilder = ParagraphBuilder(
+      //   ParagraphStyle(
+      //       textAlign: TextAlign.left,
+      //       fontSize: 16,
+      //       textDirection: TextDirection.ltr),
+      // );
+      // distanceBuilder
+      //     .pushStyle(ui.TextStyle(color: Colors.blue, background: background));
+      // distanceBuilder.addText('$disZ');
+      // distanceBuilder.pop();
 
-      canvas.drawParagraph(
-        distanceBuilder.build()
-          ..layout(const ParagraphConstraints(
-            width: 1000,
-          )),
-        Offset(right, bottom),
-      );
+      // canvas.drawParagraph(
+      //   distanceBuilder.build()
+      //     ..layout(const ParagraphConstraints(
+      //       width: 1000,
+      //     )),
+      //   Offset(right, bottom),
+      // );
     }
   }
 

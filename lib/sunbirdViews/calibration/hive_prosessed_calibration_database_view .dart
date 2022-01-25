@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/dataInjectors/objects.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/matched_calibration_data_adapter.dart';
+import 'package:flutter_google_ml_kit/objects/barcode_distance_data.dart';
 import 'package:hive/hive.dart';
 
 class HiveProsessedCalibrationDatabaseView extends StatefulWidget {
@@ -122,16 +122,12 @@ class _HiveProsessedCalibrationDatabaseViewState
       LinearCalibrationData data =
           LinearCalibrationData(objectSize: imageSizeAve, distance: distance);
       matchedDataBox.put(imageSizeAve.toString(), data);
-      //print(matchedDataBox.toMap());
 
       displayList.add([
         timestamp,
         imageSizeAve,
         double.parse(accelerometerMap[accKey].toString().split(',').last)
       ]);
-
-      //debugPrint(barcodeDistanceData.toString());
-      //print('$qrSizeAve : ${accelerometerMap[greater.first.toString()]}');
     });
 
     return displayList;

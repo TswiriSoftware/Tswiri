@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/dataInjectors/functions.dart';
+import 'package:flutter_google_ml_kit/functions/functions.dart';
 import 'package:hive/hive.dart';
 
 class HiveLinearRegressionDatabaseView extends StatefulWidget {

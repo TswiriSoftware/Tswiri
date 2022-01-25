@@ -6,17 +6,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/accelerometer_data_adapter.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/calibration/camera_calibration_navigation_view.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/toolsNavigationView/barcode_scanning_tools_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/qrCodeGeneration/qr_code_generation_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/qrCodeNavigation/qr_code_navigation_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/scanning/qr_scanning_tools_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
-
 import 'databaseAdapters/matched_calibration_data_adapter.dart';
 import 'databaseAdapters/raw_data_adapter.dart';
+import 'sunbirdViews/barcodeNavigation/toolsNavigationView/barcode_navigation_tools_view.dart';
+import 'sunbirdViews/calibration/toolsNavigationView/camera_calibration_tools_view.dart';
 
 List<CameraDescription> cameras = [];
 
@@ -88,14 +87,13 @@ class Home extends StatelessWidget {
           mainAxisSpacing: 8,
           crossAxisSpacing: 16,
           crossAxisCount: 2,
-          // ignore: prefer_const_literals_to_create_immutables
-          children: [
-            CustomCard('Qr Code Tools', QrCodeScanningView(), Icons.qr_code,
+          children: const [
+            CustomCard('Qr Code Tools', BarcodeScanningView(), Icons.qr_code,
                 featureCompleted: true),
             CustomCard('Camera Calibration Tools', CameraCalibrationView(),
                 Icons.camera_alt,
                 featureCompleted: true),
-            CustomCard('Qr Code Navigation Tools', QrCodeNavigationView(),
+            CustomCard('Qr Code Navigation Tools', BarcodeNavigationView(),
                 Icons.qr_code_rounded,
                 featureCompleted: true),
             CustomCard('Qr Code Generator Tools', QrCodeGenerationView(),

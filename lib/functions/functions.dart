@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/objects/data_points.dart';
+import 'package:flutter_google_ml_kit/objects/linear_equation_object.dart';
 import 'package:hive/hive.dart';
-
-import 'objects.dart';
 
 List<Offset> listOfPoints(Box matchedDataBox) {
   List<Offset> points = [];
