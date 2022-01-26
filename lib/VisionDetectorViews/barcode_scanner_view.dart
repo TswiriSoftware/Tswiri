@@ -58,7 +58,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     isBusy = false;
     if (mounted) {
       setState(() {
-        injectBarcode(context, barcodes, inputImage.inputImageData!, rawDataBox,
+        injectBarcodes(context, barcodes, inputImage.inputImageData!, rawDataBox,
             lookupTable);
       });
     }

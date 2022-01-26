@@ -11,3 +11,4 @@ class BarcodeMarker {
   final bool fixed;
   final Vector2 position;
 }
+
