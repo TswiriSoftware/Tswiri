@@ -14,8 +14,6 @@ List<InterBarcodeVector> listProcessedData(Box processedDataBox) {
         endQrCode: data.uidEnd,
         vector: Vector2(data.x, data.y));
     processedDataList.add(listData);
-    print(
-        'data: ${listData.startQrCode}, ${listData.endQrCode}, ${listData.vector}');
   });
 
   return processedDataList;

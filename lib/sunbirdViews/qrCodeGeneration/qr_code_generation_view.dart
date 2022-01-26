@@ -31,10 +31,10 @@ class _QrCodeGenerationViewState extends State<QrCodeGenerationView> {
           crossAxisCount: 1,
           // ignore: prefer_const_literals_to_create_immutables
 
-          children: [
+          children: const [
             CustomCardQrCode([1, 2, 3, 4, 5, 6]),
             CustomCardQrCode([7, 8, 9, 10, 11, 12]),
-            CustomCardQrCode([13, 14, 15, 16, 17, 18]),
+            CustomCardQrCode(const [13, 14, 15, 16, 17, 18]),
             CustomCardQrCode([19, 20, 21, 22, 23, 24]),
           ],
         ),

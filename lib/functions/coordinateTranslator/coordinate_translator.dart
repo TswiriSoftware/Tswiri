@@ -3,34 +3,34 @@ import 'dart:ui';
 
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-double translateXFixed(
-    double x, InputImageRotation rotation, Size size, Size absoluteImageSize) {
+double translateXAbsolute(
+    double x, InputImageRotation rotation, Size absoluteImageSize) {
   switch (rotation) {
     case InputImageRotation.Rotation_90deg:
       return x *
-          size.width /
+          1 /
           (Platform.isIOS ? absoluteImageSize.width : absoluteImageSize.height);
     case InputImageRotation.Rotation_270deg:
-      return size.width -
+      return 1 -
           x *
-              size.width /
+              1 /
               (Platform.isIOS
                   ? absoluteImageSize.width
                   : absoluteImageSize.height);
     default:
-      return x * size.width / absoluteImageSize.width;
+      return x * 1 / absoluteImageSize.width;
   }
 }
 
-double translateYFixed(
-    double y, InputImageRotation rotation, Size size, Size absoluteImageSize) {
+double translateYAbsolute(
+    double y, InputImageRotation rotation, Size absoluteImageSize) {
   switch (rotation) {
     case InputImageRotation.Rotation_90deg:
     case InputImageRotation.Rotation_270deg:
       return -y *
-          size.height /
+          1 /
           (Platform.isIOS ? absoluteImageSize.height : absoluteImageSize.width);
     default:
-      return y * size.height / absoluteImageSize.height;
+      return y * 1 / absoluteImageSize.height;
   }
 }

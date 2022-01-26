@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-class dataPoints {
-  dataPoints(this.offset);
+class DataPoints {
+  DataPoints(this.offset);
   final Offset offset;
 }

@@ -23,15 +23,6 @@ double calculateLinearEquation(LinearEquationObject linearEquation, x) {
   return y;
 }
 
-void generateLookupTable(Box matchedDataBox) {
-  var matchedDataMap = matchedDataBox.toMap();
-
-  matchedDataMap.forEach((key, value) {
-    double imageSize = double.parse(value.toString().split(',').last);
-    double distancemm = double.parse(value.toString().split(',').first);
-  });
-}
-
 LinearEquationObject linearRegression(Box matchedDataBox) {
   var xArray = [];
   var yArray = [];

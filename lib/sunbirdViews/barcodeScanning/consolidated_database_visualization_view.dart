@@ -1,7 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
+import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataInjectorFunctions/raw_data_functions.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
+//TODO: Refactor @049er
 
 class DatabaseVisualization extends StatefulWidget {
   const DatabaseVisualization({Key? key}) : super(key: key);
@@ -12,6 +15,7 @@ class DatabaseVisualization extends StatefulWidget {
 
 class _DatabaseVisualizationState extends State<DatabaseVisualization> {
   List pointNames = [];
+  List pointRelativePositions = [];
 
   @override
   void initState() {
@@ -55,7 +59,7 @@ class _DatabaseVisualizationState extends State<DatabaseVisualization> {
           elevation: 0,
         ),
         body: FutureBuilder(
-            future: _getPoints(context, pointNames),
+            future: _getPoints(context, pointNames, pointRelativePositions),
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
                 return const Center(child: CircularProgressIndicator());
@@ -68,7 +72,9 @@ class _DatabaseVisualizationState extends State<DatabaseVisualization> {
                     child: CustomPaint(
                       size: Size.infinite,
                       painter: OpenPainter(
-                          dataPoints: dataPoints, pointNames: pointNames),
+                          dataPoints: dataPoints,
+                          pointNames: pointNames,
+                          pointRelativePositions: pointRelativePositions),
                     ),
                   ),
                 );
@@ -78,8 +84,12 @@ class _DatabaseVisualizationState extends State<DatabaseVisualization> {
 }
 
 class OpenPainter extends CustomPainter {
-  OpenPainter({required this.dataPoints, required this.pointNames});
+  OpenPainter(
+      {required this.dataPoints,
+      required this.pointNames,
+      required this.pointRelativePositions});
   var dataPoints;
+  var pointRelativePositions;
   var pointNames = [];
 
   @override
@@ -90,10 +100,13 @@ class OpenPainter extends CustomPainter {
 
     canvas.drawPoints(PointMode.points, dataPoints, paint1);
     for (var i = 0; i < dataPoints.length; i++) {
+      Offset data = dataPoints[i];
+
       final textSpan = TextSpan(
-          text: pointNames[i],
-          style: TextStyle(color: Colors.deepOrange[800], fontSize: 5));
+          text: pointNames[i] + ': ' + pointRelativePositions[i],
+          style: TextStyle(color: Colors.deepOrange[800], fontSize: 2));
       final textPainter = TextPainter(
+        textAlign: TextAlign.start,
         text: textSpan,
         textDirection: TextDirection.ltr,
       );
@@ -110,7 +123,8 @@ class OpenPainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
 
-_getPoints(BuildContext context, List pointNames) async {
+_getPoints(
+    BuildContext context, List pointNames, List pointRelativePositions) async {
   List<Offset> points = [];
 
   var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
@@ -118,8 +132,10 @@ _getPoints(BuildContext context, List pointNames) async {
   double height = MediaQuery.of(context).size.height;
   for (var i = 0; i < consolidatedDataBox.length; i++) {
     ConsolidatedData data = consolidatedDataBox.getAt(i);
-    points.add(
-        Offset((data.X * 10) + (width / 2), (-data.Y * 10) + (height / 2)));
+    points.add(Offset(
+        (data.X * 10000) + (width / 2), (-data.Y * 10000) + (height / 2)));
+    pointRelativePositions
+        .add('(${roundDouble(data.X, 10)}, ${roundDouble(data.Y, 10)})');
     pointNames.add(data.uid);
   }
   return points;

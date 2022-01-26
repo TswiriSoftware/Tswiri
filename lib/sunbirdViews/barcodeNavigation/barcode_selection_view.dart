@@ -44,7 +44,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
                         duration: Duration(milliseconds: 50),
                       ),
                     );
-                    print(myController.text);
+
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -61,7 +61,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
         ),
         body: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Padding(
@@ -91,7 +91,6 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
                   keyboardAppearance: Brightness.dark,
                   textAlign: TextAlign.center,
                   validator: (value) {
-                    print(validQrcodeIDs);
                     if (isNumeric(value.toString()) != true) {
                       return 'Please enter a valid ID';
                     } else if (validQrcodeIDs.contains(value) != true) {
@@ -102,7 +101,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Expanded(
               child: FutureBuilder<List>(
                 future: consolidateData(),
@@ -149,7 +148,6 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
     consolidatedDataMap.forEach((key, value) {
       displayList.add([value]);
       validQrcodeIDs.add(key);
-      print(key);
     });
     return displayList;
   }

@@ -2,11 +2,12 @@ import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataInjectorFunctions/raw_data_functions.dart';
 
+///Calculates relative offset between bacrcodes using the absolute offset between the barcodes and the absolute side length of the barcodes.
 Offset calculateRelativeOffsetBetweenBarcodes(
-    Offset pixelOffsetBetweenBarcodes, double avePixelSizeOfBarcodes) {
+    Offset absoluteOffsetBetweenBarcodes, double absoluteSizeOfBarcodes) {
   Offset relativeOffsetBetweenBarcodes =
-      (pixelOffsetBetweenBarcodes) * avePixelSizeOfBarcodes;
-  Offset rounded = Offset(roundDouble(relativeOffsetBetweenBarcodes.dx, 6),
-      roundDouble(relativeOffsetBetweenBarcodes.dy, 6));
+      (absoluteOffsetBetweenBarcodes) * absoluteSizeOfBarcodes;
+  Offset rounded = Offset(
+      relativeOffsetBetweenBarcodes.dx, relativeOffsetBetweenBarcodes.dy);
   return rounded;
 }

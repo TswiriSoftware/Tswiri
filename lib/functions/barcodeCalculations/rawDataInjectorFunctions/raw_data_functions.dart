@@ -6,8 +6,13 @@ import 'package:flutter_google_ml_kit/functions/coordinateTranslator/coordinate_
 import 'package:flutter_google_ml_kit/objects/qr_code.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-double calculateAvePixelSizeOfBarcodes(WorkingBarcode qrCodeEnd, WorkingBarcode qrCodeStart) {
-  return 1 / ((qrCodeEnd.absoluteAverageBarcodeSideLength + qrCodeStart.absoluteAverageBarcodeSideLength) / 2);
+///Calculates the average side length of 2 barcodes
+double calcAverageSideLength(
+    WorkingBarcode qrCodeEnd, WorkingBarcode qrCodeStart) {
+  return 1 /
+      ((qrCodeEnd.absoluteAverageBarcodeSideLength +
+              qrCodeStart.absoluteAverageBarcodeSideLength) /
+          2);
 }
 
 double calcAveDisFromCamera(
@@ -15,8 +20,8 @@ double calcAveDisFromCamera(
   return (qrCodeStartDistanceFromCamera + qrCodeEndDistanceFromCamera) / 2;
 }
 
-/// 
-double absoluteAverageBarcodeSideLength(Barcode barcode) {
+///
+double absoluteBarcodeSideLength(Barcode barcode) {
   return ((barcode.value.boundingBox!.left - barcode.value.boundingBox!.right)
               .abs() +
           (barcode.value.boundingBox!.top - barcode.value.boundingBox!.bottom)
@@ -24,19 +29,21 @@ double absoluteAverageBarcodeSideLength(Barcode barcode) {
       2;
 }
 
-Offset calculateBarcodeCenterPoint(
-    Barcode barcode, InputImageData inputImageData, Size screenSize) {
-  InputImageRotation rotation = InputImageRotation.Rotation_90deg;
+///Calculates the absolute center point of the barcode given the barcode and inputImageData
+Offset calculateBarcodeAbsoluteCenterPoint(
+    Barcode barcode, InputImageData inputImageData) {
   Size absoluteImageSize = inputImageData.size;
 
-  final boundingBoxLeft = translateXFixed(
-      barcode.value.boundingBox!.left, rotation, screenSize, absoluteImageSize);
-  final boundingBoxTop = translateYFixed(
-      barcode.value.boundingBox!.top, rotation, screenSize, absoluteImageSize);
-  final boundingBoxRight = translateXFixed(
-      barcode.value.boundingBox!.right, rotation, screenSize, absoluteImageSize);
-  final boundingBoxBottom = translateYFixed(
-      barcode.value.boundingBox!.bottom, rotation, screenSize, absoluteImageSize);
+  InputImageRotation rotation = inputImageData.imageRotation;
+
+  final boundingBoxLeft = translateXAbsolute(
+      barcode.value.boundingBox!.left, rotation, absoluteImageSize);
+  final boundingBoxTop = translateYAbsolute(
+      barcode.value.boundingBox!.top, rotation, absoluteImageSize);
+  final boundingBoxRight = translateXAbsolute(
+      barcode.value.boundingBox!.right, rotation, absoluteImageSize);
+  final boundingBoxBottom = translateYAbsolute(
+      barcode.value.boundingBox!.bottom, rotation, absoluteImageSize);
 
   final barcodeCentreX = (boundingBoxLeft + boundingBoxRight) / 2;
   final barcodeCentreY = (boundingBoxTop + boundingBoxBottom) / 2;
@@ -46,10 +53,20 @@ Offset calculateBarcodeCenterPoint(
   return centerOffset;
 }
 
-double calaculateDistanceFormCamera(Rect boundingBox,
-    Offset barcodeCenterOffset, Map lookupTable, List<double> imageSizes) {
-  double imageSize = (((boundingBox.left - boundingBox.right).abs() +
-          (boundingBox.top - boundingBox.bottom).abs()) /
+///Given barcode barcode
+double calaculateDistanceFormCamera(Barcode barcode, Offset barcodeCenterOffset,
+    Map lookupTable, List<double> imageSizes) {
+  Rect barcodeBoundingBox = Rect.fromLTRB(
+      barcode.value.boundingBox!.left,
+      barcode.value.boundingBox!.top,
+      barcode.value.boundingBox!.right,
+      barcode.value.boundingBox!.bottom);
+
+  double imageSize = (((barcode.value.boundingBox!.left -
+                  barcode.value.boundingBox!.right)
+              .abs() +
+          (barcode.value.boundingBox!.top - barcode.value.boundingBox!.bottom)
+              .abs()) /
       2);
 
   var greaterThan = imageSizes.where((element) => element >= imageSize).toList()
@@ -78,7 +95,8 @@ List<double> getImageSizes(Map lookupTableMap) {
   return imageSizesLookupTable;
 }
 
-WorkingBarcode determineEndQrcode(int i, Map<String, WorkingBarcode> scannedBarcodes) {
+WorkingBarcode determineEndQrcode(
+    int i, Map<String, WorkingBarcode> scannedBarcodes) {
   WorkingBarcode qrCodeEnd;
   if (i != scannedBarcodes.length - 1) {
     qrCodeEnd = scannedBarcodes.values.elementAt(i + 1);

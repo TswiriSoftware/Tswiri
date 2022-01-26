@@ -70,6 +70,8 @@ class MyApp extends StatelessWidget {
 //TODO: Implement navigator 2.0 => This is acceptable for now @Spodeopieter
 
 class Home extends StatelessWidget {
+  const Home({Key? key}) : super(key: key);
+
   @override
   build(BuildContext context) {
     return Scaffold(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/camera_view.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/barcode_detector_painter_calibration.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/accelerometer_data_adapter.dart';
+import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataInjectorFunctions/raw_data_functions.dart';
 import 'package:flutter_google_ml_kit/functions/dataInjectors/barcode_calibration_data_injector.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive_flutter/hive_flutter.dart';

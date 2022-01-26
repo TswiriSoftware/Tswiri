@@ -6,10 +6,8 @@ import 'package:hive/hive.dart';
 
 consolidateProcessedData(List<InterBarcodeVector> processedDataList,
     Map<String, BarcodeMarker> consolidatedData, Box consolidatedDataBox) {
-  print(consolidatedData.keys);
-
   for (int i = 0; i < 10; i++) {
-    processedDataList.forEach((interBarcodeVector) {
+    for (var interBarcodeVector in processedDataList) {
       if (consolidatedData.containsKey(interBarcodeVector.startQrCode) &&
           !consolidatedData.containsKey(interBarcodeVector.endQrCode)) {
         String id = interBarcodeVector.endQrCode;
@@ -39,7 +37,7 @@ consolidateProcessedData(List<InterBarcodeVector> processedDataList,
           ifAbsent: () => point,
         );
       }
-    });
+    }
 
     consolidatedData.forEach((key, value) {
       consolidatedDataBox.put(
