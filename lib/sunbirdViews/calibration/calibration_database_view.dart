@@ -44,7 +44,7 @@ class _CalibrationDatabaseViewState extends State<CalibrationDatabaseView> {
                 calibrationDataBox.clear();
                 matchedDataBox.clear();
                 displayList.clear();
-                showMyAboutDialog(context, "Deleted Hive Database");
+
                 setState(() {});
               },
               child: const Icon(Icons.delete),

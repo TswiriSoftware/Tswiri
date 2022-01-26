@@ -132,8 +132,7 @@ _getPoints(
   double height = MediaQuery.of(context).size.height;
   for (var i = 0; i < consolidatedDataBox.length; i++) {
     ConsolidatedData data = consolidatedDataBox.getAt(i);
-    points.add(Offset(
-        (data.X * 10000) + (width / 2), (-data.Y * 10000) + (height / 2)));
+    points.add(Offset((data.X) + (width / 2), (-data.Y) + (height / 2)));
     pointRelativePositions
         .add('(${roundDouble(data.X, 10)}, ${roundDouble(data.Y, 10)})');
     pointNames.add(data.uid);

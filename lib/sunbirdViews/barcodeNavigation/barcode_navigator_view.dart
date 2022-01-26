@@ -22,7 +22,7 @@ class _BarcodeNavigatorViewState extends State<BarcodeNavigatorView> {
   bool isBusy = false;
   CustomPaint? customPaint;
 
-  Map<String, Vector2> consolidatedData = {};
+  Map<String, Offset> consolidatedData = {};
 
   @override
   void initState() {
@@ -81,15 +81,15 @@ class _BarcodeNavigatorViewState extends State<BarcodeNavigatorView> {
     }
   }
 
-  Map<String, Vector2> getConsolidatedData(Box consolidatedData) {
+  Map<String, Offset> getConsolidatedData(Box consolidatedData) {
     Map map = consolidatedData.toMap();
-    Map<String, Vector2> mapConsolidated = {};
+    Map<String, Offset> mapConsolidated = {};
     map.forEach((key, value) {
       ConsolidatedData data = value;
       mapConsolidated.update(
         key,
-        (value) => Vector2(data.X, data.Y),
-        ifAbsent: () => Vector2(data.X, data.Y),
+        (value) => Offset(data.X, data.Y),
+        ifAbsent: () => Offset(data.X, data.Y),
       );
     });
     return mapConsolidated;

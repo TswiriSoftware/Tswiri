@@ -21,8 +21,9 @@ injectCalibrationData(
   Box<dynamic> calibrationDataBox,
 ) {
   for (final Barcode barcode in barcodes) {
-    if (barcode.value.displayValue != null &&
-        barcode.value.boundingBox != null) {
+    bool checkIfBarcodeIsValid() =>
+        barcode.value.displayValue != null && barcode.value.boundingBox != null;
+    if (checkIfBarcodeIsValid()) {
       var disPxX =
           (barcode.value.boundingBox!.left - barcode.value.boundingBox!.right)
               .abs();
@@ -33,6 +34,7 @@ injectCalibrationData(
       int timestamp = DateTime.now().millisecondsSinceEpoch;
       CalibrationData calibrationDataInstance =
           CalibrationData(X: disPxX, Y: disPxY, timestamp: timestamp);
+
       calibrationDataBox.put(timestamp.toString(), calibrationDataInstance);
     } else {
       throw Exception(

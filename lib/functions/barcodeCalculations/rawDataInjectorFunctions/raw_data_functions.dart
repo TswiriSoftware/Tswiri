@@ -5,8 +5,8 @@ import 'package:flutter_google_ml_kit/functions/coordinateTranslator/coordinate_
 import 'package:flutter_google_ml_kit/objects/qr_code.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-///Calculates the average side length of 2 barcodes
-double calcAverageSideLength(
+///Calculates the absolute average side length of 2 barcodes
+double calcAverageAbsoluteSideLength(
     WorkingBarcode qrCodeEnd, WorkingBarcode qrCodeStart) {
   return 1 /
       ((qrCodeEnd.absoluteAverageBarcodeSideLength +
@@ -14,12 +14,13 @@ double calcAverageSideLength(
           2);
 }
 
+///Calculates the average distance from the camera of 2 barcodes
 double calcAveDisFromCamera(
     double qrCodeStartDistanceFromCamera, double qrCodeEndDistanceFromCamera) {
   return (qrCodeStartDistanceFromCamera + qrCodeEndDistanceFromCamera) / 2;
 }
 
-///
+///Calculates the absolute side length of a single barcode
 double absoluteBarcodeSideLength(Barcode barcode) {
   return ((barcode.value.boundingBox!.left - barcode.value.boundingBox!.right)
               .abs() +
@@ -29,12 +30,8 @@ double absoluteBarcodeSideLength(Barcode barcode) {
 }
 
 ///Calculates the absolute center point of the barcode given the barcode and inputImageData
-Offset calculateBarcodeAbsoluteCenterPoint(
-    Barcode barcode, InputImageData inputImageData) {
-  Size absoluteImageSize = inputImageData.size;
-
-  InputImageRotation rotation = inputImageData.imageRotation;
-
+Offset calculateAbsoluteBarcodeCenterPoint(
+    Barcode barcode, Size absoluteImageSize, InputImageRotation rotation) {
   final boundingBoxLeft = translateXAbsolute(
       barcode.value.boundingBox!.left, rotation, absoluteImageSize);
   final boundingBoxTop = translateYAbsolute(
@@ -52,7 +49,7 @@ Offset calculateBarcodeAbsoluteCenterPoint(
   return centerOffset;
 }
 
-///Given barcode barcode
+///Calculates how far the barcode is from the camera given calibration data (imageSizes: for sorting, Lookuptable: for Distance from camera)
 double calaculateDistanceFormCamera(Barcode barcode, Offset barcodeCenterOffset,
     Map lookupTable, List<double> imageSizes) {
   double imageSize = (((barcode.value.boundingBox!.left -
@@ -78,6 +75,7 @@ double roundDouble(double val, int places) {
   return ((val * mod).round().toDouble() / mod);
 }
 
+///Returns the list of imageSizes
 List<double> getImageSizes(Map lookupTableMap) {
   List<double> imageSizesLookupTable = [];
   lookupTableMap.forEach((key, value) {

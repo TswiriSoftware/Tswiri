@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/raw_data_adapter.dart';
 import 'package:flutter_google_ml_kit/objects/inter_barcode_vector.dart';
@@ -12,7 +13,7 @@ List<InterBarcodeVector> listProcessedData(Box processedDataBox) {
     InterBarcodeVector listData = InterBarcodeVector(
         startQrCode: data.uidStart,
         endQrCode: data.uidEnd,
-        vector: Vector2(data.x, data.y));
+        offset: Offset(data.x, data.y));
     processedDataList.add(listData);
   });
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataInjectorFunctions/raw_data_functions.dart';
 import 'package:flutter_google_ml_kit/functions/dataManipulation/process_raw_data.dart';
 import 'package:hive/hive.dart';
 
@@ -92,8 +93,8 @@ List _displayList(Box rawDataBox) {
     List vectorData = [
       value.uidStart,
       value.uidEnd,
-      value.x,
-      value.y,
+      roundDouble(value.x, 4),
+      roundDouble(value.y, 4),
       value.timestamp
     ];
     displayList.add(vectorData);

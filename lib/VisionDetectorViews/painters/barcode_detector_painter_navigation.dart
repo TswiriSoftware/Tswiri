@@ -1,138 +1,90 @@
-import 'dart:math';
 import 'dart:ui';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_barcode_positional_data.dart';
+import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_relative_offset_between_points.dart';
+import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataInjectorFunctions/raw_data_functions.dart';
+import 'package:flutter_google_ml_kit/functions/coordinateTranslator/coordinate_translator.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_paints.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_scaling_factors.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_positional_data.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 
 class BarcodeDetectorPainterNavigation extends CustomPainter {
   BarcodeDetectorPainterNavigation(this.barcodes, this.absoluteImageSize,
-      this.rotation, this.consolidatedData, this.qrcodeID);
+      this.rotation, this.consolidatedData, this.selectedBarcodeID);
   final List<Barcode> barcodes;
   final Size absoluteImageSize;
   final InputImageRotation rotation;
-  final Map<String, vm.Vector2> consolidatedData;
-  final String qrcodeID;
+  final Map<String, Offset> consolidatedData;
+  final String selectedBarcodeID;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0
-      ..color = Colors.lightGreenAccent;
-
-    final Paint paintRed = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0
-      ..color = Colors.red;
-
-    final Paint paintBlue = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0
-      ..color = Colors.blue;
-
-    final Paint background = Paint()..color = const Color(0x99000000);
     Offset screenCenterPoint = Offset(size.width / 2, size.height / 2);
 
-    final ParagraphBuilder builder = ParagraphBuilder(
-      ParagraphStyle(
-          textAlign: TextAlign.left,
-          fontSize: 20,
-          textDirection: TextDirection.ltr),
-    );
-    canvas.drawCircle(screenCenterPoint, 100, paintRed);
+    canvas.drawCircle(screenCenterPoint, 100, paintRed3);
 
     for (final Barcode barcode in barcodes) {
-      builder.pushStyle(
-          ui.TextStyle(color: Colors.lightGreenAccent, background: background));
-      builder.addText('${barcode.value.displayValue}');
-      builder.pop();
-
-      BarcodePositionalData positionalData = calculateBarcodePositionalData(
+      BarcodeScreenData barcodeScreenData = calculateScreenBarcodeData(
           barcode, rotation, size, absoluteImageSize);
 
-      canvas.drawParagraph(
-        builder.build()
-          ..layout(ParagraphConstraints(
-              width: positionalData.topRight.dx - positionalData.topLeft.dx)),
-        positionalData.center,
-      );
+      drawBarcodeDisplayValues(canvas, barcodeScreenData);
+      highlightSelectedBarcode(
+          canvas, barcodeScreenData, screenCenterPoint, selectedBarcodeID);
 
-      double selectedBarcodeDisFromCenter =
-          calculateDistanceBetweenOffsets(screenCenterPoint, positionalData);
+      bool checkIfBarcodeIsValid() =>
+          barcode.value.displayValue != null &&
+          barcode.value.boundingBox != null &&
+          barcodeScreenData.displayValue != selectedBarcodeID;
 
-      if (barcode.value.displayValue == qrcodeID &&
-          selectedBarcodeDisFromCenter <= 100) {
-        canvas.drawCircle(screenCenterPoint, 100, paintBlue);
-      }
+      if (checkIfBarcodeIsValid()) {
+        Offset selectedBarcodeRelativeOffset =
+            consolidatedData[selectedBarcodeID]!;
 
-      Offset selectedBarcodeVirtualPosition =
-          Offset(consolidatedData[qrcodeID]!.x, consolidatedData[qrcodeID]!.y);
+        Offset currentBarcodeRelativeOffset =
+            consolidatedData[barcodeScreenData.displayValue]!;
 
-      if (consolidatedData.containsKey(barcode.value.displayValue.toString()) &&
-          barcode.value.displayValue != qrcodeID) {
-        String barcodeID = barcode.value.displayValue.toString();
+        Offset relativeOffsetBetweenCurrentandSelectedBarcode =
+            selectedBarcodeRelativeOffset - currentBarcodeRelativeOffset;
 
-        Offset virtualScreenCenterPoint =
-            (positionalData.center - screenCenterPoint) /
-                positionalData.barcodePixelSize;
+        Offset absoluteOffsetBetweenCurrentandSelectedBarcode =
+            relativeOffsetBetweenCurrentandSelectedBarcode /
+                (relativeScaleFactor * barcodeScreenData.absoluteBarcodeSize);
 
-        Offset virtualBarcodePosition =
-            getBarcodeVirtualPosition(barcodeID, consolidatedData);
+        Offset absoluteScreenCenterOffset = calculateAbsoluteCenterPoint(
+            screenCenterPoint, absoluteImageSize, rotation);
 
-        Offset virtualOffsetBetweenBarcodes =
-            (selectedBarcodeVirtualPosition - virtualBarcodePosition)
-                .scale(50, -50);
+        Offset absoluteBarcodeCenterOffset =
+            calculateAbsoluteBarcodeCenterPoint(
+                barcode, absoluteImageSize, rotation);
 
-        Offset centerPointVirtualOffset =
-            virtualBarcodePosition - virtualScreenCenterPoint;
+        Offset absoluteOffsetBetweenScreenCenterAndBarcodeCenter =
+            absoluteBarcodeCenterOffset - absoluteScreenCenterOffset;
 
-        Offset centerToSelectedBarcodeVirtualOffset =
-            centerPointVirtualOffset + virtualOffsetBetweenBarcodes;
+        Offset absoluteOffsetScreenCenterToSelectedBarcode =
+            absoluteOffsetBetweenCurrentandSelectedBarcode +
+                absoluteOffsetBetweenScreenCenterAndBarcodeCenter;
 
-        canvas.drawLine(screenCenterPoint,
-            screenCenterPoint + centerToSelectedBarcodeVirtualOffset, paint);
+        Offset screenOffsetScreenCenterToSelectedBarcode = Offset(
+            translateXScreen(absoluteOffsetScreenCenterToSelectedBarcode.dx,
+                rotation, absoluteImageSize),
+            absoluteOffsetScreenCenterToSelectedBarcode.dy);
 
-        Rect rect =
-            Rect.fromCenter(center: screenCenterPoint, width: 200, height: 200);
-        double startAngle =
-            centerToSelectedBarcodeVirtualOffset.direction - (pi / 6);
-        double sweepAngle = pi / 3;
-        canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
+        canvas.drawLine(
+            screenCenterPoint,
+            screenOffsetScreenCenterToSelectedBarcode + screenCenterPoint,
+            paintBlue4);
 
-        //Code Here
-      } else if (barcode.value.displayValue == qrcodeID) {
-        canvas.drawPath(
-            Path()
-              ..addPolygon([
-                positionalData.topLeft,
-                positionalData.topRight,
-                positionalData.bottomRight,
-                positionalData.bottomLeft
-              ], true),
-            paint);
+        // Offset relativeOffsetBetweenScreenCenterAndBarcodeCenter =
+        //     calculateRelativeOffsetBetweenBarcodes(
+        //         absoluteOffsetBetweenScreenCenterAndBarcodeCenter,
+        //         barcodeScreenData.absoluteBarcodeSize);
+
       }
     }
-  }
-
-  Offset getBarcodeVirtualPosition(
-      String barcodeID, Map<String, vm.Vector2> consolidatedData) {
-    return Offset(
-        consolidatedData[barcodeID]!.x, consolidatedData[barcodeID]!.y);
-  }
-
-  double calculateDistanceBetweenOffsets(
-          Offset offset1, BarcodePositionalData offset2) =>
-      (offset1 - offset2.center).distance;
-
-  Offset calculateRelativeBarcodePosition(
-      String barcodeID, double barcodePixelSize) {
-    return (Offset(
-            consolidatedData[barcodeID]!.x, consolidatedData[barcodeID]!.y) *
-        barcodePixelSize);
   }
 
   @override
@@ -140,4 +92,52 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
     return oldDelegate.absoluteImageSize != absoluteImageSize ||
         oldDelegate.barcodes != barcodes;
   }
+}
+
+///Draws the barcode display values in the center of the barcode given the canvas and barcodeData
+void drawBarcodeDisplayValues(
+  Canvas canvas,
+  BarcodeScreenData barcodeScreenData,
+) {
+  final Paint background = Paint()..color = const Color(0x99000000);
+  final ParagraphBuilder builder = ParagraphBuilder(
+    ParagraphStyle(
+        textAlign: TextAlign.left,
+        fontSize: 20,
+        textDirection: TextDirection.ltr),
+  );
+
+  builder.pushStyle(
+      ui.TextStyle(color: Colors.lightGreenAccent, background: background));
+  builder.addText(barcodeScreenData.displayValue);
+  builder.pop();
+
+  canvas.drawParagraph(
+    builder.build()..layout(const ParagraphConstraints(width: 100)),
+    barcodeScreenData.center,
+  );
+}
+
+///This draws a green box around selected barcode and will turn the finder circle blue
+void highlightSelectedBarcode(
+    Canvas canvas,
+    BarcodeScreenData barcodeScreenData,
+    Offset screenCenterPoint,
+    String barcodeID) {
+  if (barcodeScreenData.displayValue == barcodeID) {
+    canvas.drawRect(barcodeScreenData.boundingBox, paintLightGreenAccent3);
+    if ((screenCenterPoint - barcodeScreenData.center).distance < 100) {
+      canvas.drawCircle(screenCenterPoint, 100, paintBlue3);
+    }
+  }
+}
+
+Offset calculateAbsoluteCenterPoint(
+    Offset offset, Size absoluteImageSize, InputImageRotation rotation) {
+  final x = translateXAbsolute(offset.dx, rotation, absoluteImageSize);
+  final y = translateYAbsolute(offset.dy, rotation, absoluteImageSize);
+
+  final Offset centerOffset = Offset(x, y);
+
+  return centerOffset;
 }

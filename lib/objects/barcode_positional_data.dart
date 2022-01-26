@@ -1,20 +1,16 @@
 import 'package:flutter/cupertino.dart';
 
-class BarcodePositionalData {
-  BarcodePositionalData(
-      {required final this.topRight,
-      required final this.topLeft,
-      required final this.bottomRight,
-      required final this.bottomLeft,
+class BarcodeScreenData {
+  BarcodeScreenData(
+      {required final this.displayValue,
+      required final this.boundingBox,
       required final this.center,
-      required final this.barcodePixelSize});
+      required final this.absoluteBarcodeSize});
 
-  final Offset topRight;
-  final Offset topLeft;
-  final Offset bottomRight;
-  final Offset bottomLeft;
+  final String displayValue;
+  final Rect boundingBox;
   final Offset center;
-  final double barcodePixelSize;
+  final double absoluteBarcodeSize;
 }
 
 //TODO: convert to named

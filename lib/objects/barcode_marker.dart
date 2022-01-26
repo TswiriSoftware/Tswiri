@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:vector_math/vector_math.dart';
 
 class BarcodeMarker {
@@ -9,6 +11,5 @@ class BarcodeMarker {
 
   final String id;
   final bool fixed;
-  final Vector2 position;
+  final Offset position;
 }
-

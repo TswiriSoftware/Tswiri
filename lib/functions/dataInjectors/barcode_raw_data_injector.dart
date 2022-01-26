@@ -37,8 +37,8 @@ injectBarcodes(
         barcode.value.displayValue != null && barcode.value.boundingBox != null;
 
     if (checkIfBarcodeIsValid()) {
-      Offset barcodeAbsoluteCenterOffset =
-          calculateBarcodeAbsoluteCenterPoint(barcode, inputImageData);
+      Offset barcodeAbsoluteCenterOffset = calculateAbsoluteBarcodeCenterPoint(
+          barcode, inputImageData.size, inputImageData.imageRotation);
 
       double distanceFromCamera = calaculateDistanceFormCamera(barcode,
           barcodeAbsoluteCenterOffset, lookupTableMap, imageSizesLookupTable);
@@ -71,7 +71,7 @@ injectBarcodes(
               barcodeStart.distanceFromCamera, barcodeEnd.distanceFromCamera);
 
           double aveSideLengthOfBarcodes =
-              calcAverageSideLength(barcodeEnd, barcodeStart);
+              calcAverageAbsoluteSideLength(barcodeEnd, barcodeStart);
 
           Offset absoluteOffsetBetweenPoints =
               calculateAbsoluteOffsetBetweenBarcodes(barcodeStart, barcodeEnd);

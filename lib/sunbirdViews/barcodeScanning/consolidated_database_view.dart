@@ -1,3 +1,4 @@
+import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataInjectorFunctions/raw_data_functions.dart';
 import 'package:flutter_google_ml_kit/functions/dataManipulation/add_fixed_point.dart';
 import 'package:flutter_google_ml_kit/functions/dataManipulation/consolidate_processed_data.dart';
 import 'package:flutter_google_ml_kit/functions/dataManipulation/generate_list_of_processed_data.dart';
@@ -131,6 +132,7 @@ class _HiveDatabaseConsolidationViewState
 
     consolidateProcessedData(
         deduplicatedData, consolidatedData, consolidatedDataBox);
+
     return _displayList(consolidatedData, displayList);
   }
 }
@@ -139,8 +141,12 @@ List _displayList(
     Map<String, BarcodeMarker> consolidatedData, List displayList) {
   displayList.clear();
   consolidatedData.forEach((key, value) {
-    displayList
-        .add([value.id, value.position.x, value.position.y, value.fixed]);
+    displayList.add([
+      value.id,
+      roundDouble(value.position.dx, 5),
+      roundDouble(value.position.dy, 5),
+      value.fixed
+    ]);
   });
   displayList.sort((a, b) => a[0].compareTo(b[0]));
   return displayList;

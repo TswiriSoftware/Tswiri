@@ -3,7 +3,8 @@ import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/coordinates_t
 import 'package:flutter_google_ml_kit/objects/barcode_positional_data.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-BarcodePositionalData calculateBarcodePositionalData(Barcode barcode,
+///This
+BarcodeScreenData calculateScreenBarcodeData(Barcode barcode,
     InputImageRotation rotation, Size size, Size absoluteImageSize) {
   final boundingBoxLeft = translateX(
       barcode.value.boundingBox!.left, rotation, size, absoluteImageSize);
@@ -25,16 +26,13 @@ BarcodePositionalData calculateBarcodePositionalData(Barcode barcode,
       2;
 
   final Offset center = Offset(barcodeCentreX, barcodeCentreY);
-  final Offset topLeft = Offset(boundingBoxLeft, boundingBoxTop);
-  final Offset topRight = Offset(boundingBoxRight, boundingBoxTop);
-  final Offset bottomLeft = Offset(boundingBoxLeft, boundingBoxBottom);
-  final Offset bottomRight = Offset(boundingBoxRight, boundingBoxBottom);
+  final String displayValue = barcode.value.displayValue!;
+  Rect boundingBox = Rect.fromLTRB(
+      boundingBoxLeft, boundingBoxTop, boundingBoxRight, boundingBoxBottom);
 
-  return BarcodePositionalData(
-      topRight: topRight,
-      topLeft: topLeft,
-      bottomRight: bottomRight,
-      bottomLeft: bottomLeft,
+  return BarcodeScreenData(
+      displayValue: displayValue,
       center: center,
-      barcodePixelSize: barcodePixelSize);
+      absoluteBarcodeSize: barcodePixelSize,
+      boundingBox: boundingBox);
 }
