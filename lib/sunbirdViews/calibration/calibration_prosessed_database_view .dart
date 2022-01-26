@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/matched_calibration_data_adapter.dart';
-import 'package:flutter_google_ml_kit/objects/barcode_distance_data.dart';
 import 'package:hive/hive.dart';
 
-class HiveProsessedCalibrationDatabaseView extends StatefulWidget {
-  const HiveProsessedCalibrationDatabaseView({Key? key}) : super(key: key);
+class CalibrationProsessedDatabaseView extends StatefulWidget {
+  const CalibrationProsessedDatabaseView({Key? key}) : super(key: key);
 
   @override
-  _HiveProsessedCalibrationDatabaseViewState createState() =>
-      _HiveProsessedCalibrationDatabaseViewState();
+  _CalibrationProsessedDatabaseViewState createState() =>
+      _CalibrationProsessedDatabaseViewState();
 }
 
-class _HiveProsessedCalibrationDatabaseViewState
-    extends State<HiveProsessedCalibrationDatabaseView> {
+class _CalibrationProsessedDatabaseViewState
+    extends State<CalibrationProsessedDatabaseView> {
   var displayList = [];
 
   @override
@@ -115,9 +114,6 @@ class _HiveProsessedCalibrationDatabaseViewState
           2;
       double distance =
           double.parse(accelerometerMap[accKey].toString().split(',').last);
-
-      BarcodeDistanceData barcodeDistanceData =
-          BarcodeDistanceData(timestamp, imageSizeAve, distance);
 
       LinearCalibrationData data =
           LinearCalibrationData(objectSize: imageSizeAve, distance: distance);

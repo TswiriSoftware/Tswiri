@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/functions.dart';
 import 'package:hive/hive.dart';
 
-class HiveLinearRegressionDatabaseView extends StatefulWidget {
-  const HiveLinearRegressionDatabaseView({Key? key}) : super(key: key);
+class CalibrationLookupTableDatabaseView extends StatefulWidget {
+  const CalibrationLookupTableDatabaseView({Key? key}) : super(key: key);
 
   @override
-  _HiveLinearRegressionDatabaseViewState createState() =>
-      _HiveLinearRegressionDatabaseViewState();
+  _CalibrationLookupTableDatabaseViewState createState() =>
+      _CalibrationLookupTableDatabaseViewState();
 }
 
-class _HiveLinearRegressionDatabaseViewState
-    extends State<HiveLinearRegressionDatabaseView> {
+class _CalibrationLookupTableDatabaseViewState
+    extends State<CalibrationLookupTableDatabaseView> {
   var displayList = [];
 
   @override
@@ -79,6 +79,7 @@ class _HiveLinearRegressionDatabaseViewState
 
 class OpenPainter extends CustomPainter {
   OpenPainter({required this.dataPoints});
+  // ignore: prefer_typing_uninitialized_variables
   var dataPoints;
 
   @override
@@ -100,9 +101,3 @@ _getPoints(BuildContext context) async {
   List<Offset> points = listOfPoints(matchedDataBox);
   return points;
 }
-
-//TODO: LinearEquation { properties : m,b } DONE
-
-//TODO: CalulateDistance { LinearEquation,x } -> y DONE
-
-//TODO: Calulate equation (Data ..... ) { output : Linear equation object} DONE

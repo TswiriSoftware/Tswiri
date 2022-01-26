@@ -3,7 +3,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:sensors_plus/sensors_plus.dart';
 import 'coordinates_translator.dart';
 
 class BarcodeDetectorPainterCalibration extends CustomPainter {

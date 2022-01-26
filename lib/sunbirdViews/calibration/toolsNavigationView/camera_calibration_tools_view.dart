@@ -3,8 +3,8 @@ import '../../../main.dart';
 import '../accelerometer_database_view.dart';
 import '../camera_calibration_view.dart';
 import '../calibration_database_view.dart';
-import '../hive_linear_regression_database_view.dart';
-import '../hive_prosessed_calibration_database_view .dart';
+import '../calibration_lookup_table_database_view.dart';
+import '../calibration_prosessed_database_view .dart';
 
 class CameraCalibrationView extends StatefulWidget {
   const CameraCalibrationView({Key? key}) : super(key: key);
@@ -27,7 +27,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
       ),
       body: Center(
         child: GridView.count(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           mainAxisSpacing: 8,
           crossAxisSpacing: 16,
           crossAxisCount: 2,
@@ -53,13 +53,13 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
             ),
             const CustomCard(
               'Processed Data Viewer',
-              HiveProsessedCalibrationDatabaseView(),
+              CalibrationProsessedDatabaseView(),
               Icons.calculate,
               featureCompleted: true,
             ),
             const CustomCard(
               'Processed Data Viewer',
-              HiveLinearRegressionDatabaseView(),
+              CalibrationLookupTableDatabaseView(),
               Icons.calculate,
               featureCompleted: true,
             ),

@@ -1,16 +1,11 @@
-import 'dart:math';
 import 'package:flutter_google_ml_kit/functions/dataManipulation/add_fixed_point.dart';
 import 'package:flutter_google_ml_kit/functions/dataManipulation/consolidate_processed_data.dart';
 import 'package:flutter_google_ml_kit/functions/dataManipulation/generate_list_of_processed_data.dart';
-import 'package:vector_math/vector_math.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/raw_data_adapter.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_marker.dart';
 import 'package:flutter_google_ml_kit/objects/inter_barcode_vector.dart';
 import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HiveDatabaseConsolidationView extends StatefulWidget {
   const HiveDatabaseConsolidationView({Key? key}) : super(key: key);
@@ -22,8 +17,6 @@ class HiveDatabaseConsolidationView extends StatefulWidget {
 
 class _HiveDatabaseConsolidationViewState
     extends State<HiveDatabaseConsolidationView> {
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-
   List displayList = [];
   List fixedPoints = ['1'];
   List<InterBarcodeVector> processedDataList = [];
@@ -150,7 +143,6 @@ List _displayList(
         .add([value.id, value.position.x, value.position.y, value.fixed]);
   });
   displayList.sort((a, b) => a[0].compareTo(b[0]));
-  print(displayList);
   return displayList;
 }
 

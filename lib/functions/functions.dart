@@ -11,7 +11,7 @@ List<Offset> listOfPoints(Box matchedDataBox) {
   matchedDataMap.forEach((key, value) {
     double x = double.parse(value.toString().split(',').last);
     double y = double.parse(value.toString().split(',').first);
-    dataPoints offsetData = dataPoints(Offset(x, y));
+    DataPoints offsetData = DataPoints(Offset(x, y));
 
     points.add(Offset((offsetData.offset.dx / 4), (offsetData.offset.dy / 4)));
   });

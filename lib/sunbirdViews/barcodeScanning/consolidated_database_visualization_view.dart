@@ -1,10 +1,12 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataInjectorFunctions/raw_data_functions.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-//TODO: Refactor @049er
+//TODO: Refactor this @049er
 
 class DatabaseVisualization extends StatefulWidget {
   const DatabaseVisualization({Key? key}) : super(key: key);
@@ -100,8 +102,6 @@ class OpenPainter extends CustomPainter {
 
     canvas.drawPoints(PointMode.points, dataPoints, paint1);
     for (var i = 0; i < dataPoints.length; i++) {
-      Offset data = dataPoints[i];
-
       final textSpan = TextSpan(
           text: pointNames[i] + ': ' + pointRelativePositions[i],
           style: TextStyle(color: Colors.deepOrange[800], fontSize: 2));

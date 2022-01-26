@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/dataManipulation/process_raw_data.dart';
-import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
 
 class HiveDatabaseView extends StatefulWidget {
@@ -105,11 +104,11 @@ List _displayList(Box rawDataBox) {
 displayDataPoint(var myText) {
   return Column(
     children: [
-      SizedBox(
+      const SizedBox(
         height: 3,
       ),
       Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             border: Border(
                 bottom: BorderSide(color: Colors.deepOrange),
                 top: BorderSide(color: Colors.deepOrange),
@@ -121,7 +120,7 @@ displayDataPoint(var myText) {
           textDirection: TextDirection.ltr,
           children: [
             Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   border: Border(right: BorderSide(color: Colors.deepOrange))),
               child: SizedBox(
                 child: Text(myText[0], textAlign: TextAlign.center),
@@ -129,7 +128,7 @@ displayDataPoint(var myText) {
               ),
             ),
             Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   border: Border(right: BorderSide(color: Colors.deepOrange))),
               child: SizedBox(
                 child: Text(myText[1], textAlign: TextAlign.center),
@@ -137,7 +136,7 @@ displayDataPoint(var myText) {
               ),
             ),
             Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   border: Border(right: BorderSide(color: Colors.deepOrange))),
               child: SizedBox(
                 child: Text(myText[2], textAlign: TextAlign.center),
@@ -145,7 +144,7 @@ displayDataPoint(var myText) {
               ),
             ),
             Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   border: Border(right: BorderSide(color: Colors.deepOrange))),
               child: SizedBox(
                 child: Text(myText[3], textAlign: TextAlign.center),
@@ -153,7 +152,7 @@ displayDataPoint(var myText) {
               ),
             ),
             Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   border: Border(right: BorderSide(color: Colors.deepOrange))),
               child: SizedBox(
                 child: Text(myText[4], textAlign: TextAlign.center),

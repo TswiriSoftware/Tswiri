@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/coordinates_translator.dart';
 import 'package:flutter_google_ml_kit/functions/coordinateTranslator/coordinate_translator.dart';
 import 'package:flutter_google_ml_kit/objects/qr_code.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
@@ -56,12 +55,6 @@ Offset calculateBarcodeAbsoluteCenterPoint(
 ///Given barcode barcode
 double calaculateDistanceFormCamera(Barcode barcode, Offset barcodeCenterOffset,
     Map lookupTable, List<double> imageSizes) {
-  Rect barcodeBoundingBox = Rect.fromLTRB(
-      barcode.value.boundingBox!.left,
-      barcode.value.boundingBox!.top,
-      barcode.value.boundingBox!.right,
-      barcode.value.boundingBox!.bottom);
-
   double imageSize = (((barcode.value.boundingBox!.left -
                   barcode.value.boundingBox!.right)
               .abs() +

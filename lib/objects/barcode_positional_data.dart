@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:vector_math/vector_math.dart';
 
 class BarcodePositionalData {
   BarcodePositionalData(

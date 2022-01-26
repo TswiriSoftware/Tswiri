@@ -43,7 +43,7 @@ class _BarcodeNavigatorViewState extends State<BarcodeNavigatorView> {
           padding: const EdgeInsets.all(15.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
-            children: [],
+            children: const [],
           ),
         ),
         body: CameraView(

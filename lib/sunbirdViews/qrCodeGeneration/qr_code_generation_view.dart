@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/qrCodeGeneration/QrCodeGenerator.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:printing/printing.dart';
-import '../../main.dart';
 
 class QrCodeGenerationView extends StatefulWidget {
   const QrCodeGenerationView({Key? key}) : super(key: key);
@@ -25,7 +23,7 @@ class _QrCodeGenerationViewState extends State<QrCodeGenerationView> {
       ),
       body: Center(
         child: GridView.count(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           mainAxisSpacing: 8,
           crossAxisSpacing: 16,
           crossAxisCount: 1,
@@ -34,7 +32,7 @@ class _QrCodeGenerationViewState extends State<QrCodeGenerationView> {
           children: const [
             CustomCardQrCode([1, 2, 3, 4, 5, 6]),
             CustomCardQrCode([7, 8, 9, 10, 11, 12]),
-            CustomCardQrCode(const [13, 14, 15, 16, 17, 18]),
+            CustomCardQrCode([13, 14, 15, 16, 17, 18]),
             CustomCardQrCode([19, 20, 21, 22, 23, 24]),
           ],
         ),
@@ -51,7 +49,7 @@ class CustomCardQrCode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 400,
       width: 300,
       child: Card(
@@ -64,10 +62,11 @@ class CustomCardQrCode extends StatelessWidget {
                 title: Text(
                   '${range.first} - ${range.last}',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
-              Container(
+              SizedBox(
                 height: 295,
                 child: PdfPreview(
                     maxPageWidth: 200, build: (format) => generatePDF(range)),

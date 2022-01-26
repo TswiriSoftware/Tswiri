@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/camera_view.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/barcode_detector_painter_calibration.dart';
@@ -25,8 +27,7 @@ class _CameraCalibrationState extends State<CameraCalibration> {
   double zAcceleration = 0;
   double distanceMoved = 0;
   int deltaT = 0;
-  var accelerometerDataInstance;
-  var subscription;
+  late StreamSubscription<UserAccelerometerEvent> subscription;
 
   @override
   void initState() {
@@ -104,7 +105,7 @@ class _CameraCalibrationState extends State<CameraCalibration> {
 
       customPaint = CustomPaint(painter: painter);
       timestamp = DateTime.now().millisecondsSinceEpoch;
-      accelerometerDataInstance = AccelerometerData(
+      AccelerometerData accelerometerDataInstance = AccelerometerData(
           timestamp: timestamp,
           deltaT: deltaT,
           accelerometerData: zAcceleration,

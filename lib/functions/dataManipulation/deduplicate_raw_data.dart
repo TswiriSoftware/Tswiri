@@ -1,3 +1,4 @@
+// ignore: implementation_imports
 import 'package:fast_immutable_collections/src/ilist/list_extension.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/raw_data_adapter.dart';
 

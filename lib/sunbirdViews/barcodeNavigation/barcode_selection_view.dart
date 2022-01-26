@@ -154,6 +154,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
 }
 
 bool isNumeric(String s) {
+  // ignore: unnecessary_null_comparison
   if (s == null) {
     return false;
   }
