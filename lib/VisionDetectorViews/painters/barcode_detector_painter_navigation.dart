@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_barcode_positional_data.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_positional_data.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:hive/hive.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'coordinates_translator.dart';
 import 'package:vector_math/vector_math.dart' as vm;
@@ -68,36 +69,37 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
         positionalData.center,
       );
 
-      var pointsOfIntrest = [
-        positionalData.topLeft,
-        positionalData.topRight,
-        positionalData.bottomLeft,
-        positionalData.bottomRight,
-      ];
-
       double selectedBarcodeDisFromCenter =
-          (screenCenterPoint - positionalData.center).distance;
+          calculateDistanceBetweenOffsets(screenCenterPoint, positionalData);
+
       if (barcode.value.displayValue == qrcodeID &&
           selectedBarcodeDisFromCenter <= 100) {
         canvas.drawCircle(screenCenterPoint, 100, paintBlue);
       }
 
-      Offset selectedBarcodeStoredPosition =
+      Offset selectedBarcodeVirtualPosition =
           Offset(consolidatedData[qrcodeID]!.x, consolidatedData[qrcodeID]!.y);
 
       if (consolidatedData.containsKey(barcode.value.displayValue.toString()) &&
           barcode.value.displayValue != qrcodeID) {
         String barcodeID = barcode.value.displayValue.toString();
 
-        Offset storedBarcodePosition = Offset(
-            consolidatedData[barcode.value.displayValue]!.x,
-            consolidatedData[barcode.value.displayValue]!.y);
+        Offset virtualBarcodePosition =
+            getBarcodeVirtualPosition(barcodeID, consolidatedData);
 
-        Offset directionalOffset =
-            (selectedBarcodeStoredPosition - storedBarcodePosition) * 100;
+        Offset virtualOffsetBetweenBarcodes =
+            (selectedBarcodeVirtualPosition - virtualBarcodePosition) * 100;
 
-        canvas.drawLine(positionalData.center,
-            directionalOffset + positionalData.center, paint);
+        Offset centerPointVirtualOffset = virtualBarcodePosition -
+            screenCenterPoint / positionalData.barcodePixelSize;
+
+        Offset centerToSelectedBarcodeVirtualOffset =
+            centerPointVirtualOffset + virtualOffsetBetweenBarcodes;
+
+        canvas.drawLine(
+            positionalData.center,
+            positionalData.center + centerToSelectedBarcodeVirtualOffset,
+            paint);
 
         // Rect rect =
         //     Rect.fromCenter(center: screenCenterPoint, width: 200, height: 200);
@@ -119,6 +121,16 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
       }
     }
   }
+
+  Offset getBarcodeVirtualPosition(
+      String barcodeID, Map<String, vm.Vector2> consolidatedData) {
+    return Offset(
+        consolidatedData[barcodeID]!.x, consolidatedData[barcodeID]!.y);
+  }
+
+  double calculateDistanceBetweenOffsets(
+          Offset offset1, BarcodePositionalData offset2) =>
+      (offset1 - offset2.center).distance;
 
   Offset calculateRelativeBarcodePosition(
       String barcodeID, double barcodePixelSize) {
