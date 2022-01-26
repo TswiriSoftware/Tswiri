@@ -84,28 +84,32 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
           barcode.value.displayValue != qrcodeID) {
         String barcodeID = barcode.value.displayValue.toString();
 
+        Offset virtualScreenCenterPoint =
+            (positionalData.center - screenCenterPoint) /
+                positionalData.barcodePixelSize;
+
         Offset virtualBarcodePosition =
             getBarcodeVirtualPosition(barcodeID, consolidatedData);
 
         Offset virtualOffsetBetweenBarcodes =
-            (selectedBarcodeVirtualPosition - virtualBarcodePosition) * 100;
+            (selectedBarcodeVirtualPosition - virtualBarcodePosition)
+                .scale(50, -50);
 
-        Offset centerPointVirtualOffset = virtualBarcodePosition -
-            screenCenterPoint / positionalData.barcodePixelSize;
+        Offset centerPointVirtualOffset =
+            virtualBarcodePosition - virtualScreenCenterPoint;
 
         Offset centerToSelectedBarcodeVirtualOffset =
             centerPointVirtualOffset + virtualOffsetBetweenBarcodes;
 
-        canvas.drawLine(
-            positionalData.center,
-            positionalData.center + centerToSelectedBarcodeVirtualOffset,
-            paint);
+        canvas.drawLine(screenCenterPoint,
+            screenCenterPoint + centerToSelectedBarcodeVirtualOffset, paint);
 
-        // Rect rect =
-        //     Rect.fromCenter(center: screenCenterPoint, width: 200, height: 200);
-        // double startAngle = a.direction - (pi / 3);
-        // double sweepAngle = pi / 2;
-        // canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
+        Rect rect =
+            Rect.fromCenter(center: screenCenterPoint, width: 200, height: 200);
+        double startAngle =
+            centerToSelectedBarcodeVirtualOffset.direction - (pi / 6);
+        double sweepAngle = pi / 3;
+        canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
 
         //Code Here
       } else if (barcode.value.displayValue == qrcodeID) {
