@@ -4,7 +4,7 @@ import '../accelerometer_database_view.dart';
 import '../camera_calibration_view.dart';
 import '../calibration_database_view.dart';
 import '../calibration_lookup_table_database_view.dart';
-import '../calibration_prosessed_database_view .dart';
+import '../calibration_prosessed_database_view.dart';
 
 class CameraCalibrationView extends StatefulWidget {
   const CameraCalibrationView({Key? key}) : super(key: key);

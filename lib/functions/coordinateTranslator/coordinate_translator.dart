@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/coordinates_translator.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-double translateXAbsolute(
+double translateXOnimage(
     double x, InputImageRotation rotation, Size absoluteImageSize) {
   switch (rotation) {
     case InputImageRotation.Rotation_90deg:
@@ -21,7 +21,7 @@ double translateXAbsolute(
   }
 }
 
-double translateYAbsolute(
+double translateYOnImage(
     double y, InputImageRotation rotation, Size absoluteImageSize) {
   switch (rotation) {
     case InputImageRotation.Rotation_90deg:

@@ -20,13 +20,4 @@ class ConsolidatedData extends HiveObject {
 
   @HiveField(3)
   late bool fixed;
-
-  getList() {
-    return [uid, X, Y, fixed];
-  }
-
-  @override
-  String toString() {
-    return '$uid, $X, $Y, $fixed';
-  }
 }

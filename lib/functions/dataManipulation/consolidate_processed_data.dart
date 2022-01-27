@@ -1,40 +1,36 @@
 import 'dart:ui';
-
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_marker.dart';
-import 'package:flutter_google_ml_kit/objects/inter_barcode_vector.dart';
-import 'package:vector_math/vector_math.dart';
+import 'package:flutter_google_ml_kit/objects/inter_barcode_real_data.dart';
 import 'package:hive/hive.dart';
 
-consolidateProcessedData(List<InterBarcodeVector> processedDataList,
+consolidateProcessedData(List<RealInterBarcodeData> realInterBarcodeDataList,
     Map<String, BarcodeMarker> consolidatedData, Box consolidatedDataBox) {
   for (int i = 0; i < 10; i++) {
-    for (var interBarcodeVector in processedDataList) {
-      if (consolidatedData.containsKey(interBarcodeVector.startQrCode) &&
-          !consolidatedData.containsKey(interBarcodeVector.endQrCode)) {
-        String id = interBarcodeVector.endQrCode;
+    for (var interBarcodeVector in realInterBarcodeDataList) {
+      if (consolidatedData.containsKey(interBarcodeVector.uidStart) &&
+          !consolidatedData.containsKey(interBarcodeVector.uidEnd)) {
         Offset position =
-            consolidatedData[interBarcodeVector.startQrCode]!.position +
-                interBarcodeVector.offset;
+            consolidatedData[interBarcodeVector.uidStart]!.position +
+                interBarcodeVector.interBarcodeOffset;
 
-        BarcodeMarker point =
-            BarcodeMarker(id: id, position: position, fixed: false);
+        BarcodeMarker point = BarcodeMarker(
+            id: interBarcodeVector.uidEnd, position: position, fixed: false);
         consolidatedData.update(
-          id,
+          interBarcodeVector.uidEnd,
           (value) => point,
           ifAbsent: () => point,
         );
-      } else if (consolidatedData.containsKey(interBarcodeVector.endQrCode) &&
-          !consolidatedData.containsKey(interBarcodeVector.startQrCode)) {
-        String id = interBarcodeVector.startQrCode;
+      } else if (consolidatedData.containsKey(interBarcodeVector.uidEnd) &&
+          !consolidatedData.containsKey(interBarcodeVector.uidStart)) {
         Offset position =
-            consolidatedData[interBarcodeVector.endQrCode]!.position +
-                (-interBarcodeVector.offset);
+            consolidatedData[interBarcodeVector.uidEnd]!.position +
+                (-interBarcodeVector.interBarcodeOffset);
 
-        BarcodeMarker point =
-            BarcodeMarker(id: id, position: position, fixed: false);
+        BarcodeMarker point = BarcodeMarker(
+            id: interBarcodeVector.uidStart, position: position, fixed: false);
         consolidatedData.update(
-          id,
+          interBarcodeVector.uidStart,
           (value) => point,
           ifAbsent: () => point,
         );
@@ -42,7 +38,6 @@ consolidateProcessedData(List<InterBarcodeVector> processedDataList,
     }
 
     consolidatedData.forEach((key, value) {
-      print('$key , ${value.position}');
       consolidatedDataBox.put(
           value.id,
           ConsolidatedData(

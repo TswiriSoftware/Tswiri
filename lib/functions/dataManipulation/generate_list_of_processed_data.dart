@@ -1,19 +1,18 @@
 import 'package:flutter/cupertino.dart';
-import 'package:vector_math/vector_math.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/raw_data_adapter.dart';
-import 'package:flutter_google_ml_kit/objects/inter_barcode_vector.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/on_image_inter_barcode_data.dart';
+import 'package:flutter_google_ml_kit/objects/inter_barcode_offset.dart';
 import 'package:hive/hive.dart';
 
-List<InterBarcodeVector> listProcessedData(Box processedDataBox) {
-  List<InterBarcodeVector> processedDataList = [];
+List<InterBarcodeOffset> listProcessedData(Box processedDataBox) {
+  List<InterBarcodeOffset> processedDataList = [];
   var processedData = processedDataBox.toMap();
 
   processedData.forEach((key, value) {
-    RelativeQrCodes data = value;
-    InterBarcodeVector listData = InterBarcodeVector(
+    OnImageInterBarcodeData data = value;
+    InterBarcodeOffset listData = InterBarcodeOffset(
         startQrCode: data.uidStart,
         endQrCode: data.uidEnd,
-        offset: Offset(data.x, data.y));
+        offset: Offset(data.interBarcodeOffset.x, data.interBarcodeOffset.y));
     processedDataList.add(listData);
   });
 

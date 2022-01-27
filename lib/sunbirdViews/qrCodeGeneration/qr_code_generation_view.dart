@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/qrCodeGeneration/QrCodeGenerator.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/qrCodeGeneration/qr_code_generator.dart';
 import 'package:printing/printing.dart';
 
 class QrCodeGenerationView extends StatefulWidget {

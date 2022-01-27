@@ -1,11 +1,11 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/raw_data_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/on_image_inter_barcode_data.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/type_offset_adapter.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_pixel_offset_between_points.dart';
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_relative_offset_between_points.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataInjectorFunctions/raw_data_functions.dart';
-import 'package:flutter_google_ml_kit/objects/qr_code.dart';
-import 'package:flutter_google_ml_kit/objects/qr_code_vectors.dart';
+import 'package:flutter_google_ml_kit/objects/working_barcode.dart';
+import 'package:flutter_google_ml_kit/objects/inter_barcode_on_image_data.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
 
@@ -27,27 +27,23 @@ injectBarcodes(
 //TODO: Write documentation for all functions.
 
   Map<String, WorkingBarcode> scannedBarcodes = {};
-  Map<String, BarcodesOffset> qrCodeVectorsList = {};
+  Map<String, InterBarcodeOnImageData> interBarcodeOffsetList = {};
 
   //Map lookupTableMap = lookupTableBox.toMap();
-  List<double> imageSizesLookupTable = getImageSizes(lookupTableMap);
 
   for (final Barcode barcode in barcodes) {
     bool checkIfBarcodeIsValid() =>
         barcode.value.displayValue != null && barcode.value.boundingBox != null;
 
     if (checkIfBarcodeIsValid()) {
-      Offset barcodeAbsoluteCenterOffset = calculateAbsoluteBarcodeCenterPoint(
+      Offset barcodeOnImageCenterOffset = calcOnImageBarcodeCenterPoint(
           barcode, inputImageData.size, inputImageData.imageRotation);
-
-      double distanceFromCamera = calaculateDistanceFormCamera(barcode,
-           lookupTableMap, imageSizesLookupTable);
 
       WorkingBarcode workingBarcode = WorkingBarcode(
           displayValue: barcode.value.displayValue!,
-          barcodeAbsoluteCenterOffset: barcodeAbsoluteCenterOffset,
-          absoluteAverageBarcodeSideLength: absoluteBarcodeSideLength(barcode),
-          distanceFromCamera: distanceFromCamera,
+          barcodeCenterOffsetOnImage: barcodeOnImageCenterOffset,
+          aveBarcodeDiagonalLengthOnImage:
+              averageBarcodeDiagonalLength(barcode),
           timestamp: DateTime.now().millisecondsSinceEpoch);
 
       scannedBarcodes.putIfAbsent(
@@ -63,48 +59,44 @@ injectBarcodes(
       for (var k = 0; k < scannedBarcodes.length; k++) {
         if (barcodeStart.displayValue != i.toString()) {
           WorkingBarcode barcodeEnd = determineEndQrcode(i, scannedBarcodes);
-          String startQrCodeDisplayValue = barcodeStart.displayValue;
-          String endQrCodeDisplayValue = barcodeEnd.displayValue;
-          int timestamp = barcodeStart.timestamp;
 
-          double aveDistanceFromCamera = calcAveDisFromCamera(
-              barcodeStart.distanceFromCamera, barcodeEnd.distanceFromCamera);
+          Offset interBarcodeOffsetOnImage = calculateOffsetBetweenBarcodes(
+              barcodeEnd.barcodeCenterOffsetOnImage,
+              barcodeStart.barcodeCenterOffsetOnImage);
 
-          double aveSideLengthOfBarcodes =
-              calcAverageAbsoluteSideLength(barcodeEnd, barcodeStart);
+          double aveDiagonalSideLength =
+              (barcodeStart.aveBarcodeDiagonalLengthOnImage +
+                      barcodeEnd.aveBarcodeDiagonalLengthOnImage) /
+                  2;
 
-          Offset absoluteOffsetBetweenPoints =
-              calculateAbsoluteOffsetBetweenBarcodes(
-                  barcodeEnd.barcodeAbsoluteCenterOffset,
-                  barcodeStart.barcodeAbsoluteCenterOffset);
+          InterBarcodeOnImageData interBarcodeOffset = InterBarcodeOnImageData(
+              startBarcodeID: barcodeStart.displayValue,
+              endBarcodeID: barcodeEnd.displayValue,
+              aveDiagonalSideLength: aveDiagonalSideLength,
+              interBarcodeOffsetonImage: interBarcodeOffsetOnImage,
+              timestamp: barcodeStart.timestamp);
 
-          Offset relativeOffsetBetweenPoints =
-              translateOffsetAbsoluteToRelative(
-                  absoluteOffsetBetweenPoints, aveSideLengthOfBarcodes);
-
-          BarcodesOffset qrCodeVector = BarcodesOffset(
-              startQrCode: startQrCodeDisplayValue,
-              endQrCode: endQrCodeDisplayValue,
-              relativeOffset: relativeOffsetBetweenPoints,
-              distanceFromCamera: aveDistanceFromCamera,
-              timestamp: timestamp);
-
-          qrCodeVectorsList.putIfAbsent(
+          interBarcodeOffsetList.putIfAbsent(
               '${barcodeStart.displayValue}_${barcodeEnd.displayValue}',
-              () => qrCodeVector);
+              () => interBarcodeOffset);
         }
       }
     }
 
-    qrCodeVectorsList.forEach((key, value) {
-      RelativeQrCodes _qrCodeVectors = RelativeQrCodes(
-          uid: key,
-          uidStart: value.startQrCode,  
-          uidEnd: value.endQrCode,
-          x: value.relativeOffset.dx,
-          y: value.relativeOffset.dy,
-          timestamp: value.timestamp);
-      rawDataBox.put(key, _qrCodeVectors);
+    interBarcodeOffsetList.forEach((key, value) {
+      OnImageInterBarcodeData onImageInterBarcodeOffsets =
+          OnImageInterBarcodeData(
+        uid: key,
+        uidStart: value.startBarcodeID,
+        uidEnd: value.endBarcodeID,
+        interBarcodeOffset: TypeOffset(
+            x: value.interBarcodeOffsetonImage.dx,
+            y: value.interBarcodeOffsetonImage.dy),
+        aveDiagonalLength: value.aveDiagonalSideLength,
+        timestamp: value.timestamp,
+      );
+
+      rawDataBox.put(key, onImageInterBarcodeOffsets);
     });
   }
 }

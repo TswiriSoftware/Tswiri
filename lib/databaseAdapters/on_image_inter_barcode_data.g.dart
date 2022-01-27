@@ -1,33 +1,34 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'raw_data_adapter.dart';
+part of 'on_image_inter_barcode_data.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class RelativeQrCodesAdapter extends TypeAdapter<RelativeQrCodes> {
+class OnImageInterBarcodeDataAdapter
+    extends TypeAdapter<OnImageInterBarcodeData> {
   @override
   final int typeId = 0;
 
   @override
-  RelativeQrCodes read(BinaryReader reader) {
+  OnImageInterBarcodeData read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return RelativeQrCodes(
+    return OnImageInterBarcodeData(
       uid: fields[0] as String,
       uidStart: fields[1] as String,
       uidEnd: fields[2] as String,
-      x: fields[3] as double,
-      y: fields[4] as double,
+      interBarcodeOffset: fields[3] as TypeOffset,
+      aveDiagonalLength: fields[4] as double,
       timestamp: fields[5] as int,
     );
   }
 
   @override
-  void write(BinaryWriter writer, RelativeQrCodes obj) {
+  void write(BinaryWriter writer, OnImageInterBarcodeData obj) {
     writer
       ..writeByte(6)
       ..writeByte(0)
@@ -37,9 +38,9 @@ class RelativeQrCodesAdapter extends TypeAdapter<RelativeQrCodes> {
       ..writeByte(2)
       ..write(obj.uidEnd)
       ..writeByte(3)
-      ..write(obj.x)
+      ..write(obj.interBarcodeOffset)
       ..writeByte(4)
-      ..write(obj.y)
+      ..write(obj.aveDiagonalLength)
       ..writeByte(5)
       ..write(obj.timestamp);
   }
@@ -50,7 +51,7 @@ class RelativeQrCodesAdapter extends TypeAdapter<RelativeQrCodes> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is RelativeQrCodesAdapter &&
+      other is OnImageInterBarcodeDataAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

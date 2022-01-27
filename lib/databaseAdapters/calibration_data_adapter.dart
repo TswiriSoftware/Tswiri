@@ -4,26 +4,17 @@ part 'calibration_data_adapter.g.dart';
 @HiveType(typeId: 2)
 class CalibrationData extends HiveObject {
   CalibrationData({
-    required this.X,
-    required this.Y,
+    required this.averageDiagonalLength,
     required this.timestamp,
   });
 
   @HiveField(0)
-  late double X;
+  late double averageDiagonalLength;
 
   @HiveField(1)
-  late double Y;
-
-  @HiveField(2)
   late int timestamp;
 
-  getList() {
-    return [X, Y, timestamp];
-  }
-
-  @override
-  String toString() {
-    return '$X, $Y, $timestamp';
-  }
+  // getList() {
+  //   return [X, timestamp];
+  // }
 }

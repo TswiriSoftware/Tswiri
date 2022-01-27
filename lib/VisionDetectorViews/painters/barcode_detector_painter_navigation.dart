@@ -3,10 +3,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_barcode_positional_data.dart';
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_pixel_offset_between_points.dart';
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_relative_offset_between_points.dart';
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataInjectorFunctions/raw_data_functions.dart';
-import 'package:flutter_google_ml_kit/functions/coordinateTranslator/coordinate_translator.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_paints.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_positional_data.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
@@ -39,16 +35,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
           barcode.value.boundingBox != null &&
           barcodeScreenData.displayValue != selectedBarcodeID;
 
-      if (checkIfBarcodeIsValid()) {
-        // translateOffsetRelativeToAbsolute(relativeScreenCenterOffset,
-        //     barcodeScreenData.absoluteBarcodeSize),
-
-        // canvas.drawLine(
-        //     screenCenterPoint,
-        //     translateCoordinates(test, relativeScreenCenterOffset) +
-        //         screenCenterPoint,
-        //     paintBlue3);
-      }
+      if (checkIfBarcodeIsValid()) {}
     }
   }
 
@@ -95,36 +82,4 @@ void highlightSelectedBarcode(
       canvas.drawCircle(screenCenterPoint, 100, paintBlue3);
     }
   }
-}
-
-///This calculates the absolute center of a given image
-Offset calculateAbsoluteCenterPoint(
-    Offset offset, Size absoluteImageSize, InputImageRotation rotation) {
-  final x = translateXAbsolute(offset.dx, rotation, absoluteImageSize);
-  final y = translateYAbsolute(offset.dy, rotation, absoluteImageSize);
-
-  final Offset centerOffset = Offset(x, y);
-
-  return centerOffset;
-}
-
-///Returns a offset from p2 to p1
-Offset calculateOffsetBetweenTwoOffsets(
-    {required Offset p1, required Offset p2}) {
-  Offset offset = p1 - p2;
-  return offset;
-}
-
-Offset translateCoordinates(Offset offset, Offset relativeBarcode) {
-  if (relativeBarcode.dx > 0 && relativeBarcode.dy > 0) {
-    offset = Offset(-offset.dx, -offset.dy);
-  } else if (relativeBarcode.dx > 0 && relativeBarcode.dy < 0) {
-    offset = Offset(offset.dx, offset.dy);
-  } else if (relativeBarcode.dx < 0 && relativeBarcode.dy < 0) {
-    offset = Offset(offset.dx, offset.dy);
-  } else if (relativeBarcode.dx < 0 && relativeBarcode.dy < 0) {
-    offset = Offset(offset.dx, -offset.dy);
-  }
-
-  return offset;
 }

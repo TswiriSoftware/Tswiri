@@ -2,15 +2,15 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/functions/coordinateTranslator/coordinate_translator.dart';
-import 'package:flutter_google_ml_kit/objects/qr_code.dart';
+import 'package:flutter_google_ml_kit/objects/working_barcode.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 ///Calculates the absolute average side length of 2 barcodes
 double calcAverageAbsoluteSideLength(
     WorkingBarcode qrCodeEnd, WorkingBarcode qrCodeStart) {
   return 1 /
-      ((qrCodeEnd.absoluteAverageBarcodeSideLength +
-              qrCodeStart.absoluteAverageBarcodeSideLength) /
+      ((qrCodeEnd.aveBarcodeDiagonalLengthOnImage +
+              qrCodeStart.aveBarcodeDiagonalLengthOnImage) /
           2);
 }
 
@@ -21,24 +21,29 @@ double calcAveDisFromCamera(
 }
 
 ///Calculates the absolute side length of a single barcode
-double absoluteBarcodeSideLength(Barcode barcode) {
-  return ((barcode.value.boundingBox!.left - barcode.value.boundingBox!.right)
-              .abs() +
-          (barcode.value.boundingBox!.top - barcode.value.boundingBox!.bottom)
-              .abs()) /
-      2;
+double averageBarcodeDiagonalLength(Barcode barcode) {
+  double diagonal1 = Offset(
+          barcode.value.boundingBox!.left + barcode.value.boundingBox!.top,
+          barcode.value.boundingBox!.right + barcode.value.boundingBox!.bottom)
+      .distance;
+  double diagonal2 = Offset(
+          barcode.value.boundingBox!.right + barcode.value.boundingBox!.top,
+          barcode.value.boundingBox!.left + barcode.value.boundingBox!.bottom)
+      .distance;
+
+  return (diagonal1 + diagonal2) / 2;
 }
 
 ///Calculates the absolute center point of the barcode given the barcode and inputImageData
-Offset calculateAbsoluteBarcodeCenterPoint(
+Offset calcOnImageBarcodeCenterPoint(
     Barcode barcode, Size absoluteImageSize, InputImageRotation rotation) {
-  final boundingBoxLeft = translateXAbsolute(
+  final boundingBoxLeft = translateXOnimage(
       barcode.value.boundingBox!.left, rotation, absoluteImageSize);
-  final boundingBoxTop = translateYAbsolute(
+  final boundingBoxTop = translateYOnImage(
       barcode.value.boundingBox!.top, rotation, absoluteImageSize);
-  final boundingBoxRight = translateXAbsolute(
+  final boundingBoxRight = translateXOnimage(
       barcode.value.boundingBox!.right, rotation, absoluteImageSize);
-  final boundingBoxBottom = translateYAbsolute(
+  final boundingBoxBottom = translateYOnImage(
       barcode.value.boundingBox!.bottom, rotation, absoluteImageSize);
 
   final barcodeCentreX = (boundingBoxLeft + boundingBoxRight) / 2;
@@ -50,18 +55,11 @@ Offset calculateAbsoluteBarcodeCenterPoint(
 }
 
 ///Calculates how far the barcode is from the camera given calibration data (imageSizes: for sorting, Lookuptable: for Distance from camera)
-double calaculateDistanceFormCamera(Barcode barcode,
+double calaculateDistanceFormCamera(double barcodeDiagonalSizeOnImage,
     Map lookupTable, List<double> imageSizes) {
-
-  
-  double absoluteBarcodeSize = (((barcode.value.boundingBox!.left -
-                  barcode.value.boundingBox!.right)
-              .abs() +
-          (barcode.value.boundingBox!.top - barcode.value.boundingBox!.bottom)
-              .abs()) /
-      2);
-
-  var greaterThan = imageSizes.where((element) => element >= absoluteBarcodeSize).toList()
+  var greaterThan = imageSizes
+      .where((element) => element >= barcodeDiagonalSizeOnImage)
+      .toList()
     ..sort();
 
   String imageSizeKey = greaterThan.first.toString();

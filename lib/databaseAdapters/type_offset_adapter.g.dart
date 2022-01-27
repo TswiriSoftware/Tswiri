@@ -1,35 +1,35 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'calibration_data_adapter.dart';
+part of 'type_offset_adapter.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class CalibrationDataAdapter extends TypeAdapter<CalibrationData> {
+class TypeOffsetAdapter extends TypeAdapter<TypeOffset> {
   @override
-  final int typeId = 2;
+  final int typeId = 5;
 
   @override
-  CalibrationData read(BinaryReader reader) {
+  TypeOffset read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return CalibrationData(
-      averageDiagonalLength: fields[0] as double,
-      timestamp: fields[1] as int,
+    return TypeOffset(
+      x: fields[0] as double,
+      y: fields[1] as double,
     );
   }
 
   @override
-  void write(BinaryWriter writer, CalibrationData obj) {
+  void write(BinaryWriter writer, TypeOffset obj) {
     writer
       ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.averageDiagonalLength)
+      ..write(obj.x)
       ..writeByte(1)
-      ..write(obj.timestamp);
+      ..write(obj.y);
   }
 
   @override
@@ -38,7 +38,7 @@ class CalibrationDataAdapter extends TypeAdapter<CalibrationData> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CalibrationDataAdapter &&
+      other is TypeOffsetAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

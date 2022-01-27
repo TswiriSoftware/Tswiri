@@ -23,7 +23,7 @@ class _BarcodeNavigationViewState extends State<BarcodeNavigationView> {
       ),
       body: Center(
         child: GridView.count(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           mainAxisSpacing: 8,
           crossAxisSpacing: 16,
           crossAxisCount: 2,

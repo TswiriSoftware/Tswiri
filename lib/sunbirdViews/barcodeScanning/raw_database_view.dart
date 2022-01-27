@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataInjectorFunctions/raw_data_functions.dart';
 import 'package:flutter_google_ml_kit/functions/dataManipulation/process_raw_data.dart';
 import 'package:hive/hive.dart';
@@ -79,22 +80,27 @@ class _HiveDatabaseViewState extends State<HiveDatabaseView> {
   }
 
   Future<List> loadData() async {
-    var rawDataBox = await Hive.openBox('rawDataBox');
-    var processedDataBox = await Hive.openBox('processedDataBox');
-    processRawData(rawDataBox, processedDataBox);
-    return _displayList(rawDataBox);
+    var rawOnImageDataBox = await Hive.openBox('rawDataBox');
+    var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
+    var lookupTable = await Hive.openBox('calibrationDataBox');
+    Map rawOnImageDataMap = rawOnImageDataBox.toMap();
+
+    processRawOnImageData(rawOnImageDataMap, consolidatedDataBox, lookupTable);
+
+    return _displayList(rawOnImageDataBox);
   }
 }
 
-List _displayList(Box rawDataBox) {
+List _displayList(Box onImageDataBox) {
   var displayList = [];
-  var rawDataMap = rawDataBox.toMap();
+  var rawDataMap = onImageDataBox.toMap();
   rawDataMap.forEach((key, value) {
+    OnImageInterBarcodeData data = value;
     List vectorData = [
       value.uidStart,
       value.uidEnd,
-      roundDouble(value.x, 4),
-      roundDouble(value.y, 4),
+      roundDouble(data.interBarcodeOffset.x, 4),
+      roundDouble(data.interBarcodeOffset.y, 4),
       value.timestamp
     ];
     displayList.add(vectorData);

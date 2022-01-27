@@ -4,7 +4,6 @@ import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/barcode_detec
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
-import 'package:vector_math/vector_math.dart';
 
 class BarcodeNavigatorView extends StatefulWidget {
   final String qrcodeID;

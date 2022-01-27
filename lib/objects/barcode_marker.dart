@@ -1,7 +1,5 @@
 import 'dart:ui';
 
-import 'package:vector_math/vector_math.dart';
-
 class BarcodeMarker {
   BarcodeMarker({
     required final this.id,

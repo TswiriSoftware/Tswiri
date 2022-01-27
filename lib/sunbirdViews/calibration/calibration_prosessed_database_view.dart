@@ -72,10 +72,6 @@ class _CalibrationProsessedDatabaseViewState
                           child: Text(text[1], textAlign: TextAlign.start),
                           width: 50,
                         ),
-                        SizedBox(
-                          child: Text(text[2], textAlign: TextAlign.start),
-                          width: 100,
-                        ),
                       ],
                     ),
                   );
@@ -115,8 +111,8 @@ class _CalibrationProsessedDatabaseViewState
       double distance =
           double.parse(accelerometerMap[accKey].toString().split(',').last);
 
-      LinearCalibrationData data =
-          LinearCalibrationData(objectSize: imageSizeAve, distance: distance);
+      CalibrationData data =
+          CalibrationData(objectSize: imageSizeAve, distance: distance);
       matchedDataBox.put(imageSizeAve.toString(), data);
 
       displayList.add([

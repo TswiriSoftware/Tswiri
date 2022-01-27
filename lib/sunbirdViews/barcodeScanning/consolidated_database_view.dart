@@ -1,10 +1,6 @@
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataInjectorFunctions/raw_data_functions.dart';
-import 'package:flutter_google_ml_kit/functions/dataManipulation/add_fixed_point.dart';
-import 'package:flutter_google_ml_kit/functions/dataManipulation/consolidate_processed_data.dart';
-import 'package:flutter_google_ml_kit/functions/dataManipulation/generate_list_of_processed_data.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/objects/barcode_marker.dart';
-import 'package:flutter_google_ml_kit/objects/inter_barcode_vector.dart';
+import 'package:flutter_google_ml_kit/objects/inter_barcode_offset.dart';
 import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
 
@@ -20,10 +16,9 @@ class _HiveDatabaseConsolidationViewState
     extends State<HiveDatabaseConsolidationView> {
   List displayList = [];
   List fixedPoints = ['1'];
-  List<InterBarcodeVector> processedDataList = [];
+  List<InterBarcodeOffset> processedDataList = [];
   Map<String, List> consolidatedDataList = {};
   Map<String, List> currentPoints = {};
-  Map<String, BarcodeMarker> consolidatedData = {};
 
   @override
   void initState() {
@@ -120,33 +115,22 @@ class _HiveDatabaseConsolidationViewState
   }
 
   Future<List> consolidateData(List displayList) async {
-    var processedDataBox = await Hive.openBox('processedDataBox');
     var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
-
-    List<InterBarcodeVector> deduplicatedData =
-        listProcessedData(processedDataBox);
-
-    if (deduplicatedData.isNotEmpty) {
-      addFixedPoint(deduplicatedData.first, consolidatedData);
-    }
-
-    consolidateProcessedData(
-        deduplicatedData, consolidatedData, consolidatedDataBox);
+    Map<String, ConsolidatedData> consolidatedData = {};
+    Map consolidatedDataMap = consolidatedDataBox.toMap();
+    consolidatedDataMap.forEach((key, value) {
+      consolidatedData.putIfAbsent(key, () => value);
+    });
 
     return _displayList(consolidatedData, displayList);
   }
 }
 
 List _displayList(
-    Map<String, BarcodeMarker> consolidatedData, List displayList) {
+    Map<String, ConsolidatedData> consolidatedData, List displayList) {
   displayList.clear();
   consolidatedData.forEach((key, value) {
-    displayList.add([
-      value.id,
-      roundDouble(value.position.dx, 5),
-      roundDouble(value.position.dy, 5),
-      value.fixed
-    ]);
+    displayList.add([value.uid, value.X, value.Y, value.fixed]);
   });
   displayList.sort((a, b) => a[0].compareTo(b[0]));
   return displayList;
