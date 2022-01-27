@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataInjectorFunctions/raw_data_functions.dart';
-import 'package:flutter_google_ml_kit/functions/dataManipulation/add_fixed_point.dart';
+import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataFunctions/data_processing_functions.dart';
 import 'package:flutter_google_ml_kit/functions/dataManipulation/deduplicate_raw_data.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_marker.dart';
@@ -12,7 +11,7 @@ import 'consolidate_processed_data.dart';
 processRawOnImageData(
     Map rawOnImageDataMap, Box consolidatedDataBox, Box lookupTable) {
   Map<String, OnImageInterBarcodeData> processedData =
-      deduplicateRawData(rawOnImageDataMap);
+      deduplicateRawOnImageData(rawOnImageDataMap);
 
   List<RealInterBarcodeData> realInterBarcodeDataList = [];
   Map<String, BarcodeMarker> consolidatedDataMap = {};
@@ -26,18 +25,19 @@ processRawOnImageData(
           onImageBarcodeData.interBarcodeOffset.y),
     );
 
-    List<double> imageSizesLookupTable = getImageSizes(lookupTable.toMap());
+    Map lookupTableMap = lookupTable.toMap();
 
-    print(value.aveDiagonalLength);
-    // double distanceFromCamera = calaculateDistanceFormCamera(
-    //     value.aveDiagonalLength, lookupTable.toMap(), imageSizesLookupTable);
+    List<double> imageSizesLookupTable = getImageSizes(lookupTableMap);
+
+    double distanceFromCamera = calaculateDistanceFormCamera(
+        value.aveDiagonalLength, lookupTableMap, imageSizesLookupTable);
 
     RealInterBarcodeData realBarcodeData = RealInterBarcodeData(
         uid: onImageBarcodeData.uid,
         uidStart: onImageBarcodeData.uidStart,
         uidEnd: onImageBarcodeData.uidEnd,
         interBarcodeOffset: realInterBarcodeOffset,
-        distanceFromCamera: 0,
+        distanceFromCamera: distanceFromCamera,
         timestamp: value.timestamp);
 
     realInterBarcodeDataList.add(realBarcodeData);
@@ -49,10 +49,4 @@ processRawOnImageData(
 
   consolidateProcessedData(
       realInterBarcodeDataList, consolidatedDataMap, consolidatedDataBox);
-}
-
-Offset convertOnImageOffsetToRealOffset(
-    {required Offset onImageInterBarcodeOffset,
-    required double aveDiagonalSideLength}) {
-  return onImageInterBarcodeOffset / aveDiagonalSideLength;
 }
