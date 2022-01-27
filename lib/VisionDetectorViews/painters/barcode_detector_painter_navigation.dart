@@ -40,38 +40,14 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
           barcodeScreenData.displayValue != selectedBarcodeID;
 
       if (checkIfBarcodeIsValid()) {
-        Offset relativeOffsetBetweenCurrentandSelectedBarcode =
-            calculateOffsetBetweenTwoOffsets(
-                p1: consolidatedData[selectedBarcodeID]!,
-                p2: consolidatedData[barcodeScreenData.displayValue]!);
-
-        Offset absoluteScreenCenterOffset = calculateAbsoluteCenterPoint(
-            screenCenterPoint, absoluteImageSize, rotation);
-
-        Offset absoluteBarcodeCenterOffset =
-            calculateAbsoluteBarcodeCenterPoint(
-                barcode, absoluteImageSize, rotation);
-
-        Offset absoluteOffsetBetweenBarcodeCenterAndScreenCenter =
-            calculateAbsoluteOffsetBetweenBarcodes(
-                absoluteScreenCenterOffset, absoluteBarcodeCenterOffset);
-
-        Offset relativeScreenCenterOffset = translateOffsetAbsoluteToRelative(
-            absoluteOffsetBetweenBarcodeCenterAndScreenCenter,
-            barcodeScreenData.absoluteBarcodeSize);
-
-        Offset test = translateOffsetRelativeToAbsolute(
-                calculateOffsetBetweenTwoOffsets(
-                    p1: consolidatedData[selectedBarcodeID]!,
-                    p2: relativeScreenCenterOffset),
-                barcodeScreenData.absoluteBarcodeSize) *
-            100;
-
         // translateOffsetRelativeToAbsolute(relativeScreenCenterOffset,
         //     barcodeScreenData.absoluteBarcodeSize),
 
-        canvas.drawLine(
-            screenCenterPoint, test + screenCenterPoint, paintBlue4);
+        // canvas.drawLine(
+        //     screenCenterPoint,
+        //     translateCoordinates(test, relativeScreenCenterOffset) +
+        //         screenCenterPoint,
+        //     paintBlue3);
       }
     }
   }
@@ -139,15 +115,15 @@ Offset calculateOffsetBetweenTwoOffsets(
   return offset;
 }
 
-Offset translateCoordinates(Offset offset) {
-  if (offset.dx > 0 && offset.dy > 0) {
+Offset translateCoordinates(Offset offset, Offset relativeBarcode) {
+  if (relativeBarcode.dx > 0 && relativeBarcode.dy > 0) {
+    offset = Offset(-offset.dx, -offset.dy);
+  } else if (relativeBarcode.dx > 0 && relativeBarcode.dy < 0) {
     offset = Offset(offset.dx, offset.dy);
-  } else if (offset.dx > 0 && offset.dy < 0) {
+  } else if (relativeBarcode.dx < 0 && relativeBarcode.dy < 0) {
     offset = Offset(offset.dx, offset.dy);
-  } else if (offset.dx < 0 && offset.dy < 0) {
-    offset = Offset(offset.dx, offset.dy);
-  } else if (offset.dx < 0 && offset.dy < 0) {
-    offset = Offset(offset.dx, offset.dy);
+  } else if (relativeBarcode.dx < 0 && relativeBarcode.dy < 0) {
+    offset = Offset(offset.dx, -offset.dy);
   }
 
   return offset;
