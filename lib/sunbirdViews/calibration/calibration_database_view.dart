@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/calibration_data_adapter.dart';
 import 'package:hive/hive.dart';
 
 class CalibrationDatabaseView extends StatefulWidget {
@@ -76,14 +77,10 @@ class _CalibrationDatabaseViewState extends State<CalibrationDatabaseView> {
                       children: [
                         SizedBox(
                           child: Text(text[0], textAlign: TextAlign.start),
-                          width: 50,
+                          width: 150,
                         ),
                         SizedBox(
                           child: Text(text[1], textAlign: TextAlign.start),
-                          width: 50,
-                        ),
-                        SizedBox(
-                          child: Text(text[2], textAlign: TextAlign.start),
                           width: 150,
                         ),
                       ],
@@ -99,11 +96,12 @@ class _CalibrationDatabaseViewState extends State<CalibrationDatabaseView> {
   Future<List> loadData() async {
     displayList.clear();
     var calibrationDataBox = await Hive.openBox('calibrationDataBox');
-    var calibrationMap = {};
-    calibrationMap = calibrationDataBox.toMap();
+
+    var calibrationMap = calibrationDataBox.toMap();
 
     calibrationMap.forEach((key, value) {
-      displayList.add(value);
+      CalibrationData data = value;
+      displayList.add([data.averageDiagonalLength, data.timestamp]);
     });
 
     return displayList;

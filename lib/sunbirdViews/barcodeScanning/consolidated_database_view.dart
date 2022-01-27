@@ -15,10 +15,6 @@ class HiveDatabaseConsolidationView extends StatefulWidget {
 class _HiveDatabaseConsolidationViewState
     extends State<HiveDatabaseConsolidationView> {
   List displayList = [];
-  List fixedPoints = ['1'];
-  List<InterBarcodeOffset> processedDataList = [];
-  Map<String, List> consolidatedDataList = {};
-  Map<String, List> currentPoints = {};
 
   @override
   void initState() {
@@ -130,7 +126,7 @@ List _displayList(
     Map<String, ConsolidatedData> consolidatedData, List displayList) {
   displayList.clear();
   consolidatedData.forEach((key, value) {
-    displayList.add([value.uid, value.X, value.Y, value.fixed]);
+    displayList.add([value.uid, value.offset.x, value.offset.y, value.fixed]);
   });
   displayList.sort((a, b) => a[0].compareTo(b[0]));
   return displayList;

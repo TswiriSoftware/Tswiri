@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/functions.dart';
+import 'package:flutter_google_ml_kit/functions/calibration_functions.dart';
 import 'package:hive/hive.dart';
 
 class CalibrationLookupTableDatabaseView extends StatefulWidget {
@@ -67,13 +67,6 @@ class _CalibrationLookupTableDatabaseViewState
                 );
               }
             }));
-  }
-
-  Future<List> loadData() async {
-    displayList.clear();
-
-    displayList.add('');
-    return displayList;
   }
 }
 

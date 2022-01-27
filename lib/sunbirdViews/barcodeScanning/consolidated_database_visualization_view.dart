@@ -3,7 +3,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataInjectorFunctions/raw_data_functions.dart';
+import 'package:flutter_google_ml_kit/functions/round_to_double.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 //TODO: Refactor this @049er
@@ -132,10 +132,10 @@ _getPoints(
   double height = MediaQuery.of(context).size.height;
   for (var i = 0; i < consolidatedDataBox.length; i++) {
     ConsolidatedData data = consolidatedDataBox.getAt(i);
-    points.add(Offset(
-        (data.X * 10000) + (width / 2), (-data.Y * 10000) + (height / 2)));
-    pointRelativePositions
-        .add('(${roundDouble(data.X, 10)}, ${roundDouble(data.Y, 10)})');
+
+    points.add(Offset((data.offset.x * 150000) + (width / 2),
+        (-data.offset.y * 150000) + (height / 2)));
+    pointRelativePositions.add('(${data.offset.x}, ${data.offset.y})');
     pointNames.add(data.uid);
   }
   return points;

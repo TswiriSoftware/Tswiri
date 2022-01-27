@@ -3,7 +3,7 @@ import 'package:flutter_google_ml_kit/VisionDetectorViews/barcode_scanner_view.d
 import '../../../main.dart';
 import '../consolidated_database_view.dart';
 import '../consolidated_database_visualization_view.dart';
-import '../raw_database_view.dart';
+import '../raw_on_image_database_view.dart';
 
 class BarcodeScanningView extends StatefulWidget {
   const BarcodeScanningView({Key? key}) : super(key: key);
@@ -39,7 +39,7 @@ class _BarcodeScanningViewState extends State<BarcodeScanningView> {
               featureCompleted: true,
             ),
             const CustomCard(
-                'Raw Data Viewer', HiveDatabaseView(), Icons.view_array,
+                'Raw Data Viewer', RawOnImageDatabaseView(), Icons.view_array,
                 featureCompleted: true),
             const CustomCard('Consolidated Data Viewer',
                 HiveDatabaseConsolidationView(), Icons.view_array,

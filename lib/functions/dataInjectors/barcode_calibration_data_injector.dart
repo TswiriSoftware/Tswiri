@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibration_data_adapter.dart';
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataInjectorFunctions/raw_data_functions.dart';
+import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataFunctions/data_capturing_functions.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
 
@@ -34,11 +34,18 @@ injectCalibrationData(
     if (checkIfBarcodeIsValid()) {
       var diagonalLength = averageBarcodeDiagonalLength(barcode);
 
-      int timestamp = DateTime.now().millisecondsSinceEpoch;
       CalibrationData calibrationDataInstance = CalibrationData(
-          averageDiagonalLength: diagonalLength, timestamp: timestamp);
+          timestamp: DateTime.now().millisecondsSinceEpoch.toString(),
+          averageDiagonalLength: diagonalLength,
+          timestampInt: DateTime.now().millisecondsSinceEpoch);
 
-      calibrationDataBox.put(timestamp.toString(), calibrationDataInstance);
+      print(calibrationDataInstance.timestamp);
+
+      calibrationDataBox.put(
+          calibrationDataInstance.timestamp, calibrationDataInstance);
+
+      // calibrationDataBox.put(
+      //     calibrationDataInstance.timestamp, calibrationDataInstance);
     } else {
       throw Exception(
           'Barcode with null displayvalue or boundingbox detected ');

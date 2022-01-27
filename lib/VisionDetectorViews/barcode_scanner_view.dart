@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/dataInjectors/barcode_raw_data_injector.dart';
+import 'package:flutter_google_ml_kit/functions/dataInjectors/barcode_raw_on_image_data_injector.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'camera_view.dart';
@@ -58,8 +58,8 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     isBusy = false;
     if (mounted) {
       setState(() {
-        injectBarcodes(
-            barcodes, inputImage.inputImageData!, rawDataBox, lookupTable.toMap());
+        barcodeRawOnImageDataInjector(barcodes, inputImage.inputImageData!,
+            rawDataBox, lookupTable.toMap());
       });
     }
   }

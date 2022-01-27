@@ -4,17 +4,19 @@ import 'package:flutter/material.dart';
 class WorkingBarcode {
   WorkingBarcode(
       {required this.displayValue,
-      required this.barcodeCenterOffsetOnImage,
+      required this.onImageBarcodeCenterOffset,
       required this.aveBarcodeDiagonalLengthOnImage,
       required this.timestamp});
 
+  ///Barcode display value or ID.
   final String displayValue;
-  final Offset barcodeCenterOffsetOnImage;
-  late double aveBarcodeDiagonalLengthOnImage;
-  final int timestamp;
 
-  @override
-  String toString() {
-    return '$displayValue, $barcodeCenterOffsetOnImage, $timestamp';
-  }
+  ///Barcode center offset on the image.
+  final Offset onImageBarcodeCenterOffset;
+
+  ///Average diagonal length of the barcode on the image.
+  late double aveBarcodeDiagonalLengthOnImage;
+
+  ///Timestamp when the barcode was scanned.
+  final int timestamp;
 }

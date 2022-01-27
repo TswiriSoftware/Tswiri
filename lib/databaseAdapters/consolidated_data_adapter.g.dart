@@ -18,23 +18,20 @@ class ConsolidatedDataAdapter extends TypeAdapter<ConsolidatedData> {
     };
     return ConsolidatedData(
       uid: fields[0] as String,
-      X: fields[1] as double,
-      Y: fields[2] as double,
-      fixed: fields[3] as bool,
+      offset: fields[1] as TypeOffset,
+      fixed: fields[2] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, ConsolidatedData obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.uid)
       ..writeByte(1)
-      ..write(obj.X)
+      ..write(obj.offset)
       ..writeByte(2)
-      ..write(obj.Y)
-      ..writeByte(3)
       ..write(obj.fixed);
   }
 

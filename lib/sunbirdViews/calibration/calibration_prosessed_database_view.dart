@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/matched_calibration_data_adapter.dart';
 import 'package:hive/hive.dart';
 
@@ -65,12 +66,12 @@ class _CalibrationProsessedDatabaseViewState
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(
-                          child: Text(text[0], textAlign: TextAlign.start),
+                          child: Text(text[1], textAlign: TextAlign.start),
                           width: 150,
                         ),
                         SizedBox(
-                          child: Text(text[1], textAlign: TextAlign.start),
-                          width: 50,
+                          child: Text(text[2], textAlign: TextAlign.start),
+                          width: 150,
                         ),
                       ],
                     ),
@@ -99,25 +100,27 @@ class _CalibrationProsessedDatabaseViewState
     });
 
     calibrationMap.forEach((key, value) {
+      CalibrationData calibrationData = value;
       int timestamp = int.parse(key) - 2;
       //double qrSizeAve = 2;
       var greater = accelerometerArray.where((e) => e >= timestamp).toList()
         ..sort();
 
       String accKey = greater.first.toString();
-      double imageSizeAve = (double.parse(value.toString().split(',').first) +
-              double.parse(value.toString().split(',')[1])) /
-          2;
+
       double distance =
           double.parse(accelerometerMap[accKey].toString().split(',').last);
 
-      CalibrationData data =
-          CalibrationData(objectSize: imageSizeAve, distance: distance);
-      matchedDataBox.put(imageSizeAve.toString(), data);
+      MatchedCalibrationData data = MatchedCalibrationData(
+          objectSize: calibrationData.averageDiagonalLength,
+          distance: distance);
+
+      matchedDataBox.put(
+          calibrationData.averageDiagonalLength.toString(), data);
 
       displayList.add([
         timestamp,
-        imageSizeAve,
+        calibrationData.averageDiagonalLength,
         double.parse(accelerometerMap[accKey].toString().split(',').last)
       ]);
     });

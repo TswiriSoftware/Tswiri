@@ -87,8 +87,8 @@ class _BarcodeNavigatorViewState extends State<BarcodeNavigatorView> {
       ConsolidatedData data = value;
       mapConsolidated.update(
         key,
-        (value) => Offset(data.X, data.Y),
-        ifAbsent: () => Offset(data.X, data.Y),
+        (value) => Offset(data.offset.x, data.offset.y),
+        ifAbsent: () => Offset(data.offset.x, data.offset.y),
       );
     });
     return mapConsolidated;

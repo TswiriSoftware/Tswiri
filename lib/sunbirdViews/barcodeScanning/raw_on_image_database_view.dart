@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/on_image_inter_barcode_data.dart';
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataInjectorFunctions/raw_data_functions.dart';
 import 'package:flutter_google_ml_kit/functions/dataManipulation/process_raw_data.dart';
+import 'package:flutter_google_ml_kit/functions/round_to_double.dart';
 import 'package:hive/hive.dart';
 
-class HiveDatabaseView extends StatefulWidget {
-  const HiveDatabaseView({Key? key}) : super(key: key);
+class RawOnImageDatabaseView extends StatefulWidget {
+  const RawOnImageDatabaseView({Key? key}) : super(key: key);
 
   @override
-  _HiveDatabaseViewState createState() => _HiveDatabaseViewState();
+  _RawOnImageDatabaseViewState createState() => _RawOnImageDatabaseViewState();
 }
 
-class _HiveDatabaseViewState extends State<HiveDatabaseView> {
+class _RawOnImageDatabaseViewState extends State<RawOnImageDatabaseView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,7 +82,8 @@ class _HiveDatabaseViewState extends State<HiveDatabaseView> {
   Future<List> loadData() async {
     var rawOnImageDataBox = await Hive.openBox('rawDataBox');
     var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
-    var lookupTable = await Hive.openBox('calibrationDataBox');
+    var lookupTable = await Hive.openBox('matchedDataBox');
+    print(lookupTable.toMap());
     Map rawOnImageDataMap = rawOnImageDataBox.toMap();
 
     processRawOnImageData(rawOnImageDataMap, consolidatedDataBox, lookupTable);

@@ -12,26 +12,27 @@ class OnImageInterBarcodeData extends HiveObject {
       required this.aveDiagonalLength,
       required this.timestamp});
 
+  ///uid = uidStart_uidEnd.
   @HiveField(0)
   late String uid;
 
+  ///uid of the start barcode.
   @HiveField(1)
   late String uidStart;
 
+  ///uid of the end barcode.
   @HiveField(2)
   late String uidEnd;
 
+  ///The inter barcode offset on the image.
   @HiveField(3)
   late TypeOffset interBarcodeOffset;
 
+  ///The average diagonal length of the two barcodes.
   @HiveField(4)
   late double aveDiagonalLength;
 
+  ///Timestamp of when the barcodes where scanned.
   @HiveField(5)
   late int timestamp;
-
-  @override
-  String toString() {
-    return '$uidStart, $uidEnd, $aveDiagonalLength, $timestamp';
-  }
 }

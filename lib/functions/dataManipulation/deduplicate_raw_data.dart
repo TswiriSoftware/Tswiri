@@ -2,7 +2,7 @@
 import 'package:fast_immutable_collections/src/ilist/list_extension.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/on_image_inter_barcode_data.dart';
 
-Map<String, OnImageInterBarcodeData> deduplicateRawData(Map rawData) {
+Map<String, OnImageInterBarcodeData> deduplicateRawOnImageData(Map rawData) {
   Map<String, OnImageInterBarcodeData> processedData = {};
   List uids = [];
   uids.clear();
