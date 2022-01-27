@@ -50,16 +50,18 @@ Offset calculateAbsoluteBarcodeCenterPoint(
 }
 
 ///Calculates how far the barcode is from the camera given calibration data (imageSizes: for sorting, Lookuptable: for Distance from camera)
-double calaculateDistanceFormCamera(Barcode barcode, Offset barcodeCenterOffset,
+double calaculateDistanceFormCamera(Barcode barcode,
     Map lookupTable, List<double> imageSizes) {
-  double imageSize = (((barcode.value.boundingBox!.left -
+
+  
+  double absoluteBarcodeSize = (((barcode.value.boundingBox!.left -
                   barcode.value.boundingBox!.right)
               .abs() +
           (barcode.value.boundingBox!.top - barcode.value.boundingBox!.bottom)
               .abs()) /
       2);
 
-  var greaterThan = imageSizes.where((element) => element >= imageSize).toList()
+  var greaterThan = imageSizes.where((element) => element >= absoluteBarcodeSize).toList()
     ..sort();
 
   String imageSizeKey = greaterThan.first.toString();

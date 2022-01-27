@@ -22,14 +22,14 @@ injectBarcodes(
   List<Barcode> barcodes,
   InputImageData inputImageData,
   Box<dynamic> rawDataBox,
-  Box<dynamic> lookupTableBox,
+  Map lookupTableMap,
 ) {
 //TODO: Write documentation for all functions.
 
   Map<String, WorkingBarcode> scannedBarcodes = {};
   Map<String, BarcodesOffset> qrCodeVectorsList = {};
 
-  Map lookupTableMap = lookupTableBox.toMap();
+  //Map lookupTableMap = lookupTableBox.toMap();
   List<double> imageSizesLookupTable = getImageSizes(lookupTableMap);
 
   for (final Barcode barcode in barcodes) {
@@ -41,7 +41,7 @@ injectBarcodes(
           barcode, inputImageData.size, inputImageData.imageRotation);
 
       double distanceFromCamera = calaculateDistanceFormCamera(barcode,
-          barcodeAbsoluteCenterOffset, lookupTableMap, imageSizesLookupTable);
+           lookupTableMap, imageSizesLookupTable);
 
       WorkingBarcode workingBarcode = WorkingBarcode(
           displayValue: barcode.value.displayValue!,
@@ -99,7 +99,7 @@ injectBarcodes(
     qrCodeVectorsList.forEach((key, value) {
       RelativeQrCodes _qrCodeVectors = RelativeQrCodes(
           uid: key,
-          uidStart: value.startQrCode,
+          uidStart: value.startQrCode,  
           uidEnd: value.endQrCode,
           x: value.relativeOffset.dx,
           y: value.relativeOffset.dy,
