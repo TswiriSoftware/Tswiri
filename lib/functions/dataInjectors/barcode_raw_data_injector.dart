@@ -74,10 +74,12 @@ injectBarcodes(
               calcAverageAbsoluteSideLength(barcodeEnd, barcodeStart);
 
           Offset absoluteOffsetBetweenPoints =
-              calculateAbsoluteOffsetBetweenBarcodes(barcodeStart, barcodeEnd);
+              calculateAbsoluteOffsetBetweenBarcodes(
+                  barcodeEnd.barcodeAbsoluteCenterOffset,
+                  barcodeStart.barcodeAbsoluteCenterOffset);
 
           Offset relativeOffsetBetweenPoints =
-              calculateRelativeOffsetBetweenBarcodes(
+              translateOffsetAbsoluteToRelative(
                   absoluteOffsetBetweenPoints, aveSideLengthOfBarcodes);
 
           BarcodesOffset qrCodeVector = BarcodesOffset(

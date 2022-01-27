@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/coordinates_translator.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 double translateXAbsolute(
@@ -31,6 +32,14 @@ double translateYAbsolute(
   }
 }
 
+Offset translateOffsetScreen(
+    Offset offset, InputImageRotation rotation, Size absoluteImageSize) {
+  Offset translatedOffset = Offset(
+      translateXScreen(offset.dx, rotation, absoluteImageSize),
+      translateYScreen(offset.dy, rotation, absoluteImageSize));
+  return translatedOffset;
+}
+
 double translateXScreen(
     double x, InputImageRotation rotation, Size absoluteImageSize) {
   switch (rotation) {
@@ -52,8 +61,16 @@ double translateYScreen(
   switch (rotation) {
     case InputImageRotation.Rotation_90deg:
     case InputImageRotation.Rotation_270deg:
-      return -y * absoluteImageSize.width;
+      return y * absoluteImageSize.width;
     default:
-      return y * absoluteImageSize.height;
+      return -y * absoluteImageSize.height;
   }
+}
+
+Offset translateOffset(Offset offset, InputImageRotation rotation, Size size,
+    Size absoluteImageSize) {
+  Offset translatedOffset = Offset(
+      translateX(offset.dx, rotation, size, absoluteImageSize),
+      translateY(offset.dy, rotation, size, absoluteImageSize));
+  return translatedOffset;
 }
