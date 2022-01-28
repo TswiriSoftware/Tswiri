@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibration_data_adapter.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:hive/hive.dart';
 
 class CalibrationDatabaseView extends StatefulWidget {
@@ -26,32 +27,6 @@ class _CalibrationDatabaseViewState extends State<CalibrationDatabaseView> {
         centerTitle: true,
         elevation: 0,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.all(18.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            FloatingActionButton(
-              heroTag: null,
-              onPressed: () async {
-                var calibrationDataBox =
-                    await Hive.openBox('calibrationDataBox');
-                var accelerometerDataBox =
-                    await Hive.openBox('accelerometerDataBox');
-                var matchedDataBox = await Hive.openBox('matchedDataBox');
-                accelerometerDataBox.clear();
-                calibrationDataBox.clear();
-                matchedDataBox.clear();
-                displayList.clear();
-
-                setState(() {});
-              },
-              child: const Icon(Icons.delete),
-            ),
-          ],
-        ),
-      ),
       body: FutureBuilder<List>(
         future: loadData(),
         builder: (context, snapshot) {
@@ -70,22 +45,22 @@ class _CalibrationDatabaseViewState extends State<CalibrationDatabaseView> {
                       .split(',')
                       .toList();
 
-                  return Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          child: Text(text[0], textAlign: TextAlign.start),
-                          width: 150,
+                  if (index == 0) {
+                    return Column(
+                      children: <Widget>[
+                        displayDataPoint([
+                          'Diagonal Size Length',
+                          'Timestamp',
+                        ]),
+                        const SizedBox(
+                          height: 5,
                         ),
-                        SizedBox(
-                          child: Text(text[1], textAlign: TextAlign.start),
-                          width: 150,
-                        ),
+                        displayDataPoint(text),
                       ],
-                    ),
-                  );
+                    );
+                  } else {
+                    return displayDataPoint(text);
+                  }
                 });
           }
         },
@@ -106,4 +81,44 @@ class _CalibrationDatabaseViewState extends State<CalibrationDatabaseView> {
 
     return displayList;
   }
+}
+
+displayDataPoint(var myText) {
+  return Column(
+    children: [
+      const SizedBox(
+        height: 3,
+      ),
+      Container(
+        decoration: const BoxDecoration(
+            border: Border(
+                bottom: BorderSide(color: deepSpaceSparkle),
+                top: BorderSide(color: deepSpaceSparkle),
+                left: BorderSide(color: deepSpaceSparkle),
+                right: BorderSide(color: deepSpaceSparkle))),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          textDirection: TextDirection.ltr,
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                  border: Border(right: BorderSide(color: deepSpaceSparkle))),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 15),
+                child: SizedBox(
+                  child: Text(myText[0], textAlign: TextAlign.center),
+                  width: 175,
+                ),
+              ),
+            ),
+            SizedBox(
+              child: Text(myText[1], textAlign: TextAlign.center),
+              width: 175,
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/VisionDetectorViews/camera_view.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/barcode_scanner_view.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/barcode_detector_painter_navigation.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';

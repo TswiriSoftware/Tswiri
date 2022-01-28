@@ -1,9 +1,12 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/accelerometer_data_adapter.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataFunctions/data_capturing_functions.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
+
+import '../../round_to_double.dart';
 
 //TODO: New Sheet.
 //RealData  (Stored in box) ****** Majoroty of calulations Real Offset -> Screen Offset;  realOffset * X = screenOffset ;
@@ -12,16 +15,7 @@ import 'package:hive/hive.dart';
 
 //Add barcode size to Database... realBarcodeSize
 
-class BarcodeCalibrationInjector {
-  BarcodeCalibrationInjector(
-      this.barcodes, this.absoluteImageSize, this.rotation);
-
-  final List<Barcode> barcodes;
-  final Size absoluteImageSize;
-  final InputImageRotation rotation;
-}
-
-injectCalibrationData(
+injectBarcodeSizeData(
   BuildContext context,
   List<Barcode> barcodes,
   Size absoluteImageSize,
@@ -36,19 +30,25 @@ injectCalibrationData(
 
       CalibrationData calibrationDataInstance = CalibrationData(
           timestamp: DateTime.now().millisecondsSinceEpoch.toString(),
-          averageDiagonalLength: diagonalLength,
-          timestampInt: DateTime.now().millisecondsSinceEpoch);
-
-      print(calibrationDataInstance.timestamp);
+          averageDiagonalLength: diagonalLength);
 
       calibrationDataBox.put(
           calibrationDataInstance.timestamp, calibrationDataInstance);
-
-      // calibrationDataBox.put(
-      //     calibrationDataInstance.timestamp, calibrationDataInstance);
     } else {
       throw Exception(
           'Barcode with null displayvalue or boundingbox detected ');
     }
   }
+}
+
+injectAccelerometerData(int deltaT, double zAcceleration, double distanceMoved,
+    Box accelerometerDataBox) {
+  int timestamp = DateTime.now().millisecondsSinceEpoch;
+  AccelerometerData accelerometerDataInstance = AccelerometerData(
+      timestamp: timestamp,
+      deltaT: deltaT,
+      accelerometerData: zAcceleration,
+      distanceMoved: roundDouble(distanceMoved, 5).abs());
+
+  accelerometerDataBox.put(timestamp.toString(), accelerometerDataInstance);
 }

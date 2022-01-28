@@ -19,20 +19,17 @@ class CalibrationDataAdapter extends TypeAdapter<CalibrationData> {
     return CalibrationData(
       timestamp: fields[0] as String,
       averageDiagonalLength: fields[1] as double,
-      timestampInt: fields[3] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, CalibrationData obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(2)
       ..writeByte(0)
       ..write(obj.timestamp)
       ..writeByte(1)
-      ..write(obj.averageDiagonalLength)
-      ..writeByte(3)
-      ..write(obj.timestampInt);
+      ..write(obj.averageDiagonalLength);
   }
 
   @override

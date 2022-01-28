@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/functions/dataManipulation/process_raw_data.dart';
 import 'package:flutter_google_ml_kit/functions/round_to_double.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:hive/hive.dart';
 
 class RawOnImageDatabaseView extends StatefulWidget {
@@ -118,10 +119,10 @@ displayDataPoint(var myText) {
       Container(
         decoration: const BoxDecoration(
             border: Border(
-                bottom: BorderSide(color: Colors.deepOrange),
-                top: BorderSide(color: Colors.deepOrange),
-                left: BorderSide(color: Colors.deepOrange),
-                right: BorderSide(color: Colors.deepOrange))),
+                bottom: BorderSide(color: deepSpaceSparkle),
+                top: BorderSide(color: deepSpaceSparkle),
+                left: BorderSide(color: deepSpaceSparkle),
+                right: BorderSide(color: deepSpaceSparkle))),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,7 +130,7 @@ displayDataPoint(var myText) {
           children: [
             Container(
               decoration: const BoxDecoration(
-                  border: Border(right: BorderSide(color: Colors.deepOrange))),
+                  border: Border(right: BorderSide(color: deepSpaceSparkle))),
               child: SizedBox(
                 child: Text(myText[0], textAlign: TextAlign.center),
                 width: 35,
@@ -137,7 +138,7 @@ displayDataPoint(var myText) {
             ),
             Container(
               decoration: const BoxDecoration(
-                  border: Border(right: BorderSide(color: Colors.deepOrange))),
+                  border: Border(right: BorderSide(color: deepSpaceSparkle))),
               child: SizedBox(
                 child: Text(myText[1], textAlign: TextAlign.center),
                 width: 35,
@@ -145,7 +146,7 @@ displayDataPoint(var myText) {
             ),
             Container(
               decoration: const BoxDecoration(
-                  border: Border(right: BorderSide(color: Colors.deepOrange))),
+                  border: Border(right: BorderSide(color: deepSpaceSparkle))),
               child: SizedBox(
                 child: Text(myText[2], textAlign: TextAlign.center),
                 width: 75,
@@ -153,19 +154,15 @@ displayDataPoint(var myText) {
             ),
             Container(
               decoration: const BoxDecoration(
-                  border: Border(right: BorderSide(color: Colors.deepOrange))),
+                  border: Border(right: BorderSide(color: deepSpaceSparkle))),
               child: SizedBox(
                 child: Text(myText[3], textAlign: TextAlign.center),
                 width: 75,
               ),
             ),
-            Container(
-              decoration: const BoxDecoration(
-                  border: Border(right: BorderSide(color: Colors.deepOrange))),
-              child: SizedBox(
-                child: Text(myText[4], textAlign: TextAlign.center),
-                width: 125,
-              ),
+            SizedBox(
+              child: Text(myText[4], textAlign: TextAlign.center),
+              width: 125,
             ),
           ],
         ),

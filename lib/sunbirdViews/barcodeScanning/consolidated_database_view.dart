@@ -1,5 +1,7 @@
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/functions/round_to_double.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/objects/inter_barcode_offset.dart';
 import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
@@ -126,34 +128,59 @@ List _displayList(
     Map<String, ConsolidatedData> consolidatedData, List displayList) {
   displayList.clear();
   consolidatedData.forEach((key, value) {
-    displayList.add([value.uid, value.offset.x, value.offset.y, value.fixed]);
+    displayList.add([
+      value.uid,
+      roundDouble(value.offset.x, 13),
+      roundDouble(value.offset.y, 13),
+      value.fixed
+    ]);
   });
   displayList.sort((a, b) => a[0].compareTo(b[0]));
   return displayList;
 }
 
 displayDataPoint(var myText) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    crossAxisAlignment: CrossAxisAlignment.start,
-    textDirection: TextDirection.ltr,
-    children: [
-      SizedBox(
-        child: Text(myText[0], textAlign: TextAlign.center),
-        width: 50,
-      ),
-      SizedBox(
-        child: Text(myText[1], textAlign: TextAlign.center),
-        width: 100,
-      ),
-      SizedBox(
-        child: Text(myText[2], textAlign: TextAlign.center),
-        width: 100,
-      ),
-      SizedBox(
-        child: Text(myText[3], textAlign: TextAlign.center),
-        width: 100,
-      ),
-    ],
+  return Container(
+    decoration: const BoxDecoration(
+        border: Border(
+            bottom: BorderSide(color: deepSpaceSparkle),
+            top: BorderSide(color: deepSpaceSparkle),
+            left: BorderSide(color: deepSpaceSparkle),
+            right: BorderSide(color: deepSpaceSparkle))),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      textDirection: TextDirection.ltr,
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+              border: Border(right: BorderSide(color: deepSpaceSparkle))),
+          child: SizedBox(
+            child: Text(myText[0], textAlign: TextAlign.center),
+            width: 50,
+          ),
+        ),
+        Container(
+          decoration: const BoxDecoration(
+              border: Border(right: BorderSide(color: deepSpaceSparkle))),
+          child: SizedBox(
+            child: Text(myText[1], textAlign: TextAlign.center),
+            width: 140,
+          ),
+        ),
+        Container(
+          decoration: const BoxDecoration(
+              border: Border(right: BorderSide(color: deepSpaceSparkle))),
+          child: SizedBox(
+            child: Text(myText[2], textAlign: TextAlign.center),
+            width: 140,
+          ),
+        ),
+        SizedBox(
+          child: Text(myText[3], textAlign: TextAlign.center),
+          width: 50,
+        ),
+      ],
+    ),
   );
 }

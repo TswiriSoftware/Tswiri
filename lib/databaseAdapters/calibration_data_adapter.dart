@@ -6,7 +6,6 @@ class CalibrationData extends HiveObject {
   CalibrationData({
     required this.timestamp,
     required this.averageDiagonalLength,
-    required this.timestampInt,
   });
 
   @HiveField(0)
@@ -14,7 +13,4 @@ class CalibrationData extends HiveObject {
 
   @HiveField(1)
   late double averageDiagonalLength;
-
-  @HiveField(3)
-  late int timestampInt;
 }
