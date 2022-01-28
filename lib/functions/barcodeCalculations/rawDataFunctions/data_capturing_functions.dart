@@ -1,12 +1,12 @@
 import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/functions/coordinateTranslator/coordinate_translator.dart';
-import 'package:flutter_google_ml_kit/objects/working_barcode.dart';
+import 'package:flutter_google_ml_kit/objects/on_image_barcode.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 ///Calculates the absolute average side length of 2 barcodes
 double calcAverageAbsoluteSideLength(
-    WorkingBarcode qrCodeEnd, WorkingBarcode qrCodeStart) {
+    OnImageBarcode qrCodeEnd, OnImageBarcode qrCodeStart) {
   return 1 /
       ((qrCodeEnd.aveBarcodeDiagonalLengthOnImage +
               qrCodeStart.aveBarcodeDiagonalLengthOnImage) /
@@ -28,7 +28,7 @@ double averageBarcodeDiagonalLength(Barcode barcode) {
 }
 
 ///Calculates the OnImage center point of the barcode given the barcode and inputImageData
-Offset calcOnImageBarcodeCenterPoint(
+Offset calculateOnImageBarcodeCenterPoint(
     Barcode barcode, Size absoluteImageSize, InputImageRotation rotation) {
   final boundingBoxLeft = translateXOnimage(
       barcode.value.boundingBox!.left, rotation, absoluteImageSize);
@@ -47,9 +47,9 @@ Offset calcOnImageBarcodeCenterPoint(
   return centerOffset;
 }
 
-WorkingBarcode determineEndQrcode(
-    int i, Map<String, WorkingBarcode> scannedBarcodes) {
-  WorkingBarcode qrCodeEnd;
+OnImageBarcode determineEndQrcode(
+    int i, Map<String, OnImageBarcode> scannedBarcodes) {
+  OnImageBarcode qrCodeEnd;
   if (i != scannedBarcodes.length - 1) {
     qrCodeEnd = scannedBarcodes.values.elementAt(i + 1);
   } else {

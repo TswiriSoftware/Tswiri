@@ -3,8 +3,8 @@ import 'package:hive/hive.dart';
 part 'on_image_inter_barcode_data.g.dart';
 
 @HiveType(typeId: 0)
-class OnImageInterBarcodeData extends HiveObject {
-  OnImageInterBarcodeData(
+class OnImageInterBarcodeDataHiveObject extends HiveObject {
+  OnImageInterBarcodeDataHiveObject(
       {required this.uid,
       required this.uidStart,
       required this.uidEnd,

@@ -97,7 +97,7 @@ List _displayList(Box onImageDataBox) {
   var displayList = [];
   var rawDataMap = onImageDataBox.toMap();
   rawDataMap.forEach((key, value) {
-    OnImageInterBarcodeData data = value;
+    OnImageInterBarcodeDataHiveObject data = value;
     List vectorData = [
       value.uidStart,
       value.uidEnd,

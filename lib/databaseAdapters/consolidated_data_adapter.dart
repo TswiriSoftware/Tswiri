@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 part 'consolidated_data_adapter.g.dart';
 
 @HiveType(typeId: 1)
-class ConsolidatedData extends HiveObject {
+class ConsolidatedData extends HiveObject { //TODO: rename to hiveObject
   ConsolidatedData(
       {required this.uid, required this.offset, required this.fixed});
 

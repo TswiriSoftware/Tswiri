@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 ///Used to create a
-class WorkingBarcode {
-  WorkingBarcode(
+class OnImageBarcode {
+  OnImageBarcode(
       {required this.displayValue,
       required this.onImageBarcodeCenterOffset,
       required this.aveBarcodeDiagonalLengthOnImage,

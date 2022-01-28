@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/type_offset_adapter.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_marker.dart';
-import 'package:flutter_google_ml_kit/objects/inter_barcode_real_data.dart';
+import 'package:flutter_google_ml_kit/objects/real_inter_barcode_data.dart';
 import 'package:hive/hive.dart';
 
 consolidateProcessedData(List<RealInterBarcodeData> realInterBarcodeDataList,
