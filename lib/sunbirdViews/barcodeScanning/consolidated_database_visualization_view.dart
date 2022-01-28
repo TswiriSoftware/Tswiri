@@ -3,7 +3,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
+import 'package:flutter_google_ml_kit/functions/round_to_double.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_paints.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/calibration/matched_calibration_database_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 //TODO: Refactor this @049er
 
@@ -53,7 +57,7 @@ class _DatabaseVisualizationState extends State<DatabaseVisualization> {
         ),
         appBar: AppBar(
           title: const Text(
-            'Hive Database Tools',
+            'Consolidated Data Visualizer',
             style: TextStyle(fontSize: 25),
           ),
           centerTitle: true,
@@ -73,9 +77,10 @@ class _DatabaseVisualizationState extends State<DatabaseVisualization> {
                     child: CustomPaint(
                       size: Size.infinite,
                       painter: OpenPainter(
-                          dataPoints: dataPoints,
-                          pointNames: pointNames,
-                          pointRelativePositions: pointRelativePositions),
+                        dataPoints: dataPoints,
+                        pointNames: pointNames,
+                        pointRelativePositions: pointRelativePositions,
+                      ),
                     ),
                   ),
                 );
@@ -85,10 +90,11 @@ class _DatabaseVisualizationState extends State<DatabaseVisualization> {
 }
 
 class OpenPainter extends CustomPainter {
-  OpenPainter(
-      {required this.dataPoints,
-      required this.pointNames,
-      required this.pointRelativePositions});
+  OpenPainter({
+    required this.dataPoints,
+    required this.pointNames,
+    required this.pointRelativePositions,
+  });
   var dataPoints;
   var pointRelativePositions;
   var pointNames = [];
@@ -99,13 +105,28 @@ class OpenPainter extends CustomPainter {
       ..color = Colors.blueAccent
       ..strokeWidth = 6;
 
-    canvas.drawPoints(PointMode.points, dataPoints, paint1);
+    canvas.drawPoints(PointMode.points, dataPoints, paintBlue3);
+
     for (var i = 0; i < dataPoints.length; i++) {
+      List pointData = pointRelativePositions[i]
+          .toString()
+          .replaceAll(RegExp(r'\[|\]'), '')
+          .split(',')
+          .toList();
       final textSpan = TextSpan(
-          text: pointNames[i] + ': ' + pointRelativePositions[i],
-          style: TextStyle(color: Colors.deepOrange[800], fontSize: 2));
+          text: pointNames[i] +
+              '\n x: ' +
+              pointData[0] +
+              '\n y: ' +
+              pointData[1] +
+              '\n z: ' +
+              pointData[2],
+          style: TextStyle(
+              color: Colors.red[500],
+              fontSize: 1.5,
+              fontWeight: FontWeight.bold));
       final textPainter = TextPainter(
-        textAlign: TextAlign.start,
+        textAlign: TextAlign.justify,
         text: textSpan,
         textDirection: TextDirection.ltr,
       );
@@ -114,7 +135,8 @@ class OpenPainter extends CustomPainter {
         maxWidth: size.width,
       );
       //print(dataPoints[i]);
-      textPainter.paint(canvas, dataPoints[i]);
+      Offset offset = dataPoints[i];
+      textPainter.paint(canvas, (offset));
     }
   }
 
@@ -132,9 +154,13 @@ _getPoints(
   for (var i = 0; i < consolidatedDataBox.length; i++) {
     ConsolidatedData data = consolidatedDataBox.getAt(i);
 
-    points.add(Offset((data.offset.x * 150000) + (width / 2),
-        (-data.offset.y * 150000) + (height / 2)));
-    pointRelativePositions.add('(${data.offset.x}, ${data.offset.y})');
+    points.add(Offset((data.offset.x * 150) + (width / 2),
+        (data.offset.y * 150) + (height / 2)));
+    pointRelativePositions.add([
+      roundDouble(data.offset.x, 5),
+      roundDouble(data.offset.y, 5),
+      roundDouble(data.distanceFromCamera, 5)
+    ]);
     pointNames.add(data.uid);
   }
   return points;

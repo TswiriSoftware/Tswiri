@@ -6,11 +6,12 @@ class AccelerometerDatabaseView extends StatefulWidget {
   const AccelerometerDatabaseView({Key? key}) : super(key: key);
 
   @override
-  _AccelerometerDatabaseViewState createState() =>
-      _AccelerometerDatabaseViewState();
+  _CalibrationAccelerometerDataViewState createState() =>
+      _CalibrationAccelerometerDataViewState();
 }
 
-class _AccelerometerDatabaseViewState extends State<AccelerometerDatabaseView> {
+class _CalibrationAccelerometerDataViewState
+    extends State<AccelerometerDatabaseView> {
   var displayList = [];
 
   @override
@@ -22,7 +23,7 @@ class _AccelerometerDatabaseViewState extends State<AccelerometerDatabaseView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hive Accelerometer Database'),
+        title: const Text('Calibration Accelerometer Data'),
         centerTitle: true,
         elevation: 0,
       ),

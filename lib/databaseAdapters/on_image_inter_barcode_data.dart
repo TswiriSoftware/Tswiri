@@ -9,7 +9,8 @@ class OnImageInterBarcodeDataHiveObject extends HiveObject {
       required this.uidStart,
       required this.uidEnd,
       required this.interBarcodeOffset,
-      required this.aveDiagonalLength,
+      required this.startDiagonalLength,
+      required this.endDiagonalLength,
       required this.timestamp});
 
   ///uid = uidStart_uidEnd.
@@ -30,9 +31,12 @@ class OnImageInterBarcodeDataHiveObject extends HiveObject {
 
   ///The average diagonal length of the two barcodes.
   @HiveField(4)
-  late double aveDiagonalLength;
+  late double startDiagonalLength;
+
+  @HiveField(5)
+  late double endDiagonalLength;
 
   ///Timestamp of when the barcodes where scanned.
-  @HiveField(5)
+  @HiveField(6)
   late int timestamp;
 }

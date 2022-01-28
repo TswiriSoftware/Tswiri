@@ -15,7 +15,7 @@ class _QrCodeGenerationViewState extends State<QrCodeGenerationView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Sunbird',
+          'Barcode Generator',
           style: TextStyle(fontSize: 25),
         ),
         centerTitle: true,

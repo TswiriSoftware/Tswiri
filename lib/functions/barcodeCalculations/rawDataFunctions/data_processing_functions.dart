@@ -1,8 +1,10 @@
 import 'dart:ui';
 
+import 'package:flutter/rendering.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/matched_calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_marker.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_data.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 ///Calculates the average distance from the camera of 2 barcodes
 double calcAveDisFromCamera(
@@ -11,17 +13,14 @@ double calcAveDisFromCamera(
 }
 
 ///Calculates how far the barcode is from the camera given calibration data (imageSizes: for sorting, Lookuptable: for Distance from camera)
-double calaculateDistanceFormCamera(double barcodeDiagonalSizeOnImage,
-    Map lookupTable, List<double> imageSizes) {
-  var greaterThan = imageSizes
-      .where((element) => element >= barcodeDiagonalSizeOnImage)
-      .toList()
-    ..sort();
+double calaculateDistanceFormCamera(
+    double barcodeDiagonalSizeOnImage, SharedPreferences prefs) {
+  double m = prefs.getDouble('m') ?? 0;
+  double c = prefs.getDouble('c') ?? 0;
+  debugPrint('y = x*$m +$c');
 
-  String imageSizeKey = greaterThan.first.toString();
-  MatchedCalibrationData calibrationData = lookupTable[imageSizeKey]!;
-  double distanceFromCamera = calibrationData.distance;
-  print(distanceFromCamera);
+  double distanceFromCamera = barcodeDiagonalSizeOnImage * m + c;
+
   return distanceFromCamera;
 }
 
@@ -43,11 +42,16 @@ addFixedPoint(RealInterBarcodeData firstPoint,
   consolidatedData.update(
       firstPoint.uidStart,
       (value) => BarcodeMarker(
-          id: firstPoint.uidStart, offset: const Offset(0, 0), fixed: true),
+          id: firstPoint.uidStart,
+          offset: const Offset(0, 0),
+          fixed: true,
+          distanceFromCamera: firstPoint.distanceFromCamera),
       ifAbsent: () => BarcodeMarker(
           id: firstPoint.uidStart,
           offset: const Offset(0, 0),
-          fixed: true)); //This is the Fixed Point
+          fixed: true,
+          distanceFromCamera:
+              firstPoint.distanceFromCamera)); //This is the Fixed Point
 }
 
 ///This converts the onImage offset to a realOffset

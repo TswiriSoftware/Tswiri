@@ -18,7 +18,7 @@ class _BarcodeScanningViewState extends State<BarcodeScanningView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Sunbird',
+          'Barcode Scanning Tools',
           style: TextStyle(fontSize: 25),
         ),
         centerTitle: true,

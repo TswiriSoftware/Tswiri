@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/consolidated_database_view.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
+import 'package:flutter_google_ml_kit/functions/round_to_double.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:hive/hive.dart';
 
 import 'barcode_navigator_view.dart';
@@ -146,7 +148,13 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
     Map consolidatedDataMap = consolidatedDataBox.toMap();
     List displayList = [];
     consolidatedDataMap.forEach((key, value) {
-      displayList.add([value]);
+      ConsolidatedData data = value;
+      displayList.add([
+        data.uid,
+        roundDouble(data.offset.x, 10),
+        roundDouble(data.offset.y, 10),
+        data.fixed
+      ]);
       validQrcodeIDs.add(key);
     });
     return displayList;
@@ -159,4 +167,50 @@ bool isNumeric(String s) {
     return false;
   }
   return int.tryParse(s) != null;
+}
+
+displayDataPoint(var myText) {
+  return Container(
+    decoration: const BoxDecoration(
+        border: Border(
+            bottom: BorderSide(color: deepSpaceSparkle),
+            top: BorderSide(color: deepSpaceSparkle),
+            left: BorderSide(color: deepSpaceSparkle),
+            right: BorderSide(color: deepSpaceSparkle))),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      textDirection: TextDirection.ltr,
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+              border: Border(right: BorderSide(color: deepSpaceSparkle))),
+          child: SizedBox(
+            child: Text(myText[0], textAlign: TextAlign.center),
+            width: 50,
+          ),
+        ),
+        Container(
+          decoration: const BoxDecoration(
+              border: Border(right: BorderSide(color: deepSpaceSparkle))),
+          child: SizedBox(
+            child: Text(myText[1], textAlign: TextAlign.center),
+            width: 140,
+          ),
+        ),
+        Container(
+          decoration: const BoxDecoration(
+              border: Border(right: BorderSide(color: deepSpaceSparkle))),
+          child: SizedBox(
+            child: Text(myText[2], textAlign: TextAlign.center),
+            width: 140,
+          ),
+        ),
+        SizedBox(
+          child: Text(myText[3], textAlign: TextAlign.center),
+          width: 50,
+        ),
+      ],
+    ),
+  );
 }

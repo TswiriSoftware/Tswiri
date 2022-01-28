@@ -1,19 +1,24 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/calibration_functions.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_paints.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/calibration/matched_calibration_database_view.dart';
 import 'package:hive/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class CalibrationLookupTableDatabaseView extends StatefulWidget {
-  const CalibrationLookupTableDatabaseView({Key? key}) : super(key: key);
+class CalibrationDataVisualizerView extends StatefulWidget {
+  const CalibrationDataVisualizerView({Key? key}) : super(key: key);
 
   @override
-  _CalibrationLookupTableDatabaseViewState createState() =>
-      _CalibrationLookupTableDatabaseViewState();
+  _CalibrationDataVisualizerViewState createState() =>
+      _CalibrationDataVisualizerViewState();
 }
 
-class _CalibrationLookupTableDatabaseViewState
-    extends State<CalibrationLookupTableDatabaseView> {
+class _CalibrationDataVisualizerViewState
+    extends State<CalibrationDataVisualizerView> {
   var displayList = [];
+
+  List<StraightLine> straightLineEquation = [];
 
   @override
   void dispose() {
@@ -24,7 +29,7 @@ class _CalibrationLookupTableDatabaseViewState
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Hive Calibrated Database'),
+          title: const Text('Calibration Data Visualizer'),
           centerTitle: true,
           elevation: 0,
         ),
@@ -47,12 +52,13 @@ class _CalibrationLookupTableDatabaseViewState
           ),
         ),
         body: FutureBuilder(
-            future: _getPoints(context),
+            future: _getPoints(context, straightLineEquation),
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
                 return const Center(child: CircularProgressIndicator());
               } else {
                 var dataPoints = snapshot.data;
+
                 //print(dataPoints.runtimeType);
                 //print(dataPoints);
                 return Center(
@@ -61,7 +67,10 @@ class _CalibrationLookupTableDatabaseViewState
                     minScale: 0.3,
                     child: CustomPaint(
                       size: Size.infinite,
-                      painter: OpenPainter(dataPoints: dataPoints),
+                      painter: OpenPainter(
+                        dataPoints: dataPoints,
+                        straightLineEquation: straightLineEquation,
+                      ),
                     ),
                   ),
                 );
@@ -71,9 +80,11 @@ class _CalibrationLookupTableDatabaseViewState
 }
 
 class OpenPainter extends CustomPainter {
-  OpenPainter({required this.dataPoints});
+  OpenPainter({required this.dataPoints, required this.straightLineEquation});
+
   // ignore: prefer_typing_uninitialized_variables
   var dataPoints;
+  List<StraightLine> straightLineEquation;
 
   @override
   paint(Canvas canvas, Size size) {
@@ -82,15 +93,33 @@ class OpenPainter extends CustomPainter {
       ..strokeWidth = 6;
 
     canvas.drawPoints(PointMode.points, dataPoints, paint1);
+
+    Offset firstDatapoint = dataPoints.first;
+    Offset lastDatapoint = dataPoints.last;
+
+    StraightLine a = straightLineEquation[0];
+
+    Offset first = Offset((5000 + size.width / 2) / (size.width / 50),
+        ((5000 * a.m + a.c + size.height / 2) / (size.height / 200)));
+    Offset last = Offset((100 + size.width / 2) / (size.width / 50),
+        ((100 * a.m + a.c + size.height / 2) / (size.height / 200)));
+
+    canvas.drawLine(first, last, paintRed3);
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
 
-_getPoints(BuildContext context) async {
+_getPoints(BuildContext context, List<StraightLine> straightLine) async {
   var matchedDataBox = await Hive.openBox('matchedDataBox');
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  straightLine.add(
+      StraightLine(m: prefs.getDouble('m') ?? 0, c: prefs.getDouble('c') ?? 0));
 
-  List<Offset> points = listOfPoints(matchedDataBox);
+  Size size = Size(
+      MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
+  List<Offset> points = listOfPoints(matchedDataBox, size);
+
   return points;
 }

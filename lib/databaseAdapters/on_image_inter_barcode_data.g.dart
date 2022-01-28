@@ -22,15 +22,16 @@ class OnImageInterBarcodeDataHiveObjectAdapter
       uidStart: fields[1] as String,
       uidEnd: fields[2] as String,
       interBarcodeOffset: fields[3] as TypeOffset,
-      aveDiagonalLength: fields[4] as double,
-      timestamp: fields[5] as int,
+      startDiagonalLength: fields[4] as double,
+      endDiagonalLength: fields[5] as double,
+      timestamp: fields[6] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, OnImageInterBarcodeDataHiveObject obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.uid)
       ..writeByte(1)
@@ -40,8 +41,10 @@ class OnImageInterBarcodeDataHiveObjectAdapter
       ..writeByte(3)
       ..write(obj.interBarcodeOffset)
       ..writeByte(4)
-      ..write(obj.aveDiagonalLength)
+      ..write(obj.startDiagonalLength)
       ..writeByte(5)
+      ..write(obj.endDiagonalLength)
+      ..writeByte(6)
       ..write(obj.timestamp);
   }
 

@@ -23,7 +23,7 @@ class _CalibrationDatabaseViewState extends State<CalibrationDatabaseView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hive Calibration Database'),
+        title: const Text('Calibration Size Data'),
         centerTitle: true,
         elevation: 0,
       ),

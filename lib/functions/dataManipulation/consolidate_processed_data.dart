@@ -16,7 +16,10 @@ consolidateProcessedData(List<RealInterBarcodeData> realInterBarcodeDataList,
                 interBarcodeVector.interBarcodeOffset;
 
         BarcodeMarker point = BarcodeMarker(
-            id: interBarcodeVector.uidEnd, offset: position, fixed: false);
+            id: interBarcodeVector.uidEnd,
+            offset: position,
+            fixed: false,
+            distanceFromCamera: interBarcodeVector.distanceFromCamera);
         consolidatedData.update(
           interBarcodeVector.uidEnd,
           (value) => point,
@@ -28,7 +31,10 @@ consolidateProcessedData(List<RealInterBarcodeData> realInterBarcodeDataList,
             (-interBarcodeVector.interBarcodeOffset);
 
         BarcodeMarker point = BarcodeMarker(
-            id: interBarcodeVector.uidStart, offset: position, fixed: false);
+            id: interBarcodeVector.uidStart,
+            offset: position,
+            fixed: false,
+            distanceFromCamera: interBarcodeVector.distanceFromCamera);
         consolidatedData.update(
           interBarcodeVector.uidStart,
           (value) => point,
@@ -43,6 +49,7 @@ consolidateProcessedData(List<RealInterBarcodeData> realInterBarcodeDataList,
           ConsolidatedData(
               uid: value.id,
               offset: TypeOffset(x: value.offset.dx, y: value.offset.dy),
+              distanceFromCamera: value.distanceFromCamera,
               fixed: value.fixed));
     });
   }

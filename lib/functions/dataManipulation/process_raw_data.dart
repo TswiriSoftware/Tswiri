@@ -5,11 +5,12 @@ import 'package:flutter_google_ml_kit/databaseAdapters/on_image_inter_barcode_da
 import 'package:flutter_google_ml_kit/objects/barcode_marker.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_data.dart';
 import 'package:hive/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'consolidate_processed_data.dart';
 
 processRawOnImageData(
-    Map rawOnImageDataMap, Box consolidatedDataBox, Box lookupTable) {
+    Map rawOnImageDataMap, Box consolidatedDataBox, SharedPreferences prefs) {
   Map<String, OnImageInterBarcodeDataHiveObject> processedData =
       deduplicateRawOnImageData(rawOnImageDataMap);
 
@@ -20,17 +21,14 @@ processRawOnImageData(
     OnImageInterBarcodeDataHiveObject onImageBarcodeData = value;
 
     Offset realInterBarcodeOffset = convertOnImageOffsetToRealOffset(
-      aveDiagonalSideLength: onImageBarcodeData.aveDiagonalLength,
+      aveDiagonalSideLength:
+          (value.startDiagonalLength + value.endDiagonalLength) / 2,
       onImageInterBarcodeOffset: Offset(onImageBarcodeData.interBarcodeOffset.x,
           onImageBarcodeData.interBarcodeOffset.y),
     );
 
-    Map lookupTableMap = lookupTable.toMap();
-
-    List<double> imageSizesLookupTable = getImageSizes(lookupTableMap);
-
     double distanceFromCamera = calaculateDistanceFormCamera(
-        value.aveDiagonalLength, lookupTableMap, imageSizesLookupTable);
+        (value.startDiagonalLength + value.endDiagonalLength) / 2, prefs);
 
     RealInterBarcodeData realBarcodeData = RealInterBarcodeData(
         uid: onImageBarcodeData.uid,

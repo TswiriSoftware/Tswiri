@@ -2,7 +2,8 @@
 import 'package:fast_immutable_collections/src/ilist/list_extension.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/on_image_inter_barcode_data.dart';
 
-Map<String, OnImageInterBarcodeDataHiveObject> deduplicateRawOnImageData(Map rawData) {
+Map<String, OnImageInterBarcodeDataHiveObject> deduplicateRawOnImageData(
+    Map rawData) {
   Map<String, OnImageInterBarcodeDataHiveObject> processedData = {};
   List uids = [];
   uids.clear();
@@ -16,7 +17,8 @@ Map<String, OnImageInterBarcodeDataHiveObject> deduplicateRawOnImageData(Map raw
         uidStart: data.uidStart,
         uidEnd: data.uidEnd,
         interBarcodeOffset: data.interBarcodeOffset,
-        aveDiagonalLength: data.aveDiagonalLength,
+        startDiagonalLength: data.startDiagonalLength,
+        endDiagonalLength: data.endDiagonalLength,
         timestamp: data.timestamp,
       );
       processedData.update(

@@ -58,15 +58,11 @@ barcodeRawOnImageDataInjector(
         if (barcodeStart.displayValue != i.toString()) {
           OnImageBarcode barcodeEnd = determineEndQrcode(i, scannedBarcodes);
 
-          double aveDiagonalSideLength =
-              (barcodeStart.aveBarcodeDiagonalLengthOnImage +
-                      barcodeEnd.aveBarcodeDiagonalLengthOnImage) /
-                  2;
-
           OnImageInterBarcodeData interBarcodeOffset = OnImageInterBarcodeData(
               startBarcodeID: barcodeStart.displayValue,
               endBarcodeID: barcodeEnd.displayValue,
-              aveDiagonalLength: aveDiagonalSideLength,
+              startDiagonalLength: barcodeStart.aveBarcodeDiagonalLengthOnImage,
+              endDiagonalLength: barcodeEnd.aveBarcodeDiagonalLengthOnImage,
               interBarcodeOffsetonImage: calculateOffsetBetweenTwoPoints(
                   barcodeEnd.onImageBarcodeCenterOffset,
                   barcodeStart.onImageBarcodeCenterOffset),
@@ -88,7 +84,8 @@ barcodeRawOnImageDataInjector(
         interBarcodeOffset: TypeOffset(
             x: interBarcodeOffset.interBarcodeOffsetonImage.dx,
             y: interBarcodeOffset.interBarcodeOffsetonImage.dy),
-        aveDiagonalLength: interBarcodeOffset.aveDiagonalLength,
+        startDiagonalLength: interBarcodeOffset.startDiagonalLength,
+        endDiagonalLength: interBarcodeOffset.endDiagonalLength,
         timestamp: interBarcodeOffset.timestamp,
       );
 

@@ -15,7 +15,7 @@ class _BarcodeNavigationViewState extends State<BarcodeNavigationView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Sunbird',
+          'Barcode Navigation Tools',
           style: TextStyle(fontSize: 25),
         ),
         centerTitle: true,

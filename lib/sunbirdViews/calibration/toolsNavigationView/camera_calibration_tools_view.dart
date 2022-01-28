@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../main.dart';
-import '../accelerometer_database_view.dart';
+import '../calibration_accelerometer_data_view.dart';
 import '../camera_calibration_view.dart';
 import '../calibration_database_view.dart';
-import '../calibration_lookup_table_database_view.dart';
-import '../calibration_prosessed_database_view.dart';
+import '../calibration_data_visualizer_view.dart';
+import '../matched_calibration_database_view.dart';
 
 class CameraCalibrationView extends StatefulWidget {
   const CameraCalibrationView({Key? key}) : super(key: key);
@@ -19,7 +19,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Sunbird',
+          'Camera Calibration Tools',
           style: TextStyle(fontSize: 25),
         ),
         centerTitle: true,
@@ -40,7 +40,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
               featureCompleted: true,
             ),
             const CustomCard(
-              'Calibration Data Viewer',
+              'Size Data Viewer',
               CalibrationDatabaseView(),
               Icons.view_array,
               featureCompleted: true,
@@ -52,14 +52,14 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
               featureCompleted: true,
             ),
             const CustomCard(
-              'Processed Data Viewer',
-              CalibrationProsessedDatabaseView(),
+              'Matched Data Viewer',
+              MatchedCalibrationDatabaseView(),
               Icons.calculate,
               featureCompleted: true,
             ),
             const CustomCard(
-              'Processed Data Viewer',
-              CalibrationLookupTableDatabaseView(),
+              'Processed Data Visualizer',
+              CalibrationDataVisualizerView(),
               Icons.calculate,
               featureCompleted: true,
             ),

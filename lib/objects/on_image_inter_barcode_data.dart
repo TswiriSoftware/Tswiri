@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 class OnImageInterBarcodeData {
   OnImageInterBarcodeData(
       {required this.startBarcodeID,
+      required this.startDiagonalLength,
       required this.endBarcodeID,
-      required this.aveDiagonalLength,
+      required this.endDiagonalLength,
       required this.interBarcodeOffsetonImage,
       required this.timestamp});
 
@@ -15,17 +16,15 @@ class OnImageInterBarcodeData {
   ///ID of the barcode at the end position.
   final String endBarcodeID;
 
-  ///Average diagonal length of both the barcodes.
-  final double aveDiagonalLength; //:TODO Start & end diagonal
+  ///Start barcode diagonal length.
+  final double startDiagonalLength;
+
+  ///End barcode diagonal length.
+  final double endDiagonalLength;
 
   ///The offset between the start and end barcodes.
   final Offset interBarcodeOffsetonImage; //Offset between Barcodes
 
   ///Timestamp when the barcodes where scanned.
   final int timestamp; //Timestamp
-
-  @override
-  String toString() {
-    return '$startBarcodeID, $endBarcodeID, $aveDiagonalLength ,$timestamp';
-  }
 }

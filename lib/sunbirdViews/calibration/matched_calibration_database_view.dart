@@ -1,19 +1,22 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/matched_calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:hive/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class CalibrationProsessedDatabaseView extends StatefulWidget {
-  const CalibrationProsessedDatabaseView({Key? key}) : super(key: key);
+class MatchedCalibrationDatabaseView extends StatefulWidget {
+  const MatchedCalibrationDatabaseView({Key? key}) : super(key: key);
 
   @override
-  _CalibrationProsessedDatabaseViewState createState() =>
-      _CalibrationProsessedDatabaseViewState();
+  _MatchedCalibrationDatabaseViewState createState() =>
+      _MatchedCalibrationDatabaseViewState();
 }
 
-class _CalibrationProsessedDatabaseViewState
-    extends State<CalibrationProsessedDatabaseView> {
+class _MatchedCalibrationDatabaseViewState
+    extends State<MatchedCalibrationDatabaseView> {
   var displayList = [];
 
   @override
@@ -25,7 +28,7 @@ class _CalibrationProsessedDatabaseViewState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hive Calibrated Database'),
+        title: const Text('Matched Data Viewer'),
         centerTitle: true,
         elevation: 0,
       ),
@@ -77,12 +80,8 @@ class _CalibrationProsessedDatabaseViewState
                   if (index == 0) {
                     return Column(
                       children: <Widget>[
-                        displayDataPoint([
-                          'Timestamp',
-                          'deltaT',
-                          'Acceleration',
-                          'Distance'
-                        ]),
+                        displayDataPoint(
+                            ['', 'Distance (mm)', 'Diagonal Length', '']),
                         const SizedBox(
                           height: 5,
                         ),
@@ -104,6 +103,7 @@ class _CalibrationProsessedDatabaseViewState
     var calibrationDataBox = await Hive.openBox('calibrationDataBox');
     var accelerometerDataBox = await Hive.openBox('accelerometerDataBox');
     var matchedDataBox = await Hive.openBox('matchedDataBox');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     var calibrationMap = {};
     var accelerometerMap = {};
@@ -133,6 +133,12 @@ class _CalibrationProsessedDatabaseViewState
 
       matchedDataBox.put(
           calibrationData.averageDiagonalLength.toString(), data);
+
+      StraightLine straightLineEquation =
+          linearRegression(matchedDataBox.toMap());
+
+      prefs.setDouble('m', straightLineEquation.m);
+      prefs.setDouble('c', straightLineEquation.c);
 
       displayList.add([
         timestamp,
@@ -164,7 +170,7 @@ displayDataPoint(var text) {
             child: Padding(
               padding: const EdgeInsets.only(right: 10, left: 10),
               child: SizedBox(
-                child: Text(text[1], textAlign: TextAlign.start),
+                child: Text(text[2], textAlign: TextAlign.start),
                 width: 150,
               ),
             ),
@@ -172,7 +178,7 @@ displayDataPoint(var text) {
           Padding(
             padding: const EdgeInsets.only(left: 25),
             child: SizedBox(
-              child: Text(text[2], textAlign: TextAlign.start),
+              child: Text(text[1], textAlign: TextAlign.start),
               width: 150,
             ),
           ),
@@ -180,4 +186,44 @@ displayDataPoint(var text) {
       ),
     ),
   );
+}
+
+class StraightLine {
+  StraightLine({required this.m, required this.c});
+  double m;
+  double c;
+}
+
+StraightLine linearRegression(Map matchedDataBox) {
+  var xArray = [];
+  var yArray = [];
+  var matchedDataMap = matchedDataBox;
+  double dX = 0;
+  double oY = 0;
+
+  matchedDataMap.forEach((key, value) {
+    double dXi = double.parse(value.toString().split(',').last);
+    double oYi = double.parse(value.toString().split(',').first);
+    xArray.add(dXi);
+    yArray.add(oYi);
+    dX = dX + dXi;
+    oY = oY + oYi;
+  });
+
+  double mX = dX / matchedDataMap.length;
+  double mY = oY / matchedDataMap.length;
+
+  double zS = 0;
+  double qS = 0;
+
+  for (var i = 0; i < matchedDataMap.length; i++) {
+    zS = zS + ((xArray[i] - mX) * (yArray[i] - mY));
+    qS = qS + pow((yArray[i] - mY), 2);
+  }
+
+  double m = zS / qS;
+  double c = mX - (m * mY);
+
+  StraightLine straightLineEquation = StraightLine(m: m, c: c);
+  return straightLineEquation;
 }

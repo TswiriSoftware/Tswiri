@@ -4,6 +4,7 @@ import 'package:flutter_google_ml_kit/functions/dataManipulation/process_raw_dat
 import 'package:flutter_google_ml_kit/functions/round_to_double.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:hive/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RawOnImageDatabaseView extends StatefulWidget {
   const RawOnImageDatabaseView({Key? key}) : super(key: key);
@@ -17,7 +18,7 @@ class _RawOnImageDatabaseViewState extends State<RawOnImageDatabaseView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hive Database'),
+        title: const Text('Raw Barcode Data'),
         centerTitle: true,
         elevation: 0,
       ),
@@ -32,6 +33,10 @@ class _RawOnImageDatabaseViewState extends State<RawOnImageDatabaseView> {
               onPressed: () async {
                 var rawDataBox = await Hive.openBox('rawDataBox');
                 rawDataBox.clear();
+
+                var consolidatedDataBox =
+                    await Hive.openBox('consolidatedDataBox');
+                consolidatedDataBox.clear();
 
                 Future.delayed(const Duration(milliseconds: 100), () {
                   setState(() {});
@@ -83,11 +88,11 @@ class _RawOnImageDatabaseViewState extends State<RawOnImageDatabaseView> {
   Future<List> loadData() async {
     var rawOnImageDataBox = await Hive.openBox('rawDataBox');
     var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
-    var lookupTable = await Hive.openBox('matchedDataBox');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     //print(lookupTable.toMap());
     Map rawOnImageDataMap = rawOnImageDataBox.toMap();
 
-    processRawOnImageData(rawOnImageDataMap, consolidatedDataBox, lookupTable);
+    processRawOnImageData(rawOnImageDataMap, consolidatedDataBox, prefs);
 
     return _displayList(rawOnImageDataBox);
   }

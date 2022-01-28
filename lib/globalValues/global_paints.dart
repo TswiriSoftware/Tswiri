@@ -12,6 +12,11 @@ final Paint paintRed3 = Paint()
   ..strokeWidth = 3.0
   ..color = Colors.red;
 
+final Paint paintRed20 = Paint()
+  ..style = PaintingStyle.stroke
+  ..strokeWidth = 20.0
+  ..color = Colors.red;
+
 final Paint paintBlue3 = Paint()
   ..style = PaintingStyle.stroke
   ..strokeWidth = 3.0

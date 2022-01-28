@@ -3,9 +3,13 @@ import 'package:hive/hive.dart';
 part 'consolidated_data_adapter.g.dart';
 
 @HiveType(typeId: 1)
-class ConsolidatedData extends HiveObject { //TODO: rename to hiveObject
+class ConsolidatedData extends HiveObject {
+  //TODO: rename to hiveObject
   ConsolidatedData(
-      {required this.uid, required this.offset, required this.fixed});
+      {required this.uid,
+      required this.offset,
+      required this.distanceFromCamera,
+      required this.fixed});
 
   @HiveField(0)
   late String uid;
@@ -14,5 +18,8 @@ class ConsolidatedData extends HiveObject { //TODO: rename to hiveObject
   late TypeOffset offset;
 
   @HiveField(2)
+  late double distanceFromCamera;
+
+  @HiveField(3)
   late bool fixed;
 }

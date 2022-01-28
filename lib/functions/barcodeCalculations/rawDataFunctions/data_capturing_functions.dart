@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:flutter_google_ml_kit/functions/coordinateTranslator/coordinate_translator.dart';
 import 'package:flutter_google_ml_kit/objects/on_image_barcode.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
