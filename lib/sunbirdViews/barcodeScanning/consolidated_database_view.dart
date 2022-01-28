@@ -2,8 +2,6 @@ import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/round_to_double.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-import 'package:flutter_google_ml_kit/objects/inter_barcode_offset.dart';
-import 'package:flutter_google_ml_kit/widgets/alert_dialog_widget.dart';
 import 'package:hive/hive.dart';
 
 class HiveDatabaseConsolidationView extends StatefulWidget {
@@ -47,11 +45,11 @@ class _HiveDatabaseConsolidationViewState
                 displayList.clear();
                 var consolidatedDataBox =
                     await Hive.openBox('consolidatedDataBox');
-                var pro = await Hive.openBox('processedDataBox');
                 consolidatedDataBox.clear();
-                pro.clear();
-                showMyAboutDialog(context, "Deleted Database");
-                setState(() {});
+
+                Future.delayed(const Duration(milliseconds: 100), () {
+                  setState(() {});
+                });
               },
               child: const Icon(Icons.delete),
             ),
@@ -160,26 +158,26 @@ displayDataPoint(var myText) {
             width: 50,
           ),
         ),
-        // Container(
-        //   decoration: const BoxDecoration(
-        //       border: Border(right: BorderSide(color: deepSpaceSparkle))),
-        //   child: SizedBox(
-        //     child: Text(myText[0], textAlign: TextAlign.center),
-        //     width: 140,
-        //   ),
-        // ),
-        // Container(
-        //   decoration: const BoxDecoration(
-        //       border: Border(right: BorderSide(color: deepSpaceSparkle))),
-        //   child: SizedBox(
-        //     child: Text(myText[2], textAlign: TextAlign.center),
-        //     width: 140,
-        //   ),
-        // ),
-        // SizedBox(
-        //   child: Text(myText[3], textAlign: TextAlign.center),
-        //   width: 50,
-        // ),
+        Container(
+          decoration: const BoxDecoration(
+              border: Border(right: BorderSide(color: deepSpaceSparkle))),
+          child: SizedBox(
+            child: Text(myText[1], textAlign: TextAlign.center),
+            width: 140,
+          ),
+        ),
+        Container(
+          decoration: const BoxDecoration(
+              border: Border(right: BorderSide(color: deepSpaceSparkle))),
+          child: SizedBox(
+            child: Text(myText[2], textAlign: TextAlign.center),
+            width: 140,
+          ),
+        ),
+        SizedBox(
+          child: Text(myText[3], textAlign: TextAlign.center),
+          width: 50,
+        ),
       ],
     ),
   );

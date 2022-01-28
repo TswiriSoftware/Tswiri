@@ -164,6 +164,7 @@ class _CameraViewState extends State<CameraView> {
   }
 
   Future _getImage(ImageSource source) async {
+    // ignore: deprecated_member_use
     final pickedFile = await _imagePicker?.getImage(source: source);
     if (pickedFile != null) {
       _processPickedFile(pickedFile);

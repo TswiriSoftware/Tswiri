@@ -37,7 +37,7 @@ Future<void> main() async {
   }
   final directory = await getApplicationDocumentsDirectory();
   await Hive.initFlutter(directory.path);
-  Hive.registerAdapter(OnImageInterBarcodeDataAdapter());
+  Hive.registerAdapter(OnImageInterBarcodeDataHiveObjectAdapter());
   Hive.registerAdapter(TypeOffsetAdapter());
   Hive.registerAdapter(ConsolidatedDataAdapter());
   Hive.registerAdapter(AccelerometerDataAdapter());

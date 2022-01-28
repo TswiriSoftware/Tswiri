@@ -26,11 +26,9 @@ injectBarcodeSizeData(
     bool checkIfBarcodeIsValid() =>
         barcode.value.displayValue != null && barcode.value.boundingBox != null;
     if (checkIfBarcodeIsValid()) {
-      var diagonalLength = averageBarcodeDiagonalLength(barcode);
-
       CalibrationData calibrationDataInstance = CalibrationData(
           timestamp: DateTime.now().millisecondsSinceEpoch.toString(),
-          averageDiagonalLength: diagonalLength);
+          averageDiagonalLength: averageBarcodeDiagonalLength(barcode));
 
       calibrationDataBox.put(
           calibrationDataInstance.timestamp, calibrationDataInstance);

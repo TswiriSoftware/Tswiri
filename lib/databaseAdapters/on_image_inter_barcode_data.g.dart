@@ -6,7 +6,7 @@ part of 'on_image_inter_barcode_data.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class OnImageInterBarcodeDataAdapter
+class OnImageInterBarcodeDataHiveObjectAdapter
     extends TypeAdapter<OnImageInterBarcodeDataHiveObject> {
   @override
   final int typeId = 0;
@@ -51,7 +51,7 @@ class OnImageInterBarcodeDataAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is OnImageInterBarcodeDataAdapter &&
+      other is OnImageInterBarcodeDataHiveObjectAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

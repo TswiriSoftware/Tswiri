@@ -30,17 +30,10 @@ double averageBarcodeDiagonalLength(Barcode barcode) {
 ///Calculates the OnImage center point of the barcode given the barcode and inputImageData
 Offset calculateOnImageBarcodeCenterPoint(
     Barcode barcode, Size absoluteImageSize, InputImageRotation rotation) {
-  final boundingBoxLeft = translateXOnimage(
-      barcode.value.boundingBox!.left, rotation, absoluteImageSize);
-  final boundingBoxTop = translateYOnImage(
-      barcode.value.boundingBox!.top, rotation, absoluteImageSize);
-  final boundingBoxRight = translateXOnimage(
-      barcode.value.boundingBox!.right, rotation, absoluteImageSize);
-  final boundingBoxBottom = translateYOnImage(
-      barcode.value.boundingBox!.bottom, rotation, absoluteImageSize);
-
-  final barcodeCentreX = (boundingBoxLeft + boundingBoxRight) / 2;
-  final barcodeCentreY = (boundingBoxTop + boundingBoxBottom) / 2;
+  final barcodeCentreX =
+      (barcode.value.boundingBox!.left + barcode.value.boundingBox!.right) / 2;
+  final barcodeCentreY =
+      (barcode.value.boundingBox!.top + barcode.value.boundingBox!.bottom) / 2;
 
   final Offset centerOffset = Offset(barcodeCentreX, barcodeCentreY);
 

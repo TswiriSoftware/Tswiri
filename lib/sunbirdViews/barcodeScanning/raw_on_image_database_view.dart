@@ -30,12 +30,12 @@ class _RawOnImageDatabaseViewState extends State<RawOnImageDatabaseView> {
             FloatingActionButton(
               heroTag: null,
               onPressed: () async {
-                var processedDataBox = await Hive.openBox('processedDataBox');
                 var rawDataBox = await Hive.openBox('rawDataBox');
-                processedDataBox.clear();
                 rawDataBox.clear();
 
-                setState(() {});
+                Future.delayed(const Duration(milliseconds: 100), () {
+                  setState(() {});
+                });
               },
               child: const Icon(Icons.delete),
             ),
@@ -84,7 +84,7 @@ class _RawOnImageDatabaseViewState extends State<RawOnImageDatabaseView> {
     var rawOnImageDataBox = await Hive.openBox('rawDataBox');
     var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
     var lookupTable = await Hive.openBox('matchedDataBox');
-    print(lookupTable.toMap());
+    //print(lookupTable.toMap());
     Map rawOnImageDataMap = rawOnImageDataBox.toMap();
 
     processRawOnImageData(rawOnImageDataMap, consolidatedDataBox, lookupTable);

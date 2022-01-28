@@ -47,7 +47,7 @@ class _CalibrationProsessedDatabaseViewState
                 calibrationDataBox.clear();
                 matchedDataBox.clear();
                 displayList.clear();
-                Future.delayed(Duration(milliseconds: 100), () {
+                Future.delayed(const Duration(milliseconds: 100), () {
                   setState(() {});
                 });
               },
