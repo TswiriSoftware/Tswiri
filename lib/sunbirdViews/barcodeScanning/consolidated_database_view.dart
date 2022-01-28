@@ -160,26 +160,26 @@ displayDataPoint(var myText) {
             width: 50,
           ),
         ),
-        Container(
-          decoration: const BoxDecoration(
-              border: Border(right: BorderSide(color: deepSpaceSparkle))),
-          child: SizedBox(
-            child: Text(myText[1], textAlign: TextAlign.center),
-            width: 140,
-          ),
-        ),
-        Container(
-          decoration: const BoxDecoration(
-              border: Border(right: BorderSide(color: deepSpaceSparkle))),
-          child: SizedBox(
-            child: Text(myText[2], textAlign: TextAlign.center),
-            width: 140,
-          ),
-        ),
-        SizedBox(
-          child: Text(myText[3], textAlign: TextAlign.center),
-          width: 50,
-        ),
+        // Container(
+        //   decoration: const BoxDecoration(
+        //       border: Border(right: BorderSide(color: deepSpaceSparkle))),
+        //   child: SizedBox(
+        //     child: Text(myText[0], textAlign: TextAlign.center),
+        //     width: 140,
+        //   ),
+        // ),
+        // Container(
+        //   decoration: const BoxDecoration(
+        //       border: Border(right: BorderSide(color: deepSpaceSparkle))),
+        //   child: SizedBox(
+        //     child: Text(myText[2], textAlign: TextAlign.center),
+        //     width: 140,
+        //   ),
+        // ),
+        // SizedBox(
+        //   child: Text(myText[3], textAlign: TextAlign.center),
+        //   width: 50,
+        // ),
       ],
     ),
   );
