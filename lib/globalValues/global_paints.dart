@@ -26,3 +26,7 @@ final Paint paintBlue4 = Paint()
   ..style = PaintingStyle.stroke
   ..strokeWidth = 4.0
   ..color = Colors.blue;
+
+var paint1 = Paint()
+  ..color = Colors.blueAccent
+  ..strokeWidth = 6;

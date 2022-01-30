@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/functions/dataManipulation/process_raw_data.dart';
-import 'package:flutter_google_ml_kit/functions/round_to_double.dart';
+import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';

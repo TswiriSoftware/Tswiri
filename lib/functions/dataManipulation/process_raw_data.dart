@@ -15,7 +15,7 @@ processRawOnImageData(
       deduplicateRawOnImageData(rawOnImageDataMap);
 
   List<RealInterBarcodeData> realInterBarcodeDataList = [];
-  Map<String, BarcodeMarker> consolidatedDataMap = {};
+  Map<String, RealBarcodeMarker> consolidatedDataMap = {};
 
   processedData.forEach((key, value) {
     OnImageInterBarcodeDataHiveObject onImageBarcodeData = value;

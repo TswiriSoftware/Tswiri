@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-class BarcodeMarker {
-  BarcodeMarker({
+class RealBarcodeMarker {
+  RealBarcodeMarker({
     required final this.id,
     required final this.offset,
     required final this.distanceFromCamera,

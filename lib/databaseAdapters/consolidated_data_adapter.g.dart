@@ -6,26 +6,27 @@ part of 'consolidated_data_adapter.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ConsolidatedDataAdapter extends TypeAdapter<ConsolidatedData> {
+class ConsolidatedDataHiveObjectAdapter
+    extends TypeAdapter<ConsolidatedDataHiveObject> {
   @override
   final int typeId = 1;
 
   @override
-  ConsolidatedData read(BinaryReader reader) {
+  ConsolidatedDataHiveObject read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return ConsolidatedData(
+    return ConsolidatedDataHiveObject(
       uid: fields[0] as String,
-      offset: fields[1] as TypeOffset,
+      offset: fields[1] as TypeOffsetHiveObject,
       distanceFromCamera: fields[2] as double,
       fixed: fields[3] as bool,
     );
   }
 
   @override
-  void write(BinaryWriter writer, ConsolidatedData obj) {
+  void write(BinaryWriter writer, ConsolidatedDataHiveObject obj) {
     writer
       ..writeByte(4)
       ..writeByte(0)
@@ -44,7 +45,7 @@ class ConsolidatedDataAdapter extends TypeAdapter<ConsolidatedData> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ConsolidatedDataAdapter &&
+      other is ConsolidatedDataHiveObjectAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

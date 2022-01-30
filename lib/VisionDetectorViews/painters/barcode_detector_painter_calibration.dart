@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'coordinates_translator.dart';
 
@@ -14,16 +14,6 @@ class BarcodeDetectorPainterCalibration extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0
-      ..color = Colors.lightGreenAccent;
-
-    final Paint paintRed = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 8.0
-      ..color = Colors.red;
-
     final Paint background = Paint()..color = const Color(0x99000000);
 
     for (final Barcode barcode in barcodes) {
@@ -58,7 +48,7 @@ class BarcodeDetectorPainterCalibration extends CustomPainter {
       canvas.drawRect(
         Rect.fromLTRB(boundingBoxLeft, boundingBoxTop, boundingBoxRight,
             boundingBoxBottom),
-        paint,
+        paintSimple(Colors.lightGreenAccent, 3),
       );
 
       var barcodeCentreX = (boundingBoxLeft + boundingBoxRight) / 2;
@@ -72,7 +62,8 @@ class BarcodeDetectorPainterCalibration extends CustomPainter {
         Offset(boundingBoxRight, boundingBoxBottom)
       ];
 
-      canvas.drawPoints(PointMode.points, pointsOfIntrest, paintRed);
+      canvas.drawPoints(
+          PointMode.points, pointsOfIntrest, paintSimple(Colors.red, 8));
     }
   }
 

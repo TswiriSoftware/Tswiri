@@ -1,9 +1,9 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/on_image_inter_barcode_data.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/type_offset_adapter.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_offset_between_points.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataFunctions/data_capturing_functions.dart';
+import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
 import 'package:flutter_google_ml_kit/objects/on_image_barcode.dart';
 import 'package:flutter_google_ml_kit/objects/on_image_inter_barcode_data.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
@@ -38,8 +38,8 @@ barcodeRawOnImageDataInjector(
     if (checkIfBarcodeIsValid()) {
       OnImageBarcode onImageBarcode = OnImageBarcode(
           displayValue: barcode.value.displayValue!,
-          onImageBarcodeCenterOffset: calculateOnImageBarcodeCenterPoint(
-              barcode, inputImageData.size, inputImageData.imageRotation),
+          onImageBarcodeCenterOffset:
+              calculateOnImageBarcodeCenterPoint(barcode),
           aveBarcodeDiagonalLengthOnImage:
               averageBarcodeDiagonalLength(barcode),
           timestamp: DateTime.now().millisecondsSinceEpoch);
@@ -58,7 +58,7 @@ barcodeRawOnImageDataInjector(
         if (barcodeStart.displayValue != i.toString()) {
           OnImageBarcode barcodeEnd = determineEndQrcode(i, scannedBarcodes);
 
-          OnImageInterBarcodeData interBarcodeOffset = OnImageInterBarcodeData(
+          OnImageInterBarcodeData interBarcodeData = OnImageInterBarcodeData(
               startBarcodeID: barcodeStart.displayValue,
               endBarcodeID: barcodeEnd.displayValue,
               startDiagonalLength: barcodeStart.aveBarcodeDiagonalLengthOnImage,
@@ -70,23 +70,22 @@ barcodeRawOnImageDataInjector(
 
           interBarcodeDataList.putIfAbsent(
               '${barcodeStart.displayValue}_${barcodeEnd.displayValue}',
-              () => interBarcodeOffset);
+              () => interBarcodeData);
         }
       }
     }
 
-    interBarcodeDataList.forEach((uid, interBarcodeOffset) {
+    interBarcodeDataList.forEach((uid, interBarcodeInstance) {
       OnImageInterBarcodeDataHiveObject interBarcodeData =
           OnImageInterBarcodeDataHiveObject(
         uid: uid,
-        uidStart: interBarcodeOffset.startBarcodeID,
-        uidEnd: interBarcodeOffset.endBarcodeID,
-        interBarcodeOffset: TypeOffset(
-            x: interBarcodeOffset.interBarcodeOffsetonImage.dx,
-            y: interBarcodeOffset.interBarcodeOffsetonImage.dy),
-        startDiagonalLength: interBarcodeOffset.startDiagonalLength,
-        endDiagonalLength: interBarcodeOffset.endDiagonalLength,
-        timestamp: interBarcodeOffset.timestamp,
+        uidStart: interBarcodeInstance.startBarcodeID,
+        uidEnd: interBarcodeInstance.endBarcodeID,
+        interBarcodeOffset:
+            offsetToTypeOffset(interBarcodeInstance.interBarcodeOffsetonImage),
+        startDiagonalLength: interBarcodeInstance.startDiagonalLength,
+        endDiagonalLength: interBarcodeInstance.endDiagonalLength,
+        timestamp: interBarcodeInstance.timestamp,
       );
 
       rawOnImageDataBox.put(uid, interBarcodeData);

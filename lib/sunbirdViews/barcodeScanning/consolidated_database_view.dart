@@ -1,7 +1,6 @@
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/type_offset_adapter.dart';
-import 'package:flutter_google_ml_kit/functions/round_to_double.dart';
+import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:hive/hive.dart';
 
@@ -113,7 +112,7 @@ class _HiveDatabaseConsolidationViewState
 
   Future<List> consolidateData(List displayList) async {
     var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
-    Map<String, ConsolidatedData> consolidatedData = {};
+    Map<String, ConsolidatedDataHiveObject> consolidatedData = {};
     Map consolidatedDataMap = consolidatedDataBox.toMap();
     consolidatedDataMap.forEach((key, value) {
       consolidatedData.putIfAbsent(key, () => value);
@@ -123,8 +122,8 @@ class _HiveDatabaseConsolidationViewState
   }
 }
 
-List _displayList(
-    Map<String, ConsolidatedData> consolidatedData, List displayList) {
+List _displayList(Map<String, ConsolidatedDataHiveObject> consolidatedData,
+    List displayList) {
   displayList.clear();
   consolidatedData.forEach((key, value) {
     displayList.add([

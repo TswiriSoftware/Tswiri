@@ -27,8 +27,7 @@ double averageBarcodeDiagonalLength(Barcode barcode) {
 }
 
 ///Calculates the OnImage center point of the barcode given the barcode and inputImageData
-Offset calculateOnImageBarcodeCenterPoint(
-    Barcode barcode, Size absoluteImageSize, InputImageRotation rotation) {
+Offset calculateOnImageBarcodeCenterPoint(Barcode barcode) {
   final barcodeCentreX =
       (barcode.value.boundingBox!.left + barcode.value.boundingBox!.right) / 2;
   final barcodeCentreY =
@@ -39,6 +38,9 @@ Offset calculateOnImageBarcodeCenterPoint(
   return centerOffset;
 }
 
+///Determines the end barcode.
+///'If the list reaches the last barcode it will wraparound to the first barcode.'
+///
 OnImageBarcode determineEndQrcode(
     int i, Map<String, OnImageBarcode> scannedBarcodes) {
   OnImageBarcode qrCodeEnd;

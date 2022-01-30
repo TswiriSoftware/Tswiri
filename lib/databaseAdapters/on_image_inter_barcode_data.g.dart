@@ -21,7 +21,7 @@ class OnImageInterBarcodeDataHiveObjectAdapter
       uid: fields[0] as String,
       uidStart: fields[1] as String,
       uidEnd: fields[2] as String,
-      interBarcodeOffset: fields[3] as TypeOffset,
+      interBarcodeOffset: fields[3] as TypeOffsetHiveObject,
       startDiagonalLength: fields[4] as double,
       endDiagonalLength: fields[5] as double,
       timestamp: fields[6] as int,

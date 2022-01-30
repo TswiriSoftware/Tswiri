@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/rendering.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/matched_calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_marker.dart';
@@ -28,7 +26,7 @@ double calaculateDistanceFormCamera(
 List<double> getImageSizes(Map lookupTableMap) {
   List<double> imageSizesLookupTable = [];
   lookupTableMap.forEach((key, value) {
-    MatchedCalibrationData data = value;
+    MatchedCalibrationDataHiveObject data = value;
     double test = data.objectSize;
     imageSizesLookupTable.add(test);
   });
@@ -38,15 +36,15 @@ List<double> getImageSizes(Map lookupTableMap) {
 
 ///Adds a fixed point to the realData Box
 addFixedPoint(RealInterBarcodeData firstPoint,
-    Map<String, BarcodeMarker> consolidatedData) {
+    Map<String, RealBarcodeMarker> consolidatedData) {
   consolidatedData.update(
       firstPoint.uidStart,
-      (value) => BarcodeMarker(
+      (value) => RealBarcodeMarker(
           id: firstPoint.uidStart,
           offset: const Offset(0, 0),
           fixed: true,
           distanceFromCamera: firstPoint.distanceFromCamera),
-      ifAbsent: () => BarcodeMarker(
+      ifAbsent: () => RealBarcodeMarker(
           id: firstPoint.uidStart,
           offset: const Offset(0, 0),
           fixed: true,

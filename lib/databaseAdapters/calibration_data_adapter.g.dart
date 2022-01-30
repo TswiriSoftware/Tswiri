@@ -6,24 +6,25 @@ part of 'calibration_data_adapter.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class CalibrationDataAdapter extends TypeAdapter<CalibrationData> {
+class CalibrationDataHiveObjectAdapter
+    extends TypeAdapter<CalibrationDataHiveObject> {
   @override
   final int typeId = 2;
 
   @override
-  CalibrationData read(BinaryReader reader) {
+  CalibrationDataHiveObject read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return CalibrationData(
+    return CalibrationDataHiveObject(
       timestamp: fields[0] as String,
       averageDiagonalLength: fields[1] as double,
     );
   }
 
   @override
-  void write(BinaryWriter writer, CalibrationData obj) {
+  void write(BinaryWriter writer, CalibrationDataHiveObject obj) {
     writer
       ..writeByte(2)
       ..writeByte(0)
@@ -38,7 +39,7 @@ class CalibrationDataAdapter extends TypeAdapter<CalibrationData> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CalibrationDataAdapter &&
+      other is CalibrationDataHiveObjectAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

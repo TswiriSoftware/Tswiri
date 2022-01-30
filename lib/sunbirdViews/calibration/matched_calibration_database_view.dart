@@ -116,7 +116,7 @@ class _MatchedCalibrationDatabaseViewState
     });
 
     calibrationMap.forEach((key, value) {
-      CalibrationData calibrationData = value;
+      CalibrationDataHiveObject calibrationData = value;
       int timestamp = int.parse(key) - 2;
       //double qrSizeAve = 2;
       var greater = accelerometerArray.where((e) => e >= timestamp).toList()
@@ -127,7 +127,7 @@ class _MatchedCalibrationDatabaseViewState
       double distance =
           double.parse(accelerometerMap[accKey].toString().split(',').last);
 
-      MatchedCalibrationData data = MatchedCalibrationData(
+      MatchedCalibrationDataHiveObject data = MatchedCalibrationDataHiveObject(
           objectSize: calibrationData.averageDiagonalLength,
           distance: distance);
 

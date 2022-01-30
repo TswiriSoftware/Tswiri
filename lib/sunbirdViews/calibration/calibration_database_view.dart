@@ -75,7 +75,7 @@ class _CalibrationDatabaseViewState extends State<CalibrationDatabaseView> {
     var calibrationMap = calibrationDataBox.toMap();
 
     calibrationMap.forEach((key, value) {
-      CalibrationData data = value;
+      CalibrationDataHiveObject data = value;
       displayList.add([data.averageDiagonalLength, data.timestamp]);
     });
 

@@ -3,23 +3,29 @@ import 'package:hive/hive.dart';
 part 'consolidated_data_adapter.g.dart';
 
 @HiveType(typeId: 1)
-class ConsolidatedData extends HiveObject {
-  //TODO: rename to hiveObject
-  ConsolidatedData(
+class ConsolidatedDataHiveObject extends HiveObject {
+  //TODO: caluclate Z offset correctly
+
+  ///This objects stores the real offset between barcodes aswell as the Z offset relative to a fixed bacodes.
+  ConsolidatedDataHiveObject(
       {required this.uid,
       required this.offset,
       required this.distanceFromCamera,
       required this.fixed});
 
+  //Barcode's ID or Displayvalue
   @HiveField(0)
   late String uid;
 
+  //Real offset relative to a fixed barcode.
   @HiveField(1)
-  late TypeOffset offset;
+  late TypeOffsetHiveObject offset;
 
+  //Z Offset relative to a fixed barcode
   @HiveField(2)
   late double distanceFromCamera;
 
+  //Is the barcode a fixed barcode ?
   @HiveField(3)
   late bool fixed;
 }

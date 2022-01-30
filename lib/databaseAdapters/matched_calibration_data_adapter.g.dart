@@ -6,25 +6,25 @@ part of 'matched_calibration_data_adapter.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class MatchedCalibrationDataAdapter
-    extends TypeAdapter<MatchedCalibrationData> {
+class MatchedCalibrationDataHiveObjectAdapter
+    extends TypeAdapter<MatchedCalibrationDataHiveObject> {
   @override
   final int typeId = 4;
 
   @override
-  MatchedCalibrationData read(BinaryReader reader) {
+  MatchedCalibrationDataHiveObject read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return MatchedCalibrationData(
+    return MatchedCalibrationDataHiveObject(
       objectSize: fields[0] as double,
       distance: fields[1] as double,
     );
   }
 
   @override
-  void write(BinaryWriter writer, MatchedCalibrationData obj) {
+  void write(BinaryWriter writer, MatchedCalibrationDataHiveObject obj) {
     writer
       ..writeByte(2)
       ..writeByte(0)
@@ -39,7 +39,7 @@ class MatchedCalibrationDataAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is MatchedCalibrationDataAdapter &&
+      other is MatchedCalibrationDataHiveObjectAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

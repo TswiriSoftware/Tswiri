@@ -27,7 +27,7 @@ class OnImageInterBarcodeDataHiveObject extends HiveObject {
 
   ///The inter barcode offset on the image.
   @HiveField(3)
-  late TypeOffset interBarcodeOffset;
+  late TypeOffsetHiveObject interBarcodeOffset;
 
   ///The average diagonal length of the two barcodes.
   @HiveField(4)

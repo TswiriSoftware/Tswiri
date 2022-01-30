@@ -6,17 +6,18 @@ part of 'accelerometer_data_adapter.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class AccelerometerDataAdapter extends TypeAdapter<AccelerometerData> {
+class AccelerometerDataHiveObjectAdapter
+    extends TypeAdapter<AccelerometerDataHiveObject> {
   @override
   final int typeId = 3;
 
   @override
-  AccelerometerData read(BinaryReader reader) {
+  AccelerometerDataHiveObject read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return AccelerometerData(
+    return AccelerometerDataHiveObject(
       timestamp: fields[0] as int,
       deltaT: fields[1] as int,
       accelerometerData: fields[2] as double,
@@ -25,7 +26,7 @@ class AccelerometerDataAdapter extends TypeAdapter<AccelerometerData> {
   }
 
   @override
-  void write(BinaryWriter writer, AccelerometerData obj) {
+  void write(BinaryWriter writer, AccelerometerDataHiveObject obj) {
     writer
       ..writeByte(4)
       ..writeByte(0)
@@ -44,7 +45,7 @@ class AccelerometerDataAdapter extends TypeAdapter<AccelerometerData> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is AccelerometerDataAdapter &&
+      other is AccelerometerDataHiveObjectAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

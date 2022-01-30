@@ -34,3 +34,17 @@ double translateY(
       return y * size.height / absoluteImageSize.height;
   }
 }
+
+Offset translateOnImageToOnScreen(
+    Offset onImageOffset, Size screenSize, Size absoluteImageSize) {
+  double dx = onImageOffset.dx *
+      screenSize.width /
+      (Platform.isIOS ? absoluteImageSize.width : absoluteImageSize.height);
+
+  double dy = onImageOffset.dy *
+      screenSize.height /
+      (Platform.isIOS ? absoluteImageSize.height : absoluteImageSize.width);
+  Offset onScreenOffset = Offset(dx, dy);
+
+  return onScreenOffset;
+}

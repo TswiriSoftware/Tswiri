@@ -8,7 +8,7 @@ List<Offset> listOfPoints(Box matchedDataBox, Size screenSize) {
   List<Offset> points = [];
   var matchedDataMap = matchedDataBox.toMap();
   matchedDataMap.forEach((key, value) {
-    MatchedCalibrationData data = value;
+    MatchedCalibrationDataHiveObject data = value;
 
     DataPoints offsetData = DataPoints(Offset(data.objectSize, data.distance));
 

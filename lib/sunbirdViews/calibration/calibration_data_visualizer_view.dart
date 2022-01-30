@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/calibration_functions.dart';
+import 'package:flutter_google_ml_kit/functions/calibrationFunctions/calibration_functions.dart';
+import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_paints.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/calibration/matched_calibration_database_view.dart';
 import 'package:hive/hive.dart';
@@ -88,14 +89,8 @@ class OpenPainter extends CustomPainter {
 
   @override
   paint(Canvas canvas, Size size) {
-    var paint1 = Paint()
-      ..color = Colors.blueAccent
-      ..strokeWidth = 6;
-
-    canvas.drawPoints(PointMode.points, dataPoints, paint1);
-
-    Offset firstDatapoint = dataPoints.first;
-    Offset lastDatapoint = dataPoints.last;
+    canvas.drawPoints(
+        PointMode.points, dataPoints, paintSimple(Colors.blue, 3));
 
     StraightLine a = straightLineEquation[0];
 

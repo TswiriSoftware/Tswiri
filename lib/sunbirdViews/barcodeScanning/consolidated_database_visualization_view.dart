@@ -3,11 +3,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
-import 'package:flutter_google_ml_kit/functions/round_to_double.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_paints.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/calibration/matched_calibration_database_view.dart';
+import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
+import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 //TODO: Refactor this @049er
 
@@ -101,11 +99,8 @@ class OpenPainter extends CustomPainter {
 
   @override
   paint(Canvas canvas, Size size) {
-    var paint1 = Paint()
-      ..color = Colors.blueAccent
-      ..strokeWidth = 6;
-
-    canvas.drawPoints(PointMode.points, dataPoints, paintBlue3);
+    canvas.drawPoints(
+        PointMode.points, dataPoints, paintSimple(Colors.blueAccent, 3));
 
     for (var i = 0; i < dataPoints.length; i++) {
       List pointData = pointRelativePositions[i]
@@ -134,7 +129,6 @@ class OpenPainter extends CustomPainter {
         minWidth: 0,
         maxWidth: size.width,
       );
-      //print(dataPoints[i]);
       Offset offset = dataPoints[i];
       textPainter.paint(canvas, (offset));
     }
@@ -152,7 +146,7 @@ _getPoints(
   double width = MediaQuery.of(context).size.width;
   double height = MediaQuery.of(context).size.height;
   for (var i = 0; i < consolidatedDataBox.length; i++) {
-    ConsolidatedData data = consolidatedDataBox.getAt(i);
+    ConsolidatedDataHiveObject data = consolidatedDataBox.getAt(i);
 
     points.add(Offset((data.offset.x * 150) + (width / 2),
         (data.offset.y * 150) + (height / 2)));

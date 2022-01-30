@@ -84,7 +84,7 @@ class _BarcodeNavigatorViewState extends State<BarcodeNavigatorView> {
     Map map = consolidatedData.toMap();
     Map<String, Offset> mapConsolidated = {};
     map.forEach((key, value) {
-      ConsolidatedData data = value;
+      ConsolidatedDataHiveObject data = value;
       mapConsolidated.update(
         key,
         (value) => Offset(data.offset.x, data.offset.y),
@@ -94,17 +94,3 @@ class _BarcodeNavigatorViewState extends State<BarcodeNavigatorView> {
     return mapConsolidated;
   }
 }
-
-// _getRelativePosition(List<Barcode> barcodes, Size absoluteImageSize,
-//     InputImageRotation rotation) {
-//   for (final Barcode barcode in barcodes) {
-//     final boundingBoxLeft = translateX(
-//         barcode.value.boundingBox!.left, rotation, size, absoluteImageSize);
-//     final boundingBoxTop = translateY(
-//         barcode.value.boundingBox!.top, rotation, size, absoluteImageSize);
-//     final boundingBoxRight = translateX(
-//         barcode.value.boundingBox!.right, rotation, size, absoluteImageSize);
-//     final boundingBoxBottom = translateY(
-//         barcode.value.boundingBox!.bottom, rotation, size, absoluteImageSize);
-//   }
-// }

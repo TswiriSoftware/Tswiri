@@ -7,8 +7,8 @@ import 'package:flutter_google_ml_kit/databaseAdapters/accelerometer_data_adapte
 import 'package:flutter_google_ml_kit/databaseAdapters/calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/type_offset_adapter.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/toolsNavigationView/barcode_scanning_tools_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/qrCodeGeneration/qr_code_generation_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -38,11 +38,11 @@ Future<void> main() async {
   final directory = await getApplicationDocumentsDirectory();
   await Hive.initFlutter(directory.path);
   Hive.registerAdapter(OnImageInterBarcodeDataHiveObjectAdapter());
-  Hive.registerAdapter(TypeOffsetAdapter());
-  Hive.registerAdapter(ConsolidatedDataAdapter());
-  Hive.registerAdapter(AccelerometerDataAdapter());
-  Hive.registerAdapter(CalibrationDataAdapter());
-  Hive.registerAdapter(MatchedCalibrationDataAdapter());
+  Hive.registerAdapter(TypeOffsetHiveObjectAdapter());
+  Hive.registerAdapter(ConsolidatedDataHiveObjectAdapter());
+  Hive.registerAdapter(AccelerometerDataHiveObjectAdapter());
+  Hive.registerAdapter(CalibrationDataHiveObjectAdapter());
+  Hive.registerAdapter(MatchedCalibrationDataHiveObjectAdapter());
 }
 
 class MyApp extends StatelessWidget {
