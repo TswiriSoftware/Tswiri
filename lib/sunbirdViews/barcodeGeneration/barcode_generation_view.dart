@@ -3,7 +3,11 @@ import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_gen
 import 'package:printing/printing.dart';
 
 class QrCodeGenerationView extends StatefulWidget {
-  const QrCodeGenerationView({Key? key}) : super(key: key);
+  const QrCodeGenerationView(
+      {Key? key, required this.rangeStart, required this.rangeEnd})
+      : super(key: key);
+  final int rangeStart;
+  final int rangeEnd;
 
   @override
   _QrCodeGenerationViewState createState() => _QrCodeGenerationViewState();
@@ -15,64 +19,29 @@ class _QrCodeGenerationViewState extends State<QrCodeGenerationView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Barcode Generator',
+          'Barcode Printer',
           style: TextStyle(fontSize: 25),
         ),
         centerTitle: true,
         elevation: 0,
       ),
-      body: Center(
-        child: GridView.count(
-          padding: const EdgeInsets.all(16),
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 16,
-          crossAxisCount: 1,
-          // ignore: prefer_const_literals_to_create_immutables
-
-          children: const [
-            CustomCardQrCode([1, 2, 3, 4, 5, 6]),
-            CustomCardQrCode([7, 8, 9, 10, 11, 12]),
-            CustomCardQrCode([13, 14, 15, 16, 17, 18]),
-            CustomCardQrCode([19, 20, 21, 22, 23, 24]),
-          ],
-        ),
-      ),
+      body: CustomCardQrCode(widget.rangeStart, widget.rangeEnd),
     );
   }
 }
 
 class CustomCardQrCode extends StatelessWidget {
-  final List<int> range;
+  final int rangeStart;
+  final int rangeEnd;
 
   // ignore: use_key_in_widget_constructors
-  const CustomCardQrCode(this.range);
+  const CustomCardQrCode(this.rangeStart, this.rangeEnd);
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 400,
-      width: 300,
-      child: Card(
-          elevation: 8,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ListTile(
-                tileColor: Theme.of(context).primaryColor,
-                title: Text(
-                  '${range.first} - ${range.last}',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ),
-              SizedBox(
-                height: 295,
-                child: PdfPreview(
-                    maxPageWidth: 200, build: (format) => generatePDF(range)),
-              )
-            ],
-          )),
-    );
+    return Container(
+        child: PdfPreview(
+            maxPageWidth: MediaQuery.of(context).size.width,
+            build: (format) => generatePDF(rangeStart, rangeEnd)));
   }
 }

@@ -8,6 +8,7 @@ import 'package:flutter_google_ml_kit/databaseAdapters/calibration_data_adapter.
 import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/type_offset_adapter.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_view.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generator_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/toolsNavigationView/barcode_scanning_tools_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -101,7 +102,10 @@ class Home extends StatelessWidget {
             CustomCard('Barcode Navigation Tools', BarcodeNavigationView(),
                 Icons.qr_code_rounded,
                 featureCompleted: true),
-            CustomCard('Barcode Generator', QrCodeGenerationView(),
+            // CustomCard('Barcode Generator', QrCodeGenerationView(),
+            //     Icons.qr_code_2_rounded,
+            //     featureCompleted: true),
+            CustomCard('Barcode Generator', BarcodeGeneratorView(),
                 Icons.qr_code_2_rounded,
                 featureCompleted: true),
           ],
