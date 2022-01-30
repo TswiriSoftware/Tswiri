@@ -2,18 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generator.dart';
 import 'package:printing/printing.dart';
 
-class QrCodeGenerationView extends StatefulWidget {
-  const QrCodeGenerationView(
-      {Key? key, required this.rangeStart, required this.rangeEnd})
-      : super(key: key);
+class BarcodeGenerationView extends StatefulWidget {
+  const BarcodeGenerationView({
+    Key? key,
+    required this.rangeStart,
+    required this.rangeEnd,
+  }) : super(key: key);
   final int rangeStart;
   final int rangeEnd;
 
   @override
-  _QrCodeGenerationViewState createState() => _QrCodeGenerationViewState();
+  _BarcodeGenerationViewState createState() => _BarcodeGenerationViewState();
 }
 
-class _QrCodeGenerationViewState extends State<QrCodeGenerationView> {
+class _BarcodeGenerationViewState extends State<BarcodeGenerationView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

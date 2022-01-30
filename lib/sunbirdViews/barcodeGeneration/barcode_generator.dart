@@ -6,15 +6,39 @@ import 'package:pdf/widgets.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 Future<Uint8List> generatePDF(int rangeStart, int rangeEnd) {
-  List<int> range =
+  final document = Document();
+  List<int> rangeOfBarcodes =
       List.generate(rangeEnd - rangeStart + 1, (index) => index + rangeStart);
   List<int> numberOfPages =
-      List.generate(((range.length) ~/ 6), (index) => index + 1);
+      List.generate(((rangeOfBarcodes.length) ~/ 6), (index) => index + 1);
 
-  return doc(numberOfPages, range).save();
+  int remainder = (rangeOfBarcodes.length) % 6;
+
+  for (var i = 0; i <= numberOfPages.length; i++) {
+    if (i < numberOfPages.length) {
+      document.addPage(pw.Page(
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) {
+            return pw.GridView(
+                direction: Axis.vertical,
+                crossAxisCount: 2,
+                children: generateBarcodes(6, rangeOfBarcodes[i * 6]));
+          }));
+    } else if (remainder > 0) {
+      document.addPage(pw.Page(
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) {
+            return pw.GridView(
+                direction: Axis.vertical,
+                crossAxisCount: 2,
+                children: generateBarcodes(remainder, rangeOfBarcodes[i * 6]));
+          }));
+    }
+  }
+  return document.save();
 }
 
-List<Widget> barcodes(int numberOfBarcodes, int startBarcode) {
+List<Widget> generateBarcodes(int numberOfBarcodes, int startBarcode) {
   List<Widget> test = List<Widget>.generate(numberOfBarcodes, (int index) {
     return pw.Padding(
         padding: const EdgeInsets.all(0),
@@ -27,6 +51,7 @@ List<Widget> barcodes(int numberOfBarcodes, int startBarcode) {
                   style: const TextStyle(fontSize: 15)),
               pw.BarcodeWidget(
                 height: 200,
+                width: 200,
                 color: PdfColor.fromHex("#000000"),
                 barcode: pw.Barcode.qrCode(),
                 data: "${startBarcode + index}",
@@ -35,31 +60,4 @@ List<Widget> barcodes(int numberOfBarcodes, int startBarcode) {
   });
 
   return test;
-}
-
-Document doc(List<int> numberOfPages, List<int> range) {
-  int remainder = (range.length) % 6;
-  final document = Document();
-  for (var i = 0; i <= numberOfPages.length; i++) {
-    if (i < numberOfPages.length) {
-      document.addPage(pw.Page(
-          pageFormat: PdfPageFormat.a4,
-          build: (pw.Context context) {
-            return pw.GridView(
-                direction: Axis.vertical,
-                crossAxisCount: 2,
-                children: barcodes(6, range[i]));
-          }));
-    } else if (remainder > 0) {
-      document.addPage(pw.Page(
-          pageFormat: PdfPageFormat.a4,
-          build: (pw.Context context) {
-            return pw.GridView(
-                direction: Axis.vertical,
-                crossAxisCount: 2,
-                children: barcodes(remainder, range[i * 6]));
-          }));
-    }
-  }
-  return document;
 }
