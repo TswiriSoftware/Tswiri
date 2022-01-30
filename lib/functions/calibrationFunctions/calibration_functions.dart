@@ -1,6 +1,5 @@
 import 'dart:ui';
-
-import 'package:flutter_google_ml_kit/databaseAdapters/matched_calibration_data_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/objects/data_points.dart';
 import 'package:hive/hive.dart';
 

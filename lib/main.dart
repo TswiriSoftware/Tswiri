@@ -3,21 +3,20 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/accelerometer_data_adapter.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/calibration_data_adapter.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/consolidated_data_adapter.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/type_offset_adapter.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generator_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/toolsNavigationView/barcode_scanning_tools_view.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_range_selector_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
-import 'databaseAdapters/matched_calibration_data_adapter.dart';
-import 'databaseAdapters/on_image_inter_barcode_data.dart';
-import 'sunbirdViews/barcodeNavigation/toolsNavigationView/barcode_navigation_tools_view.dart';
-import 'sunbirdViews/calibration/toolsNavigationView/camera_calibration_tools_view.dart';
+import 'databaseAdapters/calibrationAdapters/accelerometer_data_adapter.dart';
+import 'databaseAdapters/calibrationAdapters/calibration_data_adapter.dart';
+import 'databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
+import 'databaseAdapters/scanningAdapters/consolidated_data_adapter.dart';
+import 'databaseAdapters/scanningAdapters/on_image_inter_barcode_data.dart';
+import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
+import 'sunbirdViews/barcodeNavigation/navigationToolsView/barcode_navigation_tools_view.dart';
+import 'sunbirdViews/barcodeScanning/scanningToolsView/barcode_scanning_tools_view.dart';
+import 'sunbirdViews/cameraCalibration/calibrationToolsView/camera_calibration_tools_view.dart';
 
 List<CameraDescription> cameras = [];
 
@@ -102,11 +101,8 @@ class Home extends StatelessWidget {
             CustomCard('Barcode Navigation Tools', BarcodeNavigationView(),
                 Icons.qr_code_rounded,
                 featureCompleted: true),
-            // CustomCard('Barcode Generator', QrCodeGenerationView(),
-            //     Icons.qr_code_2_rounded,
-            //     featureCompleted: true),
-            CustomCard('Barcode Generator', BarcodeGeneratorView(),
-                Icons.qr_code_2_rounded,
+            CustomCard('Barcode Generator',
+                BarcodeGenerationRangeSelectorView(), Icons.qr_code_2_rounded,
                 featureCompleted: true),
           ],
         ),

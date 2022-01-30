@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataFunctions/data_processing_functions.dart';
 import 'package:flutter_google_ml_kit/functions/dataManipulation/deduplicate_raw_data.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_marker.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_data.dart';
 import 'package:hive/hive.dart';

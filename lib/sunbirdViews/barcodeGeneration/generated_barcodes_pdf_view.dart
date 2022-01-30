@@ -44,6 +44,6 @@ class CustomCardQrCode extends StatelessWidget {
     return Container(
         child: PdfPreview(
             maxPageWidth: MediaQuery.of(context).size.width,
-            build: (format) => generatePDF(rangeStart, rangeEnd)));
+            build: (format) => barcodePdfGenerator(rangeStart, rangeEnd)));
   }
 }

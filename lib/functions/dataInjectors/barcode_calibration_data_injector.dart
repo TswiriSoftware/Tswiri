@@ -1,12 +1,12 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/accelerometer_data_adapter.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/calibration_data_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/accelerometer_data_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataFunctions/data_capturing_functions.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
 
-import '../../mathfunctions/round_to_double.dart';
+import '../mathfunctions/round_to_double.dart';
 
 //TODO: New Sheet.
 //RealData  (Stored in box) ****** Majoroty of calulations Real Offset -> Screen Offset;  realOffset * X = screenOffset ;

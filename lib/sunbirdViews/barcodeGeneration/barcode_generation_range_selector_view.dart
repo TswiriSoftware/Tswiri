@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 
-import 'barcode_generation_view.dart';
+import 'generated_barcodes_pdf_view.dart';
 
-class BarcodeGeneratorView extends StatefulWidget {
-  const BarcodeGeneratorView({Key? key}) : super(key: key);
+class BarcodeGenerationRangeSelectorView extends StatefulWidget {
+  const BarcodeGenerationRangeSelectorView({Key? key}) : super(key: key);
 
   @override
-  _BarcodeGeneratorViewState createState() => _BarcodeGeneratorViewState();
+  _BarcodeGenerationRangeSelectorViewState createState() =>
+      _BarcodeGenerationRangeSelectorViewState();
 }
 
-class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
+class _BarcodeGenerationRangeSelectorViewState
+    extends State<BarcodeGenerationRangeSelectorView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

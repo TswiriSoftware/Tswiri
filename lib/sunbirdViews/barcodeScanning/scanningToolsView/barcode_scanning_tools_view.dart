@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/VisionDetectorViews/barcode_scanner_view.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/barcode_scanner_view.dart';
 import '../../../main.dart';
 import '../consolidated_database_view.dart';
 import '../consolidated_database_visualization_view.dart';

@@ -1,4 +1,4 @@
-import 'package:flutter_google_ml_kit/databaseAdapters/type_offset_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/typeAdapters/type_offset_adapter.dart';
 import 'package:hive/hive.dart';
 part 'on_image_inter_barcode_data.g.dart';
 

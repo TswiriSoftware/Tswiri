@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/dataInjectors/cameraCalibration/barcode_calibration_data_injector.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/barcode_scanner_view.dart';
-import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/barcode_detector_painter_calibration.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/accelerometer_data_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/accelerometer_data_adapter.dart';
+import 'package:flutter_google_ml_kit/functions/dataInjectors/barcode_calibration_data_injector.dart';
+import 'package:flutter_google_ml_kit/VisionDetectorViews/camera_view.dart';
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/painter/barcode_calibration_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:sensors_plus/sensors_plus.dart';

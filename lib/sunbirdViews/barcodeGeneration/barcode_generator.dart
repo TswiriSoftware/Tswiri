@@ -5,7 +5,7 @@ import 'package:pdf/widgets.dart';
 
 import 'package:pdf/widgets.dart' as pw;
 
-Future<Uint8List> generatePDF(int rangeStart, int rangeEnd) {
+Future<Uint8List> barcodePdfGenerator(int rangeStart, int rangeEnd) {
   final document = Document();
   List<int> rangeOfBarcodes =
       List.generate(rangeEnd - rangeStart + 1, (index) => index + rangeStart);
