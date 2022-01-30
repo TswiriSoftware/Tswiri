@@ -1,9 +1,9 @@
 import 'package:hive/hive.dart';
-part 'calibration_data_adapter.g.dart';
+part 'calibration_size_data_adapter.g.dart';
 
 @HiveType(typeId: 2)
-class CalibrationDataHiveObject extends HiveObject {
-  CalibrationDataHiveObject({
+class CalibrationSizeDataHiveObject extends HiveObject {
+  CalibrationSizeDataHiveObject({
     required this.timestamp,
     required this.averageDiagonalLength,
   });

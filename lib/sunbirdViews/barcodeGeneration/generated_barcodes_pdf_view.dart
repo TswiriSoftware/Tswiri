@@ -41,9 +41,8 @@ class CustomCardQrCode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: PdfPreview(
-            maxPageWidth: MediaQuery.of(context).size.width,
-            build: (format) => barcodePdfGenerator(rangeStart, rangeEnd)));
+    return PdfPreview(
+        maxPageWidth: MediaQuery.of(context).size.width,
+        build: (format) => barcodePdfGenerator(rangeStart, rangeEnd));
   }
 }

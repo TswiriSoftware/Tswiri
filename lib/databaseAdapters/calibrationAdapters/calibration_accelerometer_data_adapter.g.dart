@@ -1,23 +1,23 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'accelerometer_data_adapter.dart';
+part of 'calibration_accelerometer_data_adapter.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
 class AccelerometerDataHiveObjectAdapter
-    extends TypeAdapter<AccelerometerDataHiveObject> {
+    extends TypeAdapter<CalibrationAccelerometerDataHiveObject> {
   @override
   final int typeId = 3;
 
   @override
-  AccelerometerDataHiveObject read(BinaryReader reader) {
+  CalibrationAccelerometerDataHiveObject read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return AccelerometerDataHiveObject(
+    return CalibrationAccelerometerDataHiveObject(
       timestamp: fields[0] as int,
       deltaT: fields[1] as int,
       accelerometerData: fields[2] as double,
@@ -26,7 +26,7 @@ class AccelerometerDataHiveObjectAdapter
   }
 
   @override
-  void write(BinaryWriter writer, AccelerometerDataHiveObject obj) {
+  void write(BinaryWriter writer, CalibrationAccelerometerDataHiveObject obj) {
     writer
       ..writeByte(4)
       ..writeByte(0)

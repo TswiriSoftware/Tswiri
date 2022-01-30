@@ -1,30 +1,30 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'calibration_data_adapter.dart';
+part of 'calibration_size_data_adapter.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
 class CalibrationDataHiveObjectAdapter
-    extends TypeAdapter<CalibrationDataHiveObject> {
+    extends TypeAdapter<CalibrationSizeDataHiveObject> {
   @override
   final int typeId = 2;
 
   @override
-  CalibrationDataHiveObject read(BinaryReader reader) {
+  CalibrationSizeDataHiveObject read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return CalibrationDataHiveObject(
+    return CalibrationSizeDataHiveObject(
       timestamp: fields[0] as String,
       averageDiagonalLength: fields[1] as double,
     );
   }
 
   @override
-  void write(BinaryWriter writer, CalibrationDataHiveObject obj) {
+  void write(BinaryWriter writer, CalibrationSizeDataHiveObject obj) {
     writer
       ..writeByte(2)
       ..writeByte(0)

@@ -1,9 +1,9 @@
 import 'package:hive/hive.dart';
-part 'accelerometer_data_adapter.g.dart';
+part 'calibration_accelerometer_data_adapter.g.dart';
 
 @HiveType(typeId: 3)
-class AccelerometerDataHiveObject extends HiveObject {
-  AccelerometerDataHiveObject({
+class CalibrationAccelerometerDataHiveObject extends HiveObject {
+  CalibrationAccelerometerDataHiveObject({
     required this.timestamp,
     required this.deltaT,
     required this.accelerometerData,

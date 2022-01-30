@@ -4,8 +4,6 @@ part 'consolidated_data_adapter.g.dart';
 
 @HiveType(typeId: 1)
 class ConsolidatedDataHiveObject extends HiveObject {
-  //TODO: caluclate Z offset correctly
-
   ///This objects stores the real offset between barcodes aswell as the Z offset relative to a fixed bacodes.
   ConsolidatedDataHiveObject(
       {required this.uid,

@@ -93,7 +93,8 @@ class _HiveDatabaseConsolidationViewState
                   if (index == 0) {
                     return Column(
                       children: <Widget>[
-                        displayDataPoint(['UID', 'X', 'Y', 'Fixed']),
+                        displayDataPoint(
+                            ['UID', 'X', 'Y', 'Distance', 'fixed']),
                         const SizedBox(
                           height: 5,
                         ),
@@ -128,8 +129,9 @@ List _displayList(Map<String, ConsolidatedDataHiveObject> consolidatedData,
   consolidatedData.forEach((key, value) {
     displayList.add([
       value.uid,
-      roundDouble(value.offset.x, 13),
-      roundDouble(value.offset.y, 13),
+      roundDouble(value.offset.x, 8),
+      roundDouble(value.offset.y, 8),
+      roundDouble(value.distanceFromCamera, 1),
       value.fixed
     ]);
   });
@@ -155,7 +157,7 @@ displayDataPoint(var myText) {
               border: Border(right: BorderSide(color: deepSpaceSparkle))),
           child: SizedBox(
             child: Text(myText[0], textAlign: TextAlign.center),
-            width: 50,
+            width: 45,
           ),
         ),
         Container(
@@ -163,7 +165,7 @@ displayDataPoint(var myText) {
               border: Border(right: BorderSide(color: deepSpaceSparkle))),
           child: SizedBox(
             child: Text(myText[1], textAlign: TextAlign.center),
-            width: 140,
+            width: 95,
           ),
         ),
         Container(
@@ -171,11 +173,19 @@ displayDataPoint(var myText) {
               border: Border(right: BorderSide(color: deepSpaceSparkle))),
           child: SizedBox(
             child: Text(myText[2], textAlign: TextAlign.center),
-            width: 140,
+            width: 95,
+          ),
+        ),
+        Container(
+          decoration: const BoxDecoration(
+              border: Border(right: BorderSide(color: deepSpaceSparkle))),
+          child: SizedBox(
+            child: Text(myText[3], textAlign: TextAlign.center),
+            width: 60,
           ),
         ),
         SizedBox(
-          child: Text(myText[3], textAlign: TextAlign.center),
+          child: Text(myText[4], textAlign: TextAlign.center),
           width: 50,
         ),
       ],

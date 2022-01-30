@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 
 import 'generated_barcodes_pdf_view.dart';
 
@@ -24,22 +23,13 @@ class _BarcodeGenerationRangeSelectorViewState
         centerTitle: true,
         elevation: 0,
       ),
-      body: Container(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 5,
-            ),
-            SelectRangeWidget()
-          ],
-        ),
-        // child: GridView.count(
-        //   padding: const EdgeInsets.all(16),
-        //   mainAxisSpacing: 8,
-        //   crossAxisSpacing: 16,
-        //   crossAxisCount: 1,
-        //   children: const [],
-        // ),
+      body: Column(
+        children: const [
+          SizedBox(
+            height: 5,
+          ),
+          SelectRangeWidget()
+        ],
       ),
     );
   }
@@ -62,7 +52,7 @@ class _SelectRangeWidgetState extends State<SelectRangeWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(10, 2, 10, 2),
+      padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
       decoration: const BoxDecoration(
           border: Border(
               bottom: BorderSide(color: Colors.deepOrange, width: 2),
