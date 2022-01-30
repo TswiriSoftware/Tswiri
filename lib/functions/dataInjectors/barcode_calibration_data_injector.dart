@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/accelerometer_data_adapter.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/calibration_data_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/calibration_accelerometer_data_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/calibration_size_data_adapter.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataFunctions/data_capturing_functions.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
@@ -26,8 +26,8 @@ injectBarcodeSizeData(
     bool checkIfBarcodeIsValid() =>
         barcode.value.displayValue != null && barcode.value.boundingBox != null;
     if (checkIfBarcodeIsValid()) {
-      CalibrationDataHiveObject calibrationDataInstance =
-          CalibrationDataHiveObject(
+      CalibrationSizeDataHiveObject calibrationDataInstance =
+          CalibrationSizeDataHiveObject(
               timestamp: DateTime.now().millisecondsSinceEpoch.toString(),
               averageDiagonalLength: averageBarcodeDiagonalLength(barcode));
 
@@ -43,8 +43,8 @@ injectBarcodeSizeData(
 injectAccelerometerData(int deltaT, double zAcceleration, double distanceMoved,
     Box accelerometerDataBox) {
   int timestamp = DateTime.now().millisecondsSinceEpoch;
-  AccelerometerDataHiveObject accelerometerDataInstance =
-      AccelerometerDataHiveObject(
+  CalibrationAccelerometerDataHiveObject accelerometerDataInstance =
+      CalibrationAccelerometerDataHiveObject(
           timestamp: timestamp,
           deltaT: deltaT,
           accelerometerData: zAcceleration,

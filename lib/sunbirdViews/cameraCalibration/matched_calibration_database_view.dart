@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/calibration_data_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/calibration_size_data_adapter.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:hive/hive.dart';
@@ -116,7 +116,7 @@ class _MatchedCalibrationDatabaseViewState
     });
 
     calibrationMap.forEach((key, value) {
-      CalibrationDataHiveObject calibrationData = value;
+      CalibrationSizeDataHiveObject calibrationData = value;
       int timestamp = int.parse(key) - 2;
       //double qrSizeAve = 2;
       var greater = accelerometerArray.where((e) => e >= timestamp).toList()

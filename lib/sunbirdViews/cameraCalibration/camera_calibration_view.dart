@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/accelerometer_data_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/calibration_accelerometer_data_adapter.dart';
 import 'package:flutter_google_ml_kit/functions/dataInjectors/barcode_calibration_data_injector.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/camera_view.dart';
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
@@ -106,8 +106,8 @@ class _CameraCalibrationState extends State<CameraCalibration> {
       customPaint = CustomPaint(painter: painter);
 
       timestamp = DateTime.now().millisecondsSinceEpoch;
-      AccelerometerDataHiveObject accelerometerDataInstance =
-          AccelerometerDataHiveObject(
+      CalibrationAccelerometerDataHiveObject accelerometerDataInstance =
+          CalibrationAccelerometerDataHiveObject(
               timestamp: timestamp,
               deltaT: deltaT,
               accelerometerData: zAcceleration,

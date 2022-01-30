@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/calibration_data_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/calibration_size_data_adapter.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:hive/hive.dart';
 
@@ -75,7 +75,7 @@ class _CalibrationDatabaseViewState extends State<CalibrationDatabaseView> {
     var calibrationMap = calibrationDataBox.toMap();
 
     calibrationMap.forEach((key, value) {
-      CalibrationDataHiveObject data = value;
+      CalibrationSizeDataHiveObject data = value;
       displayList.add([data.averageDiagonalLength, data.timestamp]);
     });
 

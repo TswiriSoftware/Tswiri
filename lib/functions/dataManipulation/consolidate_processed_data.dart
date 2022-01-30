@@ -18,10 +18,10 @@ consolidateProcessedData(
                 interBarcodeVector.interBarcodeOffset;
 
         //TODO: caluclate Z offset correctly
-        double realDistanceRelative =
-            consolidatedDataMap[interBarcodeVector.uidStart]!
-                    .distanceFromCamera -
-                interBarcodeVector.distanceFromCamera;
+        // double realDistanceRelative =
+        //     consolidatedDataMap[interBarcodeVector.uidStart]!
+        //             .distanceFromCamera -
+        //         interBarcodeVector.distanceFromCamera;
 
         RealBarcodeMarker point = RealBarcodeMarker(
             id: interBarcodeVector.uidEnd,
@@ -39,9 +39,9 @@ consolidateProcessedData(
             consolidatedDataMap[interBarcodeVector.uidEnd]!.offset +
                 (-interBarcodeVector.interBarcodeOffset);
 
-        double realDistanceRelative =
-            consolidatedDataMap[interBarcodeVector.uidEnd]!.distanceFromCamera -
-                interBarcodeVector.distanceFromCamera;
+        // double realDistanceRelative =
+        //     consolidatedDataMap[interBarcodeVector.uidEnd]!.distanceFromCamera -
+        //         interBarcodeVector.distanceFromCamera;
 
         RealBarcodeMarker point = RealBarcodeMarker(
             id: interBarcodeVector.uidStart,

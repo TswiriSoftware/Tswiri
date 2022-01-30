@@ -3,13 +3,14 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_range_selector_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
-import 'databaseAdapters/calibrationAdapters/accelerometer_data_adapter.dart';
-import 'databaseAdapters/calibrationAdapters/calibration_data_adapter.dart';
+import 'databaseAdapters/calibrationAdapters/calibration_accelerometer_data_adapter.dart';
+import 'databaseAdapters/calibrationAdapters/calibration_size_data_adapter.dart';
 import 'databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
 import 'databaseAdapters/scanningAdapters/consolidated_data_adapter.dart';
 import 'databaseAdapters/scanningAdapters/on_image_inter_barcode_data.dart';
@@ -92,18 +93,34 @@ class Home extends StatelessWidget {
           crossAxisSpacing: 16,
           crossAxisCount: 2,
           children: const [
-            CustomCard('Barcode Scanning Tools', BarcodeScanningView(),
-                Icons.qr_code_scanner_rounded,
-                featureCompleted: true),
-            CustomCard('Camera Calibration Tools', CameraCalibrationView(),
-                Icons.camera_alt,
-                featureCompleted: true),
-            CustomCard('Barcode Navigation Tools', BarcodeNavigationView(),
-                Icons.qr_code_rounded,
-                featureCompleted: true),
-            CustomCard('Barcode Generator',
-                BarcodeGenerationRangeSelectorView(), Icons.qr_code_2_rounded,
-                featureCompleted: true),
+            CustomCard(
+              'Barcode Scanning Tools',
+              BarcodeScanningView(),
+              Icons.qr_code_scanner_rounded,
+              featureCompleted: true,
+              tileColor: brightOrange,
+            ),
+            CustomCard(
+              'Camera Calibration Tools',
+              CameraCalibrationView(),
+              Icons.camera_alt,
+              featureCompleted: true,
+              tileColor: skyBlue80,
+            ),
+            CustomCard(
+              'Barcode Navigation Tools',
+              BarcodeNavigationView(),
+              Icons.qr_code_rounded,
+              featureCompleted: true,
+              tileColor: limeGreen80,
+            ),
+            CustomCard(
+              'Barcode Generator',
+              BarcodeGenerationRangeSelectorView(),
+              Icons.qr_code_2_rounded,
+              featureCompleted: true,
+              tileColor: deeperOrange,
+            ),
           ],
         ),
       ),
@@ -116,10 +133,10 @@ class CustomCard extends StatelessWidget {
   final Widget _viewPage;
   final bool featureCompleted;
   final IconData _icon;
-
+  final Color tileColor;
   // ignore: use_key_in_widget_constructors
   const CustomCard(this._label, this._viewPage, this._icon,
-      {this.featureCompleted = false});
+      {this.featureCompleted = false, required this.tileColor});
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +148,7 @@ class CustomCard extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
         ),
-        tileColor: Theme.of(context).primaryColor,
+        tileColor: tileColor,
         title: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

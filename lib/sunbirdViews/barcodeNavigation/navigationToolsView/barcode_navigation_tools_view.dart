@@ -34,6 +34,7 @@ class _BarcodeNavigationViewState extends State<BarcodeNavigationView> {
               BarcodeSelectionView(),
               Icons.camera,
               featureCompleted: true,
+              tileColor: Colors.deepOrange,
             ),
           ],
         ),
