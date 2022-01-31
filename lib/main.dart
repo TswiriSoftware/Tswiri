@@ -3,6 +3,9 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_google_ml_kit/VisionDetectorViews/detector_views.dart';
+import 'package:flutter_google_ml_kit/VisionDetectorViews/label_detector_view.dart';
+import 'package:flutter_google_ml_kit/VisionDetectorViews/object_detector_view.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_range_selector_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -117,6 +120,27 @@ class Home extends StatelessWidget {
             CustomCard(
               'Barcode Generator',
               BarcodeGenerationRangeSelectorView(),
+              Icons.qr_code_2_rounded,
+              featureCompleted: true,
+              tileColor: deeperOrange,
+            ),
+            CustomCard(
+              'ImageLabelView',
+              ImageLabelView(),
+              Icons.qr_code_2_rounded,
+              featureCompleted: true,
+              tileColor: deeperOrange,
+            ),
+            CustomCard(
+              'ObjectDetectorView',
+              ObjectDetectorView(),
+              Icons.qr_code_2_rounded,
+              featureCompleted: true,
+              tileColor: deeperOrange,
+            ),
+            CustomCard(
+              'TextDetectorView',
+              TextDetectorView(),
               Icons.qr_code_2_rounded,
               featureCompleted: true,
               tileColor: deeperOrange,
