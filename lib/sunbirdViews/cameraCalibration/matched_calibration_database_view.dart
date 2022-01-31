@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/calibration_size_data_adapter.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
+import 'package:flutter_google_ml_kit/functions/calibrationFunctions/calibration_functions.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -109,30 +110,27 @@ class _MatchedCalibrationDatabaseViewState
     var accelerometerMap = {};
     calibrationMap = calibrationDataBox.toMap();
     accelerometerMap = accelerometerDataBox.toMap();
-    var accelerometerArray = [];
 
-    accelerometerMap.forEach((key, value) {
-      accelerometerArray.add(int.parse(key));
-    });
+    List<int> accelerometerArray =
+        generateAccelerometerKeysArray(accelerometerMap);
 
-    calibrationMap.forEach((key, value) {
-      CalibrationSizeDataHiveObject calibrationData = value;
+    calibrationMap.forEach((key, calibrationData) {
       int timestamp = int.parse(key) - 2;
-      //double qrSizeAve = 2;
       var greater = accelerometerArray.where((e) => e >= timestamp).toList()
         ..sort();
 
-      String accKey = greater.first.toString();
+      String accelerometerMapKey = greater.first.toString();
 
-      double distance =
-          double.parse(accelerometerMap[accKey].toString().split(',').last);
+      double distanceFromCamera =
+          getDistanceFromCamera(accelerometerMap, accelerometerMapKey);
 
-      MatchedCalibrationDataHiveObject data = MatchedCalibrationDataHiveObject(
-          objectSize: calibrationData.averageDiagonalLength,
-          distance: distance);
+      MatchedCalibrationDataHiveObject matchedCalibrationDataInstance =
+          MatchedCalibrationDataHiveObject(
+              objectSize: calibrationData.averageDiagonalLength,
+              distance: distanceFromCamera);
 
-      matchedDataBox.put(
-          calibrationData.averageDiagonalLength.toString(), data);
+      matchedDataBox.put(calibrationData.averageDiagonalLength.toString(),
+          matchedCalibrationDataInstance);
 
       StraightLine straightLineEquation =
           linearRegression(matchedDataBox.toMap());
@@ -143,7 +141,8 @@ class _MatchedCalibrationDatabaseViewState
       displayList.add([
         timestamp,
         calibrationData.averageDiagonalLength,
-        double.parse(accelerometerMap[accKey].toString().split(',').last)
+        double.parse(
+            accelerometerMap[accelerometerMapKey].toString().split(',').last)
       ]);
     });
 
@@ -186,44 +185,4 @@ displayDataPoint(var text) {
       ),
     ),
   );
-}
-
-class StraightLine {
-  StraightLine({required this.m, required this.c});
-  double m;
-  double c;
-}
-
-StraightLine linearRegression(Map matchedDataBox) {
-  var xArray = [];
-  var yArray = [];
-  var matchedDataMap = matchedDataBox;
-  double dX = 0;
-  double oY = 0;
-
-  matchedDataMap.forEach((key, value) {
-    double dXi = double.parse(value.toString().split(',').last);
-    double oYi = double.parse(value.toString().split(',').first);
-    xArray.add(dXi);
-    yArray.add(oYi);
-    dX = dX + dXi;
-    oY = oY + oYi;
-  });
-
-  double mX = dX / matchedDataMap.length;
-  double mY = oY / matchedDataMap.length;
-
-  double zS = 0;
-  double qS = 0;
-
-  for (var i = 0; i < matchedDataMap.length; i++) {
-    zS = zS + ((xArray[i] - mX) * (yArray[i] - mY));
-    qS = qS + pow((yArray[i] - mY), 2);
-  }
-
-  double m = zS / qS;
-  double c = mX - (m * mY);
-
-  StraightLine straightLineEquation = StraightLine(m: m, c: c);
-  return straightLineEquation;
 }
