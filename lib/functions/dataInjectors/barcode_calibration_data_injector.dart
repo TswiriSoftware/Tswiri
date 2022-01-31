@@ -8,10 +8,28 @@ import 'package:hive/hive.dart';
 
 import '../mathfunctions/round_to_double.dart';
 
-//TODO: New Sheet.
 //RealData  (Stored in box) ****** Majoroty of calulations Real Offset -> Screen Offset;  realOffset * X = screenOffset ;
 //ImageData (Stored in box)) ImageOffset -> RealOffset /barcode { uid , size }
 //ScreenData * rarley used (Not stored)
+
+//TODO : Global box names:
+ 
+//1. consolidatedData: RealPositionData (UID, X & Y cordinates)
+// X and Y cordinates of every barcode 
+
+//2. rawDataBox: OnImageInterBarcodeData (......)
+
+//3. AccelerometerData: Delete
+
+//4. SizeData: Delete 
+
+//5. MatchedData: DistanceLookupTable 
+
+//.Recommended:
+
+// Barcodes (UID, BarcodeDiagonalLength , Fixed )
+
+
 
 //Add barcode size to Database... realBarcodeSize
 

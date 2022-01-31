@@ -1,6 +1,9 @@
 import 'package:hive/hive.dart';
 part 'calibration_accelerometer_data_adapter.g.dart';
 
+
+//TODO: Delete
+
 @HiveType(typeId: 3)
 class CalibrationAccelerometerDataHiveObject extends HiveObject {
   CalibrationAccelerometerDataHiveObject({
