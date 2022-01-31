@@ -71,7 +71,6 @@ class _CalibrationDatabaseViewState extends State<CalibrationDatabaseView> {
   Future<List> loadData() async {
     displayList.clear();
     var calibrationDataBox = await Hive.openBox('calibrationDataBox');
-
     var calibrationMap = calibrationDataBox.toMap();
 
     calibrationMap.forEach((key, value) {
