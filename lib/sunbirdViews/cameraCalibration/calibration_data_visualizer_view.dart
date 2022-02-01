@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/calibrationFunctions/calibration_functions.dart';
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_paints.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -44,7 +45,7 @@ class _CalibrationDataVisualizerViewState
               FloatingActionButton(
                 heroTag: null,
                 onPressed: () async {
-                  var matchedDataBox = await Hive.openBox('matchedDataBox');
+                  var matchedDataBox = await Hive.openBox(matchedDataHiveBox);
                   matchedDataBox.clear();
                   setState(() {});
                 },
@@ -108,7 +109,7 @@ class OpenPainter extends CustomPainter {
 }
 
 _getPoints(BuildContext context, List<StraightLine> straightLine) async {
-  var matchedDataBox = await Hive.openBox('matchedDataBox');
+  var matchedDataBox = await Hive.openBox(matchedDataHiveBox);
   SharedPreferences prefs = await SharedPreferences.getInstance();
   straightLine.add(
       StraightLine(m: prefs.getDouble('m') ?? 0, c: prefs.getDouble('c') ?? 0));

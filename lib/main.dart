@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/detector_views.dart';
-import 'package:flutter_google_ml_kit/VisionDetectorViews/label_detector_view.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/object_detector_view.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_range_selector_view.dart';
@@ -125,23 +124,23 @@ class Home extends StatelessWidget {
               tileColor: deeperOrange,
             ),
             CustomCard(
-              'ImageLabelView',
+              'Image Label View',
               ImageLabelView(),
-              Icons.qr_code_2_rounded,
+              Icons.image_rounded,
               featureCompleted: true,
               tileColor: deeperOrange,
             ),
             CustomCard(
-              'ObjectDetectorView',
+              'Object Detector View',
               ObjectDetectorView(),
-              Icons.qr_code_2_rounded,
+              Icons.emoji_objects_rounded,
               featureCompleted: true,
               tileColor: deeperOrange,
             ),
             CustomCard(
-              'TextDetectorView',
+              'Text Detector View',
               TextDetectorView(),
-              Icons.qr_code_2_rounded,
+              Icons.text_fields_rounded,
               featureCompleted: true,
               tileColor: deeperOrange,
             ),

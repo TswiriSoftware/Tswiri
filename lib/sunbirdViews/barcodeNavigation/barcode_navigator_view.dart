@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/camera_view.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/consolidated_data_adapter.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/painter/barcode_navigation_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
@@ -55,7 +56,7 @@ class _BarcodeNavigatorViewState extends State<BarcodeNavigatorView> {
   }
 
   Future<void> processImage(InputImage inputImage) async {
-    var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
+    var consolidatedDataBox = await Hive.openBox(consolidatedDataHiveBox);
     consolidatedData = getConsolidatedData(consolidatedDataBox);
 
     if (isBusy) return;

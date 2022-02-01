@@ -5,6 +5,7 @@ import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/calib
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/functions/calibrationFunctions/calibration_functions.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -43,10 +44,10 @@ class _MatchedCalibrationDatabaseViewState
               heroTag: null,
               onPressed: () async {
                 var calibrationDataBox =
-                    await Hive.openBox('calibrationDataBox');
+                    await Hive.openBox(calibrationDataHiveBox);
                 var accelerometerDataBox =
-                    await Hive.openBox('accelerometerDataBox');
-                var matchedDataBox = await Hive.openBox('matchedDataBox');
+                    await Hive.openBox(accelerometerDataHiveBox);
+                var matchedDataBox = await Hive.openBox(matchedDataHiveBox);
                 accelerometerDataBox.clear();
                 calibrationDataBox.clear();
                 matchedDataBox.clear();
@@ -101,9 +102,10 @@ class _MatchedCalibrationDatabaseViewState
 
   Future<List> loadData() async {
     displayList.clear();
-    var calibrationDataBox = await Hive.openBox('calibrationDataBox');
-    var accelerometerDataBox = await Hive.openBox('accelerometerDataBox');
-    var matchedDataBox = await Hive.openBox('matchedDataBox');
+    var calibrationDataBox = await Hive.openBox(calibrationDataHiveBox);
+    var accelerometerDataBox = await Hive.openBox(accelerometerDataHiveBox);
+    var matchedDataBox = await Hive.openBox(matchedDataHiveBox);
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     var calibrationMap = {};

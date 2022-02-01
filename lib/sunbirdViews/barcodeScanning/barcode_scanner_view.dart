@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/on_image_inter_barcode_data.dart';
+import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
 import 'package:flutter_google_ml_kit/functions/dataInjectors/barcode_raw_on_image_data_injector.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../VisionDetectorViews/camera_view.dart';
@@ -16,12 +19,17 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
 
+  List<OnImageInterBarcodeDataHiveObject> allBarcodeData = [];
   bool isBusy = false;
   CustomPaint? customPaint;
 
   @override
   void dispose() {
     barcodeScanner.close();
+    allBarcodeData.forEach((element) {
+      debugPrint(
+          '${element.uidStart} ,${element.uidEnd}, [${typeOffsetToOffset(element.interBarcodeOffset).dx}, ${typeOffsetToOffset(element.interBarcodeOffset).dy}], ${element.startDiagonalLength}, ${element.endDiagonalLength} ');
+    });
     super.dispose();
   }
 
@@ -41,8 +49,10 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     if (isBusy) return;
     isBusy = true;
     final barcodes = await barcodeScanner.processImage(inputImage);
-    var rawDataBox = await Hive.openBox('rawDataBox');
-    var lookupTable = await Hive.openBox('matchedDataBox');
+    var rawDataBox = await Hive.openBox(rawDataHiveBox);
+
+    barcodeRawOnImageDataInjector(
+        barcodes, inputImage.inputImageData!, rawDataBox, allBarcodeData);
 
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
@@ -57,10 +67,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     }
     isBusy = false;
     if (mounted) {
-      setState(() {
-        barcodeRawOnImageDataInjector(barcodes, inputImage.inputImageData!,
-            rawDataBox, lookupTable.toMap());
-      });
+      setState(() {});
     }
   }
 }

@@ -40,12 +40,12 @@ addFixedPoint(RealInterBarcodeData firstPoint,
   consolidatedData.update(
       firstPoint.uidStart,
       (value) => RealBarcodeMarker(
-          id: firstPoint.uidStart,
+          id: '1',
           offset: const Offset(0, 0),
           fixed: true,
           distanceFromCamera: firstPoint.distanceFromCamera),
       ifAbsent: () => RealBarcodeMarker(
-          id: firstPoint.uidStart,
+          id: '1',
           offset: const Offset(0, 0),
           fixed: true,
           distanceFromCamera:

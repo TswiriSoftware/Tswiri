@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/consolidated_data_adapter.dart';
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:hive/hive.dart';
 
 import 'barcode_navigator_view.dart';
@@ -144,7 +145,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
   }
 
   Future<List> consolidateData() async {
-    var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
+    var consolidatedDataBox = await Hive.openBox(consolidatedDataHiveBox);
     Map consolidatedDataMap = consolidatedDataBox.toMap();
     List displayList = [];
     consolidatedDataMap.forEach((key, value) {

@@ -24,7 +24,7 @@ barcodeRawOnImageDataInjector(
   List<Barcode> barcodes,
   InputImageData inputImageData,
   Box<dynamic> rawOnImageDataBox,
-  Map distanceFromCameraLookupTable,
+  List<OnImageInterBarcodeDataHiveObject> allBarcodeData,
 ) {
 //TODO: Write documentation for all functions.
 
@@ -87,7 +87,7 @@ barcodeRawOnImageDataInjector(
         endDiagonalLength: interBarcodeInstance.endDiagonalLength,
         timestamp: interBarcodeInstance.timestamp,
       );
-
+      allBarcodeData.add(interBarcodeData);
       rawOnImageDataBox.put(uid, interBarcodeData);
     });
   }

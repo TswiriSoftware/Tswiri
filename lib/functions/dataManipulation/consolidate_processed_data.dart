@@ -17,7 +17,7 @@ consolidateProcessedData(
             consolidatedDataMap[interBarcodeVector.uidStart]!.offset +
                 interBarcodeVector.interBarcodeOffset;
 
-        //TODO: caluclate Z offset correctly
+        //caluclate Z offset correctly
         // double realDistanceRelative =
         //     consolidatedDataMap[interBarcodeVector.uidStart]!
         //             .distanceFromCamera -

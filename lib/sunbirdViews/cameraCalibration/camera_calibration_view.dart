@@ -5,6 +5,7 @@ import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/calib
 import 'package:flutter_google_ml_kit/functions/dataInjectors/barcode_calibration_data_injector.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/camera_view.dart';
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/painter/barcode_calibration_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -64,7 +65,7 @@ class _CameraCalibrationState extends State<CameraCalibration> {
                 heroTag: null,
                 onPressed: () async {
                   var calibrationDataBox =
-                      await Hive.openBox('calibrationDataBox');
+                      await Hive.openBox(calibrationDataHiveBox);
                   calibrationDataBox.clear();
                   setState(() {});
                 },
@@ -93,8 +94,8 @@ class _CameraCalibrationState extends State<CameraCalibration> {
     if (isBusy) return;
     isBusy = true;
     final barcodes = await barcodeScanner.processImage(inputImage);
-    var calibrationDataBox = await Hive.openBox('calibrationDataBox');
-    var accelerometerDataBox = await Hive.openBox('accelerometerDataBox');
+    var calibrationDataBox = await Hive.openBox(calibrationDataHiveBox);
+    var accelerometerDataBox = await Hive.openBox(accelerometerDataHiveBox);
 
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {

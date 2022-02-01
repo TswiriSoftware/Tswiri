@@ -21,8 +21,8 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
     objectDetector = GoogleMlKit.vision.objectDetector(
         CustomObjectDetectorOptions(model,
             classifyObjects: false,
-            trackMutipleObjects: false,
-            maximumLabelsPerObject: 20,
+            trackMutipleObjects: true,
+            maximumLabelsPerObject: 5,
             confidenceThreshold: 0.9));
     super.initState();
   }
@@ -52,7 +52,7 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
     if (isBusy) return;
     isBusy = true;
     final result = await objectDetector.processImage(inputImage);
-    //print(result);
+    print(result);
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null &&
         result.isNotEmpty) {

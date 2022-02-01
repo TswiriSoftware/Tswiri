@@ -3,6 +3,7 @@ import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/on_image
 import 'package:flutter_google_ml_kit/functions/dataManipulation/process_raw_data.dart';
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,11 +32,11 @@ class _RawOnImageDatabaseViewState extends State<RawOnImageDatabaseView> {
             FloatingActionButton(
               heroTag: null,
               onPressed: () async {
-                var rawDataBox = await Hive.openBox('rawDataBox');
+                var rawDataBox = await Hive.openBox(rawDataHiveBox);
                 rawDataBox.clear();
 
                 var consolidatedDataBox =
-                    await Hive.openBox('consolidatedDataBox');
+                    await Hive.openBox(consolidatedDataHiveBox);
                 consolidatedDataBox.clear();
 
                 Future.delayed(const Duration(milliseconds: 100), () {
@@ -86,10 +87,10 @@ class _RawOnImageDatabaseViewState extends State<RawOnImageDatabaseView> {
   }
 
   Future<List> loadData() async {
-    var rawOnImageDataBox = await Hive.openBox('rawDataBox');
-    var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
+    var rawOnImageDataBox = await Hive.openBox(rawDataHiveBox);
+    var consolidatedDataBox = await Hive.openBox(consolidatedDataHiveBox);
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    //print(lookupTable.toMap());
+    //print(lookupTable.toMa p());
     Map rawOnImageDataMap = rawOnImageDataBox.toMap();
 
     processRawOnImageData(rawOnImageDataMap, consolidatedDataBox, prefs);

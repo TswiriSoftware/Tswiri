@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/calibration_size_data_adapter.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:hive/hive.dart';
 
 class CalibrationDatabaseView extends StatefulWidget {
@@ -70,7 +71,7 @@ class _CalibrationDatabaseViewState extends State<CalibrationDatabaseView> {
 
   Future<List> loadData() async {
     displayList.clear();
-    var calibrationDataBox = await Hive.openBox('calibrationDataBox');
+    var calibrationDataBox = await Hive.openBox(calibrationDataHiveBox);
     var calibrationMap = calibrationDataBox.toMap();
 
     calibrationMap.forEach((key, value) {

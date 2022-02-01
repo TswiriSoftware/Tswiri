@@ -37,14 +37,14 @@ class _ImageLabelViewState extends State<ImageLabelView> {
 
   Future<void> processImageWithDefaultModel(InputImage inputImage) async {
     imageLabeler = GoogleMlKit.vision
-        .imageLabeler(ImageLabelerOptions(confidenceThreshold: 0.8));
+        .imageLabeler(ImageLabelerOptions(confidenceThreshold: 0.5));
     processImage(inputImage);
   }
 
   // Add the tflite model in android/src/main/assets
   Future<void> processImageWithRemoteModel(InputImage inputImage) async {
     final options = CustomRemoteLabelerOption(
-        confidenceThreshold: 0.5, modelName: 'bird-classifier');
+        confidenceThreshold: 0.1, modelName: 'bird-classifier');
     imageLabeler = GoogleMlKit.vision.imageLabeler(options);
     processImage(inputImage);
   }

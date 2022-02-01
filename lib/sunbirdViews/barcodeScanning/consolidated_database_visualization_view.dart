@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/consolidated_data_adapter.dart';
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 //TODO: Refactor this @049er
@@ -44,7 +45,7 @@ class _DatabaseVisualizationState extends State<DatabaseVisualization> {
                 onPressed: () async {
                   pointNames.clear();
                   var consolidatedDataBox =
-                      await Hive.openBox('consolidatedDataBox');
+                      await Hive.openBox(consolidatedDataHiveBox);
                   consolidatedDataBox.clear();
                   setState(() {});
                 },

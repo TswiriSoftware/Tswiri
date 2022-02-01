@@ -41,7 +41,8 @@ processRawOnImageData(
     realInterBarcodeDataList.add(realBarcodeData);
   });
 
-  if (realInterBarcodeDataList.isNotEmpty) {
+  if (realInterBarcodeDataList.isNotEmpty &&
+      !consolidatedDataBox.containsKey('1')) {
     addFixedPoint(realInterBarcodeDataList.first, consolidatedDataMap);
   }
 
