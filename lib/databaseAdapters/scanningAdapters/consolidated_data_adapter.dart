@@ -1,4 +1,5 @@
 import 'package:flutter_google_ml_kit/databaseAdapters/typeAdapters/type_offset_adapter.dart';
+import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
 import 'package:hive/hive.dart';
 part 'consolidated_data_adapter.g.dart';
 
@@ -9,7 +10,8 @@ class ConsolidatedDataHiveObject extends HiveObject {
       {required this.uid,
       required this.offset,
       required this.distanceFromCamera,
-      required this.fixed});
+      required this.fixed,
+      required this.timestamp});
 
   //Barcode's ID or Displayvalue
   @HiveField(0)
@@ -26,4 +28,12 @@ class ConsolidatedDataHiveObject extends HiveObject {
   //Is the barcode a fixed barcode ?
   @HiveField(3)
   late bool fixed;
+
+  @HiveField(4)
+  late int timestamp;
+
+  @override
+  String toString() {
+    return '$uid, ${typeOffsetToOffset(offset)}, ';
+  }
 }

@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 /// The Offset between the startBarcode and barcode aswell as the Absolute offset between them, Distance from camera and time of creation
 class OnImageInterBarcodeData {
   OnImageInterBarcodeData(
-      {required this.startBarcodeID,
+      {required this.uid,
+      required this.startBarcodeID,
       required this.startDiagonalLength,
       required this.endBarcodeID,
       required this.endDiagonalLength,
       required this.interBarcodeOffsetonImage,
       required this.timestamp});
+
+  final String uid;
 
   ///ID of the barcode at the start position.
   final String startBarcodeID;
@@ -27,4 +30,9 @@ class OnImageInterBarcodeData {
 
   ///Timestamp when the barcodes where scanned.
   final int timestamp; //Timestamp
+
+  @override
+  String toString() {
+    return '${startBarcodeID}_$endBarcodeID, $interBarcodeOffsetonImage, $timestamp';
+  }
 }

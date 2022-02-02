@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/on_image_inter_barcode_data.dart';
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
 import 'package:flutter_google_ml_kit/functions/dataInjectors/barcode_raw_on_image_data_injector.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
+import 'package:flutter_google_ml_kit/objects/barcode_pairs_data_instance.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/barcode_scanner_data_processing.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import '../../VisionDetectorViews/camera_view.dart';
 import 'painter/barcode_detector_painter.dart';
 
@@ -19,43 +17,57 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
 
-  List<OnImageInterBarcodeDataHiveObject> allBarcodeData = [];
+  List<BarcodePairDataInstance> barcodePairsData = [];
   bool isBusy = false;
   CustomPaint? customPaint;
 
   @override
   void dispose() {
     barcodeScanner.close();
-    allBarcodeData.forEach((element) {
-      debugPrint(
-          '${element.uidStart} ,${element.uidEnd}, [${typeOffsetToOffset(element.interBarcodeOffset).dx}, ${typeOffsetToOffset(element.interBarcodeOffset).dy}], ${element.startDiagonalLength}, ${element.endDiagonalLength} ');
-    });
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              FloatingActionButton(
+                heroTag: null,
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => BarcodeScannerDataProcessingView(
+                          barcodePairsData: barcodePairsData)));
+                },
+                child: const Icon(Icons.check_circle_outline_rounded),
+              ),
+            ],
+          ),
+        ),
         body: CameraView(
-      title: 'Barcode Scanner',
-      customPaint: customPaint,
-      onImage: (inputImage) {
-        processImage(inputImage);
-      },
-    ));
+          title: 'Barcode Scanner',
+          customPaint: customPaint,
+          onImage: (inputImage) {
+            processImage(inputImage);
+          },
+        ));
   }
 
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;
     isBusy = true;
     final barcodes = await barcodeScanner.processImage(inputImage);
-    var rawDataBox = await Hive.openBox(rawDataHiveBox);
 
-    barcodeRawOnImageDataInjector(
-        barcodes, inputImage.inputImageData!, rawDataBox, allBarcodeData);
+    //barcodeRawOnImageDataInjector(barcodes, rawDataBox);
 
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
+      barcodePairsDataCollector(barcodes, barcodePairsData);
+
       final painter = BarcodeDetectorPainter(
           barcodes,
           inputImage.inputImageData!.size,

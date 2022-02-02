@@ -15,4 +15,10 @@ class RealInterBarcodeData {
   Offset interBarcodeOffset;
   double distanceFromCamera;
   int timestamp;
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return '$uid, $interBarcodeOffset, $timestamp';
+  }
 }

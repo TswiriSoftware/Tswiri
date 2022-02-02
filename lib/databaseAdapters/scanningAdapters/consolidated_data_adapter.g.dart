@@ -22,13 +22,14 @@ class ConsolidatedDataHiveObjectAdapter
       offset: fields[1] as TypeOffsetHiveObject,
       distanceFromCamera: fields[2] as double,
       fixed: fields[3] as bool,
+      timestamp: fields[4] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, ConsolidatedDataHiveObject obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.uid)
       ..writeByte(1)
@@ -36,7 +37,9 @@ class ConsolidatedDataHiveObjectAdapter
       ..writeByte(2)
       ..write(obj.distanceFromCamera)
       ..writeByte(3)
-      ..write(obj.fixed);
+      ..write(obj.fixed)
+      ..writeByte(4)
+      ..write(obj.timestamp);
   }
 
   @override

@@ -6,7 +6,7 @@ part of 'calibration_accelerometer_data_adapter.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class AccelerometerDataHiveObjectAdapter
+class CalibrationAccelerometerDataHiveObjectAdapter
     extends TypeAdapter<CalibrationAccelerometerDataHiveObject> {
   @override
   final int typeId = 3;
@@ -45,7 +45,7 @@ class AccelerometerDataHiveObjectAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is AccelerometerDataHiveObjectAdapter &&
+      other is CalibrationAccelerometerDataHiveObjectAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

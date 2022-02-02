@@ -3,7 +3,6 @@ import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/barcode_scann
 import '../../../main.dart';
 import '../consolidated_database_view.dart';
 import '../consolidated_database_visualization_view.dart';
-import '../raw_on_image_database_view.dart';
 
 class BarcodeScanningView extends StatefulWidget {
   const BarcodeScanningView({Key? key}) : super(key: key);
@@ -36,13 +35,6 @@ class _BarcodeScanningViewState extends State<BarcodeScanningView> {
               'Barcode Scanner',
               BarcodeScannerView(),
               Icons.camera,
-              featureCompleted: true,
-              tileColor: Colors.deepOrange,
-            ),
-            const CustomCard(
-              'Raw Data Viewer',
-              RawOnImageDatabaseView(),
-              Icons.view_array,
               featureCompleted: true,
               tileColor: Colors.deepOrange,
             ),

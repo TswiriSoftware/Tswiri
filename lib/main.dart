@@ -3,8 +3,6 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_google_ml_kit/VisionDetectorViews/detector_views.dart';
-import 'package:flutter_google_ml_kit/VisionDetectorViews/object_detector_view.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_range_selector_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -15,7 +13,6 @@ import 'databaseAdapters/calibrationAdapters/calibration_accelerometer_data_adap
 import 'databaseAdapters/calibrationAdapters/calibration_size_data_adapter.dart';
 import 'databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
 import 'databaseAdapters/scanningAdapters/consolidated_data_adapter.dart';
-import 'databaseAdapters/scanningAdapters/on_image_inter_barcode_data.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
 import 'sunbirdViews/barcodeNavigation/navigationToolsView/barcode_navigation_tools_view.dart';
 import 'sunbirdViews/barcodeScanning/scanningToolsView/barcode_scanning_tools_view.dart';
@@ -40,11 +37,10 @@ Future<void> main() async {
   }
   final directory = await getApplicationDocumentsDirectory();
   await Hive.initFlutter(directory.path);
-  Hive.registerAdapter(OnImageInterBarcodeDataHiveObjectAdapter());
   Hive.registerAdapter(TypeOffsetHiveObjectAdapter());
   Hive.registerAdapter(ConsolidatedDataHiveObjectAdapter());
-  Hive.registerAdapter(AccelerometerDataHiveObjectAdapter());
-  Hive.registerAdapter(CalibrationDataHiveObjectAdapter());
+  Hive.registerAdapter(CalibrationSizeDataHiveObjectAdapter());
+  Hive.registerAdapter(CalibrationAccelerometerDataHiveObjectAdapter());
   Hive.registerAdapter(MatchedCalibrationDataHiveObjectAdapter());
 }
 
@@ -123,27 +119,27 @@ class Home extends StatelessWidget {
               featureCompleted: true,
               tileColor: deeperOrange,
             ),
-            CustomCard(
-              'Image Label View',
-              ImageLabelView(),
-              Icons.image_rounded,
-              featureCompleted: true,
-              tileColor: deeperOrange,
-            ),
-            CustomCard(
-              'Object Detector View',
-              ObjectDetectorView(),
-              Icons.emoji_objects_rounded,
-              featureCompleted: true,
-              tileColor: deeperOrange,
-            ),
-            CustomCard(
-              'Text Detector View',
-              TextDetectorView(),
-              Icons.text_fields_rounded,
-              featureCompleted: true,
-              tileColor: deeperOrange,
-            ),
+            // CustomCard(
+            //   'Image Label View',
+            //   ImageLabelView(),
+            //   Icons.image_rounded,
+            //   featureCompleted: true,
+            //   tileColor: deeperOrange,
+            // ),
+            // CustomCard(
+            //   'Object Detector View',
+            //   ObjectDetectorView(),
+            //   Icons.emoji_objects_rounded,
+            //   featureCompleted: true,
+            //   tileColor: deeperOrange,
+            // ),
+            // CustomCard(
+            //   'Text Detector View',
+            //   TextDetectorView(),
+            //   Icons.text_fields_rounded,
+            //   featureCompleted: true,
+            //   tileColor: deeperOrange,
+            // ),
           ],
         ),
       ),

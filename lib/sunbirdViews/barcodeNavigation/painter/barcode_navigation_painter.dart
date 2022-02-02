@@ -43,7 +43,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
 
       if (checkIfBarcodeIsValid()) {
         Offset barcodeOnImageOffset =
-            calculateOnImageBarcodeCenterPoint(barcode);
+            calculateBarcodeCenterPoint(barcode.value);
 
         Offset barcodeOnScreenOffset = translateOnImageToOnScreen(
             barcodeOnImageOffset, size, absoluteImageSize);
@@ -80,7 +80,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
         double selectedBarcodeAng = (-screenCenterPoint +
                 barcodeOnScreenOffset +
                 (selectedbarcodeRealOffset - barcodeRealOffset) *
-                    averageBarcodeDiagonalLength(barcode))
+                    averageBarcodeDiagonalLength(barcode.value))
             .direction;
 
         canvas.drawArc(rect, selectedBarcodeAng - pi / 12, pi / 6, false,

@@ -13,25 +13,25 @@ double calcAverageAbsoluteSideLength(
 }
 
 ///Calculates the absolute side length of a single barcode
-double averageBarcodeDiagonalLength(Barcode barcode) {
+double averageBarcodeDiagonalLength(BarcodeValue barcodeValue) {
   double diagonal1 = Offset(
-          barcode.value.boundingBox!.left + barcode.value.boundingBox!.top,
-          barcode.value.boundingBox!.right + barcode.value.boundingBox!.bottom)
+          barcodeValue.boundingBox!.left + barcodeValue.boundingBox!.top,
+          barcodeValue.boundingBox!.right + barcodeValue.boundingBox!.bottom)
       .distance;
   double diagonal2 = Offset(
-          barcode.value.boundingBox!.right + barcode.value.boundingBox!.top,
-          barcode.value.boundingBox!.left + barcode.value.boundingBox!.bottom)
+          barcodeValue.boundingBox!.right + barcodeValue.boundingBox!.top,
+          barcodeValue.boundingBox!.left + barcodeValue.boundingBox!.bottom)
       .distance;
 
   return (diagonal1 + diagonal2) / 2;
 }
 
 ///Calculates the OnImage center point of the barcode given the barcode and inputImageData
-Offset calculateOnImageBarcodeCenterPoint(Barcode barcode) {
+Offset calculateBarcodeCenterPoint(BarcodeValue barcodeValue) {
   final barcodeCentreX =
-      (barcode.value.boundingBox!.left + barcode.value.boundingBox!.right) / 2;
+      (barcodeValue.boundingBox!.left + barcodeValue.boundingBox!.right) / 2;
   final barcodeCentreY =
-      (barcode.value.boundingBox!.top + barcode.value.boundingBox!.bottom) / 2;
+      (barcodeValue.boundingBox!.top + barcodeValue.boundingBox!.bottom) / 2;
 
   final Offset centerOffset = Offset(barcodeCentreX, barcodeCentreY);
 

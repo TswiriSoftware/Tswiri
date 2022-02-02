@@ -6,7 +6,7 @@ part of 'calibration_size_data_adapter.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class CalibrationDataHiveObjectAdapter
+class CalibrationSizeDataHiveObjectAdapter
     extends TypeAdapter<CalibrationSizeDataHiveObject> {
   @override
   final int typeId = 2;
@@ -39,7 +39,7 @@ class CalibrationDataHiveObjectAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CalibrationDataHiveObjectAdapter &&
+      other is CalibrationSizeDataHiveObjectAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

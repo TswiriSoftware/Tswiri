@@ -13,23 +13,21 @@ import '../mathfunctions/round_to_double.dart';
 //ScreenData * rarley used (Not stored)
 
 //TODO : Global box names:
- 
+
 //1. consolidatedData: RealPositionData (UID, X & Y cordinates)
-// X and Y cordinates of every barcode 
+// X and Y cordinates of every barcode
 
 //2. rawDataBox: OnImageInterBarcodeData (......)
 
 //3. AccelerometerData: Delete
 
-//4. SizeData: Delete 
+//4. SizeData: Delete
 
-//5. MatchedData: DistanceLookupTable 
+//5. MatchedData: DistanceLookupTable
 
 //.Recommended:
 
 // Barcodes (UID, BarcodeDiagonalLength , Fixed )
-
-
 
 //Add barcode size to Database... realBarcodeSize
 
@@ -47,7 +45,8 @@ injectBarcodeSizeData(
       CalibrationSizeDataHiveObject calibrationDataInstance =
           CalibrationSizeDataHiveObject(
               timestamp: DateTime.now().millisecondsSinceEpoch.toString(),
-              averageDiagonalLength: averageBarcodeDiagonalLength(barcode));
+              averageDiagonalLength:
+                  averageBarcodeDiagonalLength(barcode.value));
 
       calibrationDataBox.put(
           calibrationDataInstance.timestamp, calibrationDataInstance);

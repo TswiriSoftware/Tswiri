@@ -1,7 +1,5 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
-import 'package:flutter_google_ml_kit/objects/barcode_marker.dart';
-import 'package:flutter_google_ml_kit/objects/real_inter_barcode_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 ///Calculates the average distance from the camera of 2 barcodes
@@ -32,24 +30,6 @@ List<double> getImageSizes(Map lookupTableMap) {
   });
 
   return imageSizesLookupTable;
-}
-
-///Adds a fixed point to the realData Box
-addFixedPoint(RealInterBarcodeData firstPoint,
-    Map<String, RealBarcodeMarker> consolidatedData) {
-  consolidatedData.update(
-      firstPoint.uidStart,
-      (value) => RealBarcodeMarker(
-          id: '1',
-          offset: const Offset(0, 0),
-          fixed: true,
-          distanceFromCamera: firstPoint.distanceFromCamera),
-      ifAbsent: () => RealBarcodeMarker(
-          id: '1',
-          offset: const Offset(0, 0),
-          fixed: true,
-          distanceFromCamera:
-              firstPoint.distanceFromCamera)); //This is the Fixed Point
 }
 
 ///This converts the onImage offset to a realOffset
