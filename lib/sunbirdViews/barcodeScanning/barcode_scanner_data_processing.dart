@@ -14,6 +14,8 @@ import 'package:flutter_google_ml_kit/objects/real_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/scanningToolsView/barcode_scanning_tools_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'consolidated_database_view.dart';
+
 class BarcodeScannerDataProcessingView extends StatefulWidget {
   const BarcodeScannerDataProcessingView(
       {Key? key, required this.barcodePairsData})
@@ -64,10 +66,14 @@ Future processData(List<BarcodePairDataInstance> barcodePairsData) async {
       consolidatedDataBox.toMap().map((key, value) => MapEntry(key, value));
 
   Map<String, OnImageInterBarcodeData> onImageInterBarcodeDataMap =
-      deduplicateData(generateOnImageInterBarcodeDataMap(barcodePairsData));
+      generateOnImageInterBarcodeDataMap(barcodePairsData);
+
+  //print(onImageInterBarcodeDataMap);
 
   Map<String, RealInterBarcodeData> realInterBarcodeDataMap =
       generateRealInterBarcodeMap(onImageInterBarcodeDataMap);
+
+  //print('realInterBarcodeDataMap');
 
   if (!consolidatedDataMap.containsKey('1')) {
     consolidatedDataMap.putIfAbsent(
@@ -80,33 +86,50 @@ Future processData(List<BarcodePairDataInstance> barcodePairsData) async {
             timestamp: DateTime.now().millisecondsSinceEpoch));
   }
 
-  realInterBarcodeDataMap.forEach((key, value) {
-    if (consolidatedDataMap.containsKey(value.uidStart) &&
-        !consolidatedDataMap.containsKey(value.uidEnd)) {
-      Offset offset =
-          typeOffsetToOffset(consolidatedDataMap[value.uidStart]!.offset) +
-              -value.interBarcodeOffset;
-      ConsolidatedDataHiveObject consolidatedPoint = ConsolidatedDataHiveObject(
-          uid: value.uidEnd,
-          offset: offsetToTypeOffset(offset),
-          distanceFromCamera: 0,
-          fixed: false,
-          timestamp: value.timestamp);
-
-      consolidatedDataMap.update(
-        value.uidEnd,
-        (value) => consolidatedPoint,
-        ifAbsent: () => consolidatedPoint,
-      ); //putIfAbsent(value.uidEnd, () => consolidatedPoint);
-    } else if (consolidatedDataMap.containsKey(value.uidEnd) &&
-        !consolidatedDataMap.containsKey(value.uidEnd)) {}
+  realInterBarcodeDataMap.forEach((key, data) {
+    if (consolidatedDataMap.containsKey(data.uidStart)) {
+      if (consolidatedDataMap.containsKey(data.uidEnd)) {
+        if (consolidatedDataMap[data.uidEnd]!.fixed != true) {
+          consolidatedDataMap.update(
+            data.uidEnd,
+            (value) => addConsolidatedDataPoint(consolidatedDataMap, data, -1),
+            ifAbsent: () =>
+                addConsolidatedDataPoint(consolidatedDataMap, data, -1),
+          );
+        }
+      } else {
+        consolidatedDataMap.update(
+          data.uidEnd,
+          (value) => addConsolidatedDataPoint(consolidatedDataMap, data, -1),
+          ifAbsent: () =>
+              addConsolidatedDataPoint(consolidatedDataMap, data, -1),
+        );
+      }
+    } else if (consolidatedDataMap.containsKey(data.uidEnd)) {
+      if (consolidatedDataMap.containsKey(data.uidEnd)) {
+        if (consolidatedDataMap[data.uidEnd]!.fixed != true) {
+          consolidatedDataMap.update(
+            data.uidEnd,
+            (value) => addConsolidatedDataPoint(consolidatedDataMap, data, 1),
+            ifAbsent: () =>
+                addConsolidatedDataPoint(consolidatedDataMap, data, 1),
+          );
+        }
+      } else {
+        consolidatedDataMap.update(
+          data.uidEnd,
+          (value) => addConsolidatedDataPoint(consolidatedDataMap, data, 1),
+          ifAbsent: () =>
+              addConsolidatedDataPoint(consolidatedDataMap, data, 1),
+        );
+      }
+    }
   });
 
-  print("consolidatedDataMap: ");
   consolidatedDataMap.forEach((key, value) {
     consolidatedDataBox.put(key, value);
-    print(value);
   });
+  print(consolidatedDataMap);
 
   return '';
 }
@@ -115,9 +138,39 @@ ElevatedButton proceedButton(BuildContext context) {
   return ElevatedButton(
       onPressed: () {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => const BarcodeScanningView()));
+            builder: (context) => const HiveDatabaseConsolidationView()));
       },
       child: const Icon(Icons.check_circle_outline_rounded));
+}
+
+ConsolidatedDataHiveObject addConsolidatedDataPoint(
+    Map<String, ConsolidatedDataHiveObject> consolidatedDataMap,
+    RealInterBarcodeData value,
+    int direction) {
+  ConsolidatedDataHiveObject consolidatedPoint;
+  if (direction == -1) {
+    Offset offset =
+        typeOffsetToOffset(consolidatedDataMap[value.uidStart]!.offset) +
+            (value.interBarcodeOffset * direction.toDouble());
+    ConsolidatedDataHiveObject consolidatedPoint = ConsolidatedDataHiveObject(
+        uid: value.uidEnd,
+        offset: offsetToTypeOffset(offset),
+        distanceFromCamera: 0,
+        fixed: false,
+        timestamp: value.timestamp);
+    return consolidatedPoint;
+  } else {
+    Offset offset =
+        typeOffsetToOffset(consolidatedDataMap[value.uidEnd]!.offset) +
+            (value.interBarcodeOffset * direction.toDouble());
+    ConsolidatedDataHiveObject consolidatedPoint = ConsolidatedDataHiveObject(
+        uid: value.uidStart,
+        offset: offsetToTypeOffset(offset),
+        distanceFromCamera: 0,
+        fixed: false,
+        timestamp: value.timestamp);
+    return consolidatedPoint;
+  }
 }
 
 OnImageInterBarcodeData calculateAverageOnImageInterBarcodeData(
@@ -146,6 +199,8 @@ OnImageInterBarcodeData calculateAverageOnImageInterBarcodeData(
 Map<String, OnImageInterBarcodeData> generateOnImageInterBarcodeDataMap(
     List<BarcodePairDataInstance> barcodePairsData) {
   Map<String, OnImageInterBarcodeData> barcodePairsDataMap = {};
+
+  //print(barcodePairsData);
 
   if (barcodePairsData.isNotEmpty) {
     barcodePairsData.forEach((element) {

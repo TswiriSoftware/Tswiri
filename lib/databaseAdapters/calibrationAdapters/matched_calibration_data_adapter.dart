@@ -1,7 +1,6 @@
 import 'package:hive/hive.dart';
 part 'matched_calibration_data_adapter.g.dart';
 
-
 //TODO: Delete
 
 @HiveType(typeId: 4)

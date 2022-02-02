@@ -33,6 +33,6 @@ class OnImageInterBarcodeData {
 
   @override
   String toString() {
-    return '${startBarcodeID}_$endBarcodeID, $interBarcodeOffsetonImage, $timestamp';
+    return '${startBarcodeID} _ $endBarcodeID, $interBarcodeOffsetonImage, $timestamp';
   }
 }

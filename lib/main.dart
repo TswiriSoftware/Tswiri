@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/fixed_data_adapter.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_range_selector_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -39,6 +40,7 @@ Future<void> main() async {
   await Hive.initFlutter(directory.path);
   Hive.registerAdapter(TypeOffsetHiveObjectAdapter());
   Hive.registerAdapter(ConsolidatedDataHiveObjectAdapter());
+  Hive.registerAdapter(FixedDataHiveObjectAdapter());
   Hive.registerAdapter(CalibrationSizeDataHiveObjectAdapter());
   Hive.registerAdapter(CalibrationAccelerometerDataHiveObjectAdapter());
   Hive.registerAdapter(MatchedCalibrationDataHiveObjectAdapter());
