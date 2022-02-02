@@ -1,7 +1,10 @@
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-class BarcodePairDataInstance {
-  BarcodePairDataInstance(
+//TODO: Rename file
+
+///Describes the "Offset" between two barcodes.
+class RawOnImageInterBarcodeData {
+  RawOnImageInterBarcodeData(
       {required this.startBarcode,
       required this.endBarcode,
       required this.timestamp});
@@ -11,3 +14,4 @@ class BarcodePairDataInstance {
   final BarcodeValue endBarcode;
   final int timestamp;
 }
+

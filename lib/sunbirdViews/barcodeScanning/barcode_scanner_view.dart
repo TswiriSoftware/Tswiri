@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/dataInjectors/barcode_raw_on_image_data_injector.dart';
+import 'package:flutter_google_ml_kit/functions/dataInjectors/single_image_inter_barcode_data_extractor.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_pairs_data_instance.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/barcode_scanner_data_processing.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
@@ -17,7 +17,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
 
-  List<BarcodePairDataInstance> barcodePairsData = [];
+  List<RawOnImageInterBarcodeData> allInterBarcodeData = [];
   bool isBusy = false;
   CustomPaint? customPaint;
 
@@ -41,7 +41,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
                   Navigator.pop(context);
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
                       builder: (context) => BarcodeScannerDataProcessingView(
-                          barcodePairsData: barcodePairsData)));
+                          allInterBarcodeData: allInterBarcodeData)));
                 },
                 child: const Icon(Icons.check_circle_outline_rounded),
               ),
@@ -60,14 +60,17 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;
     isBusy = true;
-    final barcodes = await barcodeScanner.processImage(inputImage);
+    final List<Barcode> barcodes = await barcodeScanner.processImage(inputImage);
 
-    //barcodeRawOnImageDataInjector(barcodes, rawDataBox);
+    if (barcodes.length >= 2) { //Dont bother if we haven't detected more than one barcode on a image. 
 
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
-      barcodePairsDataCollector(barcodes, barcodePairsData);
 
+      allInterBarcodeData.addAll((singeImageInterBarcodeDataExtractor(barcodes)));
+
+
+      //Paint square on screen around barcode. 
       final painter = BarcodeDetectorPainter(
           barcodes,
           inputImage.inputImageData!.size,
@@ -81,5 +84,11 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     if (mounted) {
       setState(() {});
     }
-  }
-}
+    }
+
+}}
+
+
+
+
+

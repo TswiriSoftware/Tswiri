@@ -18,10 +18,10 @@ import 'consolidated_database_view.dart';
 
 class BarcodeScannerDataProcessingView extends StatefulWidget {
   const BarcodeScannerDataProcessingView(
-      {Key? key, required this.barcodePairsData})
+      {Key? key, required this.allInterBarcodeData})
       : super(key: key);
 
-  final List<BarcodePairDataInstance> barcodePairsData;
+  final List<RawOnImageInterBarcodeData> allInterBarcodeData;
 
   @override
   _BarcodeScannerDataProcessingViewState createState() =>
@@ -43,7 +43,7 @@ class _BarcodeScannerDataProcessingViewState
       ),
       body: Center(
         child: FutureBuilder(
-          future: processData(widget.barcodePairsData),
+          future: processData(widget.allInterBarcodeData),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return proceedButton(context);
@@ -59,14 +59,15 @@ class _BarcodeScannerDataProcessingViewState
   }
 }
 
-Future processData(List<BarcodePairDataInstance> barcodePairsData) async {
-  Box consolidatedDataBox = await Hive.openBox(consolidatedDataHiveBox);
+Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
+  Box<ConsolidatedDataHiveObject> realPositionalData = await Hive.openBox(realPositionalDataBox);
 
+  //TODO: Fix naming (Real , on Image etc etc.)
   Map<String, ConsolidatedDataHiveObject> consolidatedDataMap =
-      consolidatedDataBox.toMap().map((key, value) => MapEntry(key, value));
+      realPositionalData.toMap().map((key, value) => MapEntry(key, value));
 
-  Map<String, OnImageInterBarcodeData> onImageInterBarcodeDataMap =
-      generateOnImageInterBarcodeDataMap(barcodePairsData);
+  Map<String, ProcessedOnImageInterBarcodeData> onImageInterBarcodeDataMap =
+      generateOnImageInterBarcodeDataMap(allInterBarcodeData);
 
   //print(onImageInterBarcodeDataMap);
 
@@ -127,7 +128,7 @@ Future processData(List<BarcodePairDataInstance> barcodePairsData) async {
   });
 
   consolidatedDataMap.forEach((key, value) {
-    consolidatedDataBox.put(key, value);
+    realPositionalData.put(key, value);
   });
   print(consolidatedDataMap);
 
@@ -173,10 +174,10 @@ ConsolidatedDataHiveObject addConsolidatedDataPoint(
   }
 }
 
-OnImageInterBarcodeData calculateAverageOnImageInterBarcodeData(
-    OnImageInterBarcodeData storedInterBarcodeData,
-    OnImageInterBarcodeData interBarcodeData) {
-  OnImageInterBarcodeData averageInterBarcodeData = OnImageInterBarcodeData(
+ProcessedOnImageInterBarcodeData calculateAverageOnImageInterBarcodeData(
+    ProcessedOnImageInterBarcodeData storedInterBarcodeData,
+    ProcessedOnImageInterBarcodeData interBarcodeData) {
+  ProcessedOnImageInterBarcodeData averageInterBarcodeData = ProcessedOnImageInterBarcodeData(
       startBarcodeID: storedInterBarcodeData.startBarcodeID,
       startDiagonalLength: (storedInterBarcodeData.startDiagonalLength +
               interBarcodeData.startDiagonalLength) /
@@ -196,15 +197,18 @@ OnImageInterBarcodeData calculateAverageOnImageInterBarcodeData(
   return averageInterBarcodeData;
 }
 
-Map<String, OnImageInterBarcodeData> generateOnImageInterBarcodeDataMap(
-    List<BarcodePairDataInstance> barcodePairsData) {
-  Map<String, OnImageInterBarcodeData> barcodePairsDataMap = {};
+
+//TODO , get rid of map.
+Map<String, ProcessedOnImageInterBarcodeData> generateOnImageInterBarcodeDataMap(
+    List<RawOnImageInterBarcodeData> barcodePairsData) {
+  Map<String, ProcessedOnImageInterBarcodeData> barcodePairsDataMap = {};
 
   //print(barcodePairsData);
 
   if (barcodePairsData.isNotEmpty) {
+    //TODO: fix literal error 
     barcodePairsData.forEach((element) {
-      OnImageInterBarcodeData interBarcodeData = OnImageInterBarcodeData(
+      ProcessedOnImageInterBarcodeData interBarcodeData = ProcessedOnImageInterBarcodeData(
           startBarcodeID: element.startBarcode.displayValue.toString(),
           startDiagonalLength:
               averageBarcodeDiagonalLength(element.startBarcode),
@@ -214,7 +218,7 @@ Map<String, OnImageInterBarcodeData> generateOnImageInterBarcodeDataMap(
               calculateBarcodeCenterPoint(element.startBarcode),
               calculateBarcodeCenterPoint(element.endBarcode)),
           timestamp: element.timestamp,
-          uid: '${element.startBarcode}_${element.endBarcode}');
+          uid: '${element.startBarcode.displayValue}_${element.endBarcode.displayValue}');
 
       String barcodePairUID =
           '${interBarcodeData.startBarcodeID}_${interBarcodeData.endBarcodeID}';
@@ -234,7 +238,7 @@ Map<String, OnImageInterBarcodeData> generateOnImageInterBarcodeDataMap(
 }
 
 Map<String, RealInterBarcodeData> generateRealInterBarcodeMap(
-    Map<String, OnImageInterBarcodeData> onImageInterBarcodeDataMap) {
+    Map<String, ProcessedOnImageInterBarcodeData> onImageInterBarcodeDataMap) {
   Map<String, RealInterBarcodeData> realInterBarcodeDataMap = {};
   if (onImageInterBarcodeDataMap.isNotEmpty) {
     onImageInterBarcodeDataMap.forEach((key, value) {
@@ -257,16 +261,16 @@ Map<String, RealInterBarcodeData> generateRealInterBarcodeMap(
   return realInterBarcodeDataMap;
 }
 
-Map<String, OnImageInterBarcodeData> deduplicateData(
-    Map<String, OnImageInterBarcodeData> onImageInterBarcodeDataMap) {
-  Map<String, OnImageInterBarcodeData> deduplicatedData = {};
+Map<String, ProcessedOnImageInterBarcodeData> deduplicateData(
+    Map<String, ProcessedOnImageInterBarcodeData> onImageInterBarcodeDataMap) {
+  Map<String, ProcessedOnImageInterBarcodeData> deduplicatedData = {};
   List uids = [];
 
   onImageInterBarcodeDataMap.forEach((key, value) {
     uids.add(value.startBarcodeID);
     uids.removeDuplicates();
     if (!uids.contains(value.endBarcodeID)) {
-      OnImageInterBarcodeData onImageInterBarcodeData = OnImageInterBarcodeData(
+      ProcessedOnImageInterBarcodeData onImageInterBarcodeData = ProcessedOnImageInterBarcodeData(
           uid: value.uid,
           startBarcodeID: value.startBarcodeID,
           startDiagonalLength: value.startDiagonalLength,

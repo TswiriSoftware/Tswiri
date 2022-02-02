@@ -45,7 +45,7 @@ class _DatabaseVisualizationState extends State<DatabaseVisualization> {
                 onPressed: () async {
                   pointNames.clear();
                   var consolidatedDataBox =
-                      await Hive.openBox(consolidatedDataHiveBox);
+                      await Hive.openBox(realPositionalDataBox);
                   consolidatedDataBox.clear();
                   setState(() {});
                 },

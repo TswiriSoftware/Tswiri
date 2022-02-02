@@ -56,7 +56,7 @@ class _BarcodeNavigatorViewState extends State<BarcodeNavigatorView> {
   }
 
   Future<void> processImage(InputImage inputImage) async {
-    var consolidatedDataBox = await Hive.openBox(consolidatedDataHiveBox);
+    var consolidatedDataBox = await Hive.openBox(realPositionalDataBox);
     consolidatedData = getConsolidatedData(consolidatedDataBox);
 
     if (isBusy) return;
