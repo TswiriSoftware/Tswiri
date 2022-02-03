@@ -82,17 +82,18 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
 
  // Get set of all barcode UID that were scanned. -> Write to List<RealPositionData>
  // get origin barcode UID and Update to have ( 0,0 ) Position (Origin 0,0 , hardcoded global const )
+
+ // magic loop start.
+
  // for each barcode in list 
  //    check if current barcode has offset , if yes , skip , if no do this :
  //       Find Path to origin ->  1. get all interbarcodedatas with start or end barcode as current barcode UID. 
- //                               2. check if any of these have the Origin UID as start or end if yes continue to 3 otherwise continue to 4
- //                               3. store offset of barcode with current barcode and origin barcode as position (ensure that origin is start , if not reverse vector) 
- //                               4. Write all interbarcodes from 1 to a List<List<InterBarcodeData>>
+ //                               2. check if any of these have a offset , if yes continue to 3 if not continue to next interBarcodeData
+ //                               3. store offset of barcode with current barcode and origin barcode as position (ensure that barcode with offset is start , if not reverse vector) 
  
- // Path List [
- //InterBarcodeData(Start:originUid,End:XUID),
- //InterbarcodeData(Start:XUID ,End:YUID),
- //InterbarcodeData(Start:YUID,End:currentBarcodeUID)  ]
+ //magic loop end.
+
+ //^^^ repeat magic loop until we dont have barcodes without offsets in List<RealPositionData>
 
 
   for (RealInterBarcodeData realInterBarcodeData
