@@ -7,17 +7,17 @@ part of 'consolidated_data_adapter.dart';
 // **************************************************************************
 
 class ConsolidatedDataHiveObjectAdapter
-    extends TypeAdapter<ConsolidatedDataHiveObject> {
+    extends TypeAdapter<RealPositionData> {
   @override
   final int typeId = 1;
 
   @override
-  ConsolidatedDataHiveObject read(BinaryReader reader) {
+  RealPositionData read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return ConsolidatedDataHiveObject(
+    return RealPositionData(
       uid: fields[0] as String,
       offset: fields[1] as TypeOffsetHiveObject,
       distanceFromCamera: fields[2] as double,
@@ -27,7 +27,7 @@ class ConsolidatedDataHiveObjectAdapter
   }
 
   @override
-  void write(BinaryWriter writer, ConsolidatedDataHiveObject obj) {
+  void write(BinaryWriter writer, RealPositionData obj) {
     writer
       ..writeByte(5)
       ..writeByte(0)

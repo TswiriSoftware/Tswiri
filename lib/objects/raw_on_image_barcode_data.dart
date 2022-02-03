@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_offset_between_points.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataFunctions/data_capturing_functions.dart';
+import 'package:flutter_google_ml_kit/objects/real_inter_barcode_data.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 ///Describes the "Offset" between two barcodes.
@@ -66,7 +67,7 @@ class RawOnImageInterBarcodeData {
     }
   }
 
-  ///This calculates the realOffset of the two Barcodes.
+  ///This calculates the real Offset between the two Barcodes.
   Offset get realInterBarcodeOffset {
     if (checkBarcodes()) {
       return calculateOffsetBetweenTwoPoints(
@@ -80,6 +81,19 @@ class RawOnImageInterBarcodeData {
           ((startDiagonalLength + endDiagonalLength) / 2);
     }
   }
+
+  RealInterBarcodeData get realInterBarcodeData {
+
+  RealInterBarcodeData realInterBarcodeDataInstance = RealInterBarcodeData(
+      uid: uid,
+      uidStart: startBarcodeID,
+      uidEnd: endBarcodeID,
+      interBarcodeOffset: realInterBarcodeOffset,
+      distanceFromCamera: 0,
+      timestamp: timestamp);
+
+  return realInterBarcodeDataInstance;
+}
 
   @override
   bool operator ==(Object other) {

@@ -4,9 +4,9 @@ import 'package:hive/hive.dart';
 part 'consolidated_data_adapter.g.dart';
 
 @HiveType(typeId: 1)
-class ConsolidatedDataHiveObject extends HiveObject {
+class RealPositionData extends HiveObject {
   ///This objects stores the real offset between barcodes aswell as the Z offset relative to a fixed bacodes.
-  ConsolidatedDataHiveObject(
+  RealPositionData(
       {required this.uid,
       required this.offset,
       required this.distanceFromCamera,
