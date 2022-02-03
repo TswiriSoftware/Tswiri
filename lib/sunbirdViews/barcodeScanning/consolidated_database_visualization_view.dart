@@ -143,7 +143,7 @@ _getPoints(
     BuildContext context, List pointNames, List pointRelativePositions) async {
   List<Offset> points = [];
 
-  var consolidatedDataBox = await Hive.openBox('consolidatedDataBox');
+  var consolidatedDataBox = await Hive.openBox(realPositionalDataBox);
   double width = MediaQuery.of(context).size.width;
   double height = MediaQuery.of(context).size.height;
   for (var i = 0; i < consolidatedDataBox.length; i++) {

@@ -60,17 +60,18 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;
     isBusy = true;
-    final List<Barcode> barcodes = await barcodeScanner.processImage(inputImage);
+    final List<Barcode> barcodes =
+        await barcodeScanner.processImage(inputImage);
 
-    if (barcodes.length >= 2) { //Dont bother if we haven't detected more than one barcode on a image. 
+    //Dont bother if we haven't detected more than one barcode on a image.
 
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
-
-      allInterBarcodeData.addAll((singeImageInterBarcodeDataExtractor(barcodes)));
-
-
-      //Paint square on screen around barcode. 
+      if (barcodes.length >= 2) {
+        allInterBarcodeData
+            .addAll((singeImageInterBarcodeDataExtractor(barcodes)));
+      }
+      //Paint square on screen around barcode.
       final painter = BarcodeDetectorPainter(
           barcodes,
           inputImage.inputImageData!.size,
@@ -84,11 +85,5 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     if (mounted) {
       setState(() {});
     }
-    }
-
-}}
-
-
-
-
-
+  }
+}

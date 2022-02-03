@@ -4,16 +4,12 @@ import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/consolid
 import 'package:flutter_google_ml_kit/databaseAdapters/typeAdapters/type_offset_adapter.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_offset_between_points.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataFunctions/data_capturing_functions.dart';
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataFunctions/data_processing_functions.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
-
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_pairs_data_instance.dart';
 import 'package:flutter_google_ml_kit/objects/on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_data.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/scanningToolsView/barcode_scanning_tools_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
 import 'consolidated_database_view.dart';
 
 class BarcodeScannerDataProcessingView extends StatefulWidget {
@@ -60,22 +56,38 @@ class _BarcodeScannerDataProcessingViewState
 }
 
 Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
-  Box<ConsolidatedDataHiveObject> realPositionalData = await Hive.openBox(realPositionalDataBox);
+  Box realPositionalData = await Hive.openBox(realPositionalDataBox);
 
   //TODO: Fix naming (Real , on Image etc etc.)
-  Map<String, ConsolidatedDataHiveObject> consolidatedDataMap =
+  Map<String, ConsolidatedDataHiveObject> realPositionalDataMap =
       realPositionalData.toMap().map((key, value) => MapEntry(key, value));
 
-  Map<String, ProcessedOnImageInterBarcodeData> onImageInterBarcodeDataMap =
-      generateOnImageInterBarcodeDataMap(allInterBarcodeData);
+  List<RealInterBarcodeData> realInterBarcodeDataList = [];
 
-  //print(onImageInterBarcodeDataMap);
+  addFixedPoint(realPositionalDataMap);
 
-  Map<String, RealInterBarcodeData> realInterBarcodeDataMap =
-      generateRealInterBarcodeMap(onImageInterBarcodeDataMap);
+  //Remove all duplicates for allInterBarcode data.
+  List<RawOnImageInterBarcodeData> allDeduplicatedInterBarcodeData =
+      allInterBarcodeData.toSet().toList();
 
-  //print('realInterBarcodeDataMap');
+  for (RawOnImageInterBarcodeData interBarcodeDataInstance
+      in allDeduplicatedInterBarcodeData) {
+    RealInterBarcodeData processedOnImageBarcodeData =
+        processRawOnImageBarcodeData(interBarcodeDataInstance);
+    realInterBarcodeDataList.add(processedOnImageBarcodeData);
+  }
+  print(realInterBarcodeDataList);
+  // for (ConsolidatedDataHiveObject consolidatedBarcodeData
+  //     in consolidatedDataMap.values) {
+  //   realPositionalData.put(
+  //       consolidatedBarcodeData.uid, consolidatedBarcodeData);
+  // }
 
+  return '';
+}
+
+void addFixedPoint(
+    Map<String, ConsolidatedDataHiveObject> consolidatedDataMap) {
   if (!consolidatedDataMap.containsKey('1')) {
     consolidatedDataMap.putIfAbsent(
         '1',
@@ -86,53 +98,6 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
             fixed: true,
             timestamp: DateTime.now().millisecondsSinceEpoch));
   }
-
-  realInterBarcodeDataMap.forEach((key, data) {
-    if (consolidatedDataMap.containsKey(data.uidStart)) {
-      if (consolidatedDataMap.containsKey(data.uidEnd)) {
-        if (consolidatedDataMap[data.uidEnd]!.fixed != true) {
-          consolidatedDataMap.update(
-            data.uidEnd,
-            (value) => addConsolidatedDataPoint(consolidatedDataMap, data, -1),
-            ifAbsent: () =>
-                addConsolidatedDataPoint(consolidatedDataMap, data, -1),
-          );
-        }
-      } else {
-        consolidatedDataMap.update(
-          data.uidEnd,
-          (value) => addConsolidatedDataPoint(consolidatedDataMap, data, -1),
-          ifAbsent: () =>
-              addConsolidatedDataPoint(consolidatedDataMap, data, -1),
-        );
-      }
-    } else if (consolidatedDataMap.containsKey(data.uidEnd)) {
-      if (consolidatedDataMap.containsKey(data.uidEnd)) {
-        if (consolidatedDataMap[data.uidEnd]!.fixed != true) {
-          consolidatedDataMap.update(
-            data.uidEnd,
-            (value) => addConsolidatedDataPoint(consolidatedDataMap, data, 1),
-            ifAbsent: () =>
-                addConsolidatedDataPoint(consolidatedDataMap, data, 1),
-          );
-        }
-      } else {
-        consolidatedDataMap.update(
-          data.uidEnd,
-          (value) => addConsolidatedDataPoint(consolidatedDataMap, data, 1),
-          ifAbsent: () =>
-              addConsolidatedDataPoint(consolidatedDataMap, data, 1),
-        );
-      }
-    }
-  });
-
-  consolidatedDataMap.forEach((key, value) {
-    realPositionalData.put(key, value);
-  });
-  print(consolidatedDataMap);
-
-  return '';
 }
 
 ElevatedButton proceedButton(BuildContext context) {
@@ -144,147 +109,62 @@ ElevatedButton proceedButton(BuildContext context) {
       child: const Icon(Icons.check_circle_outline_rounded));
 }
 
-ConsolidatedDataHiveObject addConsolidatedDataPoint(
-    Map<String, ConsolidatedDataHiveObject> consolidatedDataMap,
-    RealInterBarcodeData value,
-    int direction) {
-  ConsolidatedDataHiveObject consolidatedPoint;
-  if (direction == -1) {
-    Offset offset =
-        typeOffsetToOffset(consolidatedDataMap[value.uidStart]!.offset) +
-            (value.interBarcodeOffset * direction.toDouble());
-    ConsolidatedDataHiveObject consolidatedPoint = ConsolidatedDataHiveObject(
-        uid: value.uidEnd,
-        offset: offsetToTypeOffset(offset),
-        distanceFromCamera: 0,
-        fixed: false,
-        timestamp: value.timestamp);
-    return consolidatedPoint;
-  } else {
-    Offset offset =
-        typeOffsetToOffset(consolidatedDataMap[value.uidEnd]!.offset) +
-            (value.interBarcodeOffset * direction.toDouble());
-    ConsolidatedDataHiveObject consolidatedPoint = ConsolidatedDataHiveObject(
-        uid: value.uidStart,
-        offset: offsetToTypeOffset(offset),
-        distanceFromCamera: 0,
-        fixed: false,
-        timestamp: value.timestamp);
-    return consolidatedPoint;
-  }
-}
+RealInterBarcodeData processRawOnImageBarcodeData(
+    RawOnImageInterBarcodeData interBarcodeDataInstance) {
+  ProcessedOnImageInterBarcodeData processedOnImageBarcodeDataInstance;
 
-ProcessedOnImageInterBarcodeData calculateAverageOnImageInterBarcodeData(
-    ProcessedOnImageInterBarcodeData storedInterBarcodeData,
-    ProcessedOnImageInterBarcodeData interBarcodeData) {
-  ProcessedOnImageInterBarcodeData averageInterBarcodeData = ProcessedOnImageInterBarcodeData(
-      startBarcodeID: storedInterBarcodeData.startBarcodeID,
-      startDiagonalLength: (storedInterBarcodeData.startDiagonalLength +
-              interBarcodeData.startDiagonalLength) /
-          2,
-      endBarcodeID: storedInterBarcodeData.endBarcodeID,
-      endDiagonalLength: (storedInterBarcodeData.endDiagonalLength +
-              interBarcodeData.endDiagonalLength) /
-          2,
-      interBarcodeOffsetonImage:
-          (storedInterBarcodeData.interBarcodeOffsetonImage +
-                  interBarcodeData.interBarcodeOffsetonImage) /
-              2,
-      timestamp: interBarcodeData.timestamp,
-      uid:
-          '${interBarcodeData.startBarcodeID}_${interBarcodeData.endBarcodeID}');
+  RealInterBarcodeData realInterBarcodeDataInstance = RealInterBarcodeData(
+      uid: interBarcodeDataInstance.uid,
+      uidStart: interBarcodeDataInstance.startBarcodeID,
+      uidEnd: interBarcodeDataInstance.endBarcodeID,
+      interBarcodeOffset: interBarcodeDataInstance.realInterBarcodeOffset,
+      distanceFromCamera: 0,
+      timestamp: interBarcodeDataInstance.timestamp);
 
-  return averageInterBarcodeData;
+  return realInterBarcodeDataInstance;
 }
 
 
-//TODO , get rid of map.
-Map<String, ProcessedOnImageInterBarcodeData> generateOnImageInterBarcodeDataMap(
-    List<RawOnImageInterBarcodeData> barcodePairsData) {
-  Map<String, ProcessedOnImageInterBarcodeData> barcodePairsDataMap = {};
+  // for (RealInterBarcodeData realInterBarcodeDataInstance
+  //     in realInterBarcodeDataList) {
+  //   ConsolidatedDataHiveObject consolidatedDataHiveObject;
+  //   if (consolidatedDataMap
+  //       .containsKey(realInterBarcodeDataInstance.uidStart)) {
+  //     TypeOffsetHiveObject relativeRealOffset = offsetToTypeOffset(
+  //         typeOffsetToOffset(
+  //                 consolidatedDataMap[realInterBarcodeDataInstance.uidStart]!
+  //                     .offset) +
+  //             realInterBarcodeDataInstance.interBarcodeOffset);
 
-  //print(barcodePairsData);
+  //     consolidatedDataHiveObject = ConsolidatedDataHiveObject(
+  //         uid: realInterBarcodeDataInstance.uidEnd,
+  //         offset: relativeRealOffset,
+  //         distanceFromCamera: realInterBarcodeDataInstance.distanceFromCamera,
+  //         fixed: false,
+  //         timestamp: realInterBarcodeDataInstance.timestamp);
+  //     consolidatedDataMap.update(
+  //       consolidatedDataHiveObject.uid,
+  //       (value) => consolidatedDataHiveObject,
+  //       ifAbsent: () => consolidatedDataHiveObject,
+  //     );
+  //   } else if (consolidatedDataMap
+  //       .containsKey(realInterBarcodeDataInstance.uidEnd)) {
+  //     TypeOffsetHiveObject relativeRealOffset = offsetToTypeOffset(
+  //         typeOffsetToOffset(
+  //                 consolidatedDataMap[realInterBarcodeDataInstance.uidEnd]!
+  //                     .offset) -
+  //             realInterBarcodeDataInstance.interBarcodeOffset);
 
-  if (barcodePairsData.isNotEmpty) {
-    //TODO: fix literal error 
-    barcodePairsData.forEach((element) {
-      ProcessedOnImageInterBarcodeData interBarcodeData = ProcessedOnImageInterBarcodeData(
-          startBarcodeID: element.startBarcode.displayValue.toString(),
-          startDiagonalLength:
-              averageBarcodeDiagonalLength(element.startBarcode),
-          endBarcodeID: element.endBarcode.displayValue.toString(),
-          endDiagonalLength: averageBarcodeDiagonalLength(element.endBarcode),
-          interBarcodeOffsetonImage: calculateOffsetBetweenTwoPoints(
-              calculateBarcodeCenterPoint(element.startBarcode),
-              calculateBarcodeCenterPoint(element.endBarcode)),
-          timestamp: element.timestamp,
-          uid: '${element.startBarcode.displayValue}_${element.endBarcode.displayValue}');
-
-      String barcodePairUID =
-          '${interBarcodeData.startBarcodeID}_${interBarcodeData.endBarcodeID}';
-
-      if (barcodePairsDataMap.containsKey(barcodePairUID)) {
-        barcodePairsDataMap.update(
-            barcodePairUID,
-            (value) => calculateAverageOnImageInterBarcodeData(
-                barcodePairsDataMap[barcodePairUID]!, interBarcodeData));
-      } else {
-        barcodePairsDataMap.putIfAbsent(barcodePairUID, () => interBarcodeData);
-      }
-    });
-  }
-
-  return barcodePairsDataMap;
-}
-
-Map<String, RealInterBarcodeData> generateRealInterBarcodeMap(
-    Map<String, ProcessedOnImageInterBarcodeData> onImageInterBarcodeDataMap) {
-  Map<String, RealInterBarcodeData> realInterBarcodeDataMap = {};
-  if (onImageInterBarcodeDataMap.isNotEmpty) {
-    onImageInterBarcodeDataMap.forEach((key, value) {
-      Offset realInterBarcodeOffset = convertOnImageOffsetToRealOffset(
-          onImageInterBarcodeOffset: value.interBarcodeOffsetonImage,
-          aveDiagonalSideLength:
-              (value.startDiagonalLength + value.endDiagonalLength) / 2);
-
-      RealInterBarcodeData realBarcodeData = RealInterBarcodeData(
-          uid: key,
-          uidStart: value.startBarcodeID,
-          uidEnd: value.endBarcodeID,
-          interBarcodeOffset: realInterBarcodeOffset,
-          distanceFromCamera: 0,
-          timestamp: value.timestamp);
-      realInterBarcodeDataMap.putIfAbsent(key, () => realBarcodeData);
-    });
-  }
-
-  return realInterBarcodeDataMap;
-}
-
-Map<String, ProcessedOnImageInterBarcodeData> deduplicateData(
-    Map<String, ProcessedOnImageInterBarcodeData> onImageInterBarcodeDataMap) {
-  Map<String, ProcessedOnImageInterBarcodeData> deduplicatedData = {};
-  List uids = [];
-
-  onImageInterBarcodeDataMap.forEach((key, value) {
-    uids.add(value.startBarcodeID);
-    uids.removeDuplicates();
-    if (!uids.contains(value.endBarcodeID)) {
-      ProcessedOnImageInterBarcodeData onImageInterBarcodeData = ProcessedOnImageInterBarcodeData(
-          uid: value.uid,
-          startBarcodeID: value.startBarcodeID,
-          startDiagonalLength: value.startDiagonalLength,
-          endBarcodeID: value.endBarcodeID,
-          endDiagonalLength: value.endDiagonalLength,
-          interBarcodeOffsetonImage: value.interBarcodeOffsetonImage,
-          timestamp: value.timestamp);
-      deduplicatedData.update(
-        value.uid,
-        (value) => onImageInterBarcodeData,
-        ifAbsent: () => onImageInterBarcodeData,
-      );
-    }
-  });
-
-  return deduplicatedData;
-}
+  //     consolidatedDataHiveObject = ConsolidatedDataHiveObject(
+  //         uid: realInterBarcodeDataInstance.uidStart,
+  //         offset: relativeRealOffset,
+  //         distanceFromCamera: realInterBarcodeDataInstance.distanceFromCamera,
+  //         fixed: false,
+  //         timestamp: realInterBarcodeDataInstance.timestamp);
+  //     consolidatedDataMap.update(
+  //       consolidatedDataHiveObject.uid,
+  //       (value) => consolidatedDataHiveObject,
+  //       ifAbsent: () => consolidatedDataHiveObject,
+  //     );
+  //   }
+  // }
