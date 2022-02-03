@@ -56,7 +56,7 @@ class _BarcodeNavigatorViewState extends State<BarcodeNavigatorView> {
   }
 
   Future<void> processImage(InputImage inputImage) async {
-    var consolidatedDataBox = await Hive.openBox(realPositionalDataBox);
+    var consolidatedDataBox = await Hive.openBox(realPositionDataBoxName);
     consolidatedData = getConsolidatedData(consolidatedDataBox);
 
     if (isBusy) return;
@@ -85,7 +85,7 @@ class _BarcodeNavigatorViewState extends State<BarcodeNavigatorView> {
     Map map = consolidatedData.toMap();
     Map<String, Offset> mapConsolidated = {};
     map.forEach((key, value) {
-      ConsolidatedDataHiveObject data = value;
+      RealPositionData data = value;
       mapConsolidated.update(
         key,
         (value) => Offset(data.offset.x, data.offset.y),

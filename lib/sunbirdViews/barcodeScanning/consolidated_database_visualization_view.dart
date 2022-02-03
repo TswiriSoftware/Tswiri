@@ -45,7 +45,7 @@ class _DatabaseVisualizationState extends State<DatabaseVisualization> {
                 onPressed: () async {
                   pointNames.clear();
                   var consolidatedDataBox =
-                      await Hive.openBox(realPositionalDataBox);
+                      await Hive.openBox(realPositionDataBoxName);
                   consolidatedDataBox.clear();
                   setState(() {});
                 },
@@ -143,11 +143,11 @@ _getPoints(
     BuildContext context, List pointNames, List pointRelativePositions) async {
   List<Offset> points = [];
 
-  var consolidatedRealDataBox = await Hive.openBox(realPositionalDataBox);
+  var consolidatedRealDataBox = await Hive.openBox(realPositionDataBoxName);
   double width = MediaQuery.of(context).size.width;
   double height = MediaQuery.of(context).size.height;
   for (var i = 0; i < consolidatedRealDataBox.length; i++) {
-    ConsolidatedDataHiveObject data = consolidatedRealDataBox.getAt(i);
+    RealPositionData data = consolidatedRealDataBox.getAt(i);
 
     points.add(Offset((data.offset.x * 150) + (width / 2),
         (data.offset.y * 150) + (height / 2)));

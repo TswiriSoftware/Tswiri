@@ -45,7 +45,7 @@ class _HiveDatabaseConsolidationViewState
               onPressed: () async {
                 displayList.clear();
                 var consolidatedDataBox =
-                    await Hive.openBox(realPositionalDataBox);
+                    await Hive.openBox(realPositionDataBoxName);
                 consolidatedDataBox.clear();
 
                 Future.delayed(const Duration(milliseconds: 100), () {
@@ -113,8 +113,8 @@ class _HiveDatabaseConsolidationViewState
   }
 
   Future<List> consolidateData(List displayList) async {
-    var consolidatedDataBox = await Hive.openBox(realPositionalDataBox);
-    Map<String, ConsolidatedDataHiveObject> consolidatedData = {};
+    var consolidatedDataBox = await Hive.openBox(realPositionDataBoxName);
+    Map<String, RealPositionData> consolidatedData = {};
     Map consolidatedDataMap = consolidatedDataBox.toMap();
     consolidatedDataMap.forEach((key, value) {
       consolidatedData.putIfAbsent(key, () => value);
@@ -124,8 +124,8 @@ class _HiveDatabaseConsolidationViewState
   }
 }
 
-List _displayList(Map<String, ConsolidatedDataHiveObject> consolidatedData,
-    List displayList) {
+List _displayList(
+    Map<String, RealPositionData> consolidatedData, List displayList) {
   displayList.clear();
   consolidatedData.forEach((key, value) {
     displayList.add([
