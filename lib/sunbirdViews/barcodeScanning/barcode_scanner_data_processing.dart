@@ -83,15 +83,12 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
     ConsolidatedDataHiveObject consolidatedDataHiveObject;
     if (realPositionalDataMap
         .containsKey(realInterBarcodeDataInstance.uidStart)) {
-      TypeOffsetHiveObject relativeRealOffset = offsetToTypeOffset(
-          typeOffsetToOffset(
-                  realPositionalDataMap[realInterBarcodeDataInstance.uidStart]!
-                      .offset) +
-              realInterBarcodeDataInstance.interBarcodeOffset);
-
       consolidatedDataHiveObject = ConsolidatedDataHiveObject(
           uid: realInterBarcodeDataInstance.uidEnd,
-          offset: relativeRealOffset,
+          offset: offsetToTypeOffset(typeOffsetToOffset(
+                  realPositionalDataMap[realInterBarcodeDataInstance.uidStart]!
+                      .offset) +
+              realInterBarcodeDataInstance.interBarcodeOffset),
           distanceFromCamera: realInterBarcodeDataInstance.distanceFromCamera,
           fixed: false,
           timestamp: realInterBarcodeDataInstance.timestamp);
@@ -102,15 +99,12 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
       );
     } else if (realPositionalDataMap
         .containsKey(realInterBarcodeDataInstance.uidEnd)) {
-      TypeOffsetHiveObject relativeRealOffset = offsetToTypeOffset(
-          typeOffsetToOffset(
-                  realPositionalDataMap[realInterBarcodeDataInstance.uidEnd]!
-                      .offset) -
-              realInterBarcodeDataInstance.interBarcodeOffset);
-
       consolidatedDataHiveObject = ConsolidatedDataHiveObject(
           uid: realInterBarcodeDataInstance.uidStart,
-          offset: relativeRealOffset,
+          offset: offsetToTypeOffset(typeOffsetToOffset(
+                  realPositionalDataMap[realInterBarcodeDataInstance.uidEnd]!
+                      .offset) -
+              realInterBarcodeDataInstance.interBarcodeOffset),
           distanceFromCamera: realInterBarcodeDataInstance.distanceFromCamera,
           fixed: false,
           timestamp: realInterBarcodeDataInstance.timestamp);
