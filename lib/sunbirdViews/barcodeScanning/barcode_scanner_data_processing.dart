@@ -6,7 +6,7 @@ import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_of
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataFunctions/data_capturing_functions.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
-import 'package:flutter_google_ml_kit/objects/barcode_pairs_data_instance.dart';
+import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_data.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -76,13 +76,60 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
         processRawOnImageBarcodeData(interBarcodeDataInstance);
     realInterBarcodeDataList.add(processedOnImageBarcodeData);
   }
-  print(realInterBarcodeDataList);
-  // for (ConsolidatedDataHiveObject consolidatedBarcodeData
-  //     in consolidatedDataMap.values) {
-  //   realPositionalData.put(
-  //       consolidatedBarcodeData.uid, consolidatedBarcodeData);
-  // }
+  //print(realInterBarcodeDataList);
 
+  for (RealInterBarcodeData realInterBarcodeDataInstance
+      in realInterBarcodeDataList) {
+    ConsolidatedDataHiveObject consolidatedDataHiveObject;
+    if (realPositionalDataMap
+        .containsKey(realInterBarcodeDataInstance.uidStart)) {
+      TypeOffsetHiveObject relativeRealOffset = offsetToTypeOffset(
+          typeOffsetToOffset(
+                  realPositionalDataMap[realInterBarcodeDataInstance.uidStart]!
+                      .offset) +
+              realInterBarcodeDataInstance.interBarcodeOffset);
+
+      consolidatedDataHiveObject = ConsolidatedDataHiveObject(
+          uid: realInterBarcodeDataInstance.uidEnd,
+          offset: relativeRealOffset,
+          distanceFromCamera: realInterBarcodeDataInstance.distanceFromCamera,
+          fixed: false,
+          timestamp: realInterBarcodeDataInstance.timestamp);
+      realPositionalDataMap.update(
+        consolidatedDataHiveObject.uid,
+        (value) => consolidatedDataHiveObject,
+        ifAbsent: () => consolidatedDataHiveObject,
+      );
+    } else if (realPositionalDataMap
+        .containsKey(realInterBarcodeDataInstance.uidEnd)) {
+      TypeOffsetHiveObject relativeRealOffset = offsetToTypeOffset(
+          typeOffsetToOffset(
+                  realPositionalDataMap[realInterBarcodeDataInstance.uidEnd]!
+                      .offset) -
+              realInterBarcodeDataInstance.interBarcodeOffset);
+
+      consolidatedDataHiveObject = ConsolidatedDataHiveObject(
+          uid: realInterBarcodeDataInstance.uidStart,
+          offset: relativeRealOffset,
+          distanceFromCamera: realInterBarcodeDataInstance.distanceFromCamera,
+          fixed: false,
+          timestamp: realInterBarcodeDataInstance.timestamp);
+      realPositionalDataMap.update(
+        consolidatedDataHiveObject.uid,
+        (value) => consolidatedDataHiveObject,
+        ifAbsent: () => consolidatedDataHiveObject,
+      );
+    }
+  }
+
+  for (ConsolidatedDataHiveObject consolidatedRealBarcodeData
+      in realPositionalDataMap.values) {
+    realPositionalData.put(
+        consolidatedRealBarcodeData.uid, consolidatedRealBarcodeData);
+    print(consolidatedRealBarcodeData);
+  }
+
+  //TODO: Implement tree rebuilding
   return '';
 }
 
@@ -123,48 +170,3 @@ RealInterBarcodeData processRawOnImageBarcodeData(
 
   return realInterBarcodeDataInstance;
 }
-
-
-  // for (RealInterBarcodeData realInterBarcodeDataInstance
-  //     in realInterBarcodeDataList) {
-  //   ConsolidatedDataHiveObject consolidatedDataHiveObject;
-  //   if (consolidatedDataMap
-  //       .containsKey(realInterBarcodeDataInstance.uidStart)) {
-  //     TypeOffsetHiveObject relativeRealOffset = offsetToTypeOffset(
-  //         typeOffsetToOffset(
-  //                 consolidatedDataMap[realInterBarcodeDataInstance.uidStart]!
-  //                     .offset) +
-  //             realInterBarcodeDataInstance.interBarcodeOffset);
-
-  //     consolidatedDataHiveObject = ConsolidatedDataHiveObject(
-  //         uid: realInterBarcodeDataInstance.uidEnd,
-  //         offset: relativeRealOffset,
-  //         distanceFromCamera: realInterBarcodeDataInstance.distanceFromCamera,
-  //         fixed: false,
-  //         timestamp: realInterBarcodeDataInstance.timestamp);
-  //     consolidatedDataMap.update(
-  //       consolidatedDataHiveObject.uid,
-  //       (value) => consolidatedDataHiveObject,
-  //       ifAbsent: () => consolidatedDataHiveObject,
-  //     );
-  //   } else if (consolidatedDataMap
-  //       .containsKey(realInterBarcodeDataInstance.uidEnd)) {
-  //     TypeOffsetHiveObject relativeRealOffset = offsetToTypeOffset(
-  //         typeOffsetToOffset(
-  //                 consolidatedDataMap[realInterBarcodeDataInstance.uidEnd]!
-  //                     .offset) -
-  //             realInterBarcodeDataInstance.interBarcodeOffset);
-
-  //     consolidatedDataHiveObject = ConsolidatedDataHiveObject(
-  //         uid: realInterBarcodeDataInstance.uidStart,
-  //         offset: relativeRealOffset,
-  //         distanceFromCamera: realInterBarcodeDataInstance.distanceFromCamera,
-  //         fixed: false,
-  //         timestamp: realInterBarcodeDataInstance.timestamp);
-  //     consolidatedDataMap.update(
-  //       consolidatedDataHiveObject.uid,
-  //       (value) => consolidatedDataHiveObject,
-  //       ifAbsent: () => consolidatedDataHiveObject,
-  //     );
-  //   }
-  // }

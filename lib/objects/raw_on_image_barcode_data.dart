@@ -2,10 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_offset_between_points.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataFunctions/data_capturing_functions.dart';
-import 'package:flutter_google_ml_kit/objects/on_image_barcode.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-
-//TODO: Rename file
 
 ///Describes the "Offset" between two barcodes.
 class RawOnImageInterBarcodeData {
@@ -77,7 +74,7 @@ class RawOnImageInterBarcodeData {
               calculateBarcodeCenterPoint(endBarcode)) /
           ((startDiagonalLength + endDiagonalLength) / 2);
     } else {
-      return -calculateOffsetBetweenTwoPoints(
+      return calculateOffsetBetweenTwoPoints(
               calculateBarcodeCenterPoint(endBarcode),
               calculateBarcodeCenterPoint(startBarcode)) /
           ((startDiagonalLength + endDiagonalLength) / 2);

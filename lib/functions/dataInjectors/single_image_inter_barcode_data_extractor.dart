@@ -1,4 +1,4 @@
-import 'package:flutter_google_ml_kit/objects/barcode_pairs_data_instance.dart';
+import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 ///Captures a collection of barcodes from a single image and returns a list of interBarcodeData

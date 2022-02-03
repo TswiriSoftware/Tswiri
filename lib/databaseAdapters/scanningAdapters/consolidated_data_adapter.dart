@@ -34,6 +34,6 @@ class ConsolidatedDataHiveObject extends HiveObject {
 
   @override
   String toString() {
-    return '$uid, ${typeOffsetToOffset(offset)}, ';
+    return '$uid, ${typeOffsetToOffset(offset)}, $timestamp ';
   }
 }

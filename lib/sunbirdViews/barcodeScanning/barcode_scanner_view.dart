@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/dataInjectors/single_image_inter_barcode_data_extractor.dart';
-import 'package:flutter_google_ml_kit/objects/barcode_pairs_data_instance.dart';
+import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/barcode_scanner_data_processing.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import '../../VisionDetectorViews/camera_view.dart';
