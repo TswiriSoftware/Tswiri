@@ -2,7 +2,7 @@ import 'dart:ui';
 
 class RealWorkingData {
   String uid;
-  Offset? interBarcodeOffset;
+  Offset interBarcodeOffset;
   int timestamp;
   RealWorkingData(this.uid, this.interBarcodeOffset, this.timestamp);
 
@@ -17,6 +17,6 @@ class RealWorkingData {
   @override
   String toString() {
     // TODO: implement toString
-    return '$uid, ${interBarcodeOffset ?? ''}, $timestamp';
+    return '$uid, ${interBarcodeOffset}, $timestamp';
   }
 }
