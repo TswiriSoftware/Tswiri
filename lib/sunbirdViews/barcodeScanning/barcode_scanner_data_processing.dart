@@ -60,14 +60,26 @@ class _BarcodeScannerDataProcessingViewState
 Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
   Box realPositionalData = await Hive.openBox(realPositionDataBoxName);
 
-  List<RealInterBarcodeData> realInterBarcodeDataList = [];
+  List<RealInterBarcodeData> realInterBarcodeData = [];
+
+  //Remove all duplicates for allInterBarcode data.
+  List<RawOnImageInterBarcodeData> allDeduplicatedInterBarcodeData =
+      allInterBarcodeData.toSet().toList();
+
+  for (RawOnImageInterBarcodeData interBarcodeDataInstance
+      in allDeduplicatedInterBarcodeData) {
+    RealInterBarcodeData realInterBarcodeDataInstance =
+        interBarcodeDataInstance.realInterBarcodeData;
+    realInterBarcodeData.add(realInterBarcodeDataInstance);
+    print(interBarcodeDataInstance);
+  }
 
   Map<String, RealWorkingData> realWorkingData = {};
   realWorkingData.putIfAbsent(
       '1', () => RealWorkingData('1', const Offset(0, 0), 0));
 
-  for (int i = 0; i <= realInterBarcodeDataList.length; i++) {
-    for (RealInterBarcodeData interBarcodeData in realInterBarcodeDataList) {
+  for (int i = 0; i <= realInterBarcodeData.length; i++) {
+    for (RealInterBarcodeData interBarcodeData in realInterBarcodeData) {
       if (realWorkingData.containsKey(interBarcodeData.uidStart)) {
         realWorkingData.putIfAbsent(
             interBarcodeData.uidEnd,
@@ -89,17 +101,16 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
     }
   }
 
-  realWorkingData.forEach((key, value) {
-    print(value);
+  for (RealWorkingData realWorkingData in realWorkingData.values) {
     realPositionalData.put(
-        key,
+        realWorkingData.uid,
         RealPositionData(
-            uid: key,
-            offset: offsetToTypeOffset(value.interBarcodeOffset),
+            uid: realWorkingData.uid,
+            offset: offsetToTypeOffset(realWorkingData.interBarcodeOffset),
             distanceFromCamera: 0,
             fixed: false,
-            timestamp: value.timestamp));
-  });
+            timestamp: realWorkingData.timestamp));
+  }
 
   //TODO: Fix naming (Real , on Image etc etc.)
   //TODO; to list no map
@@ -165,18 +176,7 @@ ElevatedButton proceedButton(BuildContext context) {
 ////////////
 ///
 //Contains Sets of linked Barcodes
-  // List<RealInterBarcodeData> realInterBarcodeData = [];
-
-  // //Remove all duplicates for allInterBarcode data.
-  // List<RawOnImageInterBarcodeData> allDeduplicatedInterBarcodeData =
-  //     allInterBarcodeData.toSet().toList();
-
-  // for (RawOnImageInterBarcodeData interBarcodeDataInstance
-  //     in allDeduplicatedInterBarcodeData) {
-  //   RealInterBarcodeData realInterBarcodeDataInstance =
-  //       interBarcodeDataInstance.realInterBarcodeData;
-  //   realInterBarcodeData.add(realInterBarcodeDataInstance);
-  // }
+ 
 
   // List<RealWorkingData> allScannedBarcodes = [];
   // allScannedBarcodes.addAll(extractAllScannedBarcodes(realInterBarcodeData));

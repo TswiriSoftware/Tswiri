@@ -83,17 +83,16 @@ class RawOnImageInterBarcodeData {
   }
 
   RealInterBarcodeData get realInterBarcodeData {
+    RealInterBarcodeData realInterBarcodeDataInstance = RealInterBarcodeData(
+        uid: uid,
+        uidStart: startBarcodeID,
+        uidEnd: endBarcodeID,
+        interBarcodeOffset: realInterBarcodeOffset,
+        distanceFromCamera: 0,
+        timestamp: timestamp);
 
-  RealInterBarcodeData realInterBarcodeDataInstance = RealInterBarcodeData(
-      uid: uid,
-      uidStart: startBarcodeID,
-      uidEnd: endBarcodeID,
-      interBarcodeOffset: realInterBarcodeOffset,
-      distanceFromCamera: 0,
-      timestamp: timestamp);
-
-  return realInterBarcodeDataInstance;
-}
+    return realInterBarcodeDataInstance;
+  }
 
   @override
   bool operator ==(Object other) {
@@ -105,6 +104,6 @@ class RawOnImageInterBarcodeData {
 
   @override
   String toString() {
-    return '${startBarcode.displayValue}_${endBarcode.displayValue}, $timestamp';
+    return '${startBarcode.displayValue}_${endBarcode.displayValue}, $realInterBarcodeOffset, $timestamp';
   }
 }
