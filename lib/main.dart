@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/fixed_data_adapter.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_range_selector_view.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeTagging/barcode_tagging_selector_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -121,13 +122,13 @@ class Home extends StatelessWidget {
               featureCompleted: true,
               tileColor: deeperOrange,
             ),
-            // CustomCard(
-            //   'Image Label View',
-            //   ImageLabelView(),
-            //   Icons.image_rounded,
-            //   featureCompleted: true,
-            //   tileColor: deeperOrange,
-            // ),
+            CustomCard(
+              'Image Label View',
+              BarcodeSelectionTagView(),
+              Icons.tag_faces_rounded,
+              featureCompleted: true,
+              tileColor: deeperOrange,
+            ),
             // CustomCard(
             //   'Object Detector View',
             //   ObjectDetectorView(),
