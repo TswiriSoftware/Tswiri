@@ -60,7 +60,7 @@ class _BarcodeScannerDataProcessingViewState
 Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
   Box realPositionalData = await Hive.openBox(realPositionDataBoxName);
 
-  List<RealInterBarcodeData> realInterBarcodeData = [];
+  List<RealInterBarcodeData> allRealInterBarcodeData = [];
 
   //Remove all duplicates for allInterBarcode data.
   List<RawOnImageInterBarcodeData> allDeduplicatedInterBarcodeData =
@@ -70,38 +70,72 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
       in allDeduplicatedInterBarcodeData) {
     RealInterBarcodeData realInterBarcodeDataInstance =
         interBarcodeDataInstance.realInterBarcodeData;
-    realInterBarcodeData.add(realInterBarcodeDataInstance);
-    print(interBarcodeDataInstance);
+    allRealInterBarcodeData.add(realInterBarcodeDataInstance);
+    //print(interBarcodeDataInstance);
   }
 
-  Map<String, RealWorkingData> realWorkingData = {};
-  realWorkingData.putIfAbsent(
-      '1', () => RealWorkingData('1', const Offset(0, 0), 0));
+  List<RealBarcodePosition> realPositionData = [];
 
-  for (int i = 0; i <= realInterBarcodeData.length; i++) {
-    for (RealInterBarcodeData interBarcodeData in realInterBarcodeData) {
-      if (realWorkingData.containsKey(interBarcodeData.uidStart)) {
-        realWorkingData.putIfAbsent(
-            interBarcodeData.uidEnd,
-            () => RealWorkingData(
-                interBarcodeData.uidEnd,
-                (realWorkingData[interBarcodeData.uidStart]!
-                        .interBarcodeOffset +
-                    interBarcodeData.interBarcodeOffset),
-                interBarcodeData.timestamp));
-      } else if (realWorkingData.containsKey(interBarcodeData.uidEnd)) {
-        realWorkingData.putIfAbsent(
-            interBarcodeData.uidStart,
-            () => RealWorkingData(
-                interBarcodeData.uidStart,
-                realWorkingData[interBarcodeData.uidEnd]!.interBarcodeOffset -
-                    interBarcodeData.interBarcodeOffset,
-                interBarcodeData.timestamp));
-      }
-    }
+    // realWorkingData.add(
+    //   RealPositionDataWorkingClass('1', const Offset(0, 0), 0));
+
+
+  List<RealBarcodePosition> allBarcodesInScan = [];
+
+  for (RealInterBarcodeData interBarcodeData in allRealInterBarcodeData) {
+    allBarcodesInScan.addAll([RealBarcodePosition(interBarcodeData.uidStart, null , null ),RealBarcodePosition(interBarcodeData.uidEnd, null, null)]);
+  }
+   
+  realPositionData = allBarcodesInScan.toSet().toList();
+
+  realPositionData[realPositionData.indexWhere((element) => element.uid == '1')] = RealBarcodePosition('1', const Offset(0, 0), 0);
+  
+
+  // Go through all realInterbarcode data at least realInterBarcodeData.length times (Little bit of overkill)
+  //TODO: Add check to check if any Interbarcodedatas without offset exists. 
+  for (int i = 0; i <= allRealInterBarcodeData.length; i++) {
+     for (RealBarcodePosition endRealPositionData in realPositionData) {
+       if (endRealPositionData.interBarcodeOffset == null) {
+       
+       List<RealInterBarcodeData> interBarcodeDatas = allRealInterBarcodeData.where((interBarcodeData) => (interBarcodeData.uidStart == endRealPositionData.uid) || (interBarcodeData.uidEnd == endRealPositionData.uid)  ).toList();
+       
+       List<RealBarcodePosition> realBarcodePositionWithOffset =  realPositionData.where((realBarcodePosition) => realBarcodePosition.interBarcodeOffset != null).toList();
+       
+       RealBarcodePosition startRealBarcodePosition =  realBarcodePositionWithOffset.firstWhere((element) {
+         for (RealInterBarcodeData singleInterBarcodeData in interBarcodeDatas) {
+           if (singleInterBarcodeData.uidStart == element.uid || singleInterBarcodeData.uidEnd == element.uid) {
+             return true;
+           }
+         }
+         return false;
+       }
+       
+       //TODO:
+
+       );
+       }
+     }
   }
 
-  for (RealWorkingData realWorkingData in realWorkingData.values) {
+
+    // Get set of all barcode UID that were scanned. -> Write to List<RealPositionData>                   DONE :)
+  // get origin barcode UID and Update to have ( 0,0 ) Position (Origin 0,0 , hardcoded global const )  DONE :)
+
+  // magic loop start.
+
+  // for each barcode in list
+  //    check if current barcode has offset , if yes , skip , if no do this :                                       DONE :)
+  //       Find Path to origin ->  1. get all interbarcodedatas with start or end barcode as current barcode UID.
+  //                               2. check if any of these have a offset , if yes continue to 3 if not continue to next interBarcodeData
+  //                               3. store offset of barcode with current barcode and origin barcode as position (ensure that barcode with offset is start , if not reverse vector)
+
+  //magic loop end.
+
+
+
+
+
+  for (RealBarcodePosition realWorkingData in realPositionData.values) {
     realPositionalData.put(
         realWorkingData.uid,
         RealPositionData(
@@ -138,7 +172,7 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
 
 List<RealInterBarcodeData> findDatasContainingCurrentBarcode(
     List<RealInterBarcodeData> realInterBarcodeData,
-    RealWorkingData workingData) {
+    RealBarcodePosition workingData) {
   return realInterBarcodeData
       .where((element) =>
           workingData.uid == element.uidStart ||
@@ -155,15 +189,41 @@ ElevatedButton proceedButton(BuildContext context) {
       child: const Icon(Icons.check_circle_outline_rounded));
 }
 
-// List<RealWorkingData> extractAllScannedBarcodes(
+
+//  for (RealInterBarcodeData interBarcodeData in allRealInterBarcodeData) {
+//       if (realPositionData.containsKey(interBarcodeData.uidStart)) {
+
+//         realPositionData.putIfAbsent(
+//             interBarcodeData.uidEnd,
+//             () => RealPositionDataWorkingClass(
+//                 interBarcodeData.uidEnd,
+//                 (realPositionData[interBarcodeData.uidStart]!
+//                         .interBarcodeOffset +
+//                     interBarcodeData.interBarcodeOffset),
+//                 interBarcodeData.timestamp));
+
+//       } else if (realPositionData.containsKey(interBarcodeData.uidEnd)) {
+
+//         realPositionData.putIfAbsent(
+//             interBarcodeData.uidStart,
+//             () => RealPositionDataWorkingClass(
+//                 interBarcodeData.uidStart,
+//                 realPositionData[interBarcodeData.uidEnd]!.interBarcodeOffset -
+//                     interBarcodeData.interBarcodeOffset,
+//                 interBarcodeData.timestamp));
+
+//       }
+//     }
+
+// List<RealPositionDataWorkingClass> extractAllScannedBarcodes(
 //     List<RealInterBarcodeData> realInterBarcodeDataList) {
-//   List<RealWorkingData> allScannedBarcodes = [];
+//   List<RealPositionDataWorkingClass> allScannedBarcodes = [];
 //   for (RealInterBarcodeData interBarcodeData in realInterBarcodeDataList) {
 //     if (interBarcodeData.uidStart != '1') {
-//       allScannedBarcodes.add(RealWorkingData(
+//       allScannedBarcodes.add(RealPositionDataWorkingClass(
 //           interBarcodeData.uidStart, null, interBarcodeData.timestamp));
 //     } else if (interBarcodeData.uidEnd != '1') {
-//       allScannedBarcodes.add(RealWorkingData(
+//       allScannedBarcodes.add(RealPositionDataWorkingClass(
 //           interBarcodeData.uidEnd, null, interBarcodeData.timestamp));
 //     }
 //   }

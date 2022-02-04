@@ -1,14 +1,15 @@
 import 'dart:ui';
 
-class RealWorkingData {
+//TODO: add desctiption & definition
+class RealBarcodePosition {
   String uid;
-  Offset interBarcodeOffset;
-  int timestamp;
-  RealWorkingData(this.uid, this.interBarcodeOffset, this.timestamp);
+  Offset? interBarcodeOffset;
+  int? timestamp;
+  RealBarcodePosition(this.uid, this.interBarcodeOffset, this.timestamp);
 
   @override
   bool operator ==(Object other) {
-    return other is RealWorkingData && hashCode == other.hashCode;
+    return other is RealBarcodePosition && hashCode == other.hashCode;
   }
 
   @override
