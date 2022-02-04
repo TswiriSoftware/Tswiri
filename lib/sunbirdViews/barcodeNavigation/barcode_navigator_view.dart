@@ -85,7 +85,7 @@ class _BarcodeNavigatorViewState extends State<BarcodeNavigatorView> {
     Map map = consolidatedData.toMap();
     Map<String, Offset> mapConsolidated = {};
     map.forEach((key, value) {
-      RealPositionData data = value;
+      RealBarcodePostionEntry data = value;
       mapConsolidated.update(
         key,
         (value) => Offset(data.offset.x, data.offset.y),

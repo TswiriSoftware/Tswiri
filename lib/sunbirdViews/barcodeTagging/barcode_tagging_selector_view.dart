@@ -117,7 +117,7 @@ class _BarcodeSelectionTagViewState extends State<BarcodeSelectionTagView> {
     Map consolidatedDataMap = consolidatedDataBox.toMap();
     List displayList = [];
     consolidatedDataMap.forEach((key, value) {
-      RealPositionData data = value;
+      RealBarcodePostionEntry data = value;
       displayList.add([
         data.uid,
         roundDouble(data.offset.x, 10),

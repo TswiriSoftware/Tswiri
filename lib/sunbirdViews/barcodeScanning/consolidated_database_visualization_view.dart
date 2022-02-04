@@ -147,7 +147,7 @@ _getPoints(
   double width = MediaQuery.of(context).size.width;
   double height = MediaQuery.of(context).size.height;
   for (var i = 0; i < consolidatedRealDataBox.length; i++) {
-    RealPositionData data = consolidatedRealDataBox.getAt(i);
+    RealBarcodePostionEntry data = consolidatedRealDataBox.getAt(i);
 
     points.add(Offset((data.offset.x * 150) + (width / 2),
         (data.offset.y * 150) + (height / 2)));

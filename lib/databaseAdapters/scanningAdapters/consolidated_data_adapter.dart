@@ -4,9 +4,9 @@ import 'package:hive/hive.dart';
 part 'consolidated_data_adapter.g.dart';
 
 @HiveType(typeId: 1)
-class RealPositionData extends HiveObject {
+class RealBarcodePostionEntry extends HiveObject {
   ///This objects stores the real offset between barcodes aswell as the Z offset relative to a fixed bacodes.
-  RealPositionData(
+  RealBarcodePostionEntry(
       {required this.uid,
       required this.offset,
       required this.distanceFromCamera,
@@ -29,6 +29,7 @@ class RealPositionData extends HiveObject {
   @HiveField(3)
   late bool fixed;
 
+  //The timestamp
   @HiveField(4)
   late int timestamp;
 

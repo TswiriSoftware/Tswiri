@@ -6,18 +6,18 @@ part of 'consolidated_data_adapter.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ConsolidatedDataHiveObjectAdapter
-    extends TypeAdapter<RealPositionData> {
+class RealBarcodePostionEntryAdapter
+    extends TypeAdapter<RealBarcodePostionEntry> {
   @override
   final int typeId = 1;
 
   @override
-  RealPositionData read(BinaryReader reader) {
+  RealBarcodePostionEntry read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return RealPositionData(
+    return RealBarcodePostionEntry(
       uid: fields[0] as String,
       offset: fields[1] as TypeOffsetHiveObject,
       distanceFromCamera: fields[2] as double,
@@ -27,7 +27,7 @@ class ConsolidatedDataHiveObjectAdapter
   }
 
   @override
-  void write(BinaryWriter writer, RealPositionData obj) {
+  void write(BinaryWriter writer, RealBarcodePostionEntry obj) {
     writer
       ..writeByte(5)
       ..writeByte(0)
@@ -48,7 +48,7 @@ class ConsolidatedDataHiveObjectAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ConsolidatedDataHiveObjectAdapter &&
+      other is RealBarcodePostionEntryAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
