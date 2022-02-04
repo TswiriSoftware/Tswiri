@@ -49,9 +49,7 @@ class _BarcodeTaggingViewState extends State<BarcodeTaggingView> {
             fontSize: _fontSize,
           ),
           combine: ItemTagsCombine.withTextBefore,
-          image: ItemTagsImage(
-              image: AssetImage(
-                  "img.jpg") // OR NetworkImage("https://...image.png")
+          image: ItemTagsImage(// OR NetworkImage("https://...image.png")
               ), // OR null,
           icon: ItemTagsIcon(
             icon: Icons.add,
@@ -77,8 +75,8 @@ class _BarcodeTaggingViewState extends State<BarcodeTaggingView> {
   final GlobalKey<TagsState> _tagStateKey = GlobalKey<TagsState>();
 // Allows you to get a list of all the ItemTags
   _getAllItem() {
-    List<Item> lst = _tagStateKey.currentState?.getAllItem;
-    if (lst != null)
-      lst.where((a) => a.active == true).forEach((a) => print(a.title));
+    //List<Item> lst = _tagStateKey.currentState?.getAllItem;
+    // if (lst != null)
+    //   lst.where((a) => a.active == true).forEach((a) => print(a.title));
   }
 }
