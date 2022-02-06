@@ -1,6 +1,18 @@
 import 'dart:ui';
 
 ///Contains 2 barcode ID's and the offset bewteen the barcodes
+///
+///1. uid                : 1_2
+///
+///2. uidStart           : 1
+///
+///3. uidEnd             : 2
+///
+///4. interBarcodeOffset : Offset(dx, dy)
+///
+///5. distanceFromCamera : 150 (mm)
+///
+///6. timestamp          : millisSinceEpoch
 class RealInterBarcodeOffset {
   RealInterBarcodeOffset(
       {required this.uid,
