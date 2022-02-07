@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'consolidated_data_adapter.dart';
+part of 'real_barocode_position_entry.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator

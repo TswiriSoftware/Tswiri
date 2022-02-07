@@ -14,7 +14,7 @@ import 'package:flutter/material.dart';
 import 'databaseAdapters/calibrationAdapters/calibration_accelerometer_data_adapter.dart';
 import 'databaseAdapters/calibrationAdapters/calibration_size_data_adapter.dart';
 import 'databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
-import 'databaseAdapters/scanningAdapters/consolidated_data_adapter.dart';
+import 'databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
 import 'sunbirdViews/barcodeNavigation/navigationToolsView/barcode_navigation_tools_view.dart';
 import 'sunbirdViews/barcodeScanning/scanningToolsView/barcode_scanning_tools_view.dart';
