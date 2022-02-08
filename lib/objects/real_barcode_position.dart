@@ -18,10 +18,12 @@ class RealBarcodePosition {
   ///This is the offset between this barcode and the origin (0,0)
   Offset? interBarcodeOffset;
 
+  int? numberOfBarcodesFromOrigin;
+
   ///This is the timestamp of when the barcode was scanned
-  ///
   int? timestamp;
-  RealBarcodePosition(this.uid, this.interBarcodeOffset, this.timestamp);
+  RealBarcodePosition(this.uid, this.interBarcodeOffset,
+      this.numberOfBarcodesFromOrigin, this.timestamp);
 
   @override
   bool operator ==(Object other) {
@@ -34,6 +36,6 @@ class RealBarcodePosition {
   @override
   String toString() {
     // TODO: implement toString
-    return '$uid, ${interBarcodeOffset}, $timestamp';
+    return '$uid, ${interBarcodeOffset}, $numberOfBarcodesFromOrigin, $timestamp';
   }
 }

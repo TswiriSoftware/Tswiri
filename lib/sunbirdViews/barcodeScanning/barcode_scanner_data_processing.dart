@@ -55,185 +55,221 @@ class _BarcodeScannerDataProcessingViewState
 Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
   Box realPositionalData = await Hive.openBox(realPositionDataBoxName);
 
+  List<RealInterBarcodeOffset> allRealInterBarcodeOffsets =
+      addRealInterBarcodeOffsets(allInterBarcodeData);
+
   //All interBarcode Data from scan - deduplicated
-  List<RealInterBarcodeOffset> realInterBarcodeOffsets =
+  List<RealInterBarcodeOffset> deduplicatedRealInterBarcodeOffsets =
       addRealInterBarcodeOffsets(allInterBarcodeData.toSet().toList());
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //List of all barcodes Scanned - deduplicated. 
-  List<RealBarcodePosition> realBarcodePositions =
-      allScannedBarcodes(realInterBarcodeOffsets);
+  // print('Initial Values');
+  // for (RealInterBarcodeOffset a in allRealInterBarcodeOffsets) {
+  //   print(a);
+  // }
 
-  //Populate origin 
-  realBarcodePositions[realBarcodePositions
-      .indexWhere((element) => element.uid == '1')] = origin;
-  //TODO: add error/exception when origin not in list. 
+  for (RealInterBarcodeOffset realInterBacrodeOffset
+      in deduplicatedRealInterBarcodeOffsets) {
+    List<RealInterBarcodeOffset> similarInterBarcodeOffsets =
+        allRealInterBarcodeOffsets
+            .where((element) =>
+                (element.uidStart == realInterBacrodeOffset.uidStart &&
+                    element.uidEnd == realInterBacrodeOffset.uidEnd) ||
+                (element.uidEnd == realInterBacrodeOffset.uidStart &&
+                    element.uidStart == realInterBacrodeOffset.uidEnd))
+            .toList();
 
-  // Go through all realInterbarcode data at least realInterBarcodeData.length times (Little bit of overkill)
-  //TODO: do while barcodes without offsets are getiing less.
-  for (int i = 0; i <= realInterBarcodeOffsets.length; i++) {
-
-    for (RealBarcodePosition endBarcodeRealPosition in realBarcodePositions) {
-      if (endBarcodeRealPosition.interBarcodeOffset == null) {
-
-        //startBarcode : The barcode that we are going to use a reference (has offset relative to origin)
-
-        //endBarcode : the barcode whose Real Position we are trying to find in this step , if we cant , we will skip and see if we can do so in the next round.
-
-        // we are going to add the interbarcode offset between start and end barcodes to obtain the "position" of the end barcode. 
-        
-        //This list contains all RealInterBarcode Offsets that contains the endBarcode
-        List<RealInterBarcodeOffset> relevantInterBarcodeOffsets =
-            realInterBarcodeOffsets
-                .where((interBarcodeData) =>
-                    (interBarcodeData.uidStart == endBarcodeRealPosition.uid) ||
-                    (interBarcodeData.uidEnd == endBarcodeRealPosition.uid))
-                .toList();
-
-        //This list contains all realBarcodePositions with a Offset (effectivley to the Origin)
-        List<RealBarcodePosition> barcodesWithOffset =
-            realBarcodePositions
-                .where((realBarcodePosition) =>
-                    realBarcodePosition.interBarcodeOffset != null)
-                .toList();
-
-        int startBarcodeIndex = barcodesWithOffset.indexWhere((barcodeWithOffsetToOrigin) {
-          for (RealInterBarcodeOffset singleInterBarcodeData
-              in relevantInterBarcodeOffsets) {
-            if (singleInterBarcodeData.uidStart ==
-                    barcodeWithOffsetToOrigin.uid ||
-                singleInterBarcodeData.uidEnd ==
-                    barcodeWithOffsetToOrigin.uid) {
-              return true;
-            }
-          }
-          return false;
-        });
-
-        if (startBarcodeIndex != -1) {
-          //returns the first barcode with offset to origin that is contained in the list interBarcodeOffsetsContainingEndBarcode.
-          RealBarcodePosition startBarcode = barcodesWithOffset[startBarcodeIndex];
-
-          //Checks if any RealBarcodePosition contains startRealBarcodePosition. (Double checks)
-          if (relevantInterBarcodeOffsets.any((element) {
-            if (startBarcode.uid == element.uidStart ||
-                startBarcode.uid == element.uidEnd) {
-              return true;
-            }
-            return false;
-          })) {
-            //Returns the first interBarcodeOffset where the startRealBarcodePosition is contained.
-            RealInterBarcodeOffset interBarcodeOffset =
-                relevantInterBarcodeOffsets.firstWhere(
-              (element) {
-                if (startBarcode.uid == element.uidStart ||
-                    startBarcode.uid == element.uidEnd) {
-                  return true;
-                }
-                return false;
-              },
-            );
-            endBarcodeRealPosition.timestamp = interBarcodeOffset.timestamp;
-
-            if (interBarcodeOffset.uidEnd == endBarcodeRealPosition.uid) {
-              endBarcodeRealPosition.interBarcodeOffset =
-                  startBarcode.interBarcodeOffset! +
-                      interBarcodeOffset.interBarcodeOffset;
-            } else if (interBarcodeOffset.uidStart ==
-                endBarcodeRealPosition.uid) {
-              endBarcodeRealPosition.interBarcodeOffset =
-                  startBarcode.interBarcodeOffset! -
-                      interBarcodeOffset.interBarcodeOffset;
-            }
-          }
-        }
-        //else "Skip" 
+    for (RealInterBarcodeOffset similarInterBarcodeOffset
+        in similarInterBarcodeOffsets) {
+      if (similarInterBarcodeOffset.uidStart ==
+              realInterBacrodeOffset.uidStart &&
+          similarInterBarcodeOffset.uidEnd == realInterBacrodeOffset.uidEnd) {
+        realInterBacrodeOffset.interBarcodeOffset =
+            (realInterBacrodeOffset.interBarcodeOffset +
+                    similarInterBarcodeOffset.interBarcodeOffset) /
+                2;
+      } else if (similarInterBarcodeOffset.uidEnd ==
+              realInterBacrodeOffset.uidStart &&
+          similarInterBarcodeOffset.uidStart == realInterBacrodeOffset.uidEnd) {
+        realInterBacrodeOffset.interBarcodeOffset =
+            (realInterBacrodeOffset.interBarcodeOffset +
+                    (-similarInterBarcodeOffset.interBarcodeOffset)) /
+                2;
       }
     }
   }
 
-  //Write to hive
-    for (RealBarcodePosition realBarcodePosition in realBarcodePositions) {
-      //Checks that the interBarcodeOffset is not null and then creates an entry
-      if (realBarcodePosition.interBarcodeOffset != null) {
-        //Creates an entry for each realBarcodePosition
-        realPositionalData.put(
-            realBarcodePosition.uid,
-            RealBarcodePostionEntry(
-                uid: realBarcodePosition.uid,
-                offset:
-                    offsetToTypeOffset(realBarcodePosition.interBarcodeOffset!),
-                distanceFromCamera: 0,
-                fixed: false,
-                timestamp: realBarcodePosition.timestamp!));
+  //List of all barcodes Scanned - deduplicated.
+  List<RealBarcodePosition> realBarcodePositions =
+      allScannedBarcodes(deduplicatedRealInterBarcodeOffsets);
+
+  //Populate origin
+  realBarcodePositions[
+          realBarcodePositions.indexWhere((element) => element.uid == '1')] =
+      RealBarcodePosition('1', Offset(0, 0), 0, 0);
+
+  //TODO: add error/exception when origin not in list.
+
+  // print('realBarcodePositions');
+  // for (RealBarcodePosition realBarcodePosition in realBarcodePositions) {
+  //   print(realBarcodePosition);
+  // }
+
+  // Go through all realInterbarcode data at least realInterBarcodeData.length times (Little bit of overkill)
+  //TODO: do while barcodes without offsets are getiing less.
+
+  int nonNullPositions = 1;
+  int nullPositions = realBarcodePositions.length;
+
+  for (int i = 0; i <= deduplicatedRealInterBarcodeOffsets.length;) {
+    for (RealBarcodePosition endBarcodeRealPosition in realBarcodePositions) {
+      if (endBarcodeRealPosition.interBarcodeOffset == null) {
+        //startBarcode : The barcode that we are going to use a reference (has offset relative to origin)
+        //endBarcode : the barcode whose Real Position we are trying to find in this step , if we cant , we will skip and see if we can do so in the next round.
+        // we are going to add the interbarcode offset between start and end barcodes to obtain the "position" of the end barcode.
+
+        //This list contains all RealInterBarcode Offsets that contains the endBarcode.
+        List<RealInterBarcodeOffset> relevantInterBarcodeOffsets =
+            getRelevantInterBarcodeOffsets(
+                deduplicatedRealInterBarcodeOffsets, endBarcodeRealPosition);
+
+        //This list contains all realBarcodePositions with a Offset (effectivley to the Origin).
+        List<RealBarcodePosition> barcodesWithOffset =
+            getBarcodesWithOffset(realBarcodePositions);
+
+        //barcodesWithOffset.sort(mySortComparison);
+
+        int startBarcodeIndex = findStartBarcodeIndex(
+            barcodesWithOffset, relevantInterBarcodeOffsets);
+
+        if (indexIsValid(startBarcodeIndex)) {
+          //RealBarcodePosition of startBarcode.
+          RealBarcodePosition startBarcode =
+              barcodesWithOffset[startBarcodeIndex];
+
+          //Index of InterBarcodeOffset which contains startBarcode.
+          int interBarcodeOffsetIndex = findInterBarcodeOffset(
+              relevantInterBarcodeOffsets,
+              startBarcode,
+              endBarcodeRealPosition);
+
+          if (indexIsValid(interBarcodeOffsetIndex)) {
+            //Determine whether to add or subtract the interBarcode Offset.
+            determinesInterBarcodeOffsetDirection(
+                relevantInterBarcodeOffset:
+                    relevantInterBarcodeOffsets[interBarcodeOffsetIndex],
+                endBarcodeRealPosition: endBarcodeRealPosition,
+                startBarcode: startBarcode);
+            nonNullPositions++;
+          }
+        }
+        //else "Skip"
       }
     }
+    i++;
+    if (nonNullPositions == nullPositions) {
+      break;
+    }
+  }
 
+  //Writes data to Hive Database
+  for (RealBarcodePosition realBarcodePosition in realBarcodePositions) {
+    writeValidBarcodePositionsToDatabase(
+        realBarcodePosition, realPositionalData);
+  }
+  return '';
 }
 
+void writeValidBarcodePositionsToDatabase(
+    RealBarcodePosition realBarcodePosition, Box<dynamic> realPositionalData) {
+  if (realBarcodePosition.interBarcodeOffset != null) {
+    //Creates an entry for each realBarcodePosition
+    realPositionalData.put(
+        realBarcodePosition.uid,
+        RealBarcodePostionEntry(
+            uid: realBarcodePosition.uid,
+            offset: offsetToTypeOffset(realBarcodePosition.interBarcodeOffset!),
+            distanceFromCamera: 0,
+            fixed: false,
+            timestamp: realBarcodePosition.timestamp!));
+  }
+}
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool indexIsValid(int index) => index != -1;
 
-    //TODO: Fix naming (Real , on Image etc etc.)
-    //TODO; to list no map
+///Considers the InterBarcodeOffset Offset's Direction
+void determinesInterBarcodeOffsetDirection(
+    {required RealInterBarcodeOffset relevantInterBarcodeOffset,
+    required RealBarcodePosition endBarcodeRealPosition,
+    required RealBarcodePosition startBarcode}) {
+  if (relevantInterBarcodeOffset.uidEnd == endBarcodeRealPosition.uid) {
+    endBarcodeRealPosition.interBarcodeOffset =
+        startBarcode.interBarcodeOffset! +
+            relevantInterBarcodeOffset.interBarcodeOffset;
+    // endBarcodeRealPosition.numberOfBarcodesFromOrigin =
+    //     1 + startBarcode.numberOfBarcodesFromOrigin!;
+    endBarcodeRealPosition.timestamp = relevantInterBarcodeOffset.timestamp;
+  } else if (relevantInterBarcodeOffset.uidStart ==
+      endBarcodeRealPosition.uid) {
+    endBarcodeRealPosition.interBarcodeOffset =
+        startBarcode.interBarcodeOffset! -
+            relevantInterBarcodeOffset.interBarcodeOffset;
+    // endBarcodeRealPosition.numberOfBarcodesFromOrigin =
+    //     1 + startBarcode.numberOfBarcodesFromOrigin!;
+    endBarcodeRealPosition.timestamp = relevantInterBarcodeOffset.timestamp;
+  }
+}
 
-    // Get set of all barcode UID that were scanned. -> Write to List<RealPositionData>                   DONE :)
-    // get origin barcode UID and Update to have ( 0,0 ) Position (Origin 0,0 , hardcoded global const )  DONE :)
+///Finds the interBarcodeOffset which contains the start Barcode
+int findInterBarcodeOffset(
+    List<RealInterBarcodeOffset> relevantInterBarcodeOffsets,
+    RealBarcodePosition startBarcode,
+    RealBarcodePosition endBarcodeRealPosition) {
+  return relevantInterBarcodeOffsets.indexWhere((element) {
+    if ((startBarcode.uid == element.uidStart &&
+            endBarcodeRealPosition.uid == element.uidEnd) ||
+        (startBarcode.uid == element.uidEnd &&
+            endBarcodeRealPosition.uid == element.uidStart)) {
+      return true;
+    }
+    return false;
+  });
+}
 
-    // magic loop start.
+///Find a relevant the start barcode
+int findStartBarcodeIndex(List<RealBarcodePosition> barcodesWithOffset,
+    List<RealInterBarcodeOffset> relevantInterBarcodeOffsets) {
+  return barcodesWithOffset.indexWhere((barcodeWithOffsetToOrigin) {
+    for (RealInterBarcodeOffset singleInterBarcodeData
+        in relevantInterBarcodeOffsets) {
+      if (singleInterBarcodeData.uidStart == barcodeWithOffsetToOrigin.uid ||
+          singleInterBarcodeData.uidEnd == barcodeWithOffsetToOrigin.uid) {
+        return true;
+      }
+    }
+    return false;
+  });
+}
 
-    // for each barcode in list
-    //    check if current barcode has offset , if yes , skip , if no do this :                                       DONE :)
-    //       Find Path to origin ->  1. get all interbarcodedatas with start or end barcode as current barcode UID.
-    //                               2. check if any of these have a offset , if yes continue to 3 if not continue to next interBarcodeData
-    //                               3. store offset of barcode with current barcode and origin barcode as position (ensure that barcode with offset is start , if not reverse vector)
+///Finds all barcodes with a offset (to the origin).
+List<RealBarcodePosition> getBarcodesWithOffset(
+    List<RealBarcodePosition> realBarcodePositions) {
+  return realBarcodePositions
+      .where((realBarcodePosition) =>
+          realBarcodePosition.interBarcodeOffset != null)
+      .toList();
+}
 
-    //magic loop end.
+List<RealInterBarcodeOffset> getRelevantInterBarcodeOffsets(
+    List<RealInterBarcodeOffset> realInterBarcodeOffsets,
+    RealBarcodePosition endBarcodeRealPosition) {
+  return realInterBarcodeOffsets
+      .where((interBarcodeData) =>
+          (interBarcodeData.uidStart == endBarcodeRealPosition.uid) ||
+          (interBarcodeData.uidEnd == endBarcodeRealPosition.uid))
+      .toList();
+}
 
-    //^^^ repeat magic loop until we dont have barcodes without offsets in List<RealPositionData>
-
-    //   }
-    //print(allScannedBarcodes);
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //Map<String, RealBarcodePosition> realInterBarcodeOffsetsMap = {};
-
-    //Add origin
-    // realInterBarcodeOffsetsMap.putIfAbsent(
-    //     '1', () => RealBarcodePosition('1', const Offset(0, 0), 0));
-
-    // for (int i = 0; i <= realInterBarcodeOffsets.length; i++) {
-    //   for (RealInterBarcodeOffset realInterBarcodeOffset
-    //       in realInterBarcodeOffsets) {
-    //     //If realInterBarcodeOffsetMap contains uidEnd or uidStart then it will put the uidStart or uidEnd respectively,
-    //     //aswell as calculate the realBarcodePosition relative to the startBarcodePosition
-    //     RealBarcodePosition realBarcodePosition = calculateRealBarcodePosition(
-    //         realInterBarcodeOffsetsMap, realInterBarcodeOffset);
-    //     //Checks that the RealBarcodePosition does not contain a null value and then enters it to the database.
-    //     if (realBarcodePosition.interBarcodeOffset != null) {
-    //       realInterBarcodeOffsetsMap.putIfAbsent(
-    //           realInterBarcodeOffset.uid, () => realBarcodePosition);
-    //     }
-    //   }
-
-    //   for (RealBarcodePosition realInterBarcodeOffset
-    //       in realInterBarcodeOffsetsMap.values) {
-    //     print(realInterBarcodeOffset);
-    //     realPositionalData.put(
-    //         realInterBarcodeOffset.uid,
-    //         RealBarcodePostionEntry(
-    //             uid: realInterBarcodeOffset.uid,
-    //             offset: offsetToTypeOffset(
-    //                 realInterBarcodeOffset.interBarcodeOffset!),
-    //             distanceFromCamera: 0,
-    //             fixed: false,
-    //             timestamp: realInterBarcodeOffset.timestamp!));
-    //   }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-///Creates a list of all scanned barcodes , but with null positions , they still need to be populated. 
+///Creates a list of all scanned barcodes , but with null positions , they still need to be populated.
 List<RealBarcodePosition> allScannedBarcodes(
   List<RealInterBarcodeOffset> allRealInterBarcodeData,
 ) {
@@ -241,8 +277,8 @@ List<RealBarcodePosition> allScannedBarcodes(
   List<RealBarcodePosition> allBarcodesInScan = [];
   for (RealInterBarcodeOffset interBarcodeData in allRealInterBarcodeData) {
     allBarcodesInScan.addAll([
-      RealBarcodePosition(interBarcodeData.uidStart, null, null),
-      RealBarcodePosition(interBarcodeData.uidEnd, null, null)
+      RealBarcodePosition(interBarcodeData.uidStart, null, null, null),
+      RealBarcodePosition(interBarcodeData.uidEnd, null, null, null)
     ]);
   }
 
@@ -283,33 +319,23 @@ ElevatedButton proceedButton(BuildContext context) {
       child: const Icon(Icons.check_circle_outline_rounded));
 }
 
-///Checks if the start or end Barcode is present in the realInterBarcodeMap.
-///
-///If the start barcode is present it will calculate the realPosition accordingly.
-///If the end barcode is present it will calculate the realPosition accordingly.
-///
-///If neither the start or end barcode is present it will return a null value.
-RealBarcodePosition calculateRealBarcodePosition(
-    Map<String, RealBarcodePosition> realInterBarcodeOffsetsMap,
-    RealInterBarcodeOffset realInterBarcodeOffset) {
-  //Checks if start Barcode is present
-  if (realInterBarcodeOffsetsMap.containsKey(realInterBarcodeOffset.uidStart)) {
-    return RealBarcodePosition(
-        realInterBarcodeOffset.uidEnd,
-        realInterBarcodeOffsetsMap[realInterBarcodeOffset.uidStart]!
-                .interBarcodeOffset! +
-            realInterBarcodeOffset.interBarcodeOffset,
-        realInterBarcodeOffset.timestamp);
+int mySortComparison(RealBarcodePosition a, RealBarcodePosition b) {
+  if (a.numberOfBarcodesFromOrigin != null &&
+      b.numberOfBarcodesFromOrigin != null) {
+    if (a.numberOfBarcodesFromOrigin! < b.numberOfBarcodesFromOrigin!) {
+      return -1;
+    } else if (a.numberOfBarcodesFromOrigin! > b.numberOfBarcodesFromOrigin!) {
+      return 1;
+    } else {
+      return 0;
+    }
+  } else if (a.numberOfBarcodesFromOrigin != null &&
+      b.numberOfBarcodesFromOrigin == null) {
+    return -1;
+  } else if (a.numberOfBarcodesFromOrigin == null &&
+      b.numberOfBarcodesFromOrigin != null) {
+    return 1;
+  } else {
+    return 0;
   }
-  //Checks if end Barcode uid is present.
-  else if (realInterBarcodeOffsetsMap
-      .containsKey(realInterBarcodeOffset.uidEnd)) {
-    return RealBarcodePosition(
-        realInterBarcodeOffset.uidStart,
-        realInterBarcodeOffsetsMap[realInterBarcodeOffset.uidEnd]!
-                .interBarcodeOffset! -
-            realInterBarcodeOffset.interBarcodeOffset,
-        realInterBarcodeOffset.timestamp);
-  }
-  return RealBarcodePosition('0', null, null);
 }

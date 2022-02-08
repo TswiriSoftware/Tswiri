@@ -16,6 +16,7 @@ class RawOnImageInterBarcodeData {
   final BarcodeValue endBarcode;
   final int timestamp;
 
+  ///Check if startBarcode displayValue is less than endBarcode DisplayValue
   bool checkBarcodes() {
     return int.parse(startBarcode.displayValue!) <
         int.parse(endBarcode.displayValue!);
@@ -105,6 +106,6 @@ class RawOnImageInterBarcodeData {
 
   @override
   String toString() {
-    return '${startBarcode.displayValue}_${endBarcode.displayValue}, $realInterBarcodeOffset, $timestamp';
+    return '${startBarcode.displayValue}_${endBarcode.displayValue}, ${realInterBarcodeOffset.dx} , ${realInterBarcodeOffset.dy}, $timestamp';
   }
 }
