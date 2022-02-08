@@ -149,8 +149,8 @@ _getPoints(
   for (var i = 0; i < consolidatedRealDataBox.length; i++) {
     RealBarcodePostionEntry data = consolidatedRealDataBox.getAt(i);
 
-    points.add(Offset((data.offset.x * 100) + (width / 2),
-        (data.offset.y * 100) + (height / 2)));
+    points.add(Offset((data.offset.x / 10) + (width / 2),
+        (data.offset.y / 10) + (height / 2)));
     pointRelativePositions.add([
       roundDouble(data.offset.x, 5),
       roundDouble(data.offset.y, 5),

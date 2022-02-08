@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 import 'dart:ui' as ui;
 
@@ -38,64 +39,83 @@ class BarcodeDetectorPainter extends CustomPainter {
       builder.addText('${barcode.value.displayValue}');
       builder.pop();
 
-      final boundingBoxLeft = translateX(
-          barcode.value.boundingBox!.left, rotation, size, absoluteImageSize);
-      final top = translateY(
-          barcode.value.boundingBox!.top, rotation, size, absoluteImageSize);
-      final right = translateX(
-          barcode.value.boundingBox!.right, rotation, size, absoluteImageSize);
-      final bottom = translateY(
-          barcode.value.boundingBox!.bottom, rotation, size, absoluteImageSize);
+      // final boundingBoxLeft = translateX(
+      //     barcode.value.boundingBox!.left, rotation, size, absoluteImageSize);
+      // final top = translateY(
+      //     barcode.value.boundingBox!.top, rotation, size, absoluteImageSize);
+      // final right = translateX(
+      //     barcode.value.boundingBox!.right, rotation, size, absoluteImageSize);
+      // final bottom = translateY(
+      //     barcode.value.boundingBox!.bottom, rotation, size, absoluteImageSize);
 
-      canvas.drawParagraph(
-        builder.build()
-          ..layout(ParagraphConstraints(
-            width: right - boundingBoxLeft,
-          )),
-        Offset(boundingBoxLeft, top),
-      );
+      double left = double.infinity;
+      double top = double.infinity;
+      double right = double.negativeInfinity;
+      double bottom = double.negativeInfinity;
 
-      canvas.drawRect(
-        Rect.fromLTRB(boundingBoxLeft, top, right, bottom),
-        paint,
-      );
+      var cornerPoints = barcode.value.cornerPoints;
+      if (cornerPoints == null) {
+        left = translateX(
+            barcode.value.boundingBox!.left, rotation, size, absoluteImageSize);
+        top = translateY(
+            barcode.value.boundingBox!.top, rotation, size, absoluteImageSize);
+        right = translateX(barcode.value.boundingBox!.right, rotation, size,
+            absoluteImageSize);
+        bottom = translateY(barcode.value.boundingBox!.bottom, rotation, size,
+            absoluteImageSize);
 
-      var barcodeCentreX = (boundingBoxLeft + right) / 2;
-      var barcodeCentreY = (top + bottom) / 2;
+        // Draw a bounding rectangle around the barcode
+        canvas.drawRect(
+          Rect.fromLTRB(left, top, right, bottom),
+          paint,
+        );
+      } else {
+        List<Offset> offsetPoints = <Offset>[];
 
-      var pointsOfIntrest = [
-        Offset(barcodeCentreX, barcodeCentreY),
-        Offset(boundingBoxLeft, top),
-        Offset(right, top),
-        Offset(boundingBoxLeft, bottom),
-        Offset(right, bottom)
-      ];
+        for (var point in cornerPoints) {
+          double x =
+              translateX(point.x.toDouble(), rotation, size, absoluteImageSize);
+          double y =
+              translateY(point.y.toDouble(), rotation, size, absoluteImageSize);
 
-      canvas.drawPoints(PointMode.points, pointsOfIntrest, paintRed);
+          offsetPoints.add(Offset(x, y));
 
-      // var pxXY = ((boundingBoxLeft - right).abs() + (top - bottom).abs()) / 2;
-      //   double distanceFromCamera = calaculateDistanceFormCamera(Rect.fromLTRB(boundingBoxLeft, top, right, bottom),
-      //     Offset(barcodeCentreX, barcodeCentreY), lookupTableMap, imageSizesLookupTable);
-      // var disZ = (4341 / pxXY) - 15.75;
-
-      // final ParagraphBuilder distanceBuilder = ParagraphBuilder(
-      //   ParagraphStyle(
-      //       textAlign: TextAlign.left,
-      //       fontSize: 16,
-      //       textDirection: TextDirection.ltr),
-      // );
-      // distanceBuilder
-      //     .pushStyle(ui.TextStyle(color: Colors.blue, background: background));
-      // distanceBuilder.addText('$disZ');
-      // distanceBuilder.pop();
+          // Due to possible rotations we need to find the smallest and largest
+          top = min(top, y);
+          bottom = max(bottom, y);
+          left = min(left, x);
+          right = max(right, x);
+        }
+        // Add the first point to close the polygon
+        offsetPoints.add(offsetPoints.first);
+        canvas.drawPoints(PointMode.polygon, offsetPoints, paint);
+      }
 
       // canvas.drawParagraph(
-      //   distanceBuilder.build()
-      //     ..layout(const ParagraphConstraints(
-      //       width: 1000,
+      //   builder.build()
+      //     ..layout(ParagraphConstraints(
+      //       width: right - boundingBoxLeft,
       //     )),
-      //   Offset(right, bottom),
+      //   Offset(boundingBoxLeft, top),
       // );
+
+      // canvas.drawRect(
+      //   Rect.fromLTRB(boundingBoxLeft, top, right, bottom),
+      //   paint,
+      // );
+
+      // var barcodeCentreX = (boundingBoxLeft + right) / 2;
+      // var barcodeCentreY = (top + bottom) / 2;
+
+      // var pointsOfIntrest = [
+      //   Offset(barcodeCentreX, barcodeCentreY),
+      //   Offset(boundingBoxLeft, top),
+      //   Offset(right, top),
+      //   Offset(boundingBoxLeft, bottom),
+      //   Offset(right, bottom)
+      // ];
+
+      //canvas.drawPoints(PointMode.points, pointsOfIntrest, paintRed);
     }
   }
 

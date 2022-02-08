@@ -112,7 +112,7 @@ packages:
       name: camera
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.4+10"
+    version: "0.9.4+11"
   camera_platform_interface:
     dependency: transitive
     description:
@@ -224,7 +224,7 @@ packages:
       name: fast_immutable_collections
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.1.3"
+    version: "7.2.0"
   ffi:
     dependency: transitive
     description:
@@ -327,9 +327,11 @@ packages:
   google_ml_kit:
     dependency: "direct main"
     description:
-      name: google_ml_kit
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: "0a99deaf8b63ee3f24cbfa845d641f0d1652befc"
+      url: "https://github.com/WoLpH/Google-Ml-Kit-plugin"
+    source: git
     version: "0.7.3"
   graphs:
     dependency: transitive
@@ -673,7 +675,7 @@ packages:
       name: shared_preferences
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.12"
+    version: "2.0.13"
   shared_preferences_android:
     dependency: transitive
     description:
@@ -902,7 +904,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.3.10"
+    version: "2.3.11"
   xdg_directories:
     dependency: transitive
     description:

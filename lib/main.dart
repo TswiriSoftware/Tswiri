@@ -103,7 +103,7 @@ class Home extends StatelessWidget {
             ),
             CustomCard(
               'Camera Calibration Tools',
-              CameraCalibrationView(),
+              CameraCalibrationToolsView(),
               Icons.camera_alt,
               featureCompleted: true,
               tileColor: skyBlue80,

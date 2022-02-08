@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../../main.dart';
-import '../calibration_accelerometer_data_view.dart';
 import '../camera_calibration_view.dart';
-import '../calibration_database_view.dart';
 import '../calibration_data_visualizer_view.dart';
-import '../matched_calibration_database_view.dart';
 
-class CameraCalibrationView extends StatefulWidget {
-  const CameraCalibrationView({Key? key}) : super(key: key);
+class CameraCalibrationToolsView extends StatefulWidget {
+  const CameraCalibrationToolsView({Key? key}) : super(key: key);
 
   @override
-  _CameraCalibrationViewState createState() => _CameraCalibrationViewState();
+  _CameraCalibrationToolsViewState createState() =>
+      _CameraCalibrationToolsViewState();
 }
 
-class _CameraCalibrationViewState extends State<CameraCalibrationView> {
+class _CameraCalibrationToolsViewState
+    extends State<CameraCalibrationToolsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,15 +34,6 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
           children: [
             const CustomCard(
                 'Camera Calibration', CameraCalibration(), Icons.camera,
-                featureCompleted: true, tileColor: Colors.deepOrange),
-            const CustomCard(
-                'Size Data Viewer', CalibrationDatabaseView(), Icons.view_array,
-                featureCompleted: true, tileColor: Colors.deepOrange),
-            const CustomCard('Accelerometer Data Viewer',
-                AccelerometerDatabaseView(), Icons.view_array,
-                featureCompleted: true, tileColor: Colors.deepOrange),
-            const CustomCard('Matched Data Viewer',
-                MatchedCalibrationDatabaseView(), Icons.calculate,
                 featureCompleted: true, tileColor: Colors.deepOrange),
             const CustomCard('Processed Data Visualizer',
                 CalibrationDataVisualizerView(), Icons.calculate,

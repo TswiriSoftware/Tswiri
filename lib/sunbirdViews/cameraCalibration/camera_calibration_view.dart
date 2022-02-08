@@ -6,6 +6,9 @@ import 'package:flutter_google_ml_kit/functions/dataInjectors/barcode_calibratio
 import 'package:flutter_google_ml_kit/VisionDetectorViews/camera_view.dart';
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
+import 'package:flutter_google_ml_kit/objects/accelerometer_data_objects.dart';
+import 'package:flutter_google_ml_kit/objects/barcode_size_objects.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/barcode_calibration_data_processing.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/painter/barcode_calibration_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -22,26 +25,26 @@ class _CameraCalibrationState extends State<CameraCalibration> {
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
 
+  List<RawAccelerometerData> rawAccelerometerData = [];
+  List<BarcodeData> rawBarcodesData = [];
+
   bool isBusy = false;
   CustomPaint? customPaint;
-  int timestamp = DateTime.now().millisecondsSinceEpoch;
   double zAcceleration = 0;
-  double distanceMoved = 0;
-  int deltaT = 0;
+
   late StreamSubscription<UserAccelerometerEvent> subscription;
 
   @override
   void initState() {
-    distanceMoved = 0;
     subscription =
         userAccelerometerEvents.listen((UserAccelerometerEvent event) {
-      deltaT = DateTime.now().millisecondsSinceEpoch - timestamp;
-      if (zAcceleration <= 0) {
-        distanceMoved = deltaT * 1000 * zAcceleration / 10000 + distanceMoved;
-      }
+      zAcceleration = event.z;
 
-      zAcceleration = roundDouble(event.z, 4);
+      int timestamp = DateTime.now().millisecondsSinceEpoch;
+      rawAccelerometerData.add(RawAccelerometerData(
+          timestamp: timestamp, rawAcceleration: zAcceleration));
     });
+
     super.initState();
   }
 
@@ -57,26 +60,22 @@ class _CameraCalibrationState extends State<CameraCalibration> {
     return Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
         floatingActionButton: Padding(
-          padding: const EdgeInsets.all(18.0),
+          padding: const EdgeInsets.all(10.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               FloatingActionButton(
                 heroTag: null,
-                onPressed: () async {
-                  var calibrationDataBox =
-                      await Hive.openBox(calibrationDataHiveBox);
-                  calibrationDataBox.clear();
-                  setState(() {});
+                onPressed: () {
+                  subscription.cancel();
+                  Navigator.pop(context);
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) =>
+                          BarcodeCalibrationDataProcessingView(
+                              rawBarcodeData: rawBarcodesData,
+                              rawAccelerometerData: rawAccelerometerData)));
                 },
-                child: const Icon(Icons.delete),
-              ),
-              FloatingActionButton(
-                heroTag: null,
-                onPressed: () async {
-                  setState(() {});
-                },
-                child: const Icon(Icons.refresh),
+                child: const Icon(Icons.check_circle_outline_rounded),
               ),
             ],
           ),
@@ -94,41 +93,28 @@ class _CameraCalibrationState extends State<CameraCalibration> {
     if (isBusy) return;
     isBusy = true;
     final barcodes = await barcodeScanner.processImage(inputImage);
-    var calibrationDataBox = await Hive.openBox(calibrationDataHiveBox);
-    var accelerometerDataBox = await Hive.openBox(accelerometerDataHiveBox);
+
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
 
     if (inputImage.inputImageData?.size != null &&
-        inputImage.inputImageData?.imageRotation != null) {
+        inputImage.inputImageData?.imageRotation != null &&
+        barcodes.isNotEmpty) {
+      //Add scanned barcodeData
+      rawBarcodesData
+          .add(BarcodeData(timestamp: timestamp, barcode: barcodes.first));
+
       final painter = BarcodeDetectorPainterCalibration(
           barcodes,
           inputImage.inputImageData!.size,
           inputImage.inputImageData!.imageRotation);
 
       customPaint = CustomPaint(painter: painter);
-
-      timestamp = DateTime.now().millisecondsSinceEpoch;
-      CalibrationAccelerometerDataHiveObject accelerometerDataInstance =
-          CalibrationAccelerometerDataHiveObject(
-              timestamp: timestamp,
-              deltaT: deltaT,
-              accelerometerData: zAcceleration,
-              distanceMoved: roundDouble(distanceMoved, 5).abs());
-
-      accelerometerDataBox.put(timestamp.toString(), accelerometerDataInstance);
     } else {
       customPaint = null;
     }
     isBusy = false;
     if (mounted) {
-      setState(() {
-        injectBarcodeSizeData(
-          context,
-          barcodes,
-          inputImage.inputImageData!.size,
-          inputImage.inputImageData!.imageRotation,
-          calibrationDataBox,
-        );
-      });
+      setState(() {});
     }
   }
 }

@@ -13,15 +13,16 @@ double calcAverageAbsoluteSideLength(
 }
 
 ///Calculates the absolute side length of a single barcode
-double averageBarcodeDiagonalLength(BarcodeValue barcodeValue) {
-  double diagonal1 = Offset(
-          barcodeValue.boundingBox!.left + barcodeValue.boundingBox!.top,
-          barcodeValue.boundingBox!.right + barcodeValue.boundingBox!.bottom)
-      .distance;
-  double diagonal2 = Offset(
-          barcodeValue.boundingBox!.right + barcodeValue.boundingBox!.top,
-          barcodeValue.boundingBox!.left + barcodeValue.boundingBox!.bottom)
-      .distance;
+double calculateAverageBarcodeDiagonalLength(BarcodeValue barcodeValue) {
+  Rect a = Rect.fromLTRB(
+      barcodeValue.boundingBox!.left,
+      barcodeValue.boundingBox!.top,
+      barcodeValue.boundingBox!.right,
+      barcodeValue.boundingBox!.bottom);
+
+  double diagonal1 = (a.bottomRight - a.topLeft).distance;
+
+  double diagonal2 = (a.bottomLeft - a.topRight).distance;
 
   return (diagonal1 + diagonal2) / 2;
 }

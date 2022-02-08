@@ -46,7 +46,7 @@ injectBarcodeSizeData(
           CalibrationSizeDataHiveObject(
               timestamp: DateTime.now().millisecondsSinceEpoch.toString(),
               averageDiagonalLength:
-                  averageBarcodeDiagonalLength(barcode.value));
+                  calculateAverageBarcodeDiagonalLength(barcode.value));
 
       calibrationDataBox.put(
           calibrationDataInstance.timestamp, calibrationDataInstance);

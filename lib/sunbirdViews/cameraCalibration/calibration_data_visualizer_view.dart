@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/calibrationFunctions/calibration_functions.dart';
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_paints.dart';
+
 import 'package:hive/hive.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../main.dart';
 
 class CalibrationDataVisualizerView extends StatefulWidget {
   const CalibrationDataVisualizerView({Key? key}) : super(key: key);
@@ -43,17 +44,27 @@ class _CalibrationDataVisualizerViewState
               FloatingActionButton(
                 heroTag: null,
                 onPressed: () async {
-                  var matchedDataBox = await Hive.openBox(matchedDataHiveBox);
+                  var matchedDataBox =
+                      await Hive.openBox(matchedDataHiveBoxName);
                   matchedDataBox.clear();
                   setState(() {});
                 },
                 child: const Icon(Icons.delete),
               ),
+              FloatingActionButton(
+                heroTag: null,
+                onPressed: () {
+                  //Navigator.pop(context);
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => Home()));
+                },
+                child: const Icon(Icons.check_circle_outline_rounded),
+              ),
             ],
           ),
         ),
         body: FutureBuilder(
-            future: _getPoints(context, straightLineEquation),
+            future: _getPoints(context),
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
                 return const Center(child: CircularProgressIndicator());
@@ -91,30 +102,20 @@ class OpenPainter extends CustomPainter {
   paint(Canvas canvas, Size size) {
     canvas.drawPoints(
         PointMode.points, dataPoints, paintSimple(Colors.blue, 3));
-
-    StraightLine a = straightLineEquation[0];
-
-    Offset first = Offset((5000 + size.width / 2) / (size.width / 50),
-        ((5000 * a.m + a.c + size.height / 2) / (size.height / 200)));
-    Offset last = Offset((100 + size.width / 2) / (size.width / 50),
-        ((100 * a.m + a.c + size.height / 2) / (size.height / 200)));
-
-    canvas.drawLine(first, last, paintRed3);
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
 
-_getPoints(BuildContext context, List<StraightLine> straightLine) async {
-  var matchedDataBox = await Hive.openBox(matchedDataHiveBox);
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  straightLine.add(
-      StraightLine(m: prefs.getDouble('m') ?? 0, c: prefs.getDouble('c') ?? 0));
+_getPoints(BuildContext context) async {
+  var matchedDataBox = await Hive.openBox(matchedDataHiveBoxName);
 
   Size size = Size(
       MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
   List<Offset> points = listOfPoints(matchedDataBox, size);
+
+  matchedDataBox.close();
 
   return points;
 }

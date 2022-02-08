@@ -80,7 +80,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
         double selectedBarcodeAng = (-screenCenterPoint +
                 barcodeOnScreenOffset +
                 (selectedbarcodeRealOffset - barcodeRealOffset) *
-                    averageBarcodeDiagonalLength(barcode.value))
+                    calculateAverageBarcodeDiagonalLength(barcode.value))
             .direction;
 
         canvas.drawArc(rect, selectedBarcodeAng - pi / 12, pi / 6, false,
