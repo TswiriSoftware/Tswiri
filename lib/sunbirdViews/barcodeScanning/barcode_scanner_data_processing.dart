@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
+import 'package:flutter_google_ml_kit/globalValues/origin_data.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
 import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
@@ -60,7 +62,10 @@ class _BarcodeScannerDataProcessingViewState
             if (snapshot.hasData) {
               return proceedButton(context);
             } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
+              return Text(
+                "${snapshot.error}",
+                style: TextStyle(fontSize: 20, color: deeperOrange),
+              );
             }
             // By default, show a loading spinner
             return const CircularProgressIndicator();
@@ -70,6 +75,8 @@ class _BarcodeScannerDataProcessingViewState
     );
   }
 }
+
+//Implement data viewing
 
 Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
   Box realPositionalData = await Hive.openBox(realPositionDataBoxName);
@@ -89,7 +96,7 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
 
   matchedCalibrationDataBox.close();
 
-  //Calculates the average of each RealInterBarcode Data
+  //Calculates the average of each RealInterBarcode Data and removes outliers
   for (RealInterBarcodeOffset realInterBacrodeOffset
       in deduplicatedRealInterBarcodeOffsets) {
     //All similar interBarcodeOffsets ex 1_2 will return all 1_2 interbarcodeOffsets
@@ -147,17 +154,9 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
   if (realBarcodePositions.any((element) => element.uid == '1')) {
     realBarcodePositions[
             realBarcodePositions.indexWhere((element) => element.uid == '1')] =
-        RealBarcodePosition(
-            '1',
-            const Offset(0, 0),
-            0,
-            realBarcodePositions
-                .where((element) => element.uid == '1')
-                .first
-                .distanceFromCamera,
-            0);
+        origin(realBarcodePositions);
   } else {
-    return 'Error origin not scanned';
+    return Future.error('Error: Origin Not Scanned');
   }
 
   // ignore: todo
