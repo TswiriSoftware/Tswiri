@@ -6,18 +6,22 @@ import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/real_bar
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
+import 'package:flutter_google_ml_kit/main.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+// ignore: todo
 //TODO: Refactor this @049er
 
-class DatabaseVisualization extends StatefulWidget {
-  const DatabaseVisualization({Key? key}) : super(key: key);
+class ConsolidatedDatabaseVisualization extends StatefulWidget {
+  const ConsolidatedDatabaseVisualization({Key? key}) : super(key: key);
 
   @override
-  _DatabaseVisualizationState createState() => _DatabaseVisualizationState();
+  _ConsolidatedDatabaseVisualizationState createState() =>
+      _ConsolidatedDatabaseVisualizationState();
 }
 
-class _DatabaseVisualizationState extends State<DatabaseVisualization> {
+class _ConsolidatedDatabaseVisualizationState
+    extends State<ConsolidatedDatabaseVisualization> {
   List pointNames = [];
   List pointRelativePositions = [];
 
@@ -50,6 +54,14 @@ class _DatabaseVisualizationState extends State<DatabaseVisualization> {
                   setState(() {});
                 },
                 child: const Icon(Icons.refresh),
+              ),
+              FloatingActionButton(
+                heroTag: null,
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const Home()));
+                },
+                child: const Icon(Icons.check_circle_outline_rounded),
               ),
             ],
           ),

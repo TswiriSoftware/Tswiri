@@ -1,17 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/calibration_accelerometer_data_adapter.dart';
-import 'package:flutter_google_ml_kit/functions/dataInjectors/barcode_calibration_data_injector.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/camera_view.dart';
-import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
-import 'package:flutter_google_ml_kit/objects/accelerometer_data_objects.dart';
-import 'package:flutter_google_ml_kit/objects/barcode_size_objects.dart';
+import 'package:flutter_google_ml_kit/objects/calibration/accelerometer_data_objects.dart';
+import 'package:flutter_google_ml_kit/objects/calibration/barcode_size_objects.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/barcode_calibration_data_processing.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/painter/barcode_calibration_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
 class CameraCalibration extends StatefulWidget {

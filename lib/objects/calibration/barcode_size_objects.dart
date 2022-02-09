@@ -1,6 +1,4 @@
-import 'dart:ui';
-
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataFunctions/data_capturing_functions.dart';
+import 'package:flutter_google_ml_kit/functions/barcodeCalculations/data_capturing_functions.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 ///Timestamp and Barcode;

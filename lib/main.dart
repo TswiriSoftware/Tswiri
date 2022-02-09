@@ -1,9 +1,6 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/fixed_data_adapter.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_range_selector_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeTagging/barcode_tagging_selector_view.dart';
@@ -11,8 +8,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
-import 'databaseAdapters/calibrationAdapters/calibration_accelerometer_data_adapter.dart';
-import 'databaseAdapters/calibrationAdapters/calibration_size_data_adapter.dart';
 import 'databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
 import 'databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
@@ -41,9 +36,6 @@ Future<void> main() async {
   await Hive.initFlutter(directory.path);
   Hive.registerAdapter(TypeOffsetHiveObjectAdapter());
   Hive.registerAdapter(RealBarcodePostionEntryAdapter());
-  Hive.registerAdapter(FixedDataHiveObjectAdapter());
-  Hive.registerAdapter(CalibrationSizeDataHiveObjectAdapter());
-  Hive.registerAdapter(CalibrationAccelerometerDataHiveObjectAdapter());
   Hive.registerAdapter(MatchedCalibrationDataHiveObjectAdapter());
 }
 
@@ -67,7 +59,7 @@ class MyApp extends StatelessWidget {
               foregroundColor: Colors.black,
               backgroundColor: Colors.deepOrange)),
       debugShowCheckedModeBanner: false,
-      home: Home(),
+      home: const Home(),
     );
   }
 }
@@ -89,7 +81,7 @@ class Home extends StatelessWidget {
       ),
       body: Center(
         child: GridView.count(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           mainAxisSpacing: 8,
           crossAxisSpacing: 16,
           crossAxisCount: 2,

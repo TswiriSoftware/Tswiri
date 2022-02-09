@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_tags/flutter_tags.dart';
 
 class BarcodeTaggingView extends StatefulWidget {
@@ -9,8 +10,8 @@ class BarcodeTaggingView extends StatefulWidget {
 }
 
 class _BarcodeTaggingViewState extends State<BarcodeTaggingView> {
-  List _items = [];
-  double _fontSize = 14;
+  final List _items = [];
+  final double _fontSize = 14;
 
   @override
   void initState() {

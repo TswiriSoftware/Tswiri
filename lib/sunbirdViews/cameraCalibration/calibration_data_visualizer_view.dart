@@ -20,8 +20,6 @@ class _CalibrationDataVisualizerViewState
     extends State<CalibrationDataVisualizerView> {
   var displayList = [];
 
-  List<StraightLine> straightLineEquation = [];
-
   @override
   void dispose() {
     super.dispose();
@@ -56,7 +54,7 @@ class _CalibrationDataVisualizerViewState
                 onPressed: () {
                   //Navigator.pop(context);
                   Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => Home()));
+                      MaterialPageRoute(builder: (context) => const Home()));
                 },
                 child: const Icon(Icons.check_circle_outline_rounded),
               ),
@@ -81,7 +79,6 @@ class _CalibrationDataVisualizerViewState
                       size: Size.infinite,
                       painter: OpenPainter(
                         dataPoints: dataPoints,
-                        straightLineEquation: straightLineEquation,
                       ),
                     ),
                   ),
@@ -92,11 +89,12 @@ class _CalibrationDataVisualizerViewState
 }
 
 class OpenPainter extends CustomPainter {
-  OpenPainter({required this.dataPoints, required this.straightLineEquation});
+  OpenPainter({
+    required this.dataPoints,
+  });
 
   // ignore: prefer_typing_uninitialized_variables
   var dataPoints;
-  List<StraightLine> straightLineEquation;
 
   @override
   paint(Canvas canvas, Size size) {

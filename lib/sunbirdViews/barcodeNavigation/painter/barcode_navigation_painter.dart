@@ -5,7 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/coordinates_translator.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_barcode_positional_data.dart';
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataFunctions/data_capturing_functions.dart';
+import 'package:flutter_google_ml_kit/functions/barcodeCalculations/data_capturing_functions.dart';
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_paints.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_positional_data.dart';

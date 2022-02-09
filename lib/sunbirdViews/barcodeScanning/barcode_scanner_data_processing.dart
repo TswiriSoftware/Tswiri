@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
-import 'package:flutter_google_ml_kit/functions/dataProccessing/barcode_scanner_data_processing_dunctions.dart';
+import 'package:flutter_google_ml_kit/functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
 import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import 'consolidated_database_visualization_view.dart';
 
 class BarcodeScannerDataProcessingView extends StatefulWidget {
   const BarcodeScannerDataProcessingView(
@@ -30,6 +31,25 @@ class _BarcodeScannerDataProcessingViewState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            FloatingActionButton(
+              heroTag: null,
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) =>
+                        const ConsolidatedDatabaseVisualization()));
+              },
+              child: const Icon(Icons.check_circle_outline_rounded),
+            ),
+          ],
+        ),
+      ),
       appBar: AppBar(
         title: const Text('Processing Data'),
       ),
@@ -77,6 +97,35 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
         findSimilarInterBarcodeOffsets(
             allRealInterBarcodeOffsets, realInterBacrodeOffset);
 
+    //Sort similarInterBarcodeOffsets by distance
+    similarInterBarcodeOffsets.sort((a, b) =>
+        a.interBarcodeOffset.distance.compareTo(b.interBarcodeOffset.distance));
+
+    //Indexes
+    int medianIndex = (similarInterBarcodeOffsets.length / 2).toInt();
+    int q1Index = ((similarInterBarcodeOffsets.length / 2) / 2).toInt();
+    int q3Index = medianIndex + q1Index;
+
+    //Values
+    double median =
+        similarInterBarcodeOffsets[medianIndex].interBarcodeOffset.distance;
+    double q1 =
+        (similarInterBarcodeOffsets[q1Index].interBarcodeOffset.distance +
+                median) /
+            2;
+    double q3 =
+        (similarInterBarcodeOffsets[q3Index].interBarcodeOffset.distance +
+                median) /
+            2;
+    double interQRange = q3 - q1;
+    double q1Boundry = q1 - interQRange * 1.5; //Lower boundry
+    double q3Boundry = q3 + interQRange * 1.5; //Upper boundry
+
+    //Remove data outside the boundries
+    similarInterBarcodeOffsets.removeWhere((element) =>
+        element.interBarcodeOffset.distance <= q1Boundry &&
+        element.interBarcodeOffset.distance >= q3Boundry);
+
     //Loops through all similar interBarcodeOffsets to calculate the average
     for (RealInterBarcodeOffset similarInterBarcodeOffset
         in similarInterBarcodeOffsets) {
@@ -107,8 +156,11 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
                 .first
                 .distanceFromCamera,
             0);
+  } else {
+    return 'Error origin not scanned';
   }
 
+  // ignore: todo
   //TODO: add error/exception when origin not in list.
 
   // print('realBarcodePositions');

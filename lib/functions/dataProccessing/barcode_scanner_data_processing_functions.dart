@@ -7,7 +7,6 @@ import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/consolidated_database_view.dart';
 import 'package:hive/hive.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void calculateAverageOffsets(RealInterBarcodeOffset similarInterBarcodeOffset,
     RealInterBarcodeOffset realInterBacrodeOffset) {

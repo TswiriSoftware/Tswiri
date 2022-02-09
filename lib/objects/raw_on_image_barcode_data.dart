@@ -1,13 +1,10 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_offset_between_points.dart';
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/rawDataFunctions/data_capturing_functions.dart';
+import 'package:flutter_google_ml_kit/functions/barcodeCalculations/data_capturing_functions.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:pdf/widgets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 ///Describes the "Offset" between two barcodes.
 class RawOnImageInterBarcodeData {
@@ -85,16 +82,19 @@ class RawOnImageInterBarcodeData {
     }
   }
 
+  //Uses the lookup table matchedCalibration data to find the distance from camera
   double distanceFromCamera(
       List<MatchedCalibrationDataHiveObject> matchedCalibrationData) {
     double averageBarcodeSize = (startDiagonalLength + endDiagonalLength) / 2;
+
+    //sort in descending order
     matchedCalibrationData.sort((a, b) => a.objectSize.compareTo(b.objectSize));
 
-    print('average Barcode Size: $averageBarcodeSize');
-
+    //First index
     int distanceFromCameraIndex = matchedCalibrationData
         .indexWhere((element) => element.objectSize >= averageBarcodeSize);
     double distanceFromCamera = 0;
+    //checks if index is valid
     if (distanceFromCameraIndex != -1) {
       distanceFromCamera =
           matchedCalibrationData[distanceFromCameraIndex].distance;

@@ -47,7 +47,7 @@ class _BarcodeScanningViewState extends State<BarcodeScanningView> {
             ),
             const CustomCard(
               'Visual Data Viewer',
-              DatabaseVisualization(),
+              ConsolidatedDatabaseVisualization(),
               Icons.map_outlined,
               featureCompleted: true,
               tileColor: Colors.deepOrange,

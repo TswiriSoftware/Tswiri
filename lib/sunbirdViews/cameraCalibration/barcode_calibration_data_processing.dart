@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
-import 'package:flutter_google_ml_kit/objects/accelerometer_data_objects.dart';
-import 'package:flutter_google_ml_kit/objects/barcode_size_objects.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/calibrationToolsView/camera_calibration_tools_view.dart';
+import 'package:flutter_google_ml_kit/objects/calibration/accelerometer_data_objects.dart';
+import 'package:flutter_google_ml_kit/objects/calibration/barcode_size_objects.dart';
 import 'package:hive/hive.dart';
 
 import 'calibration_data_visualizer_view.dart';
@@ -97,17 +96,19 @@ class _BarcodeCalibrationDataProcessingViewState
       List<BarcodeData> rawBarcodesData,
       List<RawAccelerometerData> rawAccelerometData) async {
     if (rawAccelerometData.isNotEmpty && rawBarcodesData.isNotEmpty) {
+      //Box to store valid calibration Data
       Box matchedDataHiveBox = await Hive.openBox(matchedDataHiveBoxName);
+
       //A list of all barcode Sizes captured.
-      List<OnImageBarcodeSize> OnImageBarcodeSizes =
+      List<OnImageBarcodeSize> onImageBarcodeSizes =
           getOnImageBarcodeSizes(rawBarcodesData);
 
       //Get range of relevant rawAccelerometer data
       List<RawAccelerometerData> relevantRawAccelerometData =
           getRelevantRawAccelerometerData(
               rawAccelerometData,
-              OnImageBarcodeSizes.first.timestamp,
-              OnImageBarcodeSizes.last.timestamp);
+              onImageBarcodeSizes.first.timestamp,
+              onImageBarcodeSizes.last.timestamp);
 
       //List that contains processed accelerometer data.
       List<ProcessedAccelerometerData> processedAccelerometerData = [];
@@ -134,17 +135,18 @@ class _BarcodeCalibrationDataProcessingViewState
           processedAccelerometerData.add(ProcessedAccelerometerData(
               timestamp: rawAccelerometData[i].timestamp,
               barcodeDistanceFromCamera: totalDistanceMoved));
-
-          //print('${rawAccelerometData[i].timestamp}, $totalDistanceMoved ');
         }
       }
 
       //Matches OnImageBarcodeSize and DistanceFromCamera using timestamps and writes to Hive Database
-      for (OnImageBarcodeSize onImageBarcodeSize in OnImageBarcodeSizes) {
+      for (OnImageBarcodeSize onImageBarcodeSize in onImageBarcodeSizes) {
+        //Find the firts accelerometer data where the timestamp is >= to the OnImageBarcodeSize timestamp
         int distanceFromCameraIndex = processedAccelerometerData.indexWhere(
             (element) => onImageBarcodeSize.timestamp <= element.timestamp);
 
+        //Checks that entry exists
         if (distanceFromCameraIndex != -1) {
+          //Creates an entry in the Hive Database.
           MatchedCalibrationDataHiveObject matchedCalibrationDataHiveObject =
               MatchedCalibrationDataHiveObject(
                   objectSize: onImageBarcodeSize.averageBarcodeDiagonalLength,
@@ -162,6 +164,7 @@ class _BarcodeCalibrationDataProcessingViewState
   }
 }
 
+///Check that the movement is away from the barcode
 bool checkMovementDirection(double totalDistanceMoved,
     List<RawAccelerometerData> relevantRawAccelerometData, int i, int deltaT) {
   return totalDistanceMoved <=
@@ -169,6 +172,7 @@ bool checkMovementDirection(double totalDistanceMoved,
           (-relevantRawAccelerometData[i].rawAcceleration * deltaT);
 }
 
+//Get rawAccelerationData that falls in the timerange of the scanned Barcodes
 List<RawAccelerometerData> getRelevantRawAccelerometerData(
     List<RawAccelerometerData> allRawAccelerometData,
     int timeRangeStart,
@@ -182,15 +186,6 @@ List<RawAccelerometerData> getRelevantRawAccelerometerData(
           element.timestamp >= timeRangeStart &&
           element.timestamp + 10 <= timeRangeEnd)
       .toList();
-}
-
-ElevatedButton proceedButton(BuildContext context) {
-  return ElevatedButton(
-      onPressed: () {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => const CameraCalibrationToolsView()));
-      },
-      child: const Icon(Icons.check_circle_outline_rounded));
 }
 
 //Returns all OnImageBarcodeSizes (timestamp, averageBarcodeDiagonalLength)
@@ -207,6 +202,9 @@ List<OnImageBarcodeSize> getOnImageBarcodeSizes(
   return onImageBarcodeSizes;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//TODO: make this a object so that you can pass different things into it
 displayDataPoint(MatchedCalibrationDataHiveObject dataObject) {
   return Center(
     child: Container(
@@ -283,3 +281,6 @@ displayDataHeader(List dataObject) {
     ),
   );
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
