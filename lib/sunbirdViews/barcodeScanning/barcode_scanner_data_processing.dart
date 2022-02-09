@@ -97,14 +97,16 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
   matchedCalibrationDataBox.close();
 
   //Calculates the average of each RealInterBarcode Data and removes outliers
-  removeOutliers(deduplicatedRealInterBarcodeOffsets, allRealInterBarcodeOffsets);
+  deduplicatedRealInterBarcodeOffsets = removeOutliers(
+      deduplicatedRealInterBarcodeOffsets, allRealInterBarcodeOffsets);
+
+  print(deduplicatedRealInterBarcodeOffsets);
 
   //List of all barcodes Scanned - deduplicated.
   List<RealBarcodePosition> realBarcodePositions =
       extractListOfScannedBarcodes(deduplicatedRealInterBarcodeOffsets);
 
   //Populate origin
-
   if (realBarcodePositions.any((element) => element.uid == '1')) {
     realBarcodePositions[
             realBarcodePositions.indexWhere((element) => element.uid == '1')] =
@@ -187,24 +189,27 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
   return '';
 }
 
-List<RealInterBarcodeOffset> removeOutliers(List<RealInterBarcodeOffset> deduplicatedRealInterBarcodeOffsets, List<RealInterBarcodeOffset> allRealInterBarcodeOffsets) {
+List<RealInterBarcodeOffset> removeOutliers(
+    List<RealInterBarcodeOffset> deduplicatedRealInterBarcodeOffsets,
+    List<RealInterBarcodeOffset> allRealInterBarcodeOffsets) {
   //Calculates the average of each RealInterBarcode Data and removes outliers
+  List<RealInterBarcodeOffset> goodDataList = [];
   for (RealInterBarcodeOffset realInterBacrodeOffset
       in deduplicatedRealInterBarcodeOffsets) {
     //All similar interBarcodeOffsets ex 1_2 will return all 1_2 interbarcodeOffsets
     List<RealInterBarcodeOffset> similarInterBarcodeOffsets =
         findSimilarInterBarcodeOffsets(
             allRealInterBarcodeOffsets, realInterBacrodeOffset);
-  
+
     //Sort similarInterBarcodeOffsets by distance
     similarInterBarcodeOffsets.sort((a, b) =>
         a.interBarcodeOffset.distance.compareTo(b.interBarcodeOffset.distance));
-  
+
     //Indexes
     int medianIndex = (similarInterBarcodeOffsets.length ~/ 2);
     int q1Index = ((similarInterBarcodeOffsets.length / 2) ~/ 2);
     int q3Index = medianIndex + q1Index;
-  
+
     //Values
     double median =
         similarInterBarcodeOffsets[medianIndex].interBarcodeOffset.distance;
@@ -219,12 +224,12 @@ List<RealInterBarcodeOffset> removeOutliers(List<RealInterBarcodeOffset> dedupli
     double interQRange = q3 - q1;
     double q1Boundry = q1 - interQRange * 1.5; //Lower boundry
     double q3Boundry = q3 + interQRange * 1.5; //Upper boundry
-  
+
     //Remove data outside the boundries
     similarInterBarcodeOffsets.removeWhere((element) =>
         element.interBarcodeOffset.distance <= q1Boundry &&
         element.interBarcodeOffset.distance >= q3Boundry);
-  
+
     //Loops through all similar interBarcodeOffsets to calculate the average
     for (RealInterBarcodeOffset similarInterBarcodeOffset
         in similarInterBarcodeOffsets) {
@@ -235,8 +240,8 @@ List<RealInterBarcodeOffset> removeOutliers(List<RealInterBarcodeOffset> dedupli
                   similarInterBarcodeOffset.distanceFromCamera) /
               2;
     }
+    goodDataList.add(realInterBacrodeOffset);
   }
-   List<RealInterBarcodeOffset> hello = [];
 
-  return hello;
+  return goodDataList;
 }
