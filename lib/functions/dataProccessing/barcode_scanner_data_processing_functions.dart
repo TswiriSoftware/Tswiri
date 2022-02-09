@@ -144,7 +144,7 @@ List<RealInterBarcodeOffset> getRelevantInterBarcodeOffsets(
 }
 
 ///Creates a list of all scanned barcodes , but with null positions , they still need to be populated.
-List<RealBarcodePosition> allScannedBarcodes(
+List<RealBarcodePosition> extractListOfScannedBarcodes(
   List<RealInterBarcodeOffset> allRealInterBarcodeData,
 ) {
   List<RealBarcodePosition> realPositionData = [];

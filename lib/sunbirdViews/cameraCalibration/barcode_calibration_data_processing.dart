@@ -46,7 +46,7 @@ class _BarcodeCalibrationDataProcessingViewState
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => CalibrationDataVisualizerView()));
+                    builder: (context) => const CalibrationDataVisualizerView()));
               },
               child: const Icon(Icons.check_circle_outline_rounded),
             ),
@@ -120,6 +120,8 @@ class _BarcodeCalibrationDataProcessingViewState
 
       //Used to keep track of total distance from barcode.
       double totalDistanceMoved = 0;
+
+      //ListA(distanceMoved,timestamp) , ListB(Barcode,timestamp) 
 
       //Processing rawAccelerometer Data.
       //Take backward direction as positive
