@@ -51,6 +51,7 @@ class _ConsolidatedDatabaseVisualizationState
                   var consolidatedDataBox =
                       await Hive.openBox(realPositionDataBoxName);
                   consolidatedDataBox.clear();
+                  consolidatedDataBox.close();
                   setState(() {});
                 },
                 child: const Icon(Icons.refresh),

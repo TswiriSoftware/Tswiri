@@ -158,6 +158,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
       ]);
       validQrcodeIDs.add(key);
     });
+    realPositionDataBox.close();
     return displayList;
   }
 }

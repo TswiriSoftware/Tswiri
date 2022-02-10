@@ -186,6 +186,7 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
     writeValidBarcodePositionsToDatabase(
         realBarcodePosition, realPositionalData);
   }
+  realPositionalData.close();
   return '';
 }
 

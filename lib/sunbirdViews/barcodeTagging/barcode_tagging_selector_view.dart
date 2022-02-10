@@ -16,6 +16,7 @@ class BarcodeSelectionTagView extends StatefulWidget {
 }
 
 class _BarcodeSelectionTagViewState extends State<BarcodeSelectionTagView> {
+  List<String> allTags = [];
   @override
   void initState() {
     super.initState();
@@ -58,7 +59,8 @@ class _BarcodeSelectionTagViewState extends State<BarcodeSelectionTagView> {
                             if (index == 0) {
                               return Column(
                                 children: <Widget>[
-                                  displayDataHeader(['UID', 'Tags'], context),
+                                  displayDataHeaderWidget(
+                                      context, ['ID', 'Tags']),
                                   const SizedBox(
                                     height: 5,
                                   ),
@@ -98,15 +100,18 @@ class _BarcodeSelectionTagViewState extends State<BarcodeSelectionTagView> {
     //List of all scanned barcodes.
     List<RealBarcodePostionEntry> realBarcodesPositions =
         realPositionDataBox.values.toList();
-    //List of all barcodes and Tags.
-    List<BarcodeTagEntry> barcodeTags = barcodeTagsBox.values.toList();
+    //List of all barcodes and assigned Tags.
+    List<BarcodeTagEntry> barcodesAssignedTags = barcodeTagsBox.values.toList();
+
+    realPositionDataBox.close();
+    barcodeTagsBox.close();
 
     //The DisplayList.
     List<BarcodeAndTagData> displayList = [];
 
     for (RealBarcodePostionEntry realBarcodePosition in realBarcodesPositions) {
       //To set to remove any duplicates if there are any.
-      Set<BarcodeTagEntry> relevantBarcodeTagEntries = barcodeTags
+      Set<BarcodeTagEntry> relevantBarcodeTagEntries = barcodesAssignedTags
           .where((element) =>
               element.barcodeID == int.parse(realBarcodePosition.uid))
           .toSet();
@@ -120,7 +125,7 @@ class _BarcodeSelectionTagViewState extends State<BarcodeSelectionTagView> {
     }
     //Sort the display list in descending order.
     displayList.sort((a, b) => a.barcodeID.compareTo(b.barcodeID));
-    print(displayList);
+
     return displayList;
   }
 }
@@ -140,7 +145,7 @@ displayDataPointWidget(
     onTap: () => showDialog(
         context: context,
         builder: (BuildContext context) => BarcodeTaggingView(
-              title: barcodeAndTagData.barcodeID.toString(),
+              barcodeAndTagData: barcodeAndTagData,
             )),
     child: Container(
       //Outer Container Decoration
@@ -174,7 +179,10 @@ displayDataPointWidget(
             height: 55,
             width: (MediaQuery.of(context).size.width * 0.82),
             child: Center(
-              child: Text(checkIfEmpty(barcodeAndTagData.tags!)),
+              child: Text(
+                checkIfEmpty(barcodeAndTagData.tags!),
+                textAlign: TextAlign.center,
+              ),
             ),
           )
         ],
@@ -183,66 +191,7 @@ displayDataPointWidget(
   );
 }
 
-displayDataPoint(BarcodeAndTagData barcodeAndTagData, BuildContext context) {
-  return Column(
-    children: [
-      InkWell(
-        onTap: () => showDialog(
-            context: context,
-            builder: (BuildContext context) => BarcodeTaggingView(
-                  title: barcodeAndTagData.barcodeID.toString(),
-                )),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.white60, width: 0.5),
-            borderRadius: const BorderRadius.all(
-              Radius.circular(5),
-            ),
-          ),
-          //padding: EdgeInsets.all(5),
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: const BoxDecoration(
-                        color: deepSpaceSparkle,
-                        borderRadius: BorderRadius.all(Radius.circular(5))),
-                    child: Text(
-                      barcodeAndTagData.barcodeID.toString(),
-                      style: const TextStyle(fontSize: 15),
-                      textAlign: TextAlign.center,
-                    ),
-                    width: (MediaQuery.of(context).size.width - 1) * 0.15),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  padding: const EdgeInsets.all(8.0),
-                  decoration: const BoxDecoration(
-                      color: Colors.black26,
-                      borderRadius: BorderRadius.all(Radius.circular(5))),
-                  child: Text(
-                    checkIfEmpty(barcodeAndTagData.tags ?? []),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 10),
-                  ),
-                  width: ((MediaQuery.of(context).size.width - 1) * 0.75),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      const SizedBox(
-        height: 5,
-      )
-    ],
-  );
-}
-
-displayDataHeader(List<String> dataHeader, BuildContext context) {
+displayDataHeaderWidget(BuildContext context, List<String> dataHeader) {
   return Container(
     decoration: BoxDecoration(
       border: Border.all(color: Colors.white60, width: 0.5),
@@ -250,50 +199,23 @@ displayDataHeader(List<String> dataHeader, BuildContext context) {
         Radius.circular(5),
       ),
     ),
-    //padding: EdgeInsets.all(5),
     child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Container(
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.white60, width: 0.2),
-            color: deepSpaceSparkle,
-            borderRadius: const BorderRadius.all(
-              Radius.circular(5),
-            ),
+          margin: const EdgeInsets.only(left: 15, right: 15),
+          padding: const EdgeInsets.all(10),
+          child: Center(
+            child: Text(dataHeader[0]),
           ),
-          child: Text(
-            dataHeader[0],
-            style: const TextStyle(fontSize: 20),
-            textAlign: TextAlign.center,
-          ),
-          width: (MediaQuery.of(context).size.width - 1) * 0.2,
         ),
         Container(
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-              border: Border.all(color: Colors.white60, width: 0.2),
-              color: deepSpaceSparkle,
-              borderRadius: const BorderRadius.all(
-                Radius.circular(5),
-              )),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text(
-                dataHeader[1],
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 20),
-              ),
-              const Text(
-                ' (hold to edit tags)',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 10),
-              ),
-            ],
+          margin: const EdgeInsets.only(left: 15, right: 150),
+          padding: const EdgeInsets.all(8),
+          child: Center(
+            child: Text(dataHeader[1]),
           ),
-          width: (MediaQuery.of(context).size.width - 1) * 0.8,
-        ),
+        )
       ],
     ),
   );
@@ -301,7 +223,8 @@ displayDataHeader(List<String> dataHeader, BuildContext context) {
 
 String checkIfEmpty(List<String> listOfTags) {
   String tags = '';
-  if (tags.isEmpty) {
+
+  if (listOfTags.isEmpty) {
     tags = 'wow such empty';
   } else {
     tags = listOfTags.toString().replaceAll(']', '').replaceAll('[', '');
