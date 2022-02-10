@@ -145,8 +145,8 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
   }
 
   Future<List> consolidateData() async {
-    var consolidatedDataBox = await Hive.openBox(realPositionDataBoxName);
-    Map consolidatedDataMap = consolidatedDataBox.toMap();
+    var realPositionDataBox = await Hive.openBox(realPositionDataBoxName);
+    Map consolidatedDataMap = realPositionDataBox.toMap();
     List displayList = [];
     consolidatedDataMap.forEach((key, value) {
       RealBarcodePostionEntry data = value;

@@ -9,7 +9,7 @@ part of 'real_barocode_position_entry.dart';
 class RealBarcodePostionEntryAdapter
     extends TypeAdapter<RealBarcodePostionEntry> {
   @override
-  final int typeId = 1;
+  final int typeId = 0;
 
   @override
   RealBarcodePostionEntry read(BinaryReader reader) {

@@ -12,5 +12,3 @@ class BarcodeScreenData {
   final Offset center;
   final double absoluteBarcodeSize;
 }
-
-//TODO: convert to named

@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_entry.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/tag_entry.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_range_selector_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeTagging/barcode_tagging_selector_view.dart';
@@ -37,6 +39,8 @@ Future<void> main() async {
   Hive.registerAdapter(TypeOffsetHiveObjectAdapter());
   Hive.registerAdapter(RealBarcodePostionEntryAdapter());
   Hive.registerAdapter(MatchedCalibrationDataHiveObjectAdapter());
+  Hive.registerAdapter(BarcodeTagEntryAdapter());
+  Hive.registerAdapter(TagEntryAdapter());
 }
 
 class MyApp extends StatelessWidget {
@@ -115,11 +119,11 @@ class Home extends StatelessWidget {
               tileColor: deeperOrange,
             ),
             CustomCard(
-              'Image Label View',
+              'Barcode Tagging',
               BarcodeSelectionTagView(),
               Icons.tag_faces_rounded,
               featureCompleted: true,
-              tileColor: deeperOrange,
+              tileColor: deepSpaceSparkle,
             ),
             // CustomCard(
             //   'Object Detector View',

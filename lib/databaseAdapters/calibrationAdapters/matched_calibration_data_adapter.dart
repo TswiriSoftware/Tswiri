@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 part 'matched_calibration_data_adapter.g.dart';
 
-@HiveType(typeId: 4)
+@HiveType(typeId: 1)
 class MatchedCalibrationDataHiveObject extends HiveObject {
   MatchedCalibrationDataHiveObject({
     required this.objectSize,

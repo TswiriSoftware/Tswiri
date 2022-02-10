@@ -119,7 +119,6 @@ class _HiveDatabaseConsolidationViewState
     consolidatedDataMap.forEach((key, value) {
       consolidatedData.putIfAbsent(key, () => value);
     });
-
     return _displayList(consolidatedData, displayList);
   }
 }

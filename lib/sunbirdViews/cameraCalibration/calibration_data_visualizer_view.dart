@@ -113,7 +113,5 @@ _getPoints(BuildContext context) async {
       MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
   List<Offset> points = listOfPoints(matchedDataBox, size);
 
-  matchedDataBox.close();
-
   return points;
 }

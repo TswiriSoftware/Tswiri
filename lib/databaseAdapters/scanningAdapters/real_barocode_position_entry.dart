@@ -3,7 +3,7 @@ import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_
 import 'package:hive/hive.dart';
 part 'real_barocode_position_entry.g.dart';
 
-@HiveType(typeId: 1)
+@HiveType(typeId: 0)
 class RealBarcodePostionEntry extends HiveObject {
   ///This objects stores the real offset between barcodes aswell as the Z offset relative to a fixed bacodes.
   RealBarcodePostionEntry(
