@@ -4,21 +4,23 @@ import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_e
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeTagging/barcode_tag_selection.dart';
 import 'package:hive/hive.dart';
 
-class BarcodeSelectionTagView extends StatefulWidget {
-  const BarcodeSelectionTagView({Key? key}) : super(key: key);
+import 'barcode_tag_selection.dart';
+
+class BarcodesView extends StatefulWidget {
+  const BarcodesView({Key? key}) : super(key: key);
 
   @override
-  _BarcodeSelectionTagViewState createState() =>
-      _BarcodeSelectionTagViewState();
+  _BarcodesViewState createState() => _BarcodesViewState();
 }
 
-class _BarcodeSelectionTagViewState extends State<BarcodeSelectionTagView> {
+class _BarcodesViewState extends State<BarcodesView> {
   List<String> allTags = [];
+  List<BarcodeAndTagData> _foundBarcodes = [];
   @override
   void initState() {
+    runFilter('');
     super.initState();
   }
 
@@ -33,7 +35,7 @@ class _BarcodeSelectionTagViewState extends State<BarcodeSelectionTagView> {
         appBar: AppBar(
           backgroundColor: deepSpaceSparkle,
           title: const Text(
-            'Barcode Tagging',
+            'Barcodes',
             style: TextStyle(fontSize: 25),
           ),
           centerTitle: true,
@@ -41,46 +43,36 @@ class _BarcodeSelectionTagViewState extends State<BarcodeSelectionTagView> {
         ),
         body: Column(
           children: [
+            TextField(
+              onChanged: (value) => runFilter(value),
+              decoration: const InputDecoration(
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: deepSpaceSparkleBright)),
+                  hoverColor: deepSpaceSparkleBright,
+                  focusColor: deepSpaceSparkleBright,
+                  contentPadding: EdgeInsets.all(10),
+                  labelStyle: TextStyle(color: Colors.white),
+                  labelText: 'Search',
+                  suffixIcon: Icon(
+                    Icons.search,
+                    color: deepSpaceSparkleBright,
+                  )),
+            ),
             const SizedBox(height: 10),
             Expanded(
-              child: FutureBuilder<List<BarcodeAndTagData>>(
-                future: consolidateData(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState != ConnectionState.done) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else {
-                    List<BarcodeAndTagData> barcodeAndTagData = snapshot.data!;
-
-                    return RefreshIndicator(
-                      onRefresh: _pullRefresh,
-                      child: ListView.builder(
-                          itemCount: barcodeAndTagData.length,
-                          itemBuilder: (context, index) {
-                            if (index == 0) {
-                              return Column(
-                                children: <Widget>[
-                                  displayDataHeaderWidget(
-                                      context, ['ID', 'Tags']),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  displayDataPointWidget(
-                                    context,
-                                    barcodeAndTagData[index],
-                                  )
-                                ],
-                              );
-                            } else {
-                              return displayDataPointWidget(
-                                context,
-                                barcodeAndTagData[index],
-                              );
-                            }
-                          }),
-                    );
-                  }
-                },
-              ),
+              child: _foundBarcodes.isNotEmpty
+                  ? ListView.builder(
+                      itemCount: _foundBarcodes.length,
+                      itemBuilder: (context, index) {
+                        return displayDataPointWidget(
+                          context,
+                          _foundBarcodes[index],
+                        );
+                      })
+                  : const Text(
+                      'No results found',
+                      style: TextStyle(fontSize: 24),
+                    ),
             ),
           ],
         ));
@@ -90,8 +82,7 @@ class _BarcodeSelectionTagViewState extends State<BarcodeSelectionTagView> {
     setState(() {});
   }
 
-  Future<List<BarcodeAndTagData>> consolidateData() async {
-    //Box containing all scanned barcodes.
+  Future<void> runFilter(String enteredKeyword) async {
     Box<RealBarcodePostionEntry> realPositionDataBox =
         await Hive.openBox(realPositionDataBoxName);
     //Box that contains all barcodes and Tags assigned to them.
@@ -103,11 +94,8 @@ class _BarcodeSelectionTagViewState extends State<BarcodeSelectionTagView> {
     //List of all barcodes and assigned Tags.
     List<BarcodeTagEntry> barcodesAssignedTags = barcodeTagsBox.values.toList();
 
-    realPositionDataBox.close();
-    barcodeTagsBox.close();
-
     //The DisplayList.
-    List<BarcodeAndTagData> displayList = [];
+    List<BarcodeAndTagData> results = [];
 
     for (RealBarcodePostionEntry realBarcodePosition in realBarcodesPositions) {
       //To set to remove any duplicates if there are any.
@@ -120,13 +108,30 @@ class _BarcodeSelectionTagViewState extends State<BarcodeSelectionTagView> {
       List<String> relevantTags =
           getRelevantBarcodes(relevantBarcodeTagEntries);
 
-      displayList.add(BarcodeAndTagData(
+      results.add(BarcodeAndTagData(
           barcodeID: int.parse(realBarcodePosition.uid), tags: relevantTags));
+      results.sort((a, b) => a.barcodeID.compareTo(b.barcodeID));
     }
-    //Sort the display list in descending order.
-    displayList.sort((a, b) => a.barcodeID.compareTo(b.barcodeID));
 
-    return displayList;
+    if (enteredKeyword.isNotEmpty) {
+      results = results
+          .where((element) =>
+              element.barcodeID
+                  .toString()
+                  .toLowerCase()
+                  .contains(enteredKeyword) ||
+              element.tags
+                  .toString()
+                  .toLowerCase()
+                  .contains(enteredKeyword.toLowerCase()))
+          .toList();
+      // we use the toLowerCase() method to make it case-insensitive
+    }
+
+    // Refresh the UI
+    setState(() {
+      _foundBarcodes = results;
+    });
   }
 }
 
@@ -144,7 +149,7 @@ displayDataPointWidget(
   return InkWell(
     onTap: () => showDialog(
         context: context,
-        builder: (BuildContext context) => BarcodeTaggingView(
+        builder: (BuildContext context) => BarcodeView(
               barcodeAndTagData: barcodeAndTagData,
             )),
     child: Container(

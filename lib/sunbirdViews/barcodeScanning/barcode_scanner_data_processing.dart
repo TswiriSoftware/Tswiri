@@ -145,8 +145,8 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
         List<RealBarcodePosition> barcodesWithOffset =
             getBarcodesWithOffset(realBarcodePositions);
 
-        //sorts by least amount of steps to origin
-        barcodesWithOffset.sort(mySortComparison);
+        //sorts by least amount of steps to origin #not working well#
+        //barcodesWithOffset.sort(mySortComparison);
 
         int startBarcodeIndex = findStartBarcodeIndex(
             barcodesWithOffset, relevantInterBarcodeOffsets);

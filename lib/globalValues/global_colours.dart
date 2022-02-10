@@ -5,6 +5,8 @@ const Color olive = Color(0xFFb7ac44);
 const Color bone = Color(0xFFD1C6AD);
 const Color lightCyan = Color(0xFFD6FFF6);
 const Color deepSpaceSparkle = Color(0xFF335C67);
+const Color deepSpaceSparkledDark = Color(0xFF1f373e);
+const Color deepSpaceSparkleBright = Color(0xFF476c76);
 
 const Color brightOrange = Color(0xFFFF5521);
 const Color deeperOrange = Color(0xFFDB4416);

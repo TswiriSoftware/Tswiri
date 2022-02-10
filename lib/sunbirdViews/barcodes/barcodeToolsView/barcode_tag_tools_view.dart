@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/barcode_scanner_view.dart';
 import '../../../../main.dart';
-import '../barcode_tagging_selector_view.dart';
+import '../barcode_view.dart';
 
-class BarcodeTagToolsView extends StatefulWidget {
-  const BarcodeTagToolsView({Key? key}) : super(key: key);
+class BarcodeToolsView extends StatefulWidget {
+  const BarcodeToolsView({Key? key}) : super(key: key);
 
   @override
-  _BarcodeTagToolsViewState createState() => _BarcodeTagToolsViewState();
+  _BarcodeToolsViewState createState() => _BarcodeToolsViewState();
 }
 
-class _BarcodeTagToolsViewState extends State<BarcodeTagToolsView> {
+class _BarcodeToolsViewState extends State<BarcodeToolsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: deepSpaceSparkleBright,
         title: const Text(
           'Barcode Scanning Tools',
           style: TextStyle(fontSize: 25),
@@ -33,14 +33,14 @@ class _BarcodeTagToolsViewState extends State<BarcodeTagToolsView> {
           children: [
             const CustomCard(
               'Barcode Tagging',
-              BarcodeSelectionTagView(),
+              BarcodesView(),
               Icons.view_array,
               featureCompleted: true,
               tileColor: deepSpaceSparkle,
             ),
             const CustomCard(
               'All Tags',
-              BarcodeSelectionTagView(),
+              BarcodesView(),
               Icons.map_outlined,
               featureCompleted: true,
               tileColor: deepSpaceSparkle,

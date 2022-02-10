@@ -5,16 +5,15 @@ import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
 import 'package:hive/hive.dart';
 
-class BarcodeTaggingView extends StatefulWidget {
+class BarcodeView extends StatefulWidget {
   BarcodeAndTagData barcodeAndTagData;
-  BarcodeTaggingView({Key? key, required this.barcodeAndTagData})
-      : super(key: key);
+  BarcodeView({Key? key, required this.barcodeAndTagData}) : super(key: key);
 
   @override
-  _BarcodeTaggingViewState createState() => _BarcodeTaggingViewState();
+  _BarcodeViewState createState() => _BarcodeViewState();
 }
 
-class _BarcodeTaggingViewState extends State<BarcodeTaggingView> {
+class _BarcodeViewState extends State<BarcodeView> {
   int currentBarcodeID = 0;
   List<BarcodeAndTagData> barcodeAndTagData = [];
 
