@@ -50,7 +50,6 @@ class RealInterBarcodeOffset {
 
   @override
   String toString() {
-    // TODO: implement toString
     return '$uid, ${interBarcodeOffset.dx}, ${interBarcodeOffset.dy}, $timestamp';
   }
 }

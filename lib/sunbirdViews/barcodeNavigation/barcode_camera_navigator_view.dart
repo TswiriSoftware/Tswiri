@@ -6,16 +6,18 @@ import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/painter/bar
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
 
-class BarcodeNavigatorView extends StatefulWidget {
+class BarcodeCameraNavigatorView extends StatefulWidget {
   final String qrcodeID;
-  const BarcodeNavigatorView({Key? key, required this.qrcodeID})
+  const BarcodeCameraNavigatorView({Key? key, required this.qrcodeID})
       : super(key: key);
 
   @override
-  _BarcodeNavigatorViewState createState() => _BarcodeNavigatorViewState();
+  _BarcodeCameraNavigatorViewState createState() =>
+      _BarcodeCameraNavigatorViewState();
 }
 
-class _BarcodeNavigatorViewState extends State<BarcodeNavigatorView> {
+class _BarcodeCameraNavigatorViewState
+    extends State<BarcodeCameraNavigatorView> {
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
 
@@ -26,6 +28,7 @@ class _BarcodeNavigatorViewState extends State<BarcodeNavigatorView> {
 
   @override
   void initState() {
+    Hive.openBox(realPositionDataBoxName);
     super.initState();
   }
 
@@ -56,29 +59,31 @@ class _BarcodeNavigatorViewState extends State<BarcodeNavigatorView> {
   }
 
   Future<void> processImage(InputImage inputImage) async {
-    var consolidatedDataBox = await Hive.openBox(realPositionDataBoxName);
-    consolidatedData = getConsolidatedData(consolidatedDataBox);
-    consolidatedDataBox.close();
+    Box<RealBarcodePostionEntry> consolidatedDataBox =
+        await Hive.openBox(realPositionDataBoxName);
+    if (consolidatedDataBox.isNotEmpty) {
+      consolidatedData = getConsolidatedData(consolidatedDataBox);
 
-    if (isBusy) return;
-    isBusy = true;
-    final barcodes = await barcodeScanner.processImage(inputImage);
+      if (isBusy) return;
+      isBusy = true;
+      final barcodes = await barcodeScanner.processImage(inputImage);
 
-    if (inputImage.inputImageData?.size != null &&
-        inputImage.inputImageData?.imageRotation != null) {
-      final painter = BarcodeDetectorPainterNavigation(
-          barcodes,
-          inputImage.inputImageData!.size,
-          inputImage.inputImageData!.imageRotation,
-          consolidatedData,
-          widget.qrcodeID);
-      customPaint = CustomPaint(painter: painter);
-    } else {
-      customPaint = null;
-    }
-    isBusy = false;
-    if (mounted) {
-      setState(() {});
+      if (inputImage.inputImageData?.size != null &&
+          inputImage.inputImageData?.imageRotation != null) {
+        final painter = BarcodeDetectorPainterNavigation(
+            barcodes,
+            inputImage.inputImageData!.size,
+            inputImage.inputImageData!.imageRotation,
+            consolidatedData,
+            widget.qrcodeID);
+        customPaint = CustomPaint(painter: painter);
+      } else {
+        customPaint = null;
+      }
+      isBusy = false;
+      if (mounted) {
+        setState(() {});
+      }
     }
   }
 

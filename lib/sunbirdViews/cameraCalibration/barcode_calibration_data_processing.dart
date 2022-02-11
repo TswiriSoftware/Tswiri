@@ -12,12 +12,13 @@ class BarcodeCalibrationDataProcessingView extends StatefulWidget {
   const BarcodeCalibrationDataProcessingView(
       {Key? key,
       required this.rawBarcodeData,
-      required this.rawAccelerometerData})
+      required this.rawAccelerometerData,
+      required this.startTimeStamp})
       : super(key: key);
 
   final List<BarcodeData> rawBarcodeData;
   final List<RawAccelerometerData> rawAccelerometerData;
-
+  final int startTimeStamp;
   @override
   _BarcodeCalibrationDataProcessingViewState createState() =>
       _BarcodeCalibrationDataProcessingViewState();
@@ -46,7 +47,8 @@ class _BarcodeCalibrationDataProcessingViewState
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => const CalibrationDataVisualizerView()));
+                    builder: (context) =>
+                        const CalibrationDataVisualizerView()));
               },
               child: const Icon(Icons.check_circle_outline_rounded),
             ),
@@ -105,10 +107,8 @@ class _BarcodeCalibrationDataProcessingViewState
 
       //Get range of relevant rawAccelerometer data
       List<RawAccelerometerData> relevantRawAccelerometData =
-          getRelevantRawAccelerometerData(
-              rawAccelerometData,
-              onImageBarcodeSizes.first.timestamp,
-              onImageBarcodeSizes.last.timestamp);
+          getRelevantRawAccelerometerData(rawAccelerometData,
+              widget.startTimeStamp, onImageBarcodeSizes.last.timestamp);
 
       //List that contains processed accelerometer data.
       List<ProcessedAccelerometerData> processedAccelerometerData = [];
@@ -121,7 +121,7 @@ class _BarcodeCalibrationDataProcessingViewState
       //Used to keep track of total distance from barcode.
       double totalDistanceMoved = 0;
 
-      //ListA(distanceMoved,timestamp) , ListB(Barcode,timestamp) 
+      //ListA(distanceMoved,timestamp) , ListB(Barcode,timestamp)
 
       //Processing rawAccelerometer Data.
       //Take backward direction as positive

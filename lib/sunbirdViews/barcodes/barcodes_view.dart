@@ -6,26 +6,27 @@ import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
 import 'package:hive/hive.dart';
 
-import 'barcode_camera_navigator_view.dart';
+import 'barcode_view.dart';
 
-class BarcodeSelectionView extends StatefulWidget {
-  const BarcodeSelectionView({Key? key}) : super(key: key);
+class BarcodesView extends StatefulWidget {
+  const BarcodesView({Key? key}) : super(key: key);
 
   @override
-  _BarcodeSelectionViewState createState() => _BarcodeSelectionViewState();
+  _BarcodesViewState createState() => _BarcodesViewState();
 }
 
-class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
+class _BarcodesViewState extends State<BarcodesView> {
   List<BarcodeAndTagData> _foundBarcodes = [];
-
   @override
   void initState() {
+    Hive.close();
     runFilter('');
     super.initState();
   }
 
   @override
   void dispose() {
+    Hive.close();
     super.dispose();
   }
 
@@ -33,9 +34,9 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: limeGreenMuted,
+          backgroundColor: deepSpaceSparkle,
           title: const Text(
-            'Qr Code Selector',
+            'Barcodes',
             style: TextStyle(fontSize: 25),
           ),
           centerTitle: true,
@@ -47,7 +48,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
               onChanged: (value) => runFilter(value),
               decoration: InputDecoration(
                   focusedBorder: const UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white)),
+                      borderSide: const BorderSide(color: Colors.white)),
                   hoverColor: deepSpaceSparkle[700],
                   focusColor: deepSpaceSparkle[700],
                   contentPadding: const EdgeInsets.all(10),
@@ -139,6 +140,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
     });
   }
 
+  //Returns a set of relevant barcodes
   List<String> getRelevantBarcodes(
       Set<BarcodeTagEntry> relevantBarcodeTagEntries) {
     List<String> relevantTags = [];
@@ -152,20 +154,18 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
       BuildContext context, BarcodeAndTagData barcodeAndTagData) {
     Color color;
     if (barcodeAndTagData.barcodeID.isEven) {
-      color = deepSpaceSparkle;
+      color = darkPinkish;
     } else {
-      color = limeGreenMuted;
+      color = deepSpaceSparkle;
     }
 
     return InkWell(
-      onTap: () {
-        Hive.close();
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => BarcodeCameraNavigatorView(
-                    qrcodeID: barcodeAndTagData.barcodeID.toString())));
-      },
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => BarcodeView(
+                    barcodeAndTagData: barcodeAndTagData,
+                  ))).then((value) => runFilter('')),
       child: Container(
         //Outer Container Decoration
         margin: const EdgeInsets.only(bottom: 5),
@@ -205,6 +205,36 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
             )
           ],
         ),
+      ),
+    );
+  }
+
+  displayDataHeaderWidget(BuildContext context, List<String> dataHeader) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.white60, width: 0.5),
+        borderRadius: const BorderRadius.all(
+          Radius.circular(5),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(left: 15, right: 15),
+            padding: const EdgeInsets.all(10),
+            child: Center(
+              child: Text(dataHeader[0]),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(left: 15, right: 150),
+            padding: const EdgeInsets.all(8),
+            child: Center(
+              child: Text(dataHeader[1]),
+            ),
+          )
+        ],
       ),
     );
   }

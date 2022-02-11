@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../../../main.dart';
 import '../camera_calibration_view.dart';
 import '../calibration_data_visualizer_view.dart';
@@ -14,6 +15,18 @@ class CameraCalibrationToolsView extends StatefulWidget {
 
 class _CameraCalibrationToolsViewState
     extends State<CameraCalibrationToolsView> {
+  @override
+  void initState() {
+    Hive.close();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    Hive.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

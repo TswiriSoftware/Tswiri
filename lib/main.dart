@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/tag_entry.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
@@ -41,6 +42,7 @@ Future<void> main() async {
   Hive.registerAdapter(MatchedCalibrationDataHiveObjectAdapter());
   Hive.registerAdapter(BarcodeTagEntryAdapter());
   Hive.registerAdapter(TagEntryAdapter());
+  Hive.registerAdapter(BarcodeDataAdapter());
 }
 
 class MyApp extends StatelessWidget {
@@ -109,7 +111,7 @@ class Home extends StatelessWidget {
               BarcodeNavigationView(),
               Icons.qr_code_rounded,
               featureCompleted: true,
-              tileColor: limeGreen80,
+              tileColor: limeGreenMuted,
             ),
             CustomCard(
               'Barcode Generator',
@@ -119,7 +121,7 @@ class Home extends StatelessWidget {
               tileColor: deeperOrange,
             ),
             CustomCard(
-              'Barcode Tagging',
+              'Barcode Tools',
               BarcodeToolsView(),
               Icons.tag_faces_rounded,
               featureCompleted: true,

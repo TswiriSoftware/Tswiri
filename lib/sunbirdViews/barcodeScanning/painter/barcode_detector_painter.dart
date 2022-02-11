@@ -1,8 +1,8 @@
-import 'dart:math';
 import 'dart:ui';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 import '../../../VisionDetectorViews/painters/coordinates_translator.dart';
@@ -19,11 +19,6 @@ class BarcodeDetectorPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.0
       ..color = Colors.lightGreenAccent;
-
-    final Paint paintRed = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 8.0
-      ..color = Colors.red;
 
     final Paint background = Paint()..color = const Color(0x99000000);
 
@@ -81,28 +76,41 @@ class BarcodeDetectorPainter extends CustomPainter {
           offsetPoints.add(Offset(x, y));
 
           // Due to possible rotations we need to find the smallest and largest
-          top = min(top, y);
-          bottom = max(bottom, y);
-          left = min(left, x);
-          right = max(right, x);
+          // top = min(top, y);
+          // bottom = max(bottom, y);
+          // left = min(left, x);
+          // right = max(right, x);
         }
         // Add the first point to close the polygon
+
         offsetPoints.add(offsetPoints.first);
         canvas.drawPoints(PointMode.polygon, offsetPoints, paint);
+
+        double side1 = (offsetPoints[0] - offsetPoints[3]).distance;
+        double side2 = (offsetPoints[1] - offsetPoints[2]).distance;
+        double side3 = (offsetPoints[0] - offsetPoints[1]).distance;
+        double side4 = (offsetPoints[2] - offsetPoints[3]).distance;
+        double ratio = side1 / side2;
+        double average = (side3 + side4) / 2;
+
+        print('ratio: $average');
+
+        TextPainter tp = Text(roundDouble(average, 5).toString());
+        tp.textScaleFactor = 1.5;
+        tp.layout();
+        tp.paint(canvas, offsetPoints[0]);
+
+        TextPainter tp1 = Text(roundDouble(ratio, 5).toString());
+        tp1.textScaleFactor = 1.5;
+        tp1.layout();
+        tp1.paint(canvas, offsetPoints[2]);
+        // TextPainter tp2 = Text('3');
+        // tp2.layout();
+        // tp2.paint(canvas, offsetPoints[2]);
+        // TextPainter tp3 = Text('4');
+        // tp3.layout();
+        // tp3.paint(canvas, offsetPoints[3]);
       }
-
-      // canvas.drawParagraph(
-      //   builder.build()
-      //     ..layout(ParagraphConstraints(
-      //       width: right - boundingBoxLeft,
-      //     )),
-      //   Offset(boundingBoxLeft, top),
-      // );
-
-      // canvas.drawRect(
-      //   Rect.fromLTRB(boundingBoxLeft, top, right, bottom),
-      //   paint,
-      // );
 
       // var barcodeCentreX = (boundingBoxLeft + right) / 2;
       // var barcodeCentreY = (top + bottom) / 2;
@@ -117,6 +125,15 @@ class BarcodeDetectorPainter extends CustomPainter {
 
       //canvas.drawPoints(PointMode.points, pointsOfIntrest, paintRed);
     }
+  }
+
+  TextPainter Text(String text) {
+    TextSpan span = TextSpan(style: TextStyle(color: Colors.red), text: text);
+    TextPainter tp = TextPainter(
+        text: span,
+        textAlign: TextAlign.left,
+        textDirection: TextDirection.ltr);
+    return tp;
   }
 
   @override

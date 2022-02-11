@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/camera_view.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/accelerometer_data_objects.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/barcode_size_objects.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/barcode_calibration_data_processing.dart';
@@ -19,6 +20,8 @@ class CameraCalibration extends StatefulWidget {
 class _CameraCalibrationState extends State<CameraCalibration> {
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
+
+  int startTimeStamp = 0;
 
   List<RawAccelerometerData> rawAccelerometerData = [];
   List<BarcodeData> rawBarcodesData = [];
@@ -53,12 +56,19 @@ class _CameraCalibrationState extends State<CameraCalibration> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: skyBlue80,
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
         floatingActionButton: Padding(
           padding: const EdgeInsets.all(10.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+          child: Column(
             children: [
+              FloatingActionButton(
+                heroTag: null,
+                onPressed: () {
+                  startTimeStamp = DateTime.now().millisecondsSinceEpoch;
+                },
+                child: const Icon(Icons.check),
+              ),
               FloatingActionButton(
                 heroTag: null,
                 onPressed: () {
@@ -68,9 +78,10 @@ class _CameraCalibrationState extends State<CameraCalibration> {
                       builder: (context) =>
                           BarcodeCalibrationDataProcessingView(
                               rawBarcodeData: rawBarcodesData,
-                              rawAccelerometerData: rawAccelerometerData)));
+                              rawAccelerometerData: rawAccelerometerData,
+                              startTimeStamp: startTimeStamp)));
                 },
-                child: const Icon(Icons.check_circle_outline_rounded),
+                child: const Icon(Icons.done_all_outlined),
               ),
             ],
           ),

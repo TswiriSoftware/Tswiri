@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/barcode_scanner_view.dart';
+import 'package:hive/hive.dart';
 import '../../../main.dart';
 import '../consolidated_database_view.dart';
 import '../consolidated_database_visualization_view.dart';
@@ -12,6 +13,18 @@ class BarcodeScanningView extends StatefulWidget {
 }
 
 class _BarcodeScanningViewState extends State<BarcodeScanningView> {
+  @override
+  void initState() {
+    Hive.close();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    Hive.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,5 +1,3 @@
-import 'package:flutter_google_ml_kit/databaseAdapters/typeAdapters/type_offset_adapter.dart';
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
 import 'package:hive/hive.dart';
 part 'tag_entry.g.dart';
 

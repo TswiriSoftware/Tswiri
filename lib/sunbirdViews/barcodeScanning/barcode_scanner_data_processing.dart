@@ -64,7 +64,7 @@ class _BarcodeScannerDataProcessingViewState
             } else if (snapshot.hasError) {
               return Text(
                 "${snapshot.error}",
-                style: TextStyle(fontSize: 20, color: deeperOrange),
+                style: const TextStyle(fontSize: 20, color: deeperOrange),
               );
             }
             // By default, show a loading spinner
@@ -100,7 +100,7 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
   deduplicatedRealInterBarcodeOffsets = removeOutliers(
       deduplicatedRealInterBarcodeOffsets, allRealInterBarcodeOffsets);
 
-  print(deduplicatedRealInterBarcodeOffsets);
+  //print(deduplicatedRealInterBarcodeOffsets);
 
   //List of all barcodes Scanned - deduplicated.
   List<RealBarcodePosition> realBarcodePositions =

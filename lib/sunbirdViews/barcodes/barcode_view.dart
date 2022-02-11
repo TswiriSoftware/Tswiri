@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_entry.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodes/new_tag.dart';
 import 'package:hive/hive.dart';
 
-import 'barcode_tag_selection.dart';
-
-class BarcodesView extends StatefulWidget {
-  const BarcodesView({Key? key}) : super(key: key);
+class BarcodeView extends StatefulWidget {
+  BarcodeAndTagData barcodeAndTagData;
+  BarcodeView({Key? key, required this.barcodeAndTagData}) : super(key: key);
 
   @override
-  _BarcodesViewState createState() => _BarcodesViewState();
+  _BarcodeViewState createState() => _BarcodeViewState();
 }
 
-class _BarcodesViewState extends State<BarcodesView> {
-  List<String> allTags = [];
-  List<BarcodeAndTagData> _foundBarcodes = [];
+class _BarcodeViewState extends State<BarcodeView> {
+  List<String> allTags = ['+'];
+  List<String> currentBarcodeTags = [];
   @override
   void initState() {
     runFilter('');
@@ -32,208 +31,310 @@ class _BarcodesViewState extends State<BarcodesView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: deepSpaceSparkle,
-          title: const Text(
-            'Barcodes',
-            style: TextStyle(fontSize: 25),
-          ),
-          centerTitle: true,
-          elevation: 0,
-        ),
-        body: Column(
-          children: [
-            TextField(
-              onChanged: (value) => runFilter(value),
-              decoration: const InputDecoration(
-                  focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: deepSpaceSparkleBright)),
-                  hoverColor: deepSpaceSparkleBright,
-                  focusColor: deepSpaceSparkleBright,
-                  contentPadding: EdgeInsets.all(10),
-                  labelStyle: TextStyle(color: Colors.white),
-                  labelText: 'Search',
-                  suffixIcon: Icon(
-                    Icons.search,
-                    color: deepSpaceSparkleBright,
-                  )),
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: _foundBarcodes.isNotEmpty
-                  ? ListView.builder(
-                      itemCount: _foundBarcodes.length,
-                      itemBuilder: (context, index) {
-                        return displayDataPointWidget(
-                          context,
-                          _foundBarcodes[index],
-                        );
-                      })
-                  : const Text(
-                      'No results found',
-                      style: TextStyle(fontSize: 24),
-                    ),
-            ),
-          ],
-        ));
-  }
-
-  Future<void> _pullRefresh() async {
-    setState(() {});
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        backgroundColor: deepSpaceSparkle,
+        title:
+            Text('Barcode:  ' + widget.barcodeAndTagData.barcodeID.toString()),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          barcodeData(widget.barcodeAndTagData),
+          assignedTags(),
+          unAssignedTags(),
+        ],
+      ),
+    );
   }
 
   Future<void> runFilter(String enteredKeyword) async {
-    Box<RealBarcodePostionEntry> realPositionDataBox =
-        await Hive.openBox(realPositionDataBoxName);
-    //Box that contains all barcodes and Tags assigned to them.
-    Box<BarcodeTagEntry> barcodeTagsBox =
+    Box tagsBox = await Hive.openBox(tagsBoxName);
+
+    Box<BarcodeTagEntry> currentTagsBox =
         await Hive.openBox(barcodeTagsBoxName);
-    //List of all scanned barcodes.
-    List<RealBarcodePostionEntry> realBarcodesPositions =
-        realPositionDataBox.values.toList();
+
+    List<BarcodeTagEntry> barcodesAssignedTags = currentTagsBox.values
+        .toList()
+        .where((element) =>
+            element.barcodeID == widget.barcodeAndTagData.barcodeID)
+        .toList();
+
+    List<String> assignedTags = [];
+    for (BarcodeTagEntry barcodeTag in barcodesAssignedTags) {
+      assignedTags.add(barcodeTag.tag);
+    }
+
     //List of all barcodes and assigned Tags.
-    List<BarcodeTagEntry> barcodesAssignedTags = barcodeTagsBox.values.toList();
-
+    List tagEntries = tagsBox.values.toList();
     //The DisplayList.
-    List<BarcodeAndTagData> results = [];
+    List<String> results = [];
 
-    for (RealBarcodePostionEntry realBarcodePosition in realBarcodesPositions) {
-      //To set to remove any duplicates if there are any.
-      Set<BarcodeTagEntry> relevantBarcodeTagEntries = barcodesAssignedTags
-          .where((element) =>
-              element.barcodeID == int.parse(realBarcodePosition.uid))
-          .toSet();
-
-      //List containing all tags relevant to current barcode.
-      List<String> relevantTags =
-          getRelevantBarcodes(relevantBarcodeTagEntries);
-
-      results.add(BarcodeAndTagData(
-          barcodeID: int.parse(realBarcodePosition.uid), tags: relevantTags));
-      results.sort((a, b) => a.barcodeID.compareTo(b.barcodeID));
+    for (String tagEntry in tagEntries) {
+      if (!assignedTags.contains(tagEntry)) {
+        results.add(tagEntry);
+      }
     }
 
     if (enteredKeyword.isNotEmpty) {
       results = results
           .where((element) =>
-              element.barcodeID
-                  .toString()
-                  .toLowerCase()
-                  .contains(enteredKeyword) ||
-              element.tags
-                  .toString()
-                  .toLowerCase()
-                  .contains(enteredKeyword.toLowerCase()))
+              element.toLowerCase().contains(enteredKeyword.toLowerCase()))
           .toList();
-      // we use the toLowerCase() method to make it case-insensitive
     }
-
+    results.add('+');
     // Refresh the UI
     setState(() {
-      _foundBarcodes = results;
+      allTags = results;
     });
   }
-}
 
-List<String> getRelevantBarcodes(
-    Set<BarcodeTagEntry> relevantBarcodeTagEntries) {
-  List<String> relevantTags = [];
-  for (BarcodeTagEntry barcodeTag in relevantBarcodeTagEntries) {
-    relevantTags.add(barcodeTag.tag);
+  Future<List<String>> getCurrentBarcodeTags(int currentBarcode) async {
+    List<String> currentBarcodeTags = [];
+    Box<BarcodeTagEntry> barcodeTagsBox =
+        await Hive.openBox(barcodeTagsBoxName);
+    Set<BarcodeTagEntry> barcodeTags = barcodeTagsBox.values
+        .toSet()
+        .where((element) => element.barcodeID == currentBarcode)
+        .toSet();
+
+    for (BarcodeTagEntry barcodeTag in barcodeTags) {
+      if (barcodeTag.barcodeID == currentBarcode) {
+        currentBarcodeTags.add(barcodeTag.tag);
+      }
+    }
+
+    return currentBarcodeTags;
   }
-  return relevantTags;
-}
 
-displayDataPointWidget(
-    BuildContext context, BarcodeAndTagData barcodeAndTagData) {
-  return InkWell(
-    onTap: () => showDialog(
-        context: context,
-        builder: (BuildContext context) => BarcodeView(
-              barcodeAndTagData: barcodeAndTagData,
-            )),
-    child: Container(
-      //Outer Container Decoration
+  ///This displays all tags assigned to the current barcode
+  assignedTags() {
+    return Container(
+      width: double.infinity,
       margin: const EdgeInsets.only(bottom: 5),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.white60, width: 1),
+        color: deepSpaceSparkle[200],
+        border: Border.all(color: Colors.white60, width: 2),
         borderRadius: const BorderRadius.all(
           Radius.circular(5),
         ),
       ),
-      child: Row(
+      child: Wrap(
         children: [
-          //Barcode ID
-          Container(
-            margin: const EdgeInsets.all(4),
-            height: 60,
-            width: (MediaQuery.of(context).size.width * 0.13),
-            decoration: const BoxDecoration(
-                color: deepSpaceSparkle, shape: BoxShape.circle),
-            child: Center(
-              child: Text(barcodeAndTagData.barcodeID.toString()),
+          const Padding(
+            padding: EdgeInsets.only(top: 5, left: 10),
+            child: Text(
+              'Assigned Tags',
+              style: TextStyle(fontSize: 20),
             ),
           ),
-          const SizedBox(
-            width: 5,
+          const Divider(
+            color: Colors.white,
           ),
           Container(
-            decoration: const BoxDecoration(
-                color: Colors.black38,
-                borderRadius: BorderRadius.all(Radius.circular(8))),
-            height: 55,
-            width: (MediaQuery.of(context).size.width * 0.82),
-            child: Center(
-              child: Text(
-                checkIfEmpty(barcodeAndTagData.tags!),
-                textAlign: TextAlign.center,
+              padding: const EdgeInsets.all(3),
+              width: double.infinity,
+              height: 100,
+              child: FutureBuilder<List>(
+                  future:
+                      getCurrentBarcodeTags(widget.barcodeAndTagData.barcodeID),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else {
+                      List data = snapshot.data!;
+                      return SingleChildScrollView(
+                        child: Wrap(
+                          children: data
+                              .map((item) => tagContainerAssignedTags(
+                                  item,
+                                  widget.barcodeAndTagData.barcodeID
+                                      .toString()))
+                              .toList()
+                              .cast<Widget>(),
+                        ),
+                      );
+                    }
+                  })),
+        ],
+      ),
+    );
+  }
+
+  InkWell tagContainerAssignedTags(
+    String tag,
+    String barcodeID,
+  ) {
+    return InkWell(
+      onTap: () async {
+        Box<BarcodeTagEntry> barcodeTagsBox =
+            await Hive.openBox(barcodeTagsBoxName);
+        barcodeTagsBox.delete('${barcodeID}_$tag');
+        setState(() {
+          runFilter('');
+        });
+      },
+      child: UnconstrainedBox(
+        child: Container(
+          margin: const EdgeInsets.all(3),
+          padding: const EdgeInsets.only(left: 14, right: 14),
+          height: 35,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(
+              Radius.circular(50),
+            ),
+          ),
+          child: Center(
+            child: Text(
+              tag,
+              style: const TextStyle(color: Colors.black),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  //Convert to Future Builder
+
+  unAssignedTags() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 5),
+      decoration: BoxDecoration(
+        color: deepSpaceSparkle[200],
+        border: Border.all(color: Colors.white60, width: 2),
+        borderRadius: const BorderRadius.all(
+          Radius.circular(5),
+        ),
+      ),
+      child: Wrap(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 5, left: 10),
+            child: TextField(
+              onChanged: (value) => runFilter(value),
+              scrollPadding: const EdgeInsets.only(bottom: 40),
+              decoration: InputDecoration(
+                  focusedBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: deepSpaceSparkle)),
+                  hoverColor: deepSpaceSparkle[700],
+                  focusColor: deepSpaceSparkle[700],
+                  contentPadding: const EdgeInsets.all(10),
+                  labelStyle: const TextStyle(color: Colors.white),
+                  labelText: 'Search Tags',
+                  suffixIcon: Icon(
+                    Icons.search,
+                    color: deepSpaceSparkle[700],
+                  )),
+            ),
+          ),
+          const Divider(
+            color: Colors.white,
+          ),
+          Container(
+            padding: const EdgeInsets.all(3),
+            width: double.infinity,
+            child: SingleChildScrollView(
+              child: Wrap(
+                children: allTags
+                    .map((tag) => tagContainerUnAssignedTags(
+                        tag, widget.barcodeAndTagData.barcodeID.toString()))
+                    .toList(),
+                // barcodeAndTagData.tags!.map((e) => tagContainer(e)).toList(),
               ),
             ),
           )
         ],
       ),
-    ),
-  );
+    );
+  }
+
+  InkWell tagContainerUnAssignedTags(String tag, String barcodeID) {
+    Color color;
+
+    if (tag == '+') {
+      color = deeperOrange;
+    } else {
+      color = Colors.white;
+    }
+
+    return InkWell(
+      onTap: () async {
+        if (tag == '+') {
+          Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const NewTagView()))
+              .then((value) => runFilter(''));
+        } else {
+          Box<BarcodeTagEntry> barcodeTagsBox =
+              await Hive.openBox(barcodeTagsBoxName);
+          barcodeTagsBox.put('${barcodeID}_$tag',
+              BarcodeTagEntry(barcodeID: int.parse(barcodeID), tag: tag));
+
+          setState(() {
+            runFilter('');
+          });
+        }
+      },
+      child: UnconstrainedBox(
+        child: Container(
+          margin: const EdgeInsets.all(3),
+          padding: const EdgeInsets.only(left: 14, right: 14),
+          height: 35,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: const BorderRadius.all(
+              Radius.circular(50),
+            ),
+          ),
+          child: Center(
+            child: Text(
+              tag,
+              style: const TextStyle(color: Colors.black),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-displayDataHeaderWidget(BuildContext context, List<String> dataHeader) {
+barcodeData(BarcodeAndTagData barcodeAndTagData) {
   return Container(
+    width: double.infinity,
+    height: 100,
+    margin: const EdgeInsets.only(bottom: 5, top: 5),
     decoration: BoxDecoration(
-      border: Border.all(color: Colors.white60, width: 0.5),
+      color: deepSpaceSparkle[200],
+      border: Border.all(color: Colors.white60, width: 2),
       borderRadius: const BorderRadius.all(
         Radius.circular(5),
       ),
     ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          margin: const EdgeInsets.only(left: 15, right: 15),
-          padding: const EdgeInsets.all(10),
-          child: Center(
-            child: Text(dataHeader[0]),
+        const Padding(
+          padding: EdgeInsets.only(top: 5, left: 10),
+          child: Text(
+            'Barcode Data',
+            style: TextStyle(fontSize: 20),
           ),
         ),
-        Container(
-          margin: const EdgeInsets.only(left: 15, right: 150),
-          padding: const EdgeInsets.all(8),
-          child: Center(
-            child: Text(dataHeader[1]),
-          ),
+        const Divider(
+          color: Colors.white,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 5, left: 10),
+          child: Text('Barcode ID:  ' + barcodeAndTagData.barcodeID.toString()),
+        ),
+        const Padding(
+          padding: EdgeInsets.only(top: 5, left: 10),
+          child: Text('Barcode Size:  ?? '),
         )
       ],
     ),
   );
-}
-
-String checkIfEmpty(List<String> listOfTags) {
-  String tags = '';
-
-  if (listOfTags.isEmpty) {
-    tags = 'wow such empty';
-  } else {
-    tags = listOfTags.toString().replaceAll(']', '').replaceAll('[', '');
-  }
-  print(tags);
-  return tags;
 }

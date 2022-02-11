@@ -1,7 +1,5 @@
 import 'dart:ui';
 
-import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
-
 //TODO: add desctiption & definition
 
 ///Used to map out all scanned Data
@@ -37,7 +35,8 @@ class RealBarcodePosition {
 
   @override
   String toString() {
+    // ignore: todo
     // TODO: implement toString
-    return '$uid, ${interBarcodeOffset}, $numberOfBarcodesFromOrigin, $timestamp';
+    return '$uid, $interBarcodeOffset, $numberOfBarcodesFromOrigin, $timestamp';
   }
 }

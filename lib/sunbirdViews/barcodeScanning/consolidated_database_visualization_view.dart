@@ -171,5 +171,6 @@ _getPoints(
     ]);
     pointNames.add(data.uid);
   }
+  consolidatedRealDataBox.close();
   return points;
 }
