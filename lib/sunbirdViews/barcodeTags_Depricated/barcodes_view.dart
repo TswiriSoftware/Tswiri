@@ -116,7 +116,9 @@ class _BarcodesViewState extends State<BarcodesView> {
           getRelevantBarcodes(relevantBarcodeTagEntries);
 
       results.add(BarcodeAndTagData(
-          barcodeID: int.parse(realBarcodePosition.uid), tags: relevantTags));
+          barcodeID: int.parse(realBarcodePosition.uid),
+          barcodeSize: 70.0,
+          tags: relevantTags));
       results.sort((a, b) => a.barcodeID.compareTo(b.barcodeID));
     }
 

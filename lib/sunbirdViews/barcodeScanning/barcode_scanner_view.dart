@@ -1,8 +1,11 @@
+import 'dart:async';
+import 'package:vector_math/vector_math.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/dataInjectors/single_image_inter_barcode_data_extractor.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/barcode_scanner_data_processing.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 import '../../VisionDetectorViews/camera_view.dart';
 import 'painter/barcode_detector_painter.dart';
 
@@ -20,6 +23,26 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
   List<RawOnImageInterBarcodeData> allInterBarcodeData = [];
   bool isBusy = false;
   CustomPaint? customPaint;
+  late StreamSubscription<UserAccelerometerEvent> subscription;
+
+  // AccelerometerEvent accelerometerEvent = AccelerometerEvent(0, 0, 0);
+  // UserAccelerometerEvent userAccelerometerEvent =
+  //     UserAccelerometerEvent(0, 0, 0);
+
+  Vector3 accelerometerEvent = Vector3(0, 0, 0);
+  Vector3 userAccelerometerEvent = Vector3(0, 0, 0);
+
+  @override
+  void initState() {
+    accelerometerEvents.listen((AccelerometerEvent event) {
+      accelerometerEvent = Vector3(event.x, event.y, event.z);
+    });
+    userAccelerometerEvents.listen((UserAccelerometerEvent event) {
+      userAccelerometerEvent = Vector3(event.x, event.y, event.z);
+    });
+
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -63,10 +86,12 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     final List<Barcode> barcodes =
         await barcodeScanner.processImage(inputImage);
 
-    //Dont bother if we haven't detected more than one barcode on a image.
+    Vector3 gravityDirection = accelerometerEvent - userAccelerometerEvent;
+    print(gravityDirection);
 
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
+      //Dont bother if we haven't detected more than one barcode on a image.
       if (barcodes.length >= 2) {
         allInterBarcodeData
             .addAll((singeImageInterBarcodeDataExtractor(barcodes)));

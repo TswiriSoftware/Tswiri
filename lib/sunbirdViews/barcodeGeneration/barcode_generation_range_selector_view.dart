@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_entry.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
+import 'package:hive/hive.dart';
 
 import 'generated_barcodes_pdf_view.dart';
 
@@ -43,8 +46,8 @@ class SelectRangeWidget extends StatefulWidget {
 }
 
 class _SelectRangeWidgetState extends State<SelectRangeWidget> {
-  int rangeValue1 = 1;
-  int rangeValue2 = 1;
+  int rangeStart = 1;
+  int rangeEnd = 1;
   int totalNumberOfBarcodes = 100;
   List<int> totalBarcodes = List.generate(10, (index) => (index + 1) * 100);
   List<int> numbers = List.generate(100, (index) => index + 1);
@@ -102,7 +105,7 @@ class _SelectRangeWidgetState extends State<SelectRangeWidget> {
                 style: TextStyle(color: Colors.white70),
               ),
               DropdownButton<int>(
-                value: rangeValue1,
+                value: rangeStart,
                 icon: const Icon(Icons.arrow_drop_down),
                 elevation: 16,
                 style: const TextStyle(color: Colors.deepOrange),
@@ -112,9 +115,9 @@ class _SelectRangeWidgetState extends State<SelectRangeWidget> {
                 ),
                 onChanged: (int? newValue) {
                   setState(() {
-                    rangeValue1 = newValue!;
-                    if (rangeValue2 <= rangeValue1) {
-                      rangeValue2 = rangeValue1 + 6;
+                    rangeStart = newValue!;
+                    if (rangeEnd <= rangeStart) {
+                      rangeEnd = rangeStart + 6;
                     }
                   });
                 },
@@ -130,7 +133,7 @@ class _SelectRangeWidgetState extends State<SelectRangeWidget> {
                 style: TextStyle(color: Colors.white70),
               ),
               DropdownButton<int>(
-                value: rangeValue2,
+                value: rangeEnd,
                 icon: const Icon(Icons.arrow_drop_down),
                 elevation: 16,
                 style: const TextStyle(color: Colors.deepOrange),
@@ -140,7 +143,7 @@ class _SelectRangeWidgetState extends State<SelectRangeWidget> {
                 ),
                 onChanged: (int? newValue) {
                   setState(() {
-                    rangeValue2 = newValue!;
+                    rangeEnd = newValue!;
                   });
                 },
                 items: numbers.map<DropdownMenuItem<int>>((int value) {
@@ -156,18 +159,36 @@ class _SelectRangeWidgetState extends State<SelectRangeWidget> {
               style: ButtonStyle(
                   backgroundColor:
                       MaterialStateProperty.all(Colors.deepOrange)),
-              onPressed: () {
+              onPressed: () async {
+                //Save Barcode data in box
+                await putBarcodeData();
+
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => BarcodeGenerationView(
-                              rangeEnd: rangeValue2,
-                              rangeStart: rangeValue1,
+                              rangeEnd: rangeEnd,
+                              rangeStart: rangeStart,
                             )));
               },
               child: const Icon(Icons.print_rounded))
         ],
       ),
     );
+  }
+
+  Future<void> putBarcodeData() async {
+    //Open Barcode DataBox
+    Box<BarcodeDataEntry> barcodeData =
+        await Hive.openBox(generatedBarcodesBoxName);
+
+    barcodeData.clear();
+
+    //Put barcode data
+    for (int i = rangeStart; i <= rangeEnd; i++) {
+      await barcodeData.put(i, BarcodeDataEntry(barcodeID: i, barcodeSize: 70));
+    }
+    //close Box
+    barcodeData.close();
   }
 }

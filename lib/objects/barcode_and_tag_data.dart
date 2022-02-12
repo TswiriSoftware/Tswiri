@@ -1,12 +1,18 @@
-//Contains a barcodeID and a list of tags
+///Contains a barcodeID and a list of tags
 class BarcodeAndTagData {
   BarcodeAndTagData({
     required final this.barcodeID,
+    required final this.barcodeSize,
     final this.tags,
   });
-  //BarcodeID
+
+  ///BarcodeID
   final int barcodeID;
-  //List of tags
+
+  ///Size of the Barcode.
+  final double barcodeSize;
+
+  ///List of tags
   final List<String>? tags;
 
   @override

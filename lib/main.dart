@@ -6,6 +6,7 @@ import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_e
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/tag_entry.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_range_selector_view.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodes/barcodes_list_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -15,7 +16,6 @@ import 'databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
 import 'sunbirdViews/barcodeNavigation/navigationToolsView/barcode_navigation_tools_view.dart';
 import 'sunbirdViews/barcodeScanning/scanningToolsView/barcode_scanning_tools_view.dart';
-import 'sunbirdViews/barcodes/barcodeToolsView/barcode_tag_tools_view.dart';
 import 'sunbirdViews/cameraCalibration/calibrationToolsView/camera_calibration_tools_view.dart';
 
 List<CameraDescription> cameras = [];
@@ -42,7 +42,7 @@ Future<void> main() async {
   Hive.registerAdapter(MatchedCalibrationDataHiveObjectAdapter());
   Hive.registerAdapter(BarcodeTagEntryAdapter());
   Hive.registerAdapter(TagEntryAdapter());
-  Hive.registerAdapter(BarcodeDataAdapter());
+  Hive.registerAdapter(BarcodeDataEntryAdapter());
 }
 
 class MyApp extends StatelessWidget {
@@ -120,20 +120,20 @@ class Home extends StatelessWidget {
               featureCompleted: true,
               tileColor: deeperOrange,
             ),
+            // CustomCard(
+            //   'Barcode Tools',
+            //   BarcodeToolsView(),
+            //   Icons.tag_faces_rounded,
+            //   featureCompleted: true,
+            //   tileColor: deepSpaceSparkle,
+            // ),
             CustomCard(
-              'Barcode Tools',
-              BarcodeToolsView(),
-              Icons.tag_faces_rounded,
+              'Barcodes List',
+              BarcodesListView(),
+              Icons.emoji_objects_rounded,
               featureCompleted: true,
               tileColor: deepSpaceSparkle,
             ),
-            // CustomCard(
-            //   'Object Detector View',
-            //   ObjectDetectorView(),
-            //   Icons.emoji_objects_rounded,
-            //   featureCompleted: true,
-            //   tileColor: deeperOrange,
-            // ),
             // CustomCard(
             //   'Text Detector View',
             //   TextDetectorView(),

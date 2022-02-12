@@ -6,32 +6,29 @@ part of 'barcode_entry.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class BarcodeDataAdapter extends TypeAdapter<BarcodeData> {
+class BarcodeDataEntryAdapter extends TypeAdapter<BarcodeDataEntry> {
   @override
   final int typeId = 6;
 
   @override
-  BarcodeData read(BinaryReader reader) {
+  BarcodeDataEntry read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return BarcodeData(
+    return BarcodeDataEntry(
       barcodeID: fields[0] as int,
-      barcodeName: fields[1] as String,
-      barcodeSize: fields[2] as double,
+      barcodeSize: fields[1] as double,
     );
   }
 
   @override
-  void write(BinaryWriter writer, BarcodeData obj) {
+  void write(BinaryWriter writer, BarcodeDataEntry obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(2)
       ..writeByte(0)
       ..write(obj.barcodeID)
       ..writeByte(1)
-      ..write(obj.barcodeName)
-      ..writeByte(2)
       ..write(obj.barcodeSize);
   }
 
@@ -41,7 +38,7 @@ class BarcodeDataAdapter extends TypeAdapter<BarcodeData> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is BarcodeDataAdapter &&
+      other is BarcodeDataEntryAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
