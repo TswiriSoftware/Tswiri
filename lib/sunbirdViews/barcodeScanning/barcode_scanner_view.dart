@@ -8,6 +8,7 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import '../../VisionDetectorViews/camera_view.dart';
 import 'painter/barcode_detector_painter.dart';
+import 'package:provider/provider.dart';
 
 class BarcodeScannerView extends StatefulWidget {
   const BarcodeScannerView({Key? key}) : super(key: key);
@@ -23,11 +24,6 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
   List<RawOnImageInterBarcodeData> allInterBarcodeData = [];
   bool isBusy = false;
   CustomPaint? customPaint;
-  late StreamSubscription<UserAccelerometerEvent> subscription;
-
-  // AccelerometerEvent accelerometerEvent = AccelerometerEvent(0, 0, 0);
-  // UserAccelerometerEvent userAccelerometerEvent =
-  //     UserAccelerometerEvent(0, 0, 0);
 
   Vector3 accelerometerEvent = Vector3(0, 0, 0);
   Vector3 userAccelerometerEvent = Vector3(0, 0, 0);
@@ -80,14 +76,29 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
         ));
   }
 
+  phoneAngle() {
+    const snackBar = SnackBar(
+      content: Text('Yay! A SnackBar!'),
+      duration: Duration(milliseconds: 100),
+    );
+
+    Vector3 gravityDirection = accelerometerEvent - userAccelerometerEvent;
+    print(gravityDirection);
+
+    Vector3 up = Vector3(1, 1, 1);
+    double angle = gravityDirection.angleTo(up);
+    if ((angle < 0.9 || angle > 1.1)) {
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  int time = DateTime.now().millisecondsSinceEpoch;
+
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;
     isBusy = true;
     final List<Barcode> barcodes =
         await barcodeScanner.processImage(inputImage);
-
-    Vector3 gravityDirection = accelerometerEvent - userAccelerometerEvent;
-    print(gravityDirection);
 
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {

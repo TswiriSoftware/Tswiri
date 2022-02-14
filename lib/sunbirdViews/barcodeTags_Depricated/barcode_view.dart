@@ -3,9 +3,8 @@ import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_e
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodes_Depricaterd/new_tag.dart';
 import 'package:hive/hive.dart';
-
-import '../barcodes/new_tag.dart';
 
 class BarcodeView extends StatefulWidget {
   BarcodeAndTagData barcodeAndTagData;

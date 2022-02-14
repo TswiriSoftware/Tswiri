@@ -17,6 +17,6 @@ class BarcodeAndTagData {
 
   @override
   String toString() {
-    return '$barcodeID, $tags';
+    return '$barcodeID, $barcodeSize, $tags';
   }
 }

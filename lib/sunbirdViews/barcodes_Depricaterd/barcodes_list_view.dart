@@ -5,8 +5,9 @@ import 'package:flutter_google_ml_kit/functions/barcodeTools/get_data_functions.
 import 'package:flutter_google_ml_kit/functions/barcodeTools/hide_keyboard.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodes/barcode_data_view.dart';
 import 'package:hive/hive.dart';
+
+import 'barcode_data_view.dart';
 
 class BarcodesListView extends StatefulWidget {
   const BarcodesListView({Key? key}) : super(key: key);
