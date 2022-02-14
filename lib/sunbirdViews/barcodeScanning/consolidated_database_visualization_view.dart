@@ -51,7 +51,6 @@ class _ConsolidatedDatabaseVisualizationState
                   var consolidatedDataBox =
                       await Hive.openBox(realPositionDataBoxName);
                   consolidatedDataBox.clear();
-                  consolidatedDataBox.close();
                   setState(() {});
                 },
                 child: const Icon(Icons.refresh),
@@ -171,6 +170,5 @@ _getPoints(
     ]);
     pointNames.add(data.uid);
   }
-  consolidatedRealDataBox.close();
   return points;
 }

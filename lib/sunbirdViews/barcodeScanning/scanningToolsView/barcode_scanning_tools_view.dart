@@ -15,7 +15,6 @@ class BarcodeScanningView extends StatefulWidget {
 class _BarcodeScanningViewState extends State<BarcodeScanningView> {
   @override
   void initState() {
-    Hive.close();
     super.initState();
   }
 

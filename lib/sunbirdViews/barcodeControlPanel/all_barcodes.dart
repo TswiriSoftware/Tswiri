@@ -4,8 +4,10 @@ import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_e
 import 'package:flutter_google_ml_kit/functions/barcodeTools/get_data_functions.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeTools/hide_keyboard.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/barcode_control_panel.dart';
+import 'package:hive/hive.dart';
 
 class AllBarcodesView extends StatefulWidget {
   const AllBarcodesView({Key? key}) : super(key: key);
@@ -16,10 +18,12 @@ class AllBarcodesView extends StatefulWidget {
 
 class _AllBarcodesViewState extends State<AllBarcodesView> {
   List<BarcodeAndTagData> foundBarcodes = [];
+  List<String> unassignedTags = [];
 
   @override
   void initState() {
     runFilter('');
+
     super.initState();
   }
 
@@ -148,12 +152,14 @@ InkWell displayBarcodeDataWidget(
   }
 
   return InkWell(
-    onTap: () {
+    onTap: () async {
+      List<String> unassignedTags = await getUnassignedTags();
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => BarcodeControlPanelView(
                     barcodeAndTagData: barcodeAndTagData,
+                    unassignedTags: unassignedTags,
                   ))).then((value) => runFilter);
     },
     child: Container(
@@ -208,5 +214,13 @@ String checkIfEmpty(List<String> listOfTags) {
   } else {
     tags = listOfTags.toString().replaceAll(']', '').replaceAll('[', '');
   }
+  return tags;
+}
+
+///Returns a list of all unassigned tags.
+Future<List<String>> getUnassignedTags() async {
+  List<String> tags = [];
+  Box<String> allTagsBox = await Hive.openBox(tagsBoxName);
+  tags = allTagsBox.values.toList();
   return tags;
 }

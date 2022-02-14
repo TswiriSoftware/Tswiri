@@ -94,8 +94,6 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
       addRealInterBarcodeOffsets(
           allInterBarcodeData.toSet().toList(), matchedCalibrationData);
 
-  matchedCalibrationDataBox.close();
-
   //Calculates the average of each RealInterBarcode Data and removes outliers
   deduplicatedRealInterBarcodeOffsets = removeOutliers(
       deduplicatedRealInterBarcodeOffsets, allRealInterBarcodeOffsets);
@@ -186,7 +184,6 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
     writeValidBarcodePositionsToDatabase(
         realBarcodePosition, realPositionalData);
   }
-  realPositionalData.close();
   return '';
 }
 

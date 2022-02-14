@@ -47,7 +47,6 @@ class _HiveDatabaseConsolidationViewState
                 var consolidatedDataBox =
                     await Hive.openBox(realPositionDataBoxName);
                 consolidatedDataBox.clear();
-                consolidatedDataBox.close();
 
                 Future.delayed(const Duration(milliseconds: 100), () {
                   setState(() {});
