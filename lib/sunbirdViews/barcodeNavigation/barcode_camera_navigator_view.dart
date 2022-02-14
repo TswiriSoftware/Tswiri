@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/camera_view.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/painter/barcode_navigation_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
@@ -28,7 +29,6 @@ class _BarcodeCameraNavigatorViewState
 
   @override
   void initState() {
-    Hive.openBox(realPositionDataBoxName);
     super.initState();
   }
 
@@ -50,7 +50,8 @@ class _BarcodeCameraNavigatorViewState
           ),
         ),
         body: CameraView(
-          title: 'Camera Calibration',
+          color: limeGreenMuted,
+          title: 'Barcode Finder',
           customPaint: customPaint,
           onImage: (inputImage) {
             processImage(inputImage);

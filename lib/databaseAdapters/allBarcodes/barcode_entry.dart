@@ -14,7 +14,7 @@ class BarcodeDataEntry extends HiveObject {
   @HiveField(0)
   late int barcodeID;
 
-  ///Barcode Physical size in mm
+  ///Barcode Diagonal side length in mm.
   @HiveField(1)
   late double barcodeSize;
 }

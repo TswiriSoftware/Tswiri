@@ -32,7 +32,7 @@ class _BarcodeNavigationViewState extends State<BarcodeNavigationView> {
           // ignore: prefer_const_literals_to_create_immutables
           children: [
             const CustomCard(
-              'Qr Code Finder',
+              'Barcode Navigator',
               BarcodeSelectionView(),
               Icons.camera,
               featureCompleted: true,

@@ -56,11 +56,10 @@ class _CameraCalibrationState extends State<CameraCalibration> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: skyBlue80,
-        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
         floatingActionButton: Padding(
           padding: const EdgeInsets.all(10.0),
-          child: Column(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               FloatingActionButton(
                 heroTag: null,
@@ -92,6 +91,7 @@ class _CameraCalibrationState extends State<CameraCalibration> {
           onImage: (inputImage) {
             processImage(inputImage);
           },
+          color: skyBlue,
         ));
   }
 

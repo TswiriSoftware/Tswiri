@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
@@ -164,12 +165,14 @@ List<RealBarcodePosition> extractListOfScannedBarcodes(
 
 List<RealInterBarcodeOffset> addRealInterBarcodeOffsets(
     List<RawOnImageInterBarcodeData> allDeduplicatedInterBarcodeData,
-    List<MatchedCalibrationDataHiveObject> matchedCalibrationData) {
+    List<MatchedCalibrationDataHiveObject> matchedCalibrationData,
+    List<BarcodeDataEntry> barcodeDataEntries) {
   List<RealInterBarcodeOffset> allRealInterBarcodeData = [];
   for (RawOnImageInterBarcodeData interBarcodeDataInstance
       in allDeduplicatedInterBarcodeData) {
     RealInterBarcodeOffset realInterBarcodeDataInstance =
-        interBarcodeDataInstance.realInterBarcodeData(matchedCalibrationData);
+        interBarcodeDataInstance.realInterBarcodeData(
+            matchedCalibrationData, barcodeDataEntries);
     allRealInterBarcodeData.add(realInterBarcodeDataInstance);
     //print(interBarcodeDa
     //taInstance);

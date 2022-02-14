@@ -39,6 +39,7 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
   @override
   Widget build(BuildContext context) {
     return CameraView(
+      color: Colors.orange,
       title: 'Object Detector',
       customPaint: customPaint,
       onImage: (inputImage) {

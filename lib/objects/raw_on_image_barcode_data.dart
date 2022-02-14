@@ -1,10 +1,14 @@
 import 'dart:ui';
 
+import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_offset_between_points.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/data_capturing_functions.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
+import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:hive/hive.dart';
 
 ///Describes the "Offset" between two barcodes.
 class RawOnImageInterBarcodeData {
@@ -23,7 +27,7 @@ class RawOnImageInterBarcodeData {
         int.parse(endBarcode.displayValue!);
   }
 
-  ///Gets the start barcode's diagonal length
+  ///Gets the start barcode's diagonal length in px
   double get startDiagonalLength {
     if (checkBarcodes()) {
       return calculateAverageBarcodeDiagonalLength(startBarcode);
@@ -70,16 +74,45 @@ class RawOnImageInterBarcodeData {
   }
 
   ///This calculates the real Offset between the two Barcodes.
-  Offset get realInterBarcodeOffset {
+  Offset realInterBarcodeOffset(List<BarcodeDataEntry> barcodeDataEntries) {
+    //TODO: implement actual size calculations
+
     if (checkBarcodes()) {
-      return calculateOffsetBetweenTwoPoints(
-          calculateBarcodeCenterPoint(startBarcode),
-          calculateBarcodeCenterPoint(endBarcode));
+      return calculateRealOffsetBetweenTwoPoints(
+          calculateOffsetBetweenTwoPoints(
+              calculateBarcodeCenterPoint(startBarcode),
+              calculateBarcodeCenterPoint(endBarcode)),
+          barcodeDataEntries);
     } else {
-      return calculateOffsetBetweenTwoPoints(
-          calculateBarcodeCenterPoint(endBarcode),
-          calculateBarcodeCenterPoint(startBarcode));
+      return calculateRealOffsetBetweenTwoPoints(
+          calculateOffsetBetweenTwoPoints(
+              calculateBarcodeCenterPoint(endBarcode),
+              calculateBarcodeCenterPoint(startBarcode)),
+          barcodeDataEntries);
     }
+  }
+
+  ///Calculates the real interbarcode distace from the offset and barcode sizes.
+  calculateRealOffsetBetweenTwoPoints(Offset offsetBetweenTwoPoints,
+      List<BarcodeDataEntry> barcodeDataEntries) {
+    // mm/px
+    double startBarcodeMMperPX = startDiagonalLength /
+        barcodeDataEntries
+            .firstWhere(
+                (element) => element.barcodeID == int.parse(startBarcodeID))
+            .barcodeSize;
+
+    double endBarcodeMMperPX = endDiagonalLength /
+        barcodeDataEntries
+            .firstWhere(
+                (element) => element.barcodeID == int.parse(endBarcodeID))
+            .barcodeSize;
+
+    Offset realOffsetStartBarcode =
+        offsetBetweenTwoPoints * startBarcodeMMperPX;
+    Offset realOffsetEndBarcode = offsetBetweenTwoPoints * endBarcodeMMperPX;
+    Offset average = (realOffsetStartBarcode + realOffsetEndBarcode) / 2;
+    return average;
   }
 
   //Uses the lookup table matchedCalibration data to find the distance from camera
@@ -103,13 +136,14 @@ class RawOnImageInterBarcodeData {
   }
 
   RealInterBarcodeOffset realInterBarcodeData(
-      List<MatchedCalibrationDataHiveObject> matchedCalibrationData) {
+      List<MatchedCalibrationDataHiveObject> matchedCalibrationData,
+      List<BarcodeDataEntry> barcodeDataEntries) {
     RealInterBarcodeOffset realInterBarcodeDataInstance =
         RealInterBarcodeOffset(
             uid: uid,
             uidStart: startBarcodeID,
             uidEnd: endBarcodeID,
-            interBarcodeOffset: realInterBarcodeOffset,
+            interBarcodeOffset: realInterBarcodeOffset(barcodeDataEntries),
             distanceFromCamera: distanceFromCamera(matchedCalibrationData),
             timestamp: timestamp);
 
@@ -126,6 +160,6 @@ class RawOnImageInterBarcodeData {
 
   @override
   String toString() {
-    return '${startBarcode.displayValue}_${endBarcode.displayValue}, ${realInterBarcodeOffset.dx} , ${realInterBarcodeOffset.dy}, $timestamp';
+    return '${startBarcode.displayValue}_${endBarcode.displayValue}, ${realInterBarcodeOffset} , ${realInterBarcodeOffset}, $timestamp';
   }
 }

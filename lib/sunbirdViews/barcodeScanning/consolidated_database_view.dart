@@ -25,7 +25,6 @@ class _HiveDatabaseConsolidationViewState
 
   @override
   void dispose() {
-    // Hive.close();
     // print("hive_database_consolidation Disposed");
     super.dispose();
   }
@@ -44,7 +43,7 @@ class _HiveDatabaseConsolidationViewState
               heroTag: null,
               onPressed: () async {
                 displayList.clear();
-                var consolidatedDataBox =
+                Box<RealBarcodePostionEntry> consolidatedDataBox =
                     await Hive.openBox(realPositionDataBoxName);
                 consolidatedDataBox.clear();
 
@@ -113,7 +112,8 @@ class _HiveDatabaseConsolidationViewState
   }
 
   Future<List> consolidateData(List displayList) async {
-    var consolidatedDataBox = await Hive.openBox(realPositionDataBoxName);
+    Box<RealBarcodePostionEntry> consolidatedDataBox =
+        await Hive.openBox(realPositionDataBoxName);
     Map<String, RealBarcodePostionEntry> consolidatedData = {};
     Map consolidatedDataMap = consolidatedDataBox.toMap();
     consolidatedDataMap.forEach((key, value) {

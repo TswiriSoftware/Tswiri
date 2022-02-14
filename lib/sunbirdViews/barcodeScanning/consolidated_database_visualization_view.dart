@@ -32,6 +32,7 @@ class _ConsolidatedDatabaseVisualizationState
 
   @override
   void dispose() {
+    Hive.close();
     super.dispose();
   }
 
@@ -155,11 +156,12 @@ _getPoints(
     BuildContext context, List pointNames, List pointRelativePositions) async {
   List<Offset> points = [];
 
-  var consolidatedRealDataBox = await Hive.openBox(realPositionDataBoxName);
+  Box<RealBarcodePostionEntry> consolidatedRealDataBox =
+      await Hive.openBox(realPositionDataBoxName);
   double width = MediaQuery.of(context).size.width;
   double height = MediaQuery.of(context).size.height;
   for (var i = 0; i < consolidatedRealDataBox.length; i++) {
-    RealBarcodePostionEntry data = consolidatedRealDataBox.getAt(i);
+    RealBarcodePostionEntry data = consolidatedRealDataBox.getAt(i)!;
 
     points.add(Offset((data.offset.x / 10) + (width / 2),
         (data.offset.y / 10) + (height / 2)));

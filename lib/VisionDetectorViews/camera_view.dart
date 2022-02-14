@@ -18,6 +18,7 @@ class CameraView extends StatefulWidget {
       required this.title,
       required this.customPaint,
       required this.onImage,
+      required this.color,
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
 
@@ -25,6 +26,7 @@ class CameraView extends StatefulWidget {
   final CustomPaint? customPaint;
   final Function(InputImage inputImage) onImage;
   final CameraLensDirection initialDirection;
+  final Color color;
 
   @override
   _CameraViewState createState() => _CameraViewState();
@@ -63,6 +65,7 @@ class _CameraViewState extends State<CameraView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        backgroundColor: widget.color,
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 20.0),

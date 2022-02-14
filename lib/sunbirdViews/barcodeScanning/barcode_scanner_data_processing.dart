@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import 'package:flutter_google_ml_kit/functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
@@ -25,6 +27,11 @@ class BarcodeScannerDataProcessingView extends StatefulWidget {
 
 class _BarcodeScannerDataProcessingViewState
     extends State<BarcodeScannerDataProcessingView> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -79,26 +86,24 @@ class _BarcodeScannerDataProcessingViewState
 //Implement data viewing
 
 Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
-  Box realPositionalData = await Hive.openBox(realPositionDataBoxName);
-  Box<MatchedCalibrationDataHiveObject> matchedCalibrationDataBox =
-      await Hive.openBox(matchedDataHiveBoxName);
-
+  //List of all matchedCalibration Data
   List<MatchedCalibrationDataHiveObject> matchedCalibrationData =
-      matchedCalibrationDataBox.values.toList();
+      await getMatchedCalibrationData();
+
+  List<BarcodeDataEntry> barcodeDataEntries = await getGeneratedBarcodeData();
 
   List<RealInterBarcodeOffset> allRealInterBarcodeOffsets =
-      addRealInterBarcodeOffsets(allInterBarcodeData, matchedCalibrationData);
+      addRealInterBarcodeOffsets(
+          allInterBarcodeData, matchedCalibrationData, barcodeDataEntries);
 
   //All interBarcode Data from scan - deduplicated
   List<RealInterBarcodeOffset> deduplicatedRealInterBarcodeOffsets =
-      addRealInterBarcodeOffsets(
-          allInterBarcodeData.toSet().toList(), matchedCalibrationData);
+      addRealInterBarcodeOffsets(allInterBarcodeData.toSet().toList(),
+          matchedCalibrationData, barcodeDataEntries);
 
   //Calculates the average of each RealInterBarcode Data and removes outliers
   deduplicatedRealInterBarcodeOffsets = removeOutliers(
       deduplicatedRealInterBarcodeOffsets, allRealInterBarcodeOffsets);
-
-  //print(deduplicatedRealInterBarcodeOffsets);
 
   //List of all barcodes Scanned - deduplicated.
   List<RealBarcodePosition> realBarcodePositions =
@@ -112,14 +117,6 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
   } else {
     return Future.error('Error: Origin Not Scanned');
   }
-
-  // ignore: todo
-  //TODO: add error/exception when origin not in list.
-
-  // print('realBarcodePositions');
-  // for (RealBarcodePosition realBarcodePosition in realBarcodePositions) {
-  //   print(realBarcodePosition);
-  // }
 
   // Go through all realInterbarcode data at least realInterBarcodeData.length times (Little bit of overkill)
   //TODO: do while barcodes without offsets are getiing less.
@@ -178,6 +175,10 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
       break;
     }
   }
+
+  //Open realPositionalData box.
+  Box<RealBarcodePostionEntry> realPositionalData =
+      await Hive.openBox(realPositionDataBoxName);
 
   //Writes data to Hive Database
   for (RealBarcodePosition realBarcodePosition in realBarcodePositions) {
@@ -242,4 +243,19 @@ List<RealInterBarcodeOffset> removeOutliers(
   }
 
   return goodDataList;
+}
+
+Future<List<MatchedCalibrationDataHiveObject>>
+    getMatchedCalibrationData() async {
+  Box<MatchedCalibrationDataHiveObject> matchedCalibrationDataBox =
+      await Hive.openBox(matchedDataHiveBoxName);
+
+  return matchedCalibrationDataBox.values.toList();
+}
+
+///Returns a list of generated barcodeData
+Future<List<BarcodeDataEntry>> getGeneratedBarcodeData() async {
+  Box<BarcodeDataEntry> generatedBarcodeData =
+      await Hive.openBox(generatedBarcodesBoxName);
+  return generatedBarcodeData.values.toList();
 }

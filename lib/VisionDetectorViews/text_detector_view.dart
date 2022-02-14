@@ -25,6 +25,7 @@ class _TextDetectorViewState extends State<TextDetectorView> {
   @override
   Widget build(BuildContext context) {
     return CameraView(
+      color: Colors.orange,
       title: 'Text Detector',
       customPaint: customPaint,
       onImage: (inputImage) {

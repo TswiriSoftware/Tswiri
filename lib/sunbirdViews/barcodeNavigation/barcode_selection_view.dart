@@ -35,7 +35,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
         appBar: AppBar(
           backgroundColor: limeGreenMuted,
           title: const Text(
-            'Qr Code Selector',
+            'Barcode Navigator',
             style: TextStyle(fontSize: 25),
           ),
           centerTitle: true,

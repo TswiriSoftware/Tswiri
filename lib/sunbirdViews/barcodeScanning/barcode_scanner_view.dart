@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/dataInjectors/single_image_inter_barcode_data_extractor.dart';
@@ -69,6 +70,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
           ),
         ),
         body: CameraView(
+          color: brightOrange,
           title: 'Barcode Scanner',
           customPaint: customPaint,
           onImage: (inputImage) {
@@ -86,7 +88,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     Vector3 gravityDirection = accelerometerEvent - userAccelerometerEvent;
     print(gravityDirection);
 
-    Vector3 up = Vector3(1, 1, 1);
+    Vector3 up = Vector3(0, 1, 0);
     double angle = gravityDirection.angleTo(up);
     if ((angle < 0.9 || angle > 1.1)) {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);

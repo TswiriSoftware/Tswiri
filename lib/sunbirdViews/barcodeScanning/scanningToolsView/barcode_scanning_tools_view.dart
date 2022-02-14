@@ -20,7 +20,6 @@ class _BarcodeScanningViewState extends State<BarcodeScanningView> {
 
   @override
   void dispose() {
-    Hive.close();
     super.dispose();
   }
 
