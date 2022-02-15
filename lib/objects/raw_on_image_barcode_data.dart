@@ -83,7 +83,6 @@ class RawOnImageInterBarcodeData {
     }
   }
 
-  //TODO: take angle into considiration
   ///This calculates the real Offset between the two Barcodes.
   Offset realInterBarcodeOffset(List<BarcodeDataEntry> barcodeDataEntries) {
     if (checkBarcodes()) {
@@ -101,8 +100,10 @@ class RawOnImageInterBarcodeData {
     }
   }
 
+  //TODO: implement x<-45 and x>45
   ///Calculates the real interbarcode distace from the offset and barcode sizes.
   ///This will only work for -45deg to 45deg from up on the y axis.
+  ///
   calculateRealOffsetBetweenTwoPoints(Offset offsetBetweenTwoPoints,
       List<BarcodeDataEntry> barcodeDataEntries) {
     // mm/px
@@ -131,7 +132,7 @@ class RawOnImageInterBarcodeData {
         (realOffset.x * sin(angleRadians) +
             (realOffset.y * cos(angleRadians))));
 
-    //print(angleRadians);
+    print(angleRadians);
 
     return rotatedOffset;
   }
@@ -156,6 +157,7 @@ class RawOnImageInterBarcodeData {
     return distanceFromCamera;
   }
 
+  ///Creates a RealInterBarcodeOffset from data
   RealInterBarcodeOffset realInterBarcodeData(
       List<MatchedCalibrationDataHiveObject> matchedCalibrationData,
       List<BarcodeDataEntry> barcodeDataEntries) {

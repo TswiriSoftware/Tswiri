@@ -12,13 +12,11 @@ class AccelerometerEvents {
     //This is the 3D orientation of the phone
     Vector3 gravityDirection3D = accelerometerEvent - userAccelerometerEvent;
 
+    //Convert to 2D plane X-Y
     Vector2 gravityDirection2D =
         Vector2(gravityDirection3D.x, gravityDirection3D.y);
-    Vector2 realUp = Vector2(0, 1);
-    double angleRadians = gravityDirection2D.angleTo(realUp);
-    if (gravityDirection2D.x >= 0) {
-      angleRadians = -angleRadians;
-    }
+    Vector2 zero = Vector2(0, 1);
+    double angleRadians = gravityDirection2D.angleTo(zero);
 
     print(gravityDirection2D);
     print(angleRadians);
