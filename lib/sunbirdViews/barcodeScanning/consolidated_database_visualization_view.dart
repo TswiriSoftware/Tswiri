@@ -49,7 +49,7 @@ class _ConsolidatedDatabaseVisualizationState
                 heroTag: null,
                 onPressed: () async {
                   pointNames.clear();
-                  var consolidatedDataBox =
+                  Box<RealBarcodePostionEntry> consolidatedDataBox =
                       await Hive.openBox(realPositionDataBoxName);
                   consolidatedDataBox.clear();
                   setState(() {});
@@ -129,7 +129,9 @@ class OpenPainter extends CustomPainter {
               '\n y: ' +
               pointData[1] +
               '\n z: ' +
-              pointData[2],
+              pointData[2] +
+              '\n deg: ' +
+              pointData[3],
           style: TextStyle(
               color: Colors.red[500],
               fontSize: 1.5,
@@ -168,7 +170,8 @@ _getPoints(
     pointRelativePositions.add([
       roundDouble(data.offset.x, 5),
       roundDouble(data.offset.y, 5),
-      roundDouble(data.distanceFromCamera, 5)
+      roundDouble(data.distanceFromCamera, 5),
+      roundDouble((data.angleRad * 57.2958), 5)
     ]);
     pointNames.add(data.uid);
   }

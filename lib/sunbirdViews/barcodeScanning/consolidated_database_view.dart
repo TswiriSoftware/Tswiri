@@ -45,11 +45,9 @@ class _HiveDatabaseConsolidationViewState
                 displayList.clear();
                 Box<RealBarcodePostionEntry> consolidatedDataBox =
                     await Hive.openBox(realPositionDataBoxName);
-                consolidatedDataBox.clear();
+                await consolidatedDataBox.clear();
 
-                Future.delayed(const Duration(milliseconds: 100), () {
-                  setState(() {});
-                });
+                setState(() {});
               },
               child: const Icon(Icons.delete),
             ),
@@ -129,8 +127,8 @@ List _displayList(
   consolidatedData.forEach((key, value) {
     displayList.add([
       value.uid,
-      roundDouble(value.offset.x, 8),
-      roundDouble(value.offset.y, 8),
+      roundDouble(value.offset.x, 6),
+      roundDouble(value.offset.y, 6),
       roundDouble(value.distanceFromCamera, 1),
       value.fixed
     ]);

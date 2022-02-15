@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
+import 'package:flutter_google_ml_kit/objects/accelerometer_events.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/dataInjectors/single_image_inter_barcode_data_extractor.dart';
@@ -9,7 +10,6 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import '../../VisionDetectorViews/camera_view.dart';
 import 'painter/barcode_detector_painter.dart';
-import 'package:provider/provider.dart';
 
 class BarcodeScannerView extends StatefulWidget {
   const BarcodeScannerView({Key? key}) : super(key: key);
@@ -79,20 +79,11 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
         ));
   }
 
-  phoneAngle() {
-    const snackBar = SnackBar(
-      content: Text('Yay! A SnackBar!'),
-      duration: Duration(milliseconds: 100),
-    );
-
-    Vector3 gravityDirection = accelerometerEvent - userAccelerometerEvent;
-    print(gravityDirection);
-
-    Vector3 up = Vector3(0, 1, 0);
-    double angle = gravityDirection.angleTo(up);
-    if ((angle < 0.9 || angle > 1.1)) {
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+  ///This
+  AccelerometerEvents getAccelerometerEvents() {
+    return AccelerometerEvents(
+        accelerometerEvent: accelerometerEvent,
+        userAccelerometerEvent: userAccelerometerEvent);
   }
 
   int time = DateTime.now().millisecondsSinceEpoch;
@@ -107,8 +98,8 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
         inputImage.inputImageData?.imageRotation != null) {
       //Dont bother if we haven't detected more than one barcode on a image.
       if (barcodes.length >= 2) {
-        allInterBarcodeData
-            .addAll((singeImageInterBarcodeDataExtractor(barcodes)));
+        allInterBarcodeData.addAll((singeImageInterBarcodeDataExtractor(
+            barcodes, getAccelerometerEvents())));
       }
       //Paint square on screen around barcode.
       final painter = BarcodeDetectorPainter(

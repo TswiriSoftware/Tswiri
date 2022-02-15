@@ -20,10 +20,17 @@ class RealBarcodePosition {
 
   double distanceFromCamera;
 
+  double phoneAngleRad;
+
   ///This is the timestamp of when the barcode was scanned
   int? timestamp;
-  RealBarcodePosition(this.uid, this.interBarcodeOffset,
-      this.numberOfBarcodesFromOrigin, this.distanceFromCamera, this.timestamp);
+  RealBarcodePosition(
+      this.uid,
+      this.interBarcodeOffset,
+      this.numberOfBarcodesFromOrigin,
+      this.distanceFromCamera,
+      this.phoneAngleRad,
+      this.timestamp);
 
   @override
   bool operator ==(Object other) {

@@ -55,7 +55,8 @@ List<RealInterBarcodeOffset> findSimilarInterBarcodeOffsets(
 }
 
 void writeValidBarcodePositionsToDatabase(
-    RealBarcodePosition realBarcodePosition, Box<dynamic> realPositionalData) {
+    RealBarcodePosition realBarcodePosition,
+    Box<RealBarcodePostionEntry> realPositionalData) {
   if (realBarcodePosition.interBarcodeOffset != null) {
     //Creates an entry for each realBarcodePosition
     realPositionalData.put(
@@ -64,6 +65,7 @@ void writeValidBarcodePositionsToDatabase(
             uid: realBarcodePosition.uid,
             offset: offsetToTypeOffset(realBarcodePosition.interBarcodeOffset!),
             distanceFromCamera: realBarcodePosition.distanceFromCamera,
+            angleRad: realBarcodePosition.phoneAngleRad,
             fixed: false,
             timestamp: realBarcodePosition.timestamp!));
   }
@@ -152,10 +154,20 @@ List<RealBarcodePosition> extractListOfScannedBarcodes(
   List<RealBarcodePosition> allBarcodesInScan = [];
   for (RealInterBarcodeOffset interBarcodeData in allRealInterBarcodeData) {
     allBarcodesInScan.addAll([
-      RealBarcodePosition(interBarcodeData.uidStart, null, null,
-          interBarcodeData.distanceFromCamera, null),
-      RealBarcodePosition(interBarcodeData.uidEnd, null, null,
-          interBarcodeData.distanceFromCamera, null)
+      RealBarcodePosition(
+          interBarcodeData.uidStart,
+          null,
+          null,
+          interBarcodeData.distanceFromCamera,
+          interBarcodeData.phoneAngle,
+          null),
+      RealBarcodePosition(
+          interBarcodeData.uidEnd,
+          null,
+          null,
+          interBarcodeData.distanceFromCamera,
+          interBarcodeData.phoneAngle,
+          null)
     ]);
   }
 
@@ -163,11 +175,13 @@ List<RealBarcodePosition> extractListOfScannedBarcodes(
   return realPositionData;
 }
 
-List<RealInterBarcodeOffset> addRealInterBarcodeOffsets(
+///Returns all realInterBarcodeOffsets
+List<RealInterBarcodeOffset> getAllRealInterBarcodeOffsets(
     List<RawOnImageInterBarcodeData> allDeduplicatedInterBarcodeData,
     List<MatchedCalibrationDataHiveObject> matchedCalibrationData,
     List<BarcodeDataEntry> barcodeDataEntries) {
   List<RealInterBarcodeOffset> allRealInterBarcodeData = [];
+
   for (RawOnImageInterBarcodeData interBarcodeDataInstance
       in allDeduplicatedInterBarcodeData) {
     RealInterBarcodeOffset realInterBarcodeDataInstance =

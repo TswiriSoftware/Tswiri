@@ -1,33 +1,43 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_offset_between_points.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/data_capturing_functions.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
-import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
+import 'package:flutter_google_ml_kit/objects/accelerometer_events.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:hive/hive.dart';
+import 'package:sensors_plus/sensors_plus.dart';
+import 'package:vector_math/vector_math.dart';
 
 ///Describes the "Offset" between two barcodes.
 class RawOnImageInterBarcodeData {
   RawOnImageInterBarcodeData(
       {required this.startBarcode,
       required this.endBarcode,
+      required this.accelerometerEvent,
       required this.timestamp});
 
+  ///Data related to the start barcode.
   final BarcodeValue startBarcode;
+
+  ///Data related to the end barcode.
   final BarcodeValue endBarcode;
+
+  ///Contains accelerometer Events
+  final AccelerometerEvents accelerometerEvent;
+
+  ///Time of creation.
   final int timestamp;
 
-  ///Check if startBarcode displayValue is less than endBarcode DisplayValue
+  ///Check if startBarcode displayValue is less than endBarcode DisplayValue.
   bool checkBarcodes() {
     return int.parse(startBarcode.displayValue!) <
         int.parse(endBarcode.displayValue!);
   }
 
-  ///Gets the start barcode's diagonal length in px
+  ///Gets the start barcode's diagonal length in px.
   double get startDiagonalLength {
     if (checkBarcodes()) {
       return calculateAverageBarcodeDiagonalLength(startBarcode);
@@ -36,7 +46,7 @@ class RawOnImageInterBarcodeData {
     }
   }
 
-  ///Gets the end barcode's diagonal length
+  ///Gets the end barcode's diagonal length.
   double get endDiagonalLength {
     if (checkBarcodes()) {
       return calculateAverageBarcodeDiagonalLength(endBarcode);
@@ -73,10 +83,9 @@ class RawOnImageInterBarcodeData {
     }
   }
 
+  //TODO: take angle into considiration
   ///This calculates the real Offset between the two Barcodes.
   Offset realInterBarcodeOffset(List<BarcodeDataEntry> barcodeDataEntries) {
-    //TODO: implement actual size calculations
-
     if (checkBarcodes()) {
       return calculateRealOffsetBetweenTwoPoints(
           calculateOffsetBetweenTwoPoints(
@@ -93,6 +102,7 @@ class RawOnImageInterBarcodeData {
   }
 
   ///Calculates the real interbarcode distace from the offset and barcode sizes.
+  ///This will only work for -45deg to 45deg from up on the y axis.
   calculateRealOffsetBetweenTwoPoints(Offset offsetBetweenTwoPoints,
       List<BarcodeDataEntry> barcodeDataEntries) {
     // mm/px
@@ -112,7 +122,18 @@ class RawOnImageInterBarcodeData {
         offsetBetweenTwoPoints * startBarcodeMMperPX;
     Offset realOffsetEndBarcode = offsetBetweenTwoPoints * endBarcodeMMperPX;
     Offset average = (realOffsetStartBarcode + realOffsetEndBarcode) / 2;
-    return average;
+
+    Vector2 realOffset = Vector2(average.dx, average.dy);
+    double angleRadians = accelerometerEvent.calculatePhoneAngle();
+
+    Offset rotatedOffset = Offset(
+        (realOffset.x * cos(angleRadians) + (realOffset.y * sin(angleRadians))),
+        (realOffset.x * sin(angleRadians) +
+            (realOffset.y * cos(angleRadians))));
+
+    //print(angleRadians);
+
+    return rotatedOffset;
   }
 
   //Uses the lookup table matchedCalibration data to find the distance from camera
@@ -144,6 +165,7 @@ class RawOnImageInterBarcodeData {
             uidStart: startBarcodeID,
             uidEnd: endBarcodeID,
             interBarcodeOffset: realInterBarcodeOffset(barcodeDataEntries),
+            phoneAngle: accelerometerEvent.calculatePhoneAngle(),
             distanceFromCamera: distanceFromCamera(matchedCalibrationData),
             timestamp: timestamp);
 

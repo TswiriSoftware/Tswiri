@@ -93,13 +93,12 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
   List<BarcodeDataEntry> barcodeDataEntries = await getGeneratedBarcodeData();
 
   List<RealInterBarcodeOffset> allRealInterBarcodeOffsets =
-      addRealInterBarcodeOffsets(
+      getAllRealInterBarcodeOffsets(
           allInterBarcodeData, matchedCalibrationData, barcodeDataEntries);
 
   //All interBarcode Data from scan - deduplicated
   List<RealInterBarcodeOffset> deduplicatedRealInterBarcodeOffsets =
-      addRealInterBarcodeOffsets(allInterBarcodeData.toSet().toList(),
-          matchedCalibrationData, barcodeDataEntries);
+      allRealInterBarcodeOffsets.toSet().toList();
 
   //Calculates the average of each RealInterBarcode Data and removes outliers
   deduplicatedRealInterBarcodeOffsets = removeOutliers(

@@ -93,17 +93,17 @@ class BarcodeDetectorPainter extends CustomPainter {
         double ratio = side1 / side2;
         double average = (side3 + side4) / 2;
 
-        print('ratio: $average');
+//        print('ratio: $average');
 
-        TextPainter tp = Text(roundDouble(average, 5).toString());
-        tp.textScaleFactor = 1.5;
-        tp.layout();
-        tp.paint(canvas, offsetPoints[0]);
+        // TextPainter tp = Text(roundDouble(average, 5).toString());
+        // tp.textScaleFactor = 1.5;
+        // tp.layout();
+        // tp.paint(canvas, offsetPoints[0]);
 
-        TextPainter tp1 = Text(roundDouble(ratio, 5).toString());
-        tp1.textScaleFactor = 1.5;
-        tp1.layout();
-        tp1.paint(canvas, offsetPoints[2]);
+        // TextPainter tp1 = Text(roundDouble(ratio, 5).toString());
+        // tp1.textScaleFactor = 1.5;
+        // tp1.layout();
+        // tp1.paint(canvas, offsetPoints[2]);
         // TextPainter tp2 = Text('3');
         // tp2.layout();
         // tp2.paint(canvas, offsetPoints[2]);
