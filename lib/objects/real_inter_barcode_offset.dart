@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:vector_math/vector_math.dart';
 
 ///Contains 2 barcode ID's and the offset bewteen the barcodes
 ///
@@ -21,8 +20,7 @@ class RealInterBarcodeOffset {
       {required this.uid,
       required this.uidStart,
       required this.uidEnd,
-      required this.interBarcodeOffset,
-      required this.phoneAngle,
+      required this.realInterBarcodeOffset,
       required this.distanceFromCamera,
       required this.timestamp});
 
@@ -36,13 +34,10 @@ class RealInterBarcodeOffset {
   String uidEnd;
 
   ///Offset from start Barcode TO end Barcode
-  Offset interBarcodeOffset;
+  Offset realInterBarcodeOffset;
 
   ///Distance from the camera
   double distanceFromCamera;
-
-  ///This is the angle the phone makes with the Y axis
-  double phoneAngle;
 
   ///Timestamp of when it was created.
   int timestamp;
@@ -57,6 +52,6 @@ class RealInterBarcodeOffset {
 
   @override
   String toString() {
-    return '$uid, ${interBarcodeOffset.dx}, ${interBarcodeOffset.dy}, $timestamp';
+    return '$uid, ${realInterBarcodeOffset.dx}, ${realInterBarcodeOffset.dy}, $timestamp';
   }
 }

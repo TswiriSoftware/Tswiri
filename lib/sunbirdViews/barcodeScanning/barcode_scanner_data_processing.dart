@@ -7,18 +7,19 @@ import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/globalValues/origin_data.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
+import 'package:flutter_google_ml_kit/objects/raw_on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
 import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
 import 'consolidated_database_visualization_view.dart';
+import 'widgets/real_position_display_widget.dart';
 
 class BarcodeScannerDataProcessingView extends StatefulWidget {
   const BarcodeScannerDataProcessingView(
-      {Key? key, required this.allInterBarcodeData})
+      {Key? key, required this.allRawOnImageBarcodeData})
       : super(key: key);
 
-  final List<RawOnImageInterBarcodeData> allInterBarcodeData;
+  final List<RawOnImageBarcodeData> allRawOnImageBarcodeData;
 
   @override
   _BarcodeScannerDataProcessingViewState createState() =>
@@ -49,16 +50,12 @@ class _BarcodeScannerDataProcessingViewState
             FloatingActionButton(
               heroTag: null,
               onPressed: () {
-                //Navigator.pop(context);
-                // Navigator.of(context).pushReplacement(MaterialPageRoute(
-                //     builder: (context) =>
-                //         const ConsolidatedDatabaseVisualization()));
                 Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const ConsolidatedDatabaseVisualization()))
-                    .then((value) => processData(widget.allInterBarcodeData));
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            const ConsolidatedDatabaseVisualization())).then(
+                    (value) => processData(widget.allRawOnImageBarcodeData));
               },
               child: const Icon(Icons.check_circle_outline_rounded),
             ),
@@ -69,11 +66,20 @@ class _BarcodeScannerDataProcessingViewState
         title: const Text('Processing Data'),
       ),
       body: Center(
-        child: FutureBuilder(
-          future: processData(widget.allInterBarcodeData),
+        child: FutureBuilder<List<RealBarcodePosition>>(
+          future: processData(widget.allRawOnImageBarcodeData),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return const Text('Done'); //proceedButton(context);
+              List<RealBarcodePosition> data = snapshot.data!;
+              return Padding(
+                padding: const EdgeInsets.only(top: 2.5),
+                child: ListView.builder(
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      return RealPositionDisplayWidget(
+                          realBarcodePosition: data[index]);
+                    }),
+              );
             } else if (snapshot.hasError) {
               return Text(
                 "${snapshot.error}",
@@ -91,36 +97,65 @@ class _BarcodeScannerDataProcessingViewState
 
 //Implement data viewing
 
-//TODO: Clean up processing data confusion. STEP 1 ,2 ,3 .... Why this step ?
+//1. Get all initial data that will be used.
+//
+//  1.1 getMatchedCalibrationData (This is the lookupTable that allows for distance from camera calculations)
+//  1.2 getGeneratedBarcodeData (This list contains all the real life barcode sizes)
+//
+//2. Build a list of all onImageInterBarcodeData based on allRawOnImageBarcodeData.
+//
+//3. Create list containing AllRealInterBarcodeOffsets and uniqueRealInterBarcodeOffsets.
+//
+//  3.1 buildAllRealInterBarcodeOffsets.
+//    i. Takes the phones rotation into consideration
+//    ii. It calculates the real distance between barcodes.
+//    iii. It calculates the distance between the barcodes and the camera.
+//
+//  3.2 uniqueRealInterBarcodeOffsets
+//    i. Removes duplicate realInterBarcodeOffsets.
+//
+//4. processRealInterBarcodeData
+//    i. Removes data outleirs
+//    ii. Calculates averages with the remaining data.
+//
 
-Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
-  //List of all matchedCalibration Data
+Future<List<RealBarcodePosition>> processData(
+    List<RawOnImageBarcodeData> allRawOnImageBarcodeData) async {
+  //1.1 List of all matchedCalibration Data
   List<MatchedCalibrationDataHiveObject> matchedCalibrationData =
       await getMatchedCalibrationData();
 
+  //1.2 This list contains all generated barcodes and their real life sizes.
   List<BarcodeDataEntry> barcodeDataEntries = await getGeneratedBarcodeData();
 
+  //2. This list contains all onImageInterBarcodeData.
+  List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData =
+      buildAllOnImageInterBarcodeData(allRawOnImageBarcodeData);
 
-  //TODO Rotate Points here ...
-
+  //3.1 Calculates all real interBarcodeOffsets.
+  //Check Function for details.
   List<RealInterBarcodeOffset> allRealInterBarcodeOffsets =
-      calculateAllRealInterBarcodeOffsets(
-          allInterBarcodeData, matchedCalibrationData, barcodeDataEntries);
+      buildAllRealInterBarcodeOffsets(
+          allOnImageInterBarcodeData: allOnImageInterBarcodeData,
+          matchedCalibrationData: matchedCalibrationData,
+          barcodeDataEntries: barcodeDataEntries);
 
-
-
-
-  //All interBarcode Data from scan - deduplicated
-  List<RealInterBarcodeOffset> deduplicatedRealInterBarcodeOffsets =
+  //3.2 This list contains only unique realInterBarcodeOffsets.
+  List<RealInterBarcodeOffset> uniqueRealInterBarcodeOffsets =
       allRealInterBarcodeOffsets.toSet().toList();
 
-  //Calculates the average of each RealInterBarcode Data and removes outliers
-  deduplicatedRealInterBarcodeOffsets = removeOutliers(
-      deduplicatedRealInterBarcodeOffsets, allRealInterBarcodeOffsets);
+  //4. To build the list of final RealInterBarcodeOffsets we:
+  //  i. Remove all the outliers from allOnImageInterBarcodeData
+  //  ii. Then use the uniqueRealInterBarcodeOffsets as a reference to
+  //      calculate the average from allRealInterBarcodeOffsets.
+  List<RealInterBarcodeOffset> finalRealInterBarcodeOffsets =
+      processRealInterBarcodeData(
+          uniqueRealInterBarcodeOffsets: uniqueRealInterBarcodeOffsets,
+          allRealInterBarcodeOffsets: allRealInterBarcodeOffsets);
 
   //List of all barcodes Scanned - deduplicated.
   List<RealBarcodePosition> realBarcodePositions =
-      extractListOfScannedBarcodes(deduplicatedRealInterBarcodeOffsets);
+      extractListOfScannedBarcodes(finalRealInterBarcodeOffsets);
 
   //Populate origin
   if (realBarcodePositions.any((element) => element.uid == '1')) {
@@ -128,16 +163,15 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
             realBarcodePositions.indexWhere((element) => element.uid == '1')] =
         origin(realBarcodePositions);
   } else {
-    return Future.error('Error: Origin Not Scanned');
+    //If the origin was not scanned then the app will throw an error
+    return Future.error('Error: Origin Not Scanned.');
   }
 
   // Go through all realInterbarcode data at least realInterBarcodeData.length times (Little bit of overkill)
-  //TODO: do while barcodes without offsets are getiing less.
-
   int nonNullPositions = 1;
   int nullPositions = realBarcodePositions.length;
 
-  for (int i = 0; i <= deduplicatedRealInterBarcodeOffsets.length;) {
+  for (int i = 0; i <= uniqueRealInterBarcodeOffsets.length;) {
     for (RealBarcodePosition endBarcodeRealPosition in realBarcodePositions) {
       if (endBarcodeRealPosition.interBarcodeOffset == null) {
         //startBarcode : The barcode that we are going to use a reference (has offset relative to origin)
@@ -147,15 +181,13 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
         //This list contains all RealInterBarcode Offsets that contains the endBarcode.
         List<RealInterBarcodeOffset> relevantInterBarcodeOffsets =
             getRelevantInterBarcodeOffsets(
-                deduplicatedRealInterBarcodeOffsets, endBarcodeRealPosition);
+                uniqueRealInterBarcodeOffsets, endBarcodeRealPosition);
 
         //This list contains all realBarcodePositions with a Offset (effectivley to the Origin).
         List<RealBarcodePosition> barcodesWithOffset =
             getBarcodesWithOffset(realBarcodePositions);
 
-        //sorts by least amount of steps to origin #not working well#
-        //barcodesWithOffset.sort(mySortComparison);
-
+        //Finds a relevant startBarcode based on the relevantInterbarcodeOffsets and BarcodesWithOffset.
         int startBarcodeIndex = findStartBarcodeIndex(
             barcodesWithOffset, relevantInterBarcodeOffsets);
 
@@ -184,6 +216,7 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
       }
     }
     i++;
+    //If all barcodes have been mapped it will break the loop.
     if (nonNullPositions == nullPositions) {
       break;
     }
@@ -198,77 +231,9 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
     writeValidBarcodePositionsToDatabase(
         realBarcodePosition, realPositionalData);
   }
-  return '';
-}
 
-List<RealInterBarcodeOffset> removeOutliers(
-    List<RealInterBarcodeOffset> deduplicatedRealInterBarcodeOffsets,
-    List<RealInterBarcodeOffset> allRealInterBarcodeOffsets) {
-  //Calculates the average of each RealInterBarcode Data and removes outliers
-  List<RealInterBarcodeOffset> goodDataList = [];
-  for (RealInterBarcodeOffset realInterBacrodeOffset
-      in deduplicatedRealInterBarcodeOffsets) {
-    //All similar interBarcodeOffsets ex 1_2 will return all 1_2 interbarcodeOffsets
-    List<RealInterBarcodeOffset> similarInterBarcodeOffsets =
-        findSimilarInterBarcodeOffsets(
-            allRealInterBarcodeOffsets, realInterBacrodeOffset);
-
-    //Sort similarInterBarcodeOffsets by distance
-    similarInterBarcodeOffsets.sort((a, b) =>
-        a.interBarcodeOffset.distance.compareTo(b.interBarcodeOffset.distance));
-
-    //Indexes
-    int medianIndex = (similarInterBarcodeOffsets.length ~/ 2);
-    int q1Index = ((similarInterBarcodeOffsets.length / 2) ~/ 2);
-    int q3Index = medianIndex + q1Index;
-
-    //Values
-    double median =
-        similarInterBarcodeOffsets[medianIndex].interBarcodeOffset.distance;
-    double q1 =
-        (similarInterBarcodeOffsets[q1Index].interBarcodeOffset.distance +
-                median) /
-            2;
-    double q3 =
-        (similarInterBarcodeOffsets[q3Index].interBarcodeOffset.distance +
-                median) /
-            2;
-    double interQRange = q3 - q1;
-    double q1Boundry = q1 - interQRange * 1.5; //Lower boundry
-    double q3Boundry = q3 + interQRange * 1.5; //Upper boundry
-
-    //Remove data outside the boundries
-    similarInterBarcodeOffsets.removeWhere((element) =>
-        element.interBarcodeOffset.distance <= q1Boundry &&
-        element.interBarcodeOffset.distance >= q3Boundry);
-
-    //Loops through all similar interBarcodeOffsets to calculate the average
-    for (RealInterBarcodeOffset similarInterBarcodeOffset
-        in similarInterBarcodeOffsets) {
-      calculateAverageOffsets(
-          similarInterBarcodeOffset, realInterBacrodeOffset);
-      realInterBacrodeOffset.distanceFromCamera =
-          (realInterBacrodeOffset.distanceFromCamera +
-                  similarInterBarcodeOffset.distanceFromCamera) /
-              2;
-    }
-    goodDataList.add(realInterBacrodeOffset);
-  }
-
-  return goodDataList;
-}
-
-Future<List<MatchedCalibrationDataHiveObject>>
-    getMatchedCalibrationData() async {
-  Box<MatchedCalibrationDataHiveObject> matchedCalibrationDataBox =
-      await Hive.openBox(matchedDataHiveBoxName);
-
-  return matchedCalibrationDataBox.values.toList();
-}
-
-///Returns a list of generated barcodeData
-Future<List<BarcodeDataEntry>> getGeneratedBarcodeData() async {
-  Box<BarcodeDataEntry> generatedBarcodeData =
-      await Hive.openBox(generatedBarcodesBoxName);
-  return generatedBarcodeData.values.toList();
+  //Sort realBarcodePositions by uid numericalvalue.
+  realBarcodePositions
+      .sort((a, b) => int.parse(a.uid).compareTo(int.parse(b.uid)));
+  return realBarcodePositions;
 }

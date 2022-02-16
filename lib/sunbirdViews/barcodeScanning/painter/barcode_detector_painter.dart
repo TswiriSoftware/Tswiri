@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 import '../../../VisionDetectorViews/painters/coordinates_translator.dart';
@@ -86,12 +85,12 @@ class BarcodeDetectorPainter extends CustomPainter {
         offsetPoints.add(offsetPoints.first);
         canvas.drawPoints(PointMode.polygon, offsetPoints, paint);
 
-        double side1 = (offsetPoints[0] - offsetPoints[3]).distance;
-        double side2 = (offsetPoints[1] - offsetPoints[2]).distance;
-        double side3 = (offsetPoints[0] - offsetPoints[1]).distance;
-        double side4 = (offsetPoints[2] - offsetPoints[3]).distance;
-        double ratio = side1 / side2;
-        double average = (side3 + side4) / 2;
+        // double side1 = (offsetPoints[0] - offsetPoints[3]).distance;
+        // double side2 = (offsetPoints[1] - offsetPoints[2]).distance;
+        // double side3 = (offsetPoints[0] - offsetPoints[1]).distance;
+        // double side4 = (offsetPoints[2] - offsetPoints[3]).distance;
+        // double ratio = side1 / side2;
+        // double average = (side3 + side4) / 2;
 
 //        print('ratio: $average');
 
@@ -127,8 +126,9 @@ class BarcodeDetectorPainter extends CustomPainter {
     }
   }
 
-  TextPainter Text(String text) {
-    TextSpan span = TextSpan(style: TextStyle(color: Colors.red), text: text);
+  TextPainter text(String text) {
+    TextSpan span =
+        TextSpan(style: const TextStyle(color: Colors.red), text: text);
     TextPainter tp = TextPainter(
         text: span,
         textAlign: TextAlign.left,

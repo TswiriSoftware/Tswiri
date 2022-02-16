@@ -129,9 +129,7 @@ class OpenPainter extends CustomPainter {
               '\n y: ' +
               pointData[1] +
               '\n z: ' +
-              pointData[2] +
-              '\n deg: ' +
-              pointData[3],
+              pointData[2],
           style: TextStyle(
               color: Colors.red[500],
               fontSize: 1.5,
@@ -171,7 +169,6 @@ _getPoints(
       roundDouble(data.offset.x, 5),
       roundDouble(data.offset.y, 5),
       roundDouble(data.distanceFromCamera, 5),
-      roundDouble((data.angleRad * 57.2958), 5)
     ]);
     pointNames.add(data.uid);
   }

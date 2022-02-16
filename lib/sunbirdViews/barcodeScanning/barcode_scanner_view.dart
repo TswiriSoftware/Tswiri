@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-import 'package:flutter_google_ml_kit/objects/accelerometer_events.dart';
+import 'package:flutter_google_ml_kit/objects/accelerometer_data.dart';
+import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/dataInjectors/single_image_inter_barcode_data_extractor.dart';
-import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/barcode_scanner_data_processing.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:sensors_plus/sensors_plus.dart';
@@ -22,7 +21,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
 
-  List<RawOnImageInterBarcodeData> allInterBarcodeData = [];
+  List<RawOnImageBarcodeData> allRawOnImageBarcodeData = [];
   bool isBusy = false;
   CustomPaint? customPaint;
 
@@ -62,7 +61,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
                   Navigator.pop(context);
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
                       builder: (context) => BarcodeScannerDataProcessingView(
-                          allInterBarcodeData: allInterBarcodeData)));
+                          allRawOnImageBarcodeData: allRawOnImageBarcodeData)));
                 },
                 child: const Icon(Icons.check_circle_outline_rounded),
               ),
@@ -79,14 +78,12 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
         ));
   }
 
-  ///This //TODO: complete
-  AccelerometerEvents getAccelerometerEvents() {
-    return AccelerometerEvents(
+  ///This stores the AccelerometerEvent and UserAccelerometerEvent at an instant.
+  AccelerometerData getAccelerometerData() {
+    return AccelerometerData(
         accelerometerEvent: accelerometerEvent,
         userAccelerometerEvent: userAccelerometerEvent);
   }
-
-  int time = DateTime.now().millisecondsSinceEpoch;
 
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;
@@ -97,11 +94,12 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
       //Dont bother if we haven't detected more than one barcode on a image.
-
-      //TODO: dont do processing here... 
       if (barcodes.length >= 2) {
-        allInterBarcodeData.addAll((singeImageInterBarcodeDataExtractor(
-            barcodes, getAccelerometerEvents())));
+        ///Captures a list of barcodes and accelerometerData for a a single image frame.
+        allRawOnImageBarcodeData.add(RawOnImageBarcodeData(
+            barcodes: barcodes,
+            timestamp: DateTime.now().millisecondsSinceEpoch,
+            accelerometerData: getAccelerometerData()));
       }
       //Paint square on screen around barcode.
       final painter = BarcodeDetectorPainter(

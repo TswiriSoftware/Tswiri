@@ -1,10 +1,9 @@
 import 'package:vector_math/vector_math.dart';
-import 'dart:math';
 
-class AccelerometerEvents {
+class AccelerometerData {
   Vector3 userAccelerometerEvent;
   Vector3 accelerometerEvent;
-  AccelerometerEvents(
+  AccelerometerData(
       {required this.accelerometerEvent, required this.userAccelerometerEvent});
 
   ///Returns the angle between the Y-axis and the phone in radians.

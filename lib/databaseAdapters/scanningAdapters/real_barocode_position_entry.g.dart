@@ -22,7 +22,6 @@ class RealBarcodePostionEntryAdapter
       offset: fields[1] as TypeOffsetHiveObject,
       distanceFromCamera: fields[2] as double,
       fixed: fields[3] as bool,
-      angleRad: fields[5] as double,
       timestamp: fields[4] as int,
     );
   }
@@ -30,7 +29,7 @@ class RealBarcodePostionEntryAdapter
   @override
   void write(BinaryWriter writer, RealBarcodePostionEntry obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.uid)
       ..writeByte(1)
@@ -40,9 +39,7 @@ class RealBarcodePostionEntryAdapter
       ..writeByte(3)
       ..write(obj.fixed)
       ..writeByte(4)
-      ..write(obj.timestamp)
-      ..writeByte(5)
-      ..write(obj.angleRad);
+      ..write(obj.timestamp);
   }
 
   @override

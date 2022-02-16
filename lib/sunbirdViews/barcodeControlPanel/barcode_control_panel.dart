@@ -3,7 +3,6 @@ import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/classes.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/unassigned_tags_widget.dart';
-import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
 import 'assigned_tags_widgets.dart';

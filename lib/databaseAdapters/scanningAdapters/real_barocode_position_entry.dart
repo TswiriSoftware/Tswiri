@@ -11,7 +11,6 @@ class RealBarcodePostionEntry extends HiveObject {
       required this.offset,
       required this.distanceFromCamera,
       required this.fixed,
-      required this.angleRad,
       required this.timestamp});
 
   //Barcode's ID or Displayvalue
@@ -33,10 +32,6 @@ class RealBarcodePostionEntry extends HiveObject {
   //The timestamp
   @HiveField(4)
   late int timestamp;
-
-  //The timestamp
-  @HiveField(5)
-  late double angleRad;
 
   @override
   String toString() {

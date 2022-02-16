@@ -120,13 +120,6 @@ class Home extends StatelessWidget {
               featureCompleted: true,
               tileColor: deeperOrange,
             ),
-            // CustomCard(
-            //   'Barcode Tools',
-            //   BarcodeToolsView(),
-            //   Icons.tag_faces_rounded,
-            //   featureCompleted: true,
-            //   tileColor: deepSpaceSparkle,
-            // ),
             CustomCard(
               'Barcodes List',
               AllBarcodesView(),
@@ -134,13 +127,6 @@ class Home extends StatelessWidget {
               featureCompleted: true,
               tileColor: deepSpaceSparkle,
             ),
-            // CustomCard(
-            //   'Text Detector View',
-            //   TextDetectorView(),
-            //   Icons.text_fields_rounded,
-            //   featureCompleted: true,
-            //   tileColor: deeperOrange,
-            // ),
           ],
         ),
       ),
