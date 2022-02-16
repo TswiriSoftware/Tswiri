@@ -89,8 +89,12 @@ class RawOnImageInterBarcodeData {
     return Offset(x, y);
   }
 
+
+  //TODO: Split intoi two functions
+
   ///This calculates the real Offset between the two Barcodes.
   Offset realInterBarcodeOffset(List<BarcodeDataEntry> barcodeDataEntries) {
+    
     //Calculate phone's angle from y axis
     double angleRad = accelerometerEvent.calculatePhoneAngle();
 
@@ -99,6 +103,8 @@ class RawOnImageInterBarcodeData {
         rotateOffset(calculateBarcodeCenterPoint(startBarcode), angleRad);
     Offset endBarcodeCenterPoint =
         rotateOffset(calculateBarcodeCenterPoint(endBarcode), angleRad);
+
+    
 
     if (checkBarcodes()) {
       return calculateRealOffsetBetweenTwoPoints(

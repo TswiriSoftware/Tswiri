@@ -176,8 +176,9 @@ List<RealBarcodePosition> extractListOfScannedBarcodes(
   return realPositionData;
 }
 
+//TODO: convert to named parameters. 
 ///Returns all realInterBarcodeOffsets
-List<RealInterBarcodeOffset> getAllRealInterBarcodeOffsets(
+List<RealInterBarcodeOffset> calculateAllRealInterBarcodeOffsets(
     List<RawOnImageInterBarcodeData> allDeduplicatedInterBarcodeData,
     List<MatchedCalibrationDataHiveObject> matchedCalibrationData,
     List<BarcodeDataEntry> barcodeDataEntries) {
@@ -189,8 +190,6 @@ List<RealInterBarcodeOffset> getAllRealInterBarcodeOffsets(
         interBarcodeDataInstance.realInterBarcodeData(
             matchedCalibrationData, barcodeDataEntries);
     allRealInterBarcodeData.add(realInterBarcodeDataInstance);
-    //print(interBarcodeDa
-    //taInstance);
   }
   return allRealInterBarcodeData;
 }

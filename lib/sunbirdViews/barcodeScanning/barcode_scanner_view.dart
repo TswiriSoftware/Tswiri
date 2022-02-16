@@ -79,7 +79,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
         ));
   }
 
-  ///This
+  ///This //TODO: complete
   AccelerometerEvents getAccelerometerEvents() {
     return AccelerometerEvents(
         accelerometerEvent: accelerometerEvent,
@@ -97,6 +97,8 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
       //Dont bother if we haven't detected more than one barcode on a image.
+
+      //TODO: dont do processing here... 
       if (barcodes.length >= 2) {
         allInterBarcodeData.addAll((singeImageInterBarcodeDataExtractor(
             barcodes, getAccelerometerEvents())));

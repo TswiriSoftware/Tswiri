@@ -91,6 +91,8 @@ class _BarcodeScannerDataProcessingViewState
 
 //Implement data viewing
 
+//TODO: Clean up processing data confusion. STEP 1 ,2 ,3 .... Why this step ?
+
 Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
   //List of all matchedCalibration Data
   List<MatchedCalibrationDataHiveObject> matchedCalibrationData =
@@ -98,9 +100,15 @@ Future processData(List<RawOnImageInterBarcodeData> allInterBarcodeData) async {
 
   List<BarcodeDataEntry> barcodeDataEntries = await getGeneratedBarcodeData();
 
+
+  //TODO Rotate Points here ...
+
   List<RealInterBarcodeOffset> allRealInterBarcodeOffsets =
-      getAllRealInterBarcodeOffsets(
+      calculateAllRealInterBarcodeOffsets(
           allInterBarcodeData, matchedCalibrationData, barcodeDataEntries);
+
+
+
 
   //All interBarcode Data from scan - deduplicated
   List<RealInterBarcodeOffset> deduplicatedRealInterBarcodeOffsets =
