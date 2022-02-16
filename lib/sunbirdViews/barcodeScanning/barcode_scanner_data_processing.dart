@@ -49,10 +49,16 @@ class _BarcodeScannerDataProcessingViewState
             FloatingActionButton(
               heroTag: null,
               onPressed: () {
-                Navigator.pop(context);
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) =>
-                        const ConsolidatedDatabaseVisualization()));
+                //Navigator.pop(context);
+                // Navigator.of(context).pushReplacement(MaterialPageRoute(
+                //     builder: (context) =>
+                //         const ConsolidatedDatabaseVisualization()));
+                Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const ConsolidatedDatabaseVisualization()))
+                    .then((value) => processData(widget.allInterBarcodeData));
               },
               child: const Icon(Icons.check_circle_outline_rounded),
             ),
@@ -67,7 +73,7 @@ class _BarcodeScannerDataProcessingViewState
           future: processData(widget.allInterBarcodeData),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return proceedButton(context);
+              return const Text('Done'); //proceedButton(context);
             } else if (snapshot.hasError) {
               return Text(
                 "${snapshot.error}",

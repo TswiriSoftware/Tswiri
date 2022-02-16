@@ -136,6 +136,7 @@ List<RealBarcodePosition> getBarcodesWithOffset(
       .toList();
 }
 
+///Finds all interbarcodeOffsets relevant to the endBarcodeRealPosition
 List<RealInterBarcodeOffset> getRelevantInterBarcodeOffsets(
     List<RealInterBarcodeOffset> realInterBarcodeOffsets,
     RealBarcodePosition endBarcodeRealPosition) {
@@ -204,14 +205,15 @@ List<RealInterBarcodeOffset> findDatasContainingCurrentBarcode(
       .toList();
 }
 
-ElevatedButton proceedButton(BuildContext context) {
-  return ElevatedButton(
-      onPressed: () {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => const HiveDatabaseConsolidationView()));
-      },
-      child: const Icon(Icons.check_circle_outline_rounded));
-}
+// ElevatedButton proceedButton(BuildContext context) {
+//   return ElevatedButton(
+//       onPressed: () {
+//         Navigator.of(context).pushReplacement(MaterialPageRoute(
+//             builder: (context) => const HiveDatabaseConsolidationView()));
+
+//       },
+//       child: const Icon(Icons.check_circle_outline_rounded));
+// }
 
 int mySortComparison(RealBarcodePosition a, RealBarcodePosition b) {
   if (a.numberOfBarcodesFromOrigin != null &&

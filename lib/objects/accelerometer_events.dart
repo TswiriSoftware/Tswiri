@@ -17,7 +17,9 @@ class AccelerometerEvents {
         Vector2(gravityDirection3D.x, gravityDirection3D.y);
     Vector2 zero = Vector2(0, 1);
     double angleRadians = gravityDirection2D.angleTo(zero);
-
+    if (gravityDirection2D.x >= 0) {
+      angleRadians = -angleRadians;
+    }
     print(gravityDirection2D);
     print(angleRadians);
     return angleRadians;

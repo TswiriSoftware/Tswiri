@@ -83,58 +83,61 @@ class RawOnImageInterBarcodeData {
     }
   }
 
+  Offset rotateOffset(Offset offset, double angleRad) {
+    double x = offset.dx * cos(angleRad) - offset.dy * sin(angleRad);
+    double y = offset.dx * sin(angleRad) + offset.dy * cos(angleRad);
+    return Offset(x, y);
+  }
+
   ///This calculates the real Offset between the two Barcodes.
   Offset realInterBarcodeOffset(List<BarcodeDataEntry> barcodeDataEntries) {
+    //Calculate phone's angle from y axis
+    double angleRad = accelerometerEvent.calculatePhoneAngle();
+
+    //Account for phone's angle
+    Offset startBarcodeCenterPoint =
+        rotateOffset(calculateBarcodeCenterPoint(startBarcode), angleRad);
+    Offset endBarcodeCenterPoint =
+        rotateOffset(calculateBarcodeCenterPoint(endBarcode), angleRad);
+
     if (checkBarcodes()) {
       return calculateRealOffsetBetweenTwoPoints(
           calculateOffsetBetweenTwoPoints(
-              calculateBarcodeCenterPoint(startBarcode),
-              calculateBarcodeCenterPoint(endBarcode)),
+              startBarcodeCenterPoint, endBarcodeCenterPoint),
           barcodeDataEntries);
     } else {
       return calculateRealOffsetBetweenTwoPoints(
           calculateOffsetBetweenTwoPoints(
-              calculateBarcodeCenterPoint(endBarcode),
-              calculateBarcodeCenterPoint(startBarcode)),
+              endBarcodeCenterPoint, startBarcodeCenterPoint),
           barcodeDataEntries);
     }
   }
 
-  //TODO: implement x<-45 and x>45
-  ///Calculates the real interbarcode distace from the offset and barcode sizes.
-  ///This will only work for -45deg to 45deg from up on the y axis.
-  ///
+  ///Calculates the real offset between the points
   calculateRealOffsetBetweenTwoPoints(Offset offsetBetweenTwoPoints,
       List<BarcodeDataEntry> barcodeDataEntries) {
-    // mm/px
-    double startBarcodeMMperPX = startDiagonalLength /
-        barcodeDataEntries
-            .firstWhere(
-                (element) => element.barcodeID == int.parse(startBarcodeID))
-            .barcodeSize;
-
-    double endBarcodeMMperPX = endDiagonalLength /
-        barcodeDataEntries
-            .firstWhere(
-                (element) => element.barcodeID == int.parse(endBarcodeID))
-            .barcodeSize;
+    // MM per PX
+    double startBarcodeMMperPX =
+        getBacodeMMperPX(barcodeDataEntries, startDiagonalLength);
+    double endBarcodeMMperPX =
+        getBacodeMMperPX(barcodeDataEntries, endDiagonalLength);
 
     Offset realOffsetStartBarcode =
         offsetBetweenTwoPoints * startBarcodeMMperPX;
     Offset realOffsetEndBarcode = offsetBetweenTwoPoints * endBarcodeMMperPX;
-    Offset average = (realOffsetStartBarcode + realOffsetEndBarcode) / 2;
+    Offset averageRealInterBarcodeOffset =
+        (realOffsetStartBarcode + realOffsetEndBarcode) / 2;
 
-    Vector2 realOffset = Vector2(average.dx, average.dy);
-    double angleRadians = accelerometerEvent.calculatePhoneAngle();
+    return averageRealInterBarcodeOffset;
+  }
 
-    Offset rotatedOffset = Offset(
-        (realOffset.x * cos(angleRadians) + (realOffset.y * sin(angleRadians))),
-        (realOffset.x * sin(angleRadians) +
-            (realOffset.y * cos(angleRadians))));
-
-    print(angleRadians);
-
-    return rotatedOffset;
+  double getBacodeMMperPX(
+      List<BarcodeDataEntry> barcodeDataEntries, double diagonalLength) {
+    return diagonalLength /
+        barcodeDataEntries
+            .firstWhere(
+                (element) => element.barcodeID == int.parse(endBarcodeID))
+            .barcodeSize;
   }
 
   //Uses the lookup table matchedCalibration data to find the distance from camera

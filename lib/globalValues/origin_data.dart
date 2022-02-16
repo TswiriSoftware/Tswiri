@@ -12,6 +12,9 @@ RealBarcodePosition origin(List<RealBarcodePosition> realBarcodePositions) {
           .where((element) => element.uid == '1')
           .first
           .distanceFromCamera,
-      0,
+      realBarcodePositions
+          .where((element) => element.uid == '1')
+          .first
+          .phoneAngleRad,
       0);
 }
