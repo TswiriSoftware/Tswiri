@@ -20,8 +20,7 @@ class AccelerometerEvents {
     if (gravityDirection2D.x >= 0) {
       angleRadians = -angleRadians;
     }
-    print(gravityDirection2D);
-    print(angleRadians);
+
     return angleRadians;
   }
 }
