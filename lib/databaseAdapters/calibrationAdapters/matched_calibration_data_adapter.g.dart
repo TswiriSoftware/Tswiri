@@ -19,7 +19,7 @@ class MatchedCalibrationDataHiveObjectAdapter
     };
     return MatchedCalibrationDataHiveObject(
       objectSize: fields[0] as double,
-      distance: fields[1] as double,
+      distanceFromCamera: fields[1] as double,
     );
   }
 
@@ -30,7 +30,7 @@ class MatchedCalibrationDataHiveObjectAdapter
       ..writeByte(0)
       ..write(obj.objectSize)
       ..writeByte(1)
-      ..write(obj.distance);
+      ..write(obj.distanceFromCamera);
   }
 
   @override

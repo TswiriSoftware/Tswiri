@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/accelerometer_data_objects.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/barcode_size_objects.dart';
 import 'package:hive/hive.dart';
 
 import 'calibration_data_visualizer_view.dart';
+import 'widgets/calibration_display_widgets.dart';
 
 class BarcodeCalibrationDataProcessingView extends StatefulWidget {
   const BarcodeCalibrationDataProcessingView(
@@ -75,16 +75,24 @@ class _BarcodeCalibrationDataProcessingViewState
                     if (index == 0) {
                       return Column(
                         children: <Widget>[
-                          displayDataHeader(
-                              ['Barcode Size', 'Distance from Camera']),
+                          const DisplayDataHeader(
+                            dataObject: [
+                              'Barcode Size',
+                              'Distance from Camera'
+                            ],
+                          ),
                           const SizedBox(
                             height: 5,
                           ),
-                          displayDataPoint(data),
+                          DisplayMatchedDataWidget(
+                            dataObject: data,
+                          ),
                         ],
                       );
                     } else {
-                      return displayDataPoint(data);
+                      return DisplayMatchedDataWidget(
+                        dataObject: data,
+                      );
                     }
                   });
             }
@@ -152,15 +160,15 @@ class _BarcodeCalibrationDataProcessingViewState
           MatchedCalibrationDataHiveObject matchedCalibrationDataHiveObject =
               MatchedCalibrationDataHiveObject(
                   objectSize: onImageBarcodeSize.averageBarcodeDiagonalLength,
-                  distance: processedAccelerometerData[distanceFromCameraIndex]
-                      .barcodeDistanceFromCamera);
+                  distanceFromCamera:
+                      processedAccelerometerData[distanceFromCameraIndex]
+                          .barcodeDistanceFromCamera);
           matchedDataHiveBox.put(onImageBarcodeSize.timestamp.toString(),
               matchedCalibrationDataHiveObject);
 
           displayList.add(matchedCalibrationDataHiveObject);
         }
       }
-      matchedDataHiveBox.close();
     }
     return displayList;
   }
@@ -203,86 +211,3 @@ List<OnImageBarcodeSize> getOnImageBarcodeSizes(
 
   return onImageBarcodeSizes;
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//TODO: make this a object so that you can pass different things into it @049er
-displayDataPoint(MatchedCalibrationDataHiveObject dataObject) {
-  return Center(
-    child: Container(
-      decoration: const BoxDecoration(
-          border: Border(
-              bottom: BorderSide(color: deepSpaceSparkle),
-              top: BorderSide(color: deepSpaceSparkle),
-              left: BorderSide(color: deepSpaceSparkle),
-              right: BorderSide(color: deepSpaceSparkle))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-                border: Border(right: BorderSide(color: deepSpaceSparkle))),
-            child: Padding(
-              padding: const EdgeInsets.only(right: 10, left: 10),
-              child: SizedBox(
-                child: Text(dataObject.objectSize.toString(),
-                    textAlign: TextAlign.start),
-                width: 150,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 25),
-            child: SizedBox(
-              child: Text(dataObject.distance.toString(),
-                  textAlign: TextAlign.start),
-              width: 150,
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-displayDataHeader(List dataObject) {
-  return Center(
-    child: Container(
-      decoration: const BoxDecoration(
-          color: deepSpaceSparkle,
-          border: Border(
-              bottom: BorderSide(color: deepSpaceSparkle),
-              top: BorderSide(color: deepSpaceSparkle),
-              left: BorderSide(color: deepSpaceSparkle),
-              right: BorderSide(color: deepSpaceSparkle))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-                border: Border(right: BorderSide(color: Colors.white))),
-            child: Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: SizedBox(
-                child: Text(dataObject[0], textAlign: TextAlign.start),
-                width: 150,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 25),
-            child: SizedBox(
-              child: Text(dataObject[1], textAlign: TextAlign.start),
-              width: 150,
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////

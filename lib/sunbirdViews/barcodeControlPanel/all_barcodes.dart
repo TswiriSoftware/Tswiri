@@ -7,6 +7,7 @@ import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/barcode_control_panel.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/scan_barcode_view.dart';
 import 'package:hive/hive.dart';
 
 class AllBarcodesView extends StatefulWidget {
@@ -43,6 +44,20 @@ class _AllBarcodesViewState extends State<AllBarcodesView> {
         ),
         centerTitle: true,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.qr_code,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ScanBarcodeView()));
+            },
+          )
+        ],
       ),
       body: Column(
         children: [
@@ -87,6 +102,7 @@ class _AllBarcodesViewState extends State<AllBarcodesView> {
       results.add(BarcodeAndTagData(
           barcodeID: barcodeData.barcodeID,
           barcodeSize: barcodeData.barcodeSize,
+          fixed: barcodeData.isFixed,
           tags: relevantTags));
 
       results.sort((a, b) => a.barcodeID.compareTo(b.barcodeID));
@@ -153,13 +169,11 @@ InkWell displayBarcodeDataWidget(
 
   return InkWell(
     onTap: () async {
-      List<String> unassignedTags = await getUnassignedTags();
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => BarcodeControlPanelView(
-                    barcodeAndTagData: barcodeAndTagData,
-                    unassignedTags: unassignedTags,
+                    barcodeID: barcodeAndTagData.barcodeID,
                   ))).then((value) => runFilter);
     },
     child: Container(
@@ -214,13 +228,5 @@ String checkIfEmpty(List<String> listOfTags) {
   } else {
     tags = listOfTags.toString().replaceAll(']', '').replaceAll('[', '');
   }
-  return tags;
-}
-
-///Returns a list of all unassigned tags.
-Future<List<String>> getUnassignedTags() async {
-  List<String> tags = [];
-  Box<String> allTagsBox = await Hive.openBox(tagsBoxName);
-  tags = allTagsBox.values.toList();
   return tags;
 }

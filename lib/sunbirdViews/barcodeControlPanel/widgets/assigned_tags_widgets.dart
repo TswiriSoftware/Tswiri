@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:provider/provider.dart';
 
-import 'classes.dart';
+import '../classes.dart';
 
 class AssignedTagsContainer extends StatefulWidget {
   const AssignedTagsContainer(
       {Key? key, required this.assignedTags, required this.barcodeID})
       : super(key: key);
-  final List<String> assignedTags;
+  final List<String>? assignedTags;
   final int barcodeID;
 
   @override

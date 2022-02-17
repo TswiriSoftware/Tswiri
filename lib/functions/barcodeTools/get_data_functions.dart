@@ -98,3 +98,11 @@ Future<List<String>> getSearchResults(List<String> assignedTags) async {
   }
   return results;
 }
+
+///Returns a list of all unassigned tags.
+Future<List<String>> getUnassignedTags() async {
+  List<String> tags = [];
+  Box<String> allTagsBox = await Hive.openBox(tagsBoxName);
+  tags = allTagsBox.values.toList();
+  return tags;
+}

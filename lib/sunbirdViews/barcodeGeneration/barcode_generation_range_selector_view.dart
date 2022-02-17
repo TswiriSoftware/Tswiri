@@ -186,7 +186,8 @@ class _SelectRangeWidgetState extends State<SelectRangeWidget> {
 
     //Put barcode data
     for (int i = rangeStart; i <= rangeEnd; i++) {
-      await barcodeData.put(i, BarcodeDataEntry(barcodeID: i, barcodeSize: 70));
+      await barcodeData.put(
+          i, BarcodeDataEntry(barcodeID: i, barcodeSize: 70, isFixed: false));
     }
     //close Box
     barcodeData.close();

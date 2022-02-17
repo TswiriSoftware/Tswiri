@@ -9,7 +9,7 @@ List<Offset> listOfPoints(Box matchedDataBox, Size screenSize) {
   matchedDataMap.forEach((key, value) {
     MatchedCalibrationDataHiveObject data = value;
 
-    Offset offsetData = Offset(data.objectSize, data.distance);
+    Offset offsetData = Offset(data.objectSize, data.distanceFromCamera);
 
     points.add(Offset(
         ((offsetData.dx + screenSize.width / 2) / (screenSize.width / 50)),

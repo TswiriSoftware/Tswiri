@@ -300,7 +300,7 @@ double findDistanceFromCamera(
   //checks if index is valid
   if (distanceFromCameraIndex != -1) {
     distanceFromCamera =
-        calibrationLookupTable[distanceFromCameraIndex].distance;
+        calibrationLookupTable[distanceFromCameraIndex].distanceFromCamera;
   }
   return distanceFromCamera;
 }

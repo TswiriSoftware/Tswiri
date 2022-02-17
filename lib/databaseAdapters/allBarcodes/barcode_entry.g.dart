@@ -19,17 +19,20 @@ class BarcodeDataEntryAdapter extends TypeAdapter<BarcodeDataEntry> {
     return BarcodeDataEntry(
       barcodeID: fields[0] as int,
       barcodeSize: fields[1] as double,
+      isFixed: fields[2] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, BarcodeDataEntry obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.barcodeID)
       ..writeByte(1)
-      ..write(obj.barcodeSize);
+      ..write(obj.barcodeSize)
+      ..writeByte(2)
+      ..write(obj.isFixed);
   }
 
   @override

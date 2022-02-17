@@ -3,6 +3,7 @@ class BarcodeAndTagData {
   BarcodeAndTagData({
     required final this.barcodeID,
     required final this.barcodeSize,
+    required final this.fixed,
     final this.tags,
   });
 
@@ -11,6 +12,8 @@ class BarcodeAndTagData {
 
   ///Size of the Barcode.
   final double barcodeSize;
+
+  final bool fixed;
 
   ///List of tags
   final List<String>? tags;

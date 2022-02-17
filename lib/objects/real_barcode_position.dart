@@ -1,5 +1,12 @@
 import 'dart:ui';
 
+///Contains
+///
+///String : uid
+///
+///Offset : interBarcodeOffset
+///
+///double : distance form camera
 class RealBarcodePosition {
   ///This is the uid of the barcode ex. '1' or '2'.
   String uid;
