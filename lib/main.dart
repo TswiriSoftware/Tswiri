@@ -69,7 +69,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-//TODO: Implement navigator 2.0 => This is acceptable for now @Spodeopieter
+//TODO:@Spodeopieter implement navigator 2.0
 
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);

@@ -212,18 +212,18 @@ List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
         rotateOffset(offset: endBarcodeCenter, angleRadians: phoneAngleRadians);
 
     //3. Calculate the interBarcode Offset
-    Offset onImageInterBarcode =
+    Offset interBarcodeOffset =
         rotatedEndBarcodeCenter - rotatedStartBarcodeCenter;
 
     //4. Check offset direction.
     //Flips the direction if necessary
     if (!(int.parse(interBarcodeDataInstance.startBarcode.displayValue!) <
         int.parse(interBarcodeDataInstance.endBarcode.displayValue!))) {
-      onImageInterBarcode = -onImageInterBarcode;
+      interBarcodeOffset = -interBarcodeOffset;
     }
 
     //5. Calculate real life offset.
-    //Calculate the milimeter value of 1 on image unit (OIU).
+    //Calculate the milimeter value of 1 on image unit (OIU). (Pixel ?)
     double startBarcodeMMperPX = calculateBacodeMMperOIU(
         barcodeDataEntries: barcodeDataEntries,
         diagonalLength: interBarcodeDataInstance.startDiagonalLength,
@@ -235,8 +235,8 @@ List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
         barcodeID: interBarcodeDataInstance.uidEnd);
 
     //Calculate the real distance of the offset.
-    Offset realOffsetStartBarcode = onImageInterBarcode * startBarcodeMMperPX;
-    Offset realOffsetEndBarcode = onImageInterBarcode * endBarcodeMMperPX;
+    Offset realOffsetStartBarcode = interBarcodeOffset * startBarcodeMMperPX;
+    Offset realOffsetEndBarcode = interBarcodeOffset * endBarcodeMMperPX;
     //Calculate the average distance of the offsets.
     Offset averageRealInterBarcodeOffset =
         (realOffsetStartBarcode + realOffsetEndBarcode) / 2;
