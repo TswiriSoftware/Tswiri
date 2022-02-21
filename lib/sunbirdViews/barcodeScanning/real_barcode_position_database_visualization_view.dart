@@ -12,16 +12,17 @@ import 'package:hive_flutter/hive_flutter.dart';
 // ignore: todo
 //TODO: Refactor this @049er
 
-class ConsolidatedDatabaseVisualization extends StatefulWidget {
-  const ConsolidatedDatabaseVisualization({Key? key}) : super(key: key);
+class RealBarcodePositionDatabaseVisualizationView extends StatefulWidget {
+  const RealBarcodePositionDatabaseVisualizationView({Key? key})
+      : super(key: key);
 
   @override
-  _ConsolidatedDatabaseVisualizationState createState() =>
-      _ConsolidatedDatabaseVisualizationState();
+  _RealBarcodePositionDatabaseVisualizationViewState createState() =>
+      _RealBarcodePositionDatabaseVisualizationViewState();
 }
 
-class _ConsolidatedDatabaseVisualizationState
-    extends State<ConsolidatedDatabaseVisualization> {
+class _RealBarcodePositionDatabaseVisualizationViewState
+    extends State<RealBarcodePositionDatabaseVisualizationView> {
   List pointNames = [];
   List pointRelativePositions = [];
 
@@ -32,7 +33,6 @@ class _ConsolidatedDatabaseVisualizationState
 
   @override
   void dispose() {
-    Hive.close();
     super.dispose();
   }
 
@@ -84,8 +84,8 @@ class _ConsolidatedDatabaseVisualizationState
                 var dataPoints = snapshot.data;
                 return Center(
                   child: InteractiveViewer(
-                    maxScale: 6,
-                    minScale: 0.3,
+                    maxScale: 10,
+                    minScale: 0.1,
                     child: CustomPaint(
                       size: Size.infinite,
                       painter: OpenPainter(
@@ -163,8 +163,8 @@ _getPoints(
   for (var i = 0; i < consolidatedRealDataBox.length; i++) {
     RealBarcodePostionEntry data = consolidatedRealDataBox.getAt(i)!;
 
-    points.add(Offset((data.offset.x / 10) + (width / 2),
-        (data.offset.y / 10) + (height / 2)));
+    points.add(
+        Offset((data.offset.x) + (width / 2), (data.offset.y) + (height / 2)));
     pointRelativePositions.add([
       roundDouble(data.offset.x, 5),
       roundDouble(data.offset.y, 5),

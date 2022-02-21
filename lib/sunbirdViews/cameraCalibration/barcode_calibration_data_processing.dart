@@ -107,7 +107,8 @@ class _BarcodeCalibrationDataProcessingViewState
       List<RawAccelerometerData> rawAccelerometData) async {
     if (rawAccelerometData.isNotEmpty && rawBarcodesData.isNotEmpty) {
       //Box to store valid calibration Data
-      Box matchedDataHiveBox = await Hive.openBox(matchedDataHiveBoxName);
+      Box<MatchedCalibrationDataHiveObject> matchedDataHiveBox =
+          await Hive.openBox(matchedDataHiveBoxName);
 
       //A list of all barcode Sizes captured.
       List<OnImageBarcodeSize> onImageBarcodeSizes =

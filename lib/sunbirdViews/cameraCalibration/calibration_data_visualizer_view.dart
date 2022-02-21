@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/functions/calibrationFunctions/calibration_functions.dart';
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
@@ -42,7 +43,7 @@ class _CalibrationDataVisualizerViewState
               FloatingActionButton(
                 heroTag: null,
                 onPressed: () async {
-                  var matchedDataBox =
+                  Box<MatchedCalibrationDataHiveObject> matchedDataBox =
                       await Hive.openBox(matchedDataHiveBoxName);
                   matchedDataBox.clear();
                   setState(() {});
@@ -107,7 +108,8 @@ class OpenPainter extends CustomPainter {
 }
 
 _getPoints(BuildContext context) async {
-  var matchedDataBox = await Hive.openBox(matchedDataHiveBoxName);
+  Box<MatchedCalibrationDataHiveObject> matchedDataBox =
+      await Hive.openBox(matchedDataHiveBoxName);
 
   Size size = Size(
       MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);

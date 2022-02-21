@@ -21,8 +21,10 @@ class RealInterBarcodeOffset {
       required this.uidStart,
       required this.uidEnd,
       required this.realInterBarcodeOffset,
-      required this.distanceFromCamera,
-      required this.timestamp});
+      required this.startBarcodeDistanceFromCamera,
+      required this.endBarcodeDistanceFromCamera,
+      required this.timestamp,
+      this.checksOut});
 
   ///uidStart_uidEnd
   String uid;
@@ -37,10 +39,16 @@ class RealInterBarcodeOffset {
   Offset realInterBarcodeOffset;
 
   ///Distance from the camera
-  double distanceFromCamera;
+  double startBarcodeDistanceFromCamera;
+
+  ///Distance from the camera
+  double endBarcodeDistanceFromCamera;
 
   ///Timestamp of when it was created.
   int timestamp;
+
+  ///confirmed as correct
+  bool? checksOut;
 
   @override
   bool operator ==(Object other) {

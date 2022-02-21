@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
@@ -11,7 +13,7 @@ import 'package:flutter_google_ml_kit/objects/raw_on_image_inter_barcode_data.da
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
 import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'consolidated_database_visualization_view.dart';
+import 'real_barcode_position_database_visualization_view.dart';
 import 'widgets/real_position_display_widget.dart';
 
 class BarcodeScannerDataProcessingView extends StatefulWidget {
@@ -51,11 +53,12 @@ class _BarcodeScannerDataProcessingViewState
               heroTag: null,
               onPressed: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            const ConsolidatedDatabaseVisualization())).then(
-                    (value) => processData(widget.allRawOnImageBarcodeData));
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const RealBarcodePositionDatabaseVisualizationView()))
+                    .then((value) =>
+                        processData(widget.allRawOnImageBarcodeData));
               },
               child: const Icon(Icons.check_circle_outline_rounded),
             ),
@@ -174,7 +177,7 @@ Future<List<RealBarcodePosition>> processData(
   for (int i = 0; i <= uniqueRealInterBarcodeOffsets.length;) {
     for (RealBarcodePosition endBarcodeRealPosition in realBarcodePositions) {
       if (endBarcodeRealPosition.interBarcodeOffset == null) {
-        //startBarcode : The barcode that we are going to use a reference (has offset relative to origin)
+        //startBarcode : The barcode that we are going to use as a reference (has offset relative to origin)
         //endBarcode : the barcode whose Real Position we are trying to find in this step , if we cant , we will skip and see if we can do so in the next round.
         // we are going to add the interbarcode offset between start and end barcodes to obtain the "position" of the end barcode.
 
@@ -209,6 +212,9 @@ Future<List<RealBarcodePosition>> processData(
                     relevantInterBarcodeOffsets[interBarcodeOffsetIndex],
                 endBarcodeRealPosition: endBarcodeRealPosition,
                 startBarcode: startBarcode);
+
+            //log(startBarcode.startBarcodeDistanceFromCamera.toString());
+
             nonNullPositions++;
           }
         }
@@ -225,6 +231,13 @@ Future<List<RealBarcodePosition>> processData(
   //Open realPositionalData box.
   Box<RealBarcodePostionEntry> realPositionalData =
       await Hive.openBox(realPositionDataBoxName);
+
+  await realPositionalData.clear();
+
+//Set origin distance to 0
+  realBarcodePositions
+      .firstWhere((element) => element.uid == '1')
+      .distanceFromCamera = 0;
 
   //Writes data to Hive Database
   for (RealBarcodePosition realBarcodePosition in realBarcodePositions) {

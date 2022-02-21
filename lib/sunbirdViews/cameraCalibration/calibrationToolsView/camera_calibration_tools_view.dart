@@ -17,13 +17,11 @@ class _CameraCalibrationToolsViewState
     extends State<CameraCalibrationToolsView> {
   @override
   void initState() {
-    Hive.close();
     super.initState();
   }
 
   @override
   void dispose() {
-    Hive.close();
     super.dispose();
   }
 

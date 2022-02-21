@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/barcode_scanner_view.dart';
+import 'package:hive/hive.dart';
 import '../../../main.dart';
-import '../consolidated_database_view.dart';
-import '../consolidated_database_visualization_view.dart';
+import '../real_barcode_position_database_view.dart';
+import '../real_barcode_position_database_visualization_view.dart';
 
 class BarcodeScanningView extends StatefulWidget {
   const BarcodeScanningView({Key? key}) : super(key: key);
@@ -14,6 +15,7 @@ class BarcodeScanningView extends StatefulWidget {
 class _BarcodeScanningViewState extends State<BarcodeScanningView> {
   @override
   void initState() {
+    Hive.close();
     super.initState();
   }
 
@@ -50,14 +52,14 @@ class _BarcodeScanningViewState extends State<BarcodeScanningView> {
             ),
             const CustomCard(
               'Consolidated Data Viewer',
-              HiveDatabaseConsolidationView(),
+              RealBarcodePositionDatabaseView(),
               Icons.view_array,
               featureCompleted: true,
               tileColor: Colors.deepOrange,
             ),
             const CustomCard(
               'Visual Data Viewer',
-              ConsolidatedDatabaseVisualization(),
+              RealBarcodePositionDatabaseVisualizationView(),
               Icons.map_outlined,
               featureCompleted: true,
               tileColor: Colors.deepOrange,

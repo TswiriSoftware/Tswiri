@@ -89,19 +89,28 @@ void determinesInterBarcodeOffsetDirection(
     required RealBarcodePosition endBarcodeRealPosition,
     required RealBarcodePosition startBarcode}) {
   if (relevantInterBarcodeOffset.uidEnd == endBarcodeRealPosition.uid) {
+    //Set the interBarcodeOffset
     endBarcodeRealPosition.interBarcodeOffset =
         startBarcode.interBarcodeOffset! +
             relevantInterBarcodeOffset.realInterBarcodeOffset;
-    // endBarcodeRealPosition.numberOfBarcodesFromOrigin =
-    //     1 + startBarcode.numberOfBarcodesFromOrigin!;
+
+    endBarcodeRealPosition.distanceFromCamera =
+        relevantInterBarcodeOffset.startBarcodeDistanceFromCamera -
+            relevantInterBarcodeOffset.endBarcodeDistanceFromCamera;
+
+    //Set the timestamp
     endBarcodeRealPosition.timestamp = relevantInterBarcodeOffset.timestamp;
   } else if (relevantInterBarcodeOffset.uidStart ==
       endBarcodeRealPosition.uid) {
     endBarcodeRealPosition.interBarcodeOffset =
         startBarcode.interBarcodeOffset! -
             relevantInterBarcodeOffset.realInterBarcodeOffset;
-    // endBarcodeRealPosition.numberOfBarcodesFromOrigin =
-    //     1 + startBarcode.numberOfBarcodesFromOrigin!;
+
+    endBarcodeRealPosition.distanceFromCamera =
+        relevantInterBarcodeOffset.endBarcodeDistanceFromCamera -
+            relevantInterBarcodeOffset.startBarcodeDistanceFromCamera;
+
+    //Set the timestamp
     endBarcodeRealPosition.timestamp = relevantInterBarcodeOffset.timestamp;
   }
 }
@@ -167,11 +176,11 @@ List<RealBarcodePosition> extractListOfScannedBarcodes(
     allBarcodesInScan.addAll([
       RealBarcodePosition(
         uid: interBarcodeData.uidStart,
-        distanceFromCamera: interBarcodeData.distanceFromCamera,
+        distanceFromCamera: interBarcodeData.startBarcodeDistanceFromCamera,
       ),
       RealBarcodePosition(
         uid: interBarcodeData.uidEnd,
-        distanceFromCamera: interBarcodeData.distanceFromCamera,
+        distanceFromCamera: interBarcodeData.startBarcodeDistanceFromCamera,
       )
     ]);
   }
@@ -235,18 +244,21 @@ List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
         barcodeID: interBarcodeDataInstance.uidEnd);
 
     //Calculate the real distance of the offset.
-    Offset realOffsetStartBarcode = interBarcodeOffset * startBarcodeMMperPX;
-    Offset realOffsetEndBarcode = interBarcodeOffset * endBarcodeMMperPX;
+    Offset realOffsetStartBarcode = interBarcodeOffset / startBarcodeMMperPX;
+    Offset realOffsetEndBarcode = interBarcodeOffset / endBarcodeMMperPX;
     //Calculate the average distance of the offsets.
     Offset averageRealInterBarcodeOffset =
         (realOffsetStartBarcode + realOffsetEndBarcode) / 2;
 
     //6. Find the distance bewteen the camera and barcodes.
-    double distanceFromCamera = findDistanceFromCamera(
+    //startBarcode
+    double startBarcodeDistanceFromCamera = findDistanceFromCamera(
         calibrationLookupTable: matchedCalibrationData,
-        startBarcodeDiagonalLength:
-            interBarcodeDataInstance.startDiagonalLength,
-        endBarcodeDiagonalLength: interBarcodeDataInstance.endDiagonalLength);
+        barcodeDiagonalLength: interBarcodeDataInstance.startDiagonalLength);
+    //endBarcode
+    double endBarcodeDistanceFromCamera = findDistanceFromCamera(
+        calibrationLookupTable: matchedCalibrationData,
+        barcodeDiagonalLength: interBarcodeDataInstance.endDiagonalLength);
 
     //Creating the realInterBarcodeOffset.
     RealInterBarcodeOffset realInterBarcodeDataInstance =
@@ -255,7 +267,8 @@ List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
             uidStart: interBarcodeDataInstance.uidStart,
             uidEnd: interBarcodeDataInstance.uidEnd,
             realInterBarcodeOffset: averageRealInterBarcodeOffset,
-            distanceFromCamera: distanceFromCamera,
+            startBarcodeDistanceFromCamera: startBarcodeDistanceFromCamera,
+            endBarcodeDistanceFromCamera: endBarcodeDistanceFromCamera,
             timestamp: interBarcodeDataInstance.timestamp);
 
     allRealInterBarcodeData.add(realInterBarcodeDataInstance);
@@ -282,21 +295,18 @@ double calculateBacodeMMperOIU(
 }
 
 //Uses the lookup table matchedCalibration data to find the distance from camera.
-double findDistanceFromCamera(
-    {required List<MatchedCalibrationDataHiveObject> calibrationLookupTable,
-    required double startBarcodeDiagonalLength,
-    required double endBarcodeDiagonalLength}) {
-  //calculate the average size of the barcodes.
-  double averageBarcodeSize =
-      (startBarcodeDiagonalLength + endBarcodeDiagonalLength) / 2;
-
+double findDistanceFromCamera({
+  required List<MatchedCalibrationDataHiveObject> calibrationLookupTable,
+  required double barcodeDiagonalLength,
+}) {
   //sort in descending order
   calibrationLookupTable.sort((a, b) => a.objectSize.compareTo(b.objectSize));
 
   //First index
   int distanceFromCameraIndex = calibrationLookupTable
-      .indexWhere((element) => element.objectSize >= averageBarcodeSize);
+      .indexWhere((element) => element.objectSize >= barcodeDiagonalLength);
   double distanceFromCamera = 0;
+
   //checks if index is valid
   if (distanceFromCameraIndex != -1) {
     distanceFromCamera =
@@ -354,9 +364,9 @@ List<RealInterBarcodeOffset> processRealInterBarcodeData(
         in similarInterBarcodeOffsets) {
       calculateAverageOffsets(
           similarInterBarcodeOffset, realInterBacrodeOffset);
-      realInterBacrodeOffset.distanceFromCamera =
-          (realInterBacrodeOffset.distanceFromCamera +
-                  similarInterBarcodeOffset.distanceFromCamera) /
+      realInterBacrodeOffset.startBarcodeDistanceFromCamera =
+          (realInterBacrodeOffset.startBarcodeDistanceFromCamera +
+                  similarInterBarcodeOffset.startBarcodeDistanceFromCamera) /
               2;
     }
     finalRealInterBarcodeOffsets.add(realInterBacrodeOffset);
