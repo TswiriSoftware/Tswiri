@@ -118,7 +118,7 @@ class _BarcodeCalibrationDataProcessingViewState
   //      This calculates the distance the phone has moved in the Z direction for each recorded accelerometer event.
   //
   //  5. Matching the distance moved to the barcode sizes using timestamps
-  //     i.
+  //
 
   Future<List<MatchedCalibrationDataHiveObject>> processData(
       List<BarcodeData> rawBarcodesData,
