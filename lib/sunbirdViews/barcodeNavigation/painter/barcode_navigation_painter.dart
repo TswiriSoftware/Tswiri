@@ -24,7 +24,8 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     Offset screenCenterPoint = Offset(size.width / 2, size.height / 2);
 
-    canvas.drawCircle(screenCenterPoint, 100, paintRed3);
+    //double barcodeSize =
+    canvas.drawCircle(screenCenterPoint, 75, paintRed3);
 
     for (final Barcode barcode in barcodes) {
       BarcodeScreenData barcodeScreenData = calculateScreenBarcodeData(
@@ -32,9 +33,9 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
 
       drawBarcodeDisplayValues(canvas, barcodeScreenData);
       highlightSelectedBarcode(
-          canvas, barcodeScreenData, screenCenterPoint, selectedBarcodeID);
+          canvas, barcodeScreenData, screenCenterPoint, selectedBarcodeID, 75);
       changeCircleFinderColor(
-          canvas, barcodeScreenData, screenCenterPoint, selectedBarcodeID);
+          canvas, barcodeScreenData, screenCenterPoint, selectedBarcodeID, 75);
 
       bool checkIfBarcodeIsValid() =>
           barcode.value.displayValue != null &&
@@ -131,19 +132,20 @@ void highlightSelectedBarcode(
     Canvas canvas,
     BarcodeScreenData barcodeScreenData,
     Offset screenCenterPoint,
-    String barcodeID) {
+    String barcodeID,
+    double barcodeSize) {
   if (barcodeScreenData.displayValue == barcodeID) {
     canvas.drawRect(barcodeScreenData.boundingBox, paintLightGreenAccent3);
     if ((screenCenterPoint - barcodeScreenData.center).distance < 100) {
-      canvas.drawCircle(screenCenterPoint, 100, paintBlue3);
+      canvas.drawCircle(screenCenterPoint, barcodeSize, paintBlue3);
     }
   }
 }
 
 void changeCircleFinderColor(Canvas canvas, BarcodeScreenData barcodeScreenData,
-    Offset screenCenterPoint, String barcodeID) {
+    Offset screenCenterPoint, String barcodeID, double barcodeSize) {
   if ((screenCenterPoint - barcodeScreenData.center).distance < 100 &&
       barcodeScreenData.displayValue == barcodeID) {
-    canvas.drawCircle(screenCenterPoint, 100, paintBlue3);
+    canvas.drawCircle(screenCenterPoint, barcodeSize, paintBlue3);
   }
 }

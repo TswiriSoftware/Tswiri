@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
@@ -131,8 +129,6 @@ Future<List<RealBarcodePosition>> processData(
   //1.2 This list contains all barcodes and their real life sizes.
   List<BarcodeDataEntry> allBarcodes = await getAllExistingBarcodes();
 
-  //TODO: do rotation here. 
-
   //2. This list contains all onImageInterBarcodeData.
   List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData =
       buildAllOnImageInterBarcodeData(allRawOnImageBarcodeData);
@@ -143,7 +139,7 @@ Future<List<RealBarcodePosition>> processData(
       buildAllRealInterBarcodeOffsets(
           allOnImageInterBarcodeData: allOnImageInterBarcodeData,
           matchedCalibrationData: distanceFromCameraLookup,
-          barcodeDataEntries: allBarcodes);
+          allBarcodes: allBarcodes);
 
   //3.2 This list contains only unique realInterBarcodeOffsets
   List<RealInterBarcodeOffset> uniqueRealInterBarcodeOffsets =
@@ -158,7 +154,7 @@ Future<List<RealBarcodePosition>> processData(
           uniqueRealInterBarcodeOffsets: uniqueRealInterBarcodeOffsets,
           allRealInterBarcodeOffsets: allRealInterBarcodeOffsets);
 
-  //List of unique barcodes that we want to write the positions of. 
+  //List of unique barcodes that we want to write the positions of.
   List<RealBarcodePosition> realBarcodePositions =
       extractListOfScannedBarcodes(finalRealInterBarcodeOffsets);
 
@@ -173,12 +169,10 @@ Future<List<RealBarcodePosition>> processData(
   }
 
   int nonNullPositions = 1;
-  int nonNullPositionsInPreviousIteration = realBarcodePositions.length -1 ;
+  int nonNullPositionsInPreviousIteration = realBarcodePositions.length - 1;
 
-
-  //TODO: Include Z calculation inside this loop.
   for (int i = 0; i <= uniqueRealInterBarcodeOffsets.length;) {
-    nonNullPositionsInPreviousIteration =  nonNullPositions;
+    nonNullPositionsInPreviousIteration = nonNullPositions;
     for (RealBarcodePosition endBarcodeRealPosition in realBarcodePositions) {
       if (endBarcodeRealPosition.interBarcodeOffset == null) {
         //startBarcode : The barcode that we are going to use as a reference (has offset relative to origin)
@@ -211,12 +205,44 @@ Future<List<RealBarcodePosition>> processData(
 
           if (indexIsValid(interBarcodeOffsetIndex)) {
             //Determine whether to add or subtract the interBarcode Offset.
-            //TODO: return something here.
-            determinesInterBarcodeOffsetDirection(
-                relevantInterBarcodeOffset:
-                    relevantInterBarcodeOffsets[interBarcodeOffsetIndex],
-                endBarcodeRealPosition: endBarcodeRealPosition,
-                startBarcode: startBarcode);
+            if (relevantInterBarcodeOffsets[interBarcodeOffsetIndex].uidEnd ==
+                endBarcodeRealPosition.uid) {
+              //Calculate the interBarcodeOffset
+              endBarcodeRealPosition.interBarcodeOffset =
+                  startBarcode.interBarcodeOffset! +
+                      relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
+                          .realInterBarcodeOffset;
+              //Calculate the z difference from origin
+              endBarcodeRealPosition.distanceFromCamera =
+                  relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
+                          .startBarcodeDistanceFromCamera -
+                      relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
+                          .endBarcodeDistanceFromCamera;
+
+              //Set the timestamp
+              endBarcodeRealPosition.timestamp =
+                  relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
+                      .timestamp;
+            } else if (relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
+                    .uidStart ==
+                endBarcodeRealPosition.uid) {
+              //Calculate the interBarcodeOffset
+              endBarcodeRealPosition.interBarcodeOffset =
+                  startBarcode.interBarcodeOffset! -
+                      relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
+                          .realInterBarcodeOffset;
+              //Calculate the z difference from origin
+              endBarcodeRealPosition.distanceFromCamera =
+                  relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
+                          .endBarcodeDistanceFromCamera -
+                      relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
+                          .startBarcodeDistanceFromCamera;
+
+              //Set the timestamp
+              endBarcodeRealPosition.timestamp =
+                  relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
+                      .timestamp;
+            }
 
             //log(startBarcode.startBarcodeDistanceFromCamera.toString());
 
@@ -228,7 +254,6 @@ Future<List<RealBarcodePosition>> processData(
     }
     i++;
     //If all barcodes have been mapped it will break the loop.
-    //TODO: verify & test new logic. 
     if (nonNullPositions == nonNullPositionsInPreviousIteration) {
       break;
     }

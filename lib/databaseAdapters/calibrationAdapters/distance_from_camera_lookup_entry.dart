@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-part 'matched_calibration_data_adapter.g.dart';
+part 'distance_from_camera_lookup_entry.g.dart';
 
 @HiveType(typeId: 1)
 
@@ -12,15 +12,17 @@ class DistanceFromCameraLookupEntry extends HiveObject {
   DistanceFromCameraLookupEntry({
     required this.onImageBarcodeDiagonalLength,
     required this.distanceFromCamera,
+    required this.actualBarcodeDiagonalLengthKey,
   });
-
-  //TODO: actual barcode diagonal length (key) , 
 
   @HiveField(0)
   late double onImageBarcodeDiagonalLength;
 
   @HiveField(1)
   late double distanceFromCamera;
+
+  @HiveField(2)
+  late double actualBarcodeDiagonalLengthKey;
 
   getList() {
     return [onImageBarcodeDiagonalLength, distanceFromCamera];

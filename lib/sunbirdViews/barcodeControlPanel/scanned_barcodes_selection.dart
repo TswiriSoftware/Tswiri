@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/barcode_control_panel.dart';
-import '../../databaseAdapters/tagAdapters/barcode_tag_entry.dart';
-import '../../functions/barcodeTools/get_data_functions.dart';
 import '../../globalValues/global_colours.dart';
 
 class ScannedBarcodesView extends StatefulWidget {

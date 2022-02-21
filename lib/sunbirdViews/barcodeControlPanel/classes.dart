@@ -1,16 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_entry.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
 
 import '../../databaseAdapters/allBarcodes/barcode_entry.dart';
 
 class Tags extends ChangeNotifier {
-  Tags(this.assignedTags, this.unassignedTags, this.isFixed);
+  Tags(this.assignedTags, this.unassignedTags, this.isFixed, this.barcodeSize);
   List<String> assignedTags;
   List<String> unassignedTags;
+  double barcodeSize;
   bool isFixed;
+
+  Future<void> changeBarcodeSize(int barcodeID, double newBarcodeSize) async {
+    barcodeSize = newBarcodeSize;
+
+    Box<BarcodeDataEntry> generatedBarcodesBox =
+        await Hive.openBox(generatedBarcodesBoxName);
+    BarcodeDataEntry barcodeDataEntry = generatedBarcodesBox.get(barcodeID)!;
+    barcodeDataEntry.barcodeSize = newBarcodeSize;
+
+    generatedBarcodesBox.put(barcodeID, barcodeDataEntry);
+    notifyListeners();
+  }
 
   Future<void> changeFixed(int barcodeID) async {
     isFixed = !isFixed;
@@ -21,8 +33,6 @@ class Tags extends ChangeNotifier {
     barcodeDataEntry.isFixed = isFixed;
 
     generatedBarcodesBox.put(barcodeID, barcodeDataEntry);
-
-    print(isFixed);
     notifyListeners();
   }
 

@@ -132,13 +132,13 @@ class _BarcodeCameraNavigatorViewState
           allRealInterBarcodeOffsets.addAll(buildAllRealInterBarcodeOffsets(
               allOnImageInterBarcodeData: allOnImageInterBarcodeData,
               matchedCalibrationData: matchedCalibrationData,
-              barcodeDataEntries: barcodeDataEntries));
+              allBarcodes: barcodeDataEntries));
 
           //This code above can be run sustainably.//
           //Veryy niicceee :)//
         }
 
-        //TODO: convert this to work with the map idea: Map<String, List<RealInterBarcodeOffset>>
+        //TODO: convert this to work with the map idea: Map<String, List<RealInterBarcodeOffset>> @049er
 
         //Once AllRealInterBarcodeOffsets reaches a length where each barcode has been scanned at least 4 times.
         //We can run futher processing and clear the backlog.
@@ -203,26 +203,14 @@ class _BarcodeCameraNavigatorViewState
             } else {
               realInterBarcodeOffset.checksOut = false;
             }
-            // if (realInterBarcodeOffset.checked == false) {
-            //   log('Not Correct:');
-            //   log(realInterBarcodeOffset.uid +
-            //       ', ' +
-            //       realInterBarcodeOffset.realInterBarcodeOffset.dx.toString() +
-            //       ', ' +
-            //       realInterBarcodeOffset.realInterBarcodeOffset.dy.toString());
-            //   log('${realInterBarcodeOffset.uidStart}_${realInterBarcodeOffset.uidEnd}, ${storedInterbarcodeOffset.dx}, ${storedInterbarcodeOffset.dy}');
-            // }
           }
         }
 
-        // log(checksOut.toString());
-        // log(allScannedBarcodes.toString());
-
+        //TODO: implement code that updates barcode position XD.
         log('These barcodes have moved: ' +
             allScannedBarcodes
                 .where((element) => !checksOut.contains(element))
                 .toString());
-
         final painter = BarcodeDetectorPainterNavigation(
             barcodes,
             inputImage.inputImageData!.size,

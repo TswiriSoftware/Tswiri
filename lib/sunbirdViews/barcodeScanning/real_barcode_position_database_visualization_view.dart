@@ -162,8 +162,8 @@ _getPoints(BuildContext context, List pointNames, List pointData) async {
   for (var i = 0; i < consolidatedRealDataBox.length; i++) {
     RealBarcodePostionEntry data = consolidatedRealDataBox.getAt(i)!;
 
-    points.add(
-        Offset((data.offset.x) + (width / 2), (data.offset.y) + (height / 2)));
+    points.add(Offset(
+        (data.offset.x / 5) + (width / 2), (data.offset.y / 5) + (height / 2)));
     pointData.add([
       roundDouble(data.offset.x, 5),
       roundDouble(data.offset.y, 5),

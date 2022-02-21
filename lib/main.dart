@@ -39,7 +39,7 @@ Future<void> main() async {
   await Hive.initFlutter(directory.path);
   Hive.registerAdapter(TypeOffsetHiveObjectAdapter());
   Hive.registerAdapter(RealBarcodePostionEntryAdapter());
-  Hive.registerAdapter(MatchedCalibrationDataHiveObjectAdapter());
+  Hive.registerAdapter(DistanceFromCameraLookupEntryAdapter());
   Hive.registerAdapter(BarcodeTagEntryAdapter());
   Hive.registerAdapter(TagEntryAdapter());
   Hive.registerAdapter(BarcodeDataEntryAdapter());

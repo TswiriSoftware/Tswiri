@@ -4,11 +4,9 @@ import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_e
 import 'package:flutter_google_ml_kit/functions/barcodeTools/get_data_functions.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeTools/hide_keyboard.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/barcode_control_panel.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/scan_barcode_view.dart';
-import 'package:hive/hive.dart';
 
 class AllBarcodesView extends StatefulWidget {
   const AllBarcodesView({Key? key}) : super(key: key);
@@ -84,8 +82,8 @@ class _AllBarcodesViewState extends State<AllBarcodesView> {
 
   Future<void> runFilter(String enteredKeyword) async {
     //Gets a list of all generated Barcodes.
-    List<BarcodeDataEntry> generatedBarcodes = [];
-    generatedBarcodes.addAll(await getGeneratedBarcodes());
+    List<BarcodeDataEntry> allBarcodes = [];
+    allBarcodes.addAll(await getGeneratedBarcodes());
 
     //Gets a list of all barcodeTagEntries
     List<BarcodeTagEntry> barcodeTagEntries = await getAllBarcodeTags();
@@ -94,7 +92,7 @@ class _AllBarcodesViewState extends State<AllBarcodesView> {
     List<BarcodeAndTagData> results = [];
 
     //Iterate through generatedBarcodes and compile all relevant data and tags into a list.
-    for (BarcodeDataEntry barcodeData in generatedBarcodes) {
+    for (BarcodeDataEntry barcodeData in allBarcodes) {
       //List containing all relevant barcode tags.
       List<String> relevantTags =
           findRelevantBarcodeTags(barcodeTagEntries, barcodeData);

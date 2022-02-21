@@ -7,10 +7,14 @@ import '../classes.dart';
 
 class BarcodeDataContainer extends StatefulWidget {
   const BarcodeDataContainer(
-      {Key? key, required this.barcodeAndTagData, required this.isFixed})
+      {Key? key,
+      required this.barcodeAndTagData,
+      required this.isFixed,
+      required this.barcodeSize})
       : super(key: key);
   final BarcodeAndTagData barcodeAndTagData;
   final bool isFixed;
+  final double barcodeSize;
 
   @override
   State<BarcodeDataContainer> createState() => _BarcodeDataContainerState();
@@ -18,10 +22,13 @@ class BarcodeDataContainer extends StatefulWidget {
 
 class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
   bool isFixed = false;
+  double barcodeSize = 0;
+  final TextEditingController _textFieldController = TextEditingController();
 
   @override
   void initState() {
     isFixed = widget.isFixed;
+    barcodeSize = widget.barcodeSize;
     super.initState();
   }
 
@@ -63,10 +70,50 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
           Padding(
             padding:
                 const EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 10),
-            child: Text(
-              'Barcode Size:  ' +
-                  widget.barcodeAndTagData.barcodeSize.toString(),
-              style: const TextStyle(fontSize: 18),
+            child: Container(
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: deepSpaceSparkle[200],
+                border: Border.all(color: Colors.white60, width: 2),
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(5),
+                ),
+              ),
+              child: InkWell(
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text('Enter Barcode diagonal length'),
+                          content: TextField(
+                            controller: _textFieldController,
+                            textInputAction: TextInputAction.go,
+                            keyboardType:
+                                const TextInputType.numberWithOptions(),
+                            decoration: const InputDecoration(
+                                hintText: "Enter barcode size"),
+                          ),
+                          actions: [
+                            ElevatedButton(
+                              child: const Text('Submit'),
+                              onPressed: () {
+                                barcodeSize =
+                                    double.parse(_textFieldController.text);
+                                setBarcodeSize();
+                                Navigator.of(context).pop();
+                              },
+                            )
+                          ],
+                        );
+                      });
+                },
+                child: Text(
+                  'Barcode Size:  ' +
+                      Provider.of<Tags>(context).barcodeSize.toString(),
+                  style: const TextStyle(fontSize: 18),
+                ),
+              ),
             ),
           ),
           Padding(
@@ -96,5 +143,10 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
         ],
       ),
     );
+  }
+
+  setBarcodeSize() {
+    Provider.of<Tags>(context, listen: false)
+        .changeBarcodeSize(widget.barcodeAndTagData.barcodeID, barcodeSize);
   }
 }

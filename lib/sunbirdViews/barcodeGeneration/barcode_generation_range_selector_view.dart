@@ -188,10 +188,10 @@ class _SelectRangeWidgetState extends State<SelectRangeWidget> {
     for (int i = rangeStart; i <= rangeEnd; i++) {
       if (i == 1) {
         await barcodeData.put(
-            i, BarcodeDataEntry(barcodeID: i, barcodeSize: 50, isFixed: true));
+            i, BarcodeDataEntry(barcodeID: i, barcodeSize: 100, isFixed: true));
       } else {
-        await barcodeData.put(
-            i, BarcodeDataEntry(barcodeID: i, barcodeSize: 50, isFixed: false));
+        await barcodeData.put(i,
+            BarcodeDataEntry(barcodeID: i, barcodeSize: 100, isFixed: false));
       }
     }
     //close Box

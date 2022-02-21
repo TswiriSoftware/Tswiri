@@ -25,6 +25,7 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
   List<String> assignedTags = [];
   List<String> unassignedTags = [];
   bool isFixed = false;
+  double barcodeSize = 0;
 
   @override
   void initState() {
@@ -52,16 +53,17 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
         future: getCurrentBarcodeData(widget.barcodeID),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            print(isFixed);
             return Column(
               children: [
                 ChangeNotifierProvider(
-                  create: (_) => Tags(assignedTags, unassignedTags, isFixed),
+                  create: (_) =>
+                      Tags(assignedTags, unassignedTags, isFixed, barcodeSize),
                   child: Column(
                     children: [
                       BarcodeDataContainer(
                         barcodeAndTagData: snapshot.data!,
                         isFixed: isFixed,
+                        barcodeSize: barcodeSize,
                       ),
                       AssignedTagsContainer(
                         assignedTags: assignedTags,
@@ -105,6 +107,7 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
     unassignedTags = barcodeUnassignedTags;
     assignedTags = barcodeTags;
     isFixed = barcodeData.isFixed;
+    barcodeSize = barcodeData.barcodeSize;
 
     return barcodeAndTagData;
   }
