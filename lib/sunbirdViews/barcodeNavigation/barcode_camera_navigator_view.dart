@@ -135,6 +135,7 @@ class _BarcodeCameraNavigatorViewState
               barcodeDataEntries: barcodeDataEntries));
 
           //This code above can be run sustainably.//
+          //Veryy niicceee :)//
         }
 
         //TODO: convert this to work with the map idea: Map<String, List<RealInterBarcodeOffset>>

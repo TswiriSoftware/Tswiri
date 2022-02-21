@@ -12,12 +12,12 @@ class BarcodeCalibrationDataProcessingView extends StatefulWidget {
   const BarcodeCalibrationDataProcessingView(
       {Key? key,
       required this.rawBarcodeData,
-      required this.rawAccelerometerData,
+      required this.rawUserAccelerometerData,
       required this.startTimeStamp})
       : super(key: key);
 
   final List<BarcodeData> rawBarcodeData;
-  final List<RawAccelerometerData> rawAccelerometerData;
+  final List<RawAccelerometerData> rawUserAccelerometerData;
   final int startTimeStamp;
   @override
   _BarcodeCalibrationDataProcessingViewState createState() =>
@@ -60,8 +60,8 @@ class _BarcodeCalibrationDataProcessingViewState
       ),
       body: Center(
         child: FutureBuilder<List>(
-          future:
-              processData(widget.rawBarcodeData, widget.rawAccelerometerData),
+          future: processData(
+              widget.rawBarcodeData, widget.rawUserAccelerometerData),
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
               return const Center(child: CircularProgressIndicator());
@@ -102,27 +102,41 @@ class _BarcodeCalibrationDataProcessingViewState
     );
   }
 
+  // Data that we are working with:
+
+  //    i. rawBarcodeData  (This is all the collected barcode data so we can determine the barcodes diagonal length at a given point in time.)
+  //   ii. rawUserAccelerometerData (This is all the data collected by the accelerometer, we are specifically looking at the Z axis's acceleration values.)
+  //  iii. startTimeStamp (This is the timestamp created when the used indicates that the phone is in the startting position.)
+  //
+  //  1. Build a list that contains the barcode diagonal side lengths at different points in time.
+  //
+  //  2. Grab the relevant time range from the accelerometer data using the startTimeStamp and onImageBarcodeSizes.last.timestamp.
+  //
+  //  3. Set up the starting position in the list processedAccelerometerData.
+  //
+  //  4. Process the rawUserAccelerometerData
+  //      This calculates the distance the phone has moved in the Z direction for each recorded accelerometer event.
+  //
+  //  5. Matching the distance moved to the barcode sizes using timestamps
+  //     i.
+
   Future<List<MatchedCalibrationDataHiveObject>> processData(
       List<BarcodeData> rawBarcodesData,
       List<RawAccelerometerData> rawAccelerometData) async {
     if (rawAccelerometData.isNotEmpty && rawBarcodesData.isNotEmpty) {
-      //Box to store valid calibration Data
-      Box<MatchedCalibrationDataHiveObject> matchedDataHiveBox =
-          await Hive.openBox(matchedDataHiveBoxName);
-
-      //A list of all barcode Sizes captured.
+      //1. A list of all barcode diagonal side lengths at different points in time.
       List<OnImageBarcodeSize> onImageBarcodeSizes =
           getOnImageBarcodeSizes(rawBarcodesData);
 
-      //Get range of relevant rawAccelerometer data
+      //2. Get range of relevant rawAccelerometer data
       List<RawAccelerometerData> relevantRawAccelerometData =
           getRelevantRawAccelerometerData(rawAccelerometData,
               widget.startTimeStamp, onImageBarcodeSizes.last.timestamp);
 
-      //List that contains processed accelerometer data.
+      //List that contains processed accelerometer data//
       List<ProcessedAccelerometerData> processedAccelerometerData = [];
 
-      //Set the starting distance as 0
+      //3. Set the starting distance as 0
       processedAccelerometerData.add(ProcessedAccelerometerData(
           timestamp: rawAccelerometData.first.timestamp,
           barcodeDistanceFromCamera: 0));
@@ -130,10 +144,8 @@ class _BarcodeCalibrationDataProcessingViewState
       //Used to keep track of total distance from barcode.
       double totalDistanceMoved = 0;
 
-      //ListA(distanceMoved,timestamp) , ListB(Barcode,timestamp)
-
-      //Processing rawAccelerometer Data.
-      //Take backward direction as positive
+      //4. Processing rawAccelerometer Data.
+      //   i. Take backward direction as positive
       for (int i = 1; i < relevantRawAccelerometData.length; i++) {
         int deltaT = relevantRawAccelerometData[i].timestamp -
             relevantRawAccelerometData[i - 1].timestamp;
@@ -149,11 +161,22 @@ class _BarcodeCalibrationDataProcessingViewState
         }
       }
 
+      //  5. We now have 2 lists
+      //     i. processedAccelerometerData(distanceMoved,timestamp)
+      //    ii. onImageBarcodeSizes(Barcode sizes,timestamp)
+      //
+      //  Now we will match the distance moved to the barcode sizes using the timestamps.
+      //  Then Write the matched data to the matchedDataHiveBox.
+
+      //Box to store valid calibration Data
+      Box<MatchedCalibrationDataHiveObject> matchedDataHiveBox =
+          await Hive.openBox(matchedDataHiveBoxName);
+
       //Matches OnImageBarcodeSize and DistanceFromCamera using timestamps and writes to Hive Database
       for (OnImageBarcodeSize onImageBarcodeSize in onImageBarcodeSizes) {
         //Find the firts accelerometer data where the timestamp is >= to the OnImageBarcodeSize timestamp
         int distanceFromCameraIndex = processedAccelerometerData.indexWhere(
-            (element) => onImageBarcodeSize.timestamp <= element.timestamp);
+            (element) => element.timestamp >= onImageBarcodeSize.timestamp);
 
         //Checks that entry exists
         if (distanceFromCameraIndex != -1) {

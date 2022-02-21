@@ -152,8 +152,7 @@ class OpenPainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
 
-_getPoints(
-    BuildContext context, List pointNames, List pointRelativePositions) async {
+_getPoints(BuildContext context, List pointNames, List pointData) async {
   List<Offset> points = [];
 
   Box<RealBarcodePostionEntry> consolidatedRealDataBox =
@@ -165,12 +164,13 @@ _getPoints(
 
     points.add(
         Offset((data.offset.x) + (width / 2), (data.offset.y) + (height / 2)));
-    pointRelativePositions.add([
+    pointData.add([
       roundDouble(data.offset.x, 5),
       roundDouble(data.offset.y, 5),
       roundDouble(data.distanceFromCamera, 5),
     ]);
     pointNames.add(data.uid);
   }
+
   return points;
 }

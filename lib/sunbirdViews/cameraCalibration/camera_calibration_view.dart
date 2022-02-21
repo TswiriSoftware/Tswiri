@@ -23,7 +23,9 @@ class _CameraCalibrationState extends State<CameraCalibration> {
 
   int startTimeStamp = 0;
 
+  //This list contains all the rawUserAccelerometerData.
   List<RawAccelerometerData> rawAccelerometerData = [];
+  //This list contains all the scanned barcode data.
   List<BarcodeData> rawBarcodesData = [];
 
   bool isBusy = false;
@@ -77,7 +79,7 @@ class _CameraCalibrationState extends State<CameraCalibration> {
                       builder: (context) =>
                           BarcodeCalibrationDataProcessingView(
                               rawBarcodeData: rawBarcodesData,
-                              rawAccelerometerData: rawAccelerometerData,
+                              rawUserAccelerometerData: rawAccelerometerData,
                               startTimeStamp: startTimeStamp)));
                 },
                 child: const Icon(Icons.done_all_outlined),
