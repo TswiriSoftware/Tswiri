@@ -11,7 +11,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
-import 'databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
+import 'databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
 import 'databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
 import 'sunbirdViews/barcodeNavigation/navigationToolsView/barcode_navigation_tools_view.dart';

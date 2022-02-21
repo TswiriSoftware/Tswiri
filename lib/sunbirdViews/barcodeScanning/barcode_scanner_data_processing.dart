@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_entry.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import 'package:flutter_google_ml_kit/functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
@@ -125,11 +125,13 @@ class _BarcodeScannerDataProcessingViewState
 Future<List<RealBarcodePosition>> processData(
     List<RawOnImageBarcodeData> allRawOnImageBarcodeData) async {
   //1.1 List of all matchedCalibration Data
-  List<MatchedCalibrationDataHiveObject> matchedCalibrationData =
+  List<DistanceFromCameraLookupEntry> distanceFromCameraLookup =
       await getMatchedCalibrationData();
 
-  //1.2 This list contains all generated barcodes and their real life sizes.
-  List<BarcodeDataEntry> barcodeDataEntries = await getGeneratedBarcodeData();
+  //1.2 This list contains all barcodes and their real life sizes.
+  List<BarcodeDataEntry> allBarcodes = await getAllExistingBarcodes();
+
+  //TODO: do rotation here. 
 
   //2. This list contains all onImageInterBarcodeData.
   List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData =
@@ -140,10 +142,10 @@ Future<List<RealBarcodePosition>> processData(
   List<RealInterBarcodeOffset> allRealInterBarcodeOffsets =
       buildAllRealInterBarcodeOffsets(
           allOnImageInterBarcodeData: allOnImageInterBarcodeData,
-          matchedCalibrationData: matchedCalibrationData,
-          barcodeDataEntries: barcodeDataEntries);
+          matchedCalibrationData: distanceFromCameraLookup,
+          barcodeDataEntries: allBarcodes);
 
-  //3.2 This list contains only unique realInterBarcodeOffsets.
+  //3.2 This list contains only unique realInterBarcodeOffsets
   List<RealInterBarcodeOffset> uniqueRealInterBarcodeOffsets =
       allRealInterBarcodeOffsets.toSet().toList();
 
@@ -156,7 +158,7 @@ Future<List<RealBarcodePosition>> processData(
           uniqueRealInterBarcodeOffsets: uniqueRealInterBarcodeOffsets,
           allRealInterBarcodeOffsets: allRealInterBarcodeOffsets);
 
-  //List of all barcodes Scanned - deduplicated.
+  //List of unique barcodes that we want to write the positions of. 
   List<RealBarcodePosition> realBarcodePositions =
       extractListOfScannedBarcodes(finalRealInterBarcodeOffsets);
 
@@ -170,11 +172,13 @@ Future<List<RealBarcodePosition>> processData(
     return Future.error('Error: Origin Not Scanned.');
   }
 
-  // Go through all realInterbarcode data at least realInterBarcodeData.length times (Little bit of overkill)
   int nonNullPositions = 1;
-  int nullPositions = realBarcodePositions.length;
+  int nonNullPositionsInPreviousIteration = realBarcodePositions.length -1 ;
 
+
+  //TODO: Include Z calculation inside this loop.
   for (int i = 0; i <= uniqueRealInterBarcodeOffsets.length;) {
+    nonNullPositionsInPreviousIteration =  nonNullPositions;
     for (RealBarcodePosition endBarcodeRealPosition in realBarcodePositions) {
       if (endBarcodeRealPosition.interBarcodeOffset == null) {
         //startBarcode : The barcode that we are going to use as a reference (has offset relative to origin)
@@ -207,6 +211,7 @@ Future<List<RealBarcodePosition>> processData(
 
           if (indexIsValid(interBarcodeOffsetIndex)) {
             //Determine whether to add or subtract the interBarcode Offset.
+            //TODO: return something here.
             determinesInterBarcodeOffsetDirection(
                 relevantInterBarcodeOffset:
                     relevantInterBarcodeOffsets[interBarcodeOffsetIndex],
@@ -223,7 +228,8 @@ Future<List<RealBarcodePosition>> processData(
     }
     i++;
     //If all barcodes have been mapped it will break the loop.
-    if (nonNullPositions == nullPositions) {
+    //TODO: verify & test new logic. 
+    if (nonNullPositions == nonNullPositionsInPreviousIteration) {
       break;
     }
   }
@@ -234,7 +240,7 @@ Future<List<RealBarcodePosition>> processData(
 
   await realPositionalData.clear();
 
-//Set origin distance to 0
+  //Set origin distance to 0
   realBarcodePositions
       .firstWhere((element) => element.uid == '1')
       .distanceFromCamera = 0;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/user_accelerometer_z_axis_data_objects.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/barcode_size_objects.dart';
@@ -26,7 +26,7 @@ class BarcodeCalibrationDataProcessingView extends StatefulWidget {
 
 class _BarcodeCalibrationDataProcessingViewState
     extends State<BarcodeCalibrationDataProcessingView> {
-  List<MatchedCalibrationDataHiveObject> displayList = [];
+  List<DistanceFromCameraLookupEntry> displayList = [];
 
   @override
   void dispose() {
@@ -70,7 +70,7 @@ class _BarcodeCalibrationDataProcessingViewState
               return ListView.builder(
                   itemCount: myList.length,
                   itemBuilder: (context, index) {
-                    MatchedCalibrationDataHiveObject data = myList[index];
+                    DistanceFromCameraLookupEntry data = myList[index];
 
                     if (index == 0) {
                       return Column(
@@ -120,7 +120,7 @@ class _BarcodeCalibrationDataProcessingViewState
   //  5. Matching the distance moved to the barcode sizes using timestamps
   //
 
-  Future<List<MatchedCalibrationDataHiveObject>> processData(
+  Future<List<DistanceFromCameraLookupEntry>> processData(
       List<BarcodeData> rawBarcodesData,
       List<RawUserAccelerometerZAxisData> rawAccelerometData) async {
     if (rawAccelerometData.isNotEmpty && rawBarcodesData.isNotEmpty) {
@@ -169,7 +169,7 @@ class _BarcodeCalibrationDataProcessingViewState
       //  Then Write the matched data to the matchedDataHiveBox.
 
       //Box to store valid calibration Data
-      Box<MatchedCalibrationDataHiveObject> matchedDataHiveBox =
+      Box<DistanceFromCameraLookupEntry> matchedDataHiveBox =
           await Hive.openBox(matchedDataHiveBoxName);
 
       //Matches OnImageBarcodeSize and DistanceFromCamera using timestamps and writes to Hive Database
@@ -181,9 +181,9 @@ class _BarcodeCalibrationDataProcessingViewState
         //Checks that entry exists
         if (distanceFromCameraIndex != -1) {
           //Creates an entry in the Hive Database.
-          MatchedCalibrationDataHiveObject matchedCalibrationDataHiveObject =
-              MatchedCalibrationDataHiveObject(
-                  objectSize: onImageBarcodeSize.averageBarcodeDiagonalLength,
+          DistanceFromCameraLookupEntry matchedCalibrationDataHiveObject =
+              DistanceFromCameraLookupEntry(
+                  onImageBarcodeDiagonalLength: onImageBarcodeSize.averageBarcodeDiagonalLength,
                   distanceFromCamera:
                       processedAccelerometerData[distanceFromCameraIndex]
                           .barcodeDistanceFromCamera);

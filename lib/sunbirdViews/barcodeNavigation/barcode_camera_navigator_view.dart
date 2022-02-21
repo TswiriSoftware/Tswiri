@@ -10,7 +10,7 @@ import 'package:hive/hive.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:vector_math/vector_math.dart';
 import '../../databaseAdapters/allBarcodes/barcode_entry.dart';
-import '../../databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
+import '../../databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
 import '../../functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
 import '../../objects/accelerometer_data.dart';
 import '../../objects/raw_on_image_barcode_data.dart';
@@ -96,10 +96,10 @@ class _BarcodeCameraNavigatorViewState
         await Hive.openBox(realPositionDataBoxName);
 
     //This list contains all generated barcodes and their real life sizes.
-    List<BarcodeDataEntry> barcodeDataEntries = await getGeneratedBarcodeData();
+    List<BarcodeDataEntry> barcodeDataEntries = await getAllExistingBarcodes();
 
     // List of all matchedCalibration Data aka. Distance lookup table.
-    List<MatchedCalibrationDataHiveObject> matchedCalibrationData =
+    List<DistanceFromCameraLookupEntry> matchedCalibrationData =
         await getMatchedCalibrationData();
 
     if (realBarcodePositionDataBox.isNotEmpty) {

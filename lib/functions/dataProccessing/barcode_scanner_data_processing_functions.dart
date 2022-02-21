@@ -83,6 +83,7 @@ void writeValidBarcodePositionsToDatabase(
 //Checks if the index is valid.
 bool indexIsValid(int index) => index != -1;
 
+//TODO: Refactor this...
 ///Considers the InterBarcodeOffset Offset's Direction
 void determinesInterBarcodeOffsetDirection(
     {required RealInterBarcodeOffset relevantInterBarcodeOffset,
@@ -295,16 +296,17 @@ double calculateBacodeMMperOIU(
 }
 
 //Uses the lookup table matchedCalibration data to find the distance from camera.
+//TODO: Throw error when actual barcode size not in lookup
 double findDistanceFromCamera({
   required List<MatchedCalibrationDataHiveObject> calibrationLookupTable,
   required double barcodeDiagonalLength,
 }) {
   //sort in descending order
-  calibrationLookupTable.sort((a, b) => a.objectSize.compareTo(b.objectSize));
+  calibrationLookupTable.sort((a, b) => a.barcodeDiagonalLength.compareTo(b.barcodeDiagonalLength));
 
   //First index
   int distanceFromCameraIndex = calibrationLookupTable
-      .indexWhere((element) => element.objectSize >= barcodeDiagonalLength);
+      .indexWhere((element) => element.barcodeDiagonalLength >= barcodeDiagonalLength);
   double distanceFromCamera = 0;
 
   //checks if index is valid
@@ -403,7 +405,7 @@ Future<List<MatchedCalibrationDataHiveObject>>
 ///
 ///This list contains 2 things
 ///(BarcodeID, realBarcodeSize)
-Future<List<BarcodeDataEntry>> getGeneratedBarcodeData() async {
+Future<List<BarcodeDataEntry>> getAllExistingBarcodes() async {
   Box<BarcodeDataEntry> generatedBarcodeData =
       await Hive.openBox(generatedBarcodesBoxName);
   return generatedBarcodeData.values.toList();

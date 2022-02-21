@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../../databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
+import '../../../databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
 import '../../../globalValues/global_colours.dart';
 
 class DisplayMatchedDataWidget extends StatelessWidget {
   const DisplayMatchedDataWidget({Key? key, required this.dataObject})
       : super(key: key);
 
-  final MatchedCalibrationDataHiveObject dataObject;
+  final DistanceFromCameraLookupEntry dataObject;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class DisplayMatchedDataWidget extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(right: 10, left: 10),
                 child: SizedBox(
-                  child: Text(dataObject.objectSize.toString(),
+                  child: Text(dataObject.onImageBarcodeDiagonalLength.toString(),
                       textAlign: TextAlign.start),
                   width: 150,
                 ),
