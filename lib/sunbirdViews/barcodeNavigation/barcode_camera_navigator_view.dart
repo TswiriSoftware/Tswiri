@@ -98,12 +98,14 @@ class _BarcodeCameraNavigatorViewState
     //This list contains all generated barcodes and their real life sizes.
     List<BarcodeDataEntry> barcodeDataEntries = await getGeneratedBarcodeData();
 
-    // List of all matchedCalibration Data
+    // List of all matchedCalibration Data aka. Distance lookup table.
     List<MatchedCalibrationDataHiveObject> matchedCalibrationData =
         await getMatchedCalibrationData();
 
     if (realBarcodePositionDataBox.isNotEmpty) {
-      realBarcodePosition = getBarcodeRealPosition(realBarcodePositionDataBox);
+      //This map contains all the last reported positions of barcodes.
+      realBarcodePosition =
+          getBarcodeRealPositionMap(realBarcodePositionDataBox);
 
       if (isBusy) return;
       isBusy = true;
@@ -133,8 +135,9 @@ class _BarcodeCameraNavigatorViewState
               barcodeDataEntries: barcodeDataEntries));
 
           //This code above can be run sustainably.//
-
         }
+
+        //TODO: convert this to work with the map idea: Map<String, List<RealInterBarcodeOffset>>
 
         //Once AllRealInterBarcodeOffsets reaches a length where each barcode has been scanned at least 4 times.
         //We can run futher processing and clear the backlog.
@@ -186,6 +189,7 @@ class _BarcodeCameraNavigatorViewState
               int.parse(realInterBarcodeOffset.uidEnd)
             });
 
+            //This checks if the current positions falls within bounds of the old one.
             if (storedX <= currentXUpperBoundry &&
                 storedX >= currentXLowerBoundry &&
                 storedY <= currentYUpperBoundry &&
@@ -235,7 +239,8 @@ class _BarcodeCameraNavigatorViewState
     }
   }
 
-  Map<String, Offset> getBarcodeRealPosition(Box barcodeRealPosition) {
+  ///Returns a map of all stored barocodes and their last reported posiitons.
+  Map<String, Offset> getBarcodeRealPositionMap(Box barcodeRealPosition) {
     Map map = barcodeRealPosition.toMap();
     Map<String, Offset> barcodeReaPositionMap = {};
     map.forEach((key, value) {
