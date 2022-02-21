@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/camera_view.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-import 'package:flutter_google_ml_kit/objects/calibration/accelerometer_data_objects.dart';
+import 'package:flutter_google_ml_kit/objects/calibration/user_accelerometer_z_axis_data_objects.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/barcode_size_objects.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/barcode_calibration_data_processing.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/painter/barcode_calibration_painter.dart';
@@ -24,7 +24,7 @@ class _CameraCalibrationState extends State<CameraCalibration> {
   int startTimeStamp = 0;
 
   //This list contains all the rawUserAccelerometerData.
-  List<RawAccelerometerData> rawAccelerometerData = [];
+  List<RawUserAccelerometerZAxisData> rawAccelerometerData = [];
   //This list contains all the scanned barcode data.
   List<BarcodeData> rawBarcodesData = [];
 
@@ -41,7 +41,7 @@ class _CameraCalibrationState extends State<CameraCalibration> {
       zAcceleration = event.z;
 
       int timestamp = DateTime.now().millisecondsSinceEpoch;
-      rawAccelerometerData.add(RawAccelerometerData(
+      rawAccelerometerData.add(RawUserAccelerometerZAxisData(
           timestamp: timestamp, rawAcceleration: zAcceleration));
     });
 

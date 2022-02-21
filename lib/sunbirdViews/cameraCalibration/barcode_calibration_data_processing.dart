@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/matched_calibration_data_adapter.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
-import 'package:flutter_google_ml_kit/objects/calibration/accelerometer_data_objects.dart';
+import 'package:flutter_google_ml_kit/objects/calibration/user_accelerometer_z_axis_data_objects.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/barcode_size_objects.dart';
 import 'package:hive/hive.dart';
 
@@ -17,7 +17,7 @@ class BarcodeCalibrationDataProcessingView extends StatefulWidget {
       : super(key: key);
 
   final List<BarcodeData> rawBarcodeData;
-  final List<RawAccelerometerData> rawUserAccelerometerData;
+  final List<RawUserAccelerometerZAxisData> rawUserAccelerometerData;
   final int startTimeStamp;
   @override
   _BarcodeCalibrationDataProcessingViewState createState() =>
@@ -122,22 +122,22 @@ class _BarcodeCalibrationDataProcessingViewState
 
   Future<List<MatchedCalibrationDataHiveObject>> processData(
       List<BarcodeData> rawBarcodesData,
-      List<RawAccelerometerData> rawAccelerometData) async {
+      List<RawUserAccelerometerZAxisData> rawAccelerometData) async {
     if (rawAccelerometData.isNotEmpty && rawBarcodesData.isNotEmpty) {
       //1. A list of all barcode diagonal side lengths at different points in time.
       List<OnImageBarcodeSize> onImageBarcodeSizes =
           getOnImageBarcodeSizes(rawBarcodesData);
 
       //2. Get range of relevant rawAccelerometer data
-      List<RawAccelerometerData> relevantRawAccelerometData =
+      List<RawUserAccelerometerZAxisData> relevantRawAccelerometData =
           getRelevantRawAccelerometerData(rawAccelerometData,
               widget.startTimeStamp, onImageBarcodeSizes.last.timestamp);
 
       //List that contains processed accelerometer data//
-      List<ProcessedAccelerometerData> processedAccelerometerData = [];
+      List<ProcessedUserAccelerometerZAxisData> processedAccelerometerData = [];
 
       //3. Set the starting distance as 0
-      processedAccelerometerData.add(ProcessedAccelerometerData(
+      processedAccelerometerData.add(ProcessedUserAccelerometerZAxisData(
           timestamp: rawAccelerometData.first.timestamp,
           barcodeDistanceFromCamera: 0));
 
@@ -155,7 +155,7 @@ class _BarcodeCalibrationDataProcessingViewState
           totalDistanceMoved = totalDistanceMoved +
               (-relevantRawAccelerometData[i].rawAcceleration * deltaT);
 
-          processedAccelerometerData.add(ProcessedAccelerometerData(
+          processedAccelerometerData.add(ProcessedUserAccelerometerZAxisData(
               timestamp: rawAccelerometData[i].timestamp,
               barcodeDistanceFromCamera: totalDistanceMoved));
         }
@@ -199,16 +199,19 @@ class _BarcodeCalibrationDataProcessingViewState
 }
 
 ///Check that the movement is away from the barcode
-bool checkMovementDirection(double totalDistanceMoved,
-    List<RawAccelerometerData> relevantRawAccelerometData, int i, int deltaT) {
+bool checkMovementDirection(
+    double totalDistanceMoved,
+    List<RawUserAccelerometerZAxisData> relevantRawAccelerometData,
+    int i,
+    int deltaT) {
   return totalDistanceMoved <=
       totalDistanceMoved +
           (-relevantRawAccelerometData[i].rawAcceleration * deltaT);
 }
 
 //Get rawAccelerationData that falls in the timerange of the scanned Barcodes
-List<RawAccelerometerData> getRelevantRawAccelerometerData(
-    List<RawAccelerometerData> allRawAccelerometData,
+List<RawUserAccelerometerZAxisData> getRelevantRawAccelerometerData(
+    List<RawUserAccelerometerZAxisData> allRawAccelerometData,
     int timeRangeStart,
     int timeRangeEnd) {
   //Sort rawAccelerometerData by timestamp descending.

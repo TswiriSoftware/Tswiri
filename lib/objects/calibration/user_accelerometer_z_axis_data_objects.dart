@@ -1,6 +1,6 @@
 ///Accelerometer Data
-class RawAccelerometerData {
-  RawAccelerometerData({
+class RawUserAccelerometerZAxisData {
+  RawUserAccelerometerZAxisData({
     required this.timestamp,
     required this.rawAcceleration,
   });
@@ -18,8 +18,8 @@ class RawAccelerometerData {
 }
 
 //Stores the timestamp and totalDistance from camera
-class ProcessedAccelerometerData {
-  ProcessedAccelerometerData({
+class ProcessedUserAccelerometerZAxisData {
+  ProcessedUserAccelerometerZAxisData({
     required this.timestamp,
     required this.barcodeDistanceFromCamera,
   });
