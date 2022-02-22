@@ -20,10 +20,7 @@ class RealBarcodePosition {
   ///This is the timestamp of when the barcode was scanned
   int? timestamp;
   RealBarcodePosition(
-      {required this.uid,
-      this.offset,
-      required this.zOffset,
-      this.timestamp});
+      {required this.uid, this.offset, required this.zOffset, this.timestamp});
 
   @override
   bool operator ==(Object other) {

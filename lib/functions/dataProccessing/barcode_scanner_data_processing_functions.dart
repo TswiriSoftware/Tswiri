@@ -23,13 +23,11 @@ void calculateAverageOffsets(RealInterBarcodeOffset similarInterBarcodeOffset,
   if (checkIfDirectionIsSame(
       similarInterBarcodeOffset, realInterBacrodeOffset)) {
     realInterBacrodeOffset.offset = calculateAverageOffset(
-        realInterBacrodeOffset.offset,
-        similarInterBarcodeOffset.offset);
+        realInterBacrodeOffset.offset, similarInterBarcodeOffset.offset);
   } else if (checkIfDirectionIsInverse(
       similarInterBarcodeOffset, realInterBacrodeOffset)) {
     realInterBacrodeOffset.offset = calculateAverageOffset(
-        realInterBacrodeOffset.offset,
-        (-similarInterBarcodeOffset.offset));
+        realInterBacrodeOffset.offset, (-similarInterBarcodeOffset.offset));
   }
 }
 
@@ -122,8 +120,7 @@ int findStartBarcodeIndex(List<RealBarcodePosition> barcodesWithOffset,
 List<RealBarcodePosition> getBarcodesWithOffset(
     List<RealBarcodePosition> realBarcodePositions) {
   return realBarcodePositions
-      .where((realBarcodePosition) =>
-          realBarcodePosition.offset != null)
+      .where((realBarcodePosition) => realBarcodePosition.offset != null)
       .toList();
 }
 
@@ -148,11 +145,11 @@ List<RealBarcodePosition> extractListOfScannedBarcodes(
     allBarcodesInScan.addAll([
       RealBarcodePosition(
         uid: interBarcodeData.uidStart,
-        zOffset: interBarcodeData.startBarcodeDistanceFromCamera,
+        zOffset: interBarcodeData.zOffset,
       ),
       RealBarcodePosition(
         uid: interBarcodeData.uidEnd,
-        zOffset: interBarcodeData.startBarcodeDistanceFromCamera,
+        zOffset: interBarcodeData.zOffset,
       )
     ]);
   }
@@ -236,6 +233,10 @@ List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
         barcodeValue: interBarcodeDataInstance.endBarcode,
         allBarcodes: allBarcodes);
 
+    //Calculate the zOffset
+    double zOffset =
+        endBarcodeDistanceFromCamera - startBarcodeDistanceFromCamera;
+
     //Creating the realInterBarcodeOffset.
     RealInterBarcodeOffset realInterBarcodeDataInstance =
         RealInterBarcodeOffset(
@@ -243,8 +244,7 @@ List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
             uidStart: interBarcodeDataInstance.uidStart,
             uidEnd: interBarcodeDataInstance.uidEnd,
             offset: averageRealInterBarcodeOffset,
-            startBarcodeDistanceFromCamera: startBarcodeDistanceFromCamera,
-            endBarcodeDistanceFromCamera: endBarcodeDistanceFromCamera,
+            zOffset: zOffset,
             timestamp: interBarcodeDataInstance.timestamp);
 
     allRealInterBarcodeData.add(realInterBarcodeDataInstance);
@@ -330,8 +330,8 @@ List<RealInterBarcodeOffset> processRealInterBarcodeData(
             listOfRealInterBarcodeOffsets, realInterBacrodeOffset);
 
     //Sort similarInterBarcodeOffsets by the magnitude of the Offset. (aka. the distance of the offset).
-    similarInterBarcodeOffsets.sort((a, b) => a.offset.distance
-        .compareTo(b.offset.distance));
+    similarInterBarcodeOffsets
+        .sort((a, b) => a.offset.distance.compareTo(b.offset.distance));
 
     //Indexes (Stats)
     int medianIndex = (similarInterBarcodeOffsets.length ~/ 2);
@@ -339,8 +339,7 @@ List<RealInterBarcodeOffset> processRealInterBarcodeData(
     int quartile3Index = medianIndex + quartile1Index;
 
     //Values of indexes
-    double median =
-        similarInterBarcodeOffsets[medianIndex].offset.distance;
+    double median = similarInterBarcodeOffsets[medianIndex].offset.distance;
     double quartile1 = calculateQuartileValue(
         similarInterBarcodeOffsets, quartile1Index, median);
     double quartile3 = calculateQuartileValue(
@@ -361,9 +360,8 @@ List<RealInterBarcodeOffset> processRealInterBarcodeData(
         in similarInterBarcodeOffsets) {
       calculateAverageOffsets(
           similarInterBarcodeOffset, realInterBacrodeOffset);
-      realInterBacrodeOffset.zOffsetStartBarcode =
-          (realInterBacrodeOffset.zOffsetStartBarcode +
-                  similarInterBarcodeOffset.zOffsetStartBarcode) /
+      realInterBacrodeOffset.zOffset =
+          (realInterBacrodeOffset.zOffset + similarInterBarcodeOffset.zOffset) /
               2;
     }
     finalRealInterBarcodeOffsets.add(realInterBacrodeOffset);
@@ -377,10 +375,7 @@ double calculateQuartileValue(
     List<RealInterBarcodeOffset> similarInterBarcodeOffsets,
     int quartile1Index,
     double median) {
-  return (similarInterBarcodeOffsets[quartile1Index]
-              .offset
-              .distance +
-          median) /
+  return (similarInterBarcodeOffsets[quartile1Index].offset.distance + median) /
       2;
 }
 
