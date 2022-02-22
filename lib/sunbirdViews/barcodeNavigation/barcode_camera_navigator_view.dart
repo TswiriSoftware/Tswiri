@@ -96,10 +96,15 @@ class _BarcodeCameraNavigatorViewState
 
   ///////STEPS///////
   ///TODO: @049er
-  //1. Calculate where the phone's screen center is relative to all barcodes on screen.
+  // 1. Calculate where the phone's screen center is relative to all barcodes on screen.
+  // 1.1...
+  // 1.2....
   //
-  //2.
   //
+  //
+  //
+  // 2. Detect barcodes that have moved.
+  // 2.1 Update the positions of barcodes that have moved.
   //
   //
   //
