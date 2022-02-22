@@ -44,7 +44,7 @@ class RealPositionDisplayWidget extends StatelessWidget {
                 margin: const EdgeInsets.all(5),
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'X: ${roundDouble(realBarcodePosition.interBarcodeOffset!.dx, 2)}',
+                  'X: ${roundDouble(realBarcodePosition.offset!.dx, 2)}',
                 ),
               ),
             ),
@@ -60,7 +60,7 @@ class RealPositionDisplayWidget extends StatelessWidget {
                 margin: const EdgeInsets.all(5),
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Y: ${roundDouble(realBarcodePosition.interBarcodeOffset!.dy, 2)}',
+                  'Y: ${roundDouble(realBarcodePosition.offset!.dy, 2)}',
                 ),
               ),
             ),
@@ -76,7 +76,7 @@ class RealPositionDisplayWidget extends StatelessWidget {
                 margin: const EdgeInsets.all(5),
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Z: ${roundDouble(realBarcodePosition.distanceFromCamera, 2)}',
+                  'Z: ${roundDouble(realBarcodePosition.zOffset, 2)}',
                 ),
               ),
             ),

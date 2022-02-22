@@ -6,11 +6,8 @@ import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 RealBarcodePosition origin(List<RealBarcodePosition> realBarcodePositions) {
   return RealBarcodePosition(
     uid: '1',
-    interBarcodeOffset: const Offset(0, 0),
+    offset: const Offset(0, 0),
     timestamp: 0,
-    distanceFromCamera: realBarcodePositions
-        .where((element) => element.uid == '1')
-        .first
-        .distanceFromCamera,
+    zOffset: 0,
   );
 }

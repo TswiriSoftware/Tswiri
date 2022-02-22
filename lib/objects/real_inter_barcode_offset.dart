@@ -20,9 +20,8 @@ class RealInterBarcodeOffset {
       {required this.uid,
       required this.uidStart,
       required this.uidEnd,
-      required this.realInterBarcodeOffset,
-      required this.startBarcodeDistanceFromCamera,
-      required this.endBarcodeDistanceFromCamera,
+      required this.offset,
+      required this.zOffset,
       required this.timestamp,
       this.checksOut});
 
@@ -35,14 +34,11 @@ class RealInterBarcodeOffset {
   ///ID of the End Barcode.
   String uidEnd;
 
-  ///Offset from start Barcode TO end Barcode
-  Offset realInterBarcodeOffset;
+  ///XY Offset from start Barcode *to* end Barcode
+  Offset offset;
 
-  ///Distance from the camera
-  double startBarcodeDistanceFromCamera;
-
-  ///Distance from the camera
-  double endBarcodeDistanceFromCamera;
+  ///Z offset from start barcode *to* end barcode
+  double zOffset;
 
   ///Timestamp of when it was created.
   int timestamp;
@@ -60,6 +56,6 @@ class RealInterBarcodeOffset {
 
   @override
   String toString() {
-    return '$uid, ${realInterBarcodeOffset.dx}, ${realInterBarcodeOffset.dy}, $timestamp';
+    return '$uid, ${offset.dx}, ${offset.dy}, $timestamp';
   }
 }

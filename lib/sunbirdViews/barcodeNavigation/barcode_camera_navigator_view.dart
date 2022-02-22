@@ -174,11 +174,11 @@ class _BarcodeCameraNavigatorViewState
                     typeOffsetToOffset(startBarcodePosition.offset);
 
             //This is to calculate the amount of positional error we allow for.
-            double currentX = realInterBarcodeOffset.realInterBarcodeOffset.dx;
+            double currentX = realInterBarcodeOffset.offset.dx;
             double currentXLowerBoundry = currentX - (10);
             double currentXUpperBoundry = currentX + (10);
 
-            double currentY = realInterBarcodeOffset.realInterBarcodeOffset.dy;
+            double currentY = realInterBarcodeOffset.offset.dy;
             double currentYLowerBoundry = currentY - (10);
             double currentYUpperBoundry = currentY + (10);
 
