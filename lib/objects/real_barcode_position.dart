@@ -12,17 +12,17 @@ class RealBarcodePosition {
   String uid;
 
   ///This is the offset between this barcode and the origin (0,0).
-  Offset? interBarcodeOffset;
+  Offset? offset;
 
   ///Distance from the camera.
-  double distanceFromCamera;
+  double zOffset;
 
   ///This is the timestamp of when the barcode was scanned
   int? timestamp;
   RealBarcodePosition(
       {required this.uid,
-      this.interBarcodeOffset,
-      required this.distanceFromCamera,
+      this.offset,
+      required this.zOffset,
       this.timestamp});
 
   @override
@@ -37,6 +37,6 @@ class RealBarcodePosition {
   String toString() {
     // ignore: todo
     // TODO: implement toString
-    return '$uid, $interBarcodeOffset, $timestamp';
+    return '$uid, $offset, $timestamp';
   }
 }

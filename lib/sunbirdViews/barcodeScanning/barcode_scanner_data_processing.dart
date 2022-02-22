@@ -168,13 +168,18 @@ Future<List<RealBarcodePosition>> processData(
     return Future.error('Error: Origin Not Scanned.');
   }
 
+    //Set origin distance to 0
+  // realBarcodePositions
+  //     .firstWhere((element) => element.uid == '1')
+  //     .distanceFromCamera = 0;
+
   int nonNullPositions = 1;
   int nonNullPositionsInPreviousIteration = realBarcodePositions.length - 1;
 
   for (int i = 0; i <= uniqueRealInterBarcodeOffsets.length;) {
     nonNullPositionsInPreviousIteration = nonNullPositions;
     for (RealBarcodePosition endBarcodeRealPosition in realBarcodePositions) {
-      if (endBarcodeRealPosition.interBarcodeOffset == null) {
+      if (endBarcodeRealPosition.offset == null) {
         //startBarcode : The barcode that we are going to use as a reference (has offset relative to origin)
         //endBarcode : the barcode whose Real Position we are trying to find in this step , if we cant , we will skip and see if we can do so in the next round.
         // we are going to add the interbarcode offset between start and end barcodes to obtain the "position" of the end barcode.
@@ -208,16 +213,17 @@ Future<List<RealBarcodePosition>> processData(
             if (relevantInterBarcodeOffsets[interBarcodeOffsetIndex].uidEnd ==
                 endBarcodeRealPosition.uid) {
               //Calculate the interBarcodeOffset
-              endBarcodeRealPosition.interBarcodeOffset =
-                  startBarcode.interBarcodeOffset! +
+              endBarcodeRealPosition.offset =
+                  startBarcode.offset! +
                       relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
-                          .realInterBarcodeOffset;
-              //Calculate the z difference from origin
-              endBarcodeRealPosition.distanceFromCamera =
-                  relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
-                          .zOffsetStartBarcode -
+                          .offset;
+              //Calculate the z difference from start barcode 
+              endBarcodeRealPosition.zOffset =
+                  startBarcode.zOffset + (relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
+                          .startBarcodeDistanceFromCamera -
                       relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
-                          .zOffsetEndBarcode;
+                          .endBarcodeDistanceFromCamera);
+              //TODO: Test Logic & implement below as well
 
               //Set the timestamp
               endBarcodeRealPosition.timestamp =
@@ -227,16 +233,18 @@ Future<List<RealBarcodePosition>> processData(
                     .uidStart ==
                 endBarcodeRealPosition.uid) {
               //Calculate the interBarcodeOffset
-              endBarcodeRealPosition.interBarcodeOffset =
-                  startBarcode.interBarcodeOffset! -
+              endBarcodeRealPosition.offset =
+                  startBarcode.offset! -
                       relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
-                          .realInterBarcodeOffset;
+                          .offset;
               //Calculate the z difference from origin
-              endBarcodeRealPosition.distanceFromCamera =
+              endBarcodeRealPosition.zOffset =
                   relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
                           .zOffsetEndBarcode -
                       relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
                           .zOffsetStartBarcode;
+
+              //TODO: implement here as well. 
 
               //Set the timestamp
               endBarcodeRealPosition.timestamp =
@@ -264,11 +272,6 @@ Future<List<RealBarcodePosition>> processData(
       await Hive.openBox(realPositionDataBoxName);
 
   await realPositionalData.clear();
-
-  //Set origin distance to 0
-  realBarcodePositions
-      .firstWhere((element) => element.uid == '1')
-      .distanceFromCamera = 0;
 
   //Writes data to Hive Database
   for (RealBarcodePosition realBarcodePosition in realBarcodePositions) {
