@@ -215,7 +215,7 @@ class _BarcodeCalibrationDataProcessingViewState
           matchedDataHiveBox.put(onImageBarcodeSize.timestamp.toString(),
               matchedCalibrationDataHiveObject);
 
-          log(matchedCalibrationDataHiveObject.toString());
+          //log(matchedCalibrationDataHiveObject.toString());
 
           displayList.add(matchedCalibrationDataHiveObject);
         }

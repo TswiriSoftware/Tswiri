@@ -21,8 +21,8 @@ class RealInterBarcodeOffset {
       required this.uidStart,
       required this.uidEnd,
       required this.realInterBarcodeOffset,
-      required this.startBarcodeDistanceFromCamera,
-      required this.endBarcodeDistanceFromCamera,
+      required this.zOffsetStartBarcode,
+      required this.zOffsetEndBarcode,
       required this.timestamp,
       this.checksOut});
 
@@ -39,10 +39,10 @@ class RealInterBarcodeOffset {
   Offset realInterBarcodeOffset;
 
   ///Distance from the camera
-  double startBarcodeDistanceFromCamera;
+  double zOffsetStartBarcode;
 
   ///Distance from the camera
-  double endBarcodeDistanceFromCamera;
+  double zOffsetEndBarcode;
 
   ///Timestamp of when it was created.
   int timestamp;

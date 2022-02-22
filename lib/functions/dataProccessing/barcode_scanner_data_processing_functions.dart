@@ -148,11 +148,11 @@ List<RealBarcodePosition> extractListOfScannedBarcodes(
     allBarcodesInScan.addAll([
       RealBarcodePosition(
         uid: interBarcodeData.uidStart,
-        distanceFromCamera: interBarcodeData.startBarcodeDistanceFromCamera,
+        distanceFromCamera: interBarcodeData.zOffsetStartBarcode,
       ),
       RealBarcodePosition(
         uid: interBarcodeData.uidEnd,
-        distanceFromCamera: interBarcodeData.startBarcodeDistanceFromCamera,
+        distanceFromCamera: interBarcodeData.zOffsetStartBarcode,
       )
     ]);
   }
@@ -243,8 +243,8 @@ List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
             uidStart: interBarcodeDataInstance.uidStart,
             uidEnd: interBarcodeDataInstance.uidEnd,
             realInterBarcodeOffset: averageRealInterBarcodeOffset,
-            startBarcodeDistanceFromCamera: startBarcodeDistanceFromCamera,
-            endBarcodeDistanceFromCamera: endBarcodeDistanceFromCamera,
+            zOffsetStartBarcode: startBarcodeDistanceFromCamera,
+            zOffsetEndBarcode: endBarcodeDistanceFromCamera,
             timestamp: interBarcodeDataInstance.timestamp);
 
     allRealInterBarcodeData.add(realInterBarcodeDataInstance);
@@ -319,7 +319,7 @@ double findDistanceFromCamera(
 ///2. Calculates the averages from the remaining data.
 List<RealInterBarcodeOffset> processRealInterBarcodeData(
     {required List<RealInterBarcodeOffset> uniqueRealInterBarcodeOffsets,
-    required List<RealInterBarcodeOffset> allRealInterBarcodeOffsets}) {
+    required List<RealInterBarcodeOffset> listOfRealInterBarcodeOffsets}) {
   //Calculates the average of each RealInterBarcode Data and removes outliers
   List<RealInterBarcodeOffset> finalRealInterBarcodeOffsets = [];
   for (RealInterBarcodeOffset realInterBacrodeOffset
@@ -327,7 +327,7 @@ List<RealInterBarcodeOffset> processRealInterBarcodeData(
     //All similar interBarcodeOffsets ex 1_2 will return all 1_2 interbarcodeOffsets
     List<RealInterBarcodeOffset> similarInterBarcodeOffsets =
         findSimilarInterBarcodeOffsets(
-            allRealInterBarcodeOffsets, realInterBacrodeOffset);
+            listOfRealInterBarcodeOffsets, realInterBacrodeOffset);
 
     //Sort similarInterBarcodeOffsets by the magnitude of the Offset. (aka. the distance of the offset).
     similarInterBarcodeOffsets.sort((a, b) => a.realInterBarcodeOffset.distance
@@ -361,9 +361,9 @@ List<RealInterBarcodeOffset> processRealInterBarcodeData(
         in similarInterBarcodeOffsets) {
       calculateAverageOffsets(
           similarInterBarcodeOffset, realInterBacrodeOffset);
-      realInterBacrodeOffset.startBarcodeDistanceFromCamera =
-          (realInterBacrodeOffset.startBarcodeDistanceFromCamera +
-                  similarInterBarcodeOffset.startBarcodeDistanceFromCamera) /
+      realInterBacrodeOffset.zOffsetStartBarcode =
+          (realInterBacrodeOffset.zOffsetStartBarcode +
+                  similarInterBarcodeOffset.zOffsetStartBarcode) /
               2;
     }
     finalRealInterBarcodeOffsets.add(realInterBacrodeOffset);

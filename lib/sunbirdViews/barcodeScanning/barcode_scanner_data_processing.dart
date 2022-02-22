@@ -152,7 +152,7 @@ Future<List<RealBarcodePosition>> processData(
   List<RealInterBarcodeOffset> finalRealInterBarcodeOffsets =
       processRealInterBarcodeData(
           uniqueRealInterBarcodeOffsets: uniqueRealInterBarcodeOffsets,
-          allRealInterBarcodeOffsets: allRealInterBarcodeOffsets);
+          listOfRealInterBarcodeOffsets: allRealInterBarcodeOffsets);
 
   //List of unique barcodes that we want to write the positions of.
   List<RealBarcodePosition> realBarcodePositions =
@@ -215,9 +215,9 @@ Future<List<RealBarcodePosition>> processData(
               //Calculate the z difference from origin
               endBarcodeRealPosition.distanceFromCamera =
                   relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
-                          .startBarcodeDistanceFromCamera -
+                          .zOffsetStartBarcode -
                       relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
-                          .endBarcodeDistanceFromCamera;
+                          .zOffsetEndBarcode;
 
               //Set the timestamp
               endBarcodeRealPosition.timestamp =
@@ -234,9 +234,9 @@ Future<List<RealBarcodePosition>> processData(
               //Calculate the z difference from origin
               endBarcodeRealPosition.distanceFromCamera =
                   relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
-                          .endBarcodeDistanceFromCamera -
+                          .zOffsetEndBarcode -
                       relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
-                          .startBarcodeDistanceFromCamera;
+                          .zOffsetStartBarcode;
 
               //Set the timestamp
               endBarcodeRealPosition.timestamp =
