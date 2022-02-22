@@ -4,6 +4,7 @@ import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/real_bar
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
+import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/painter/barcode_navigation_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
@@ -39,14 +40,17 @@ class _BarcodeCameraNavigatorViewState
   //Used in finding the barcode.
   Map<String, Offset> realBarcodePosition = {};
 
-  //Used to check if any barcodes have moved.
-  //TODO: Convert allRealInterBarcodeOffsets to a map of type:
   //Map<String, List<RealInterBarcodeOffset>> : String is the startBarcodeUID_endBarcodeUID and then a list of RealInterBarcodeOffsets.
-  List<RealInterBarcodeOffset> allRealInterBarcodeOffsets = [];
-  Set<RealInterBarcodeOffset> finalSetRealInterBarcodeOffsets = {};
+  Map<String, List<RealInterBarcodeOffset>> realInterBarcodeOffsetMap = {};
+  //List of offsets that are not within error aka. barcode have changed location.
+  Set<RealInterBarcodeOffset> offsetsThatDoNotCheckOut = {};
+  Set<RealInterBarcodeOffset> offsetsThatDoCheckOut = {};
 
-  Set<int> checksOut = {};
-  Set<int> allScannedBarcodes = {};
+  //List of Barcodes that have not moved.
+  Set<RealBarcodePosition> realBarcodePositions = {};
+
+  Set<String> checksOut = {};
+  Set<String> doesNotcheckOut = {};
 
   Vector3 accelerometerEvent = Vector3(0, 0, 0);
   Vector3 userAccelerometerEvent = Vector3(0, 0, 0);
@@ -90,163 +94,239 @@ class _BarcodeCameraNavigatorViewState
         ));
   }
 
+  ///////STEPS///////
+  ///TODO: @049er
+  //1. Calculate where the phone's screen center is relative to all barcodes on screen.
+  //
+  //2.
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+
   Future<void> processImage(InputImage inputImage) async {
-    //This list contains all realBarcodePositions.
-    Box<RealBarcodePostionEntry> realBarcodePositionDataBox =
-        await Hive.openBox(realPositionDataBoxName);
-
-    //This list contains all generated barcodes and their real life sizes.
-    List<BarcodeDataEntry> barcodeDataEntries = await getAllExistingBarcodes();
-
-    // List of all matchedCalibration Data aka. Distance lookup table.
-    List<DistanceFromCameraLookupEntry> matchedCalibrationData =
-        await getMatchedCalibrationData();
-
-    if (realBarcodePositionDataBox.isNotEmpty) {
-      //This map contains all the last reported positions of barcodes.
-      realBarcodePosition =
-          getBarcodeRealPositionMap(realBarcodePositionDataBox);
-
-      if (isBusy) return;
-      isBusy = true;
-      final barcodes = await barcodeScanner.processImage(inputImage);
-
-      if (inputImage.inputImageData?.size != null &&
-          inputImage.inputImageData?.imageRotation != null) {
-        if (barcodes.length >= 2) {
-          //1. Get all the onImageBarcodeData from the current Istance.
-
-          //OnImageBarcodeData in this istance.
-          List<RawOnImageBarcodeData> allRawOnImageBarcodeData = [
-            RawOnImageBarcodeData(
-                barcodes: barcodes,
-                timestamp: DateTime.now().millisecondsSinceEpoch,
-                accelerometerData: getAccelerometerData())
-          ];
-
-          // This list contains all onImageInterBarcodeData from the image instant.
-          List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData =
-              buildAllOnImageInterBarcodeData(allRawOnImageBarcodeData);
-
-          // Builds and adds all the real realInterBarcodeOffsets in this instance.
-          allRealInterBarcodeOffsets.addAll(buildAllRealInterBarcodeOffsets(
-              allOnImageInterBarcodeData: allOnImageInterBarcodeData,
-              matchedCalibrationData: matchedCalibrationData,
-              allBarcodes: barcodeDataEntries));
-
-          //This code above can be run sustainably.//
-          //Veryy niicceee :)//
-        }
-
-        //TODO: convert this to work with the map idea: Map<String, List<RealInterBarcodeOffset>> @049er
-
-        //Once AllRealInterBarcodeOffsets reaches a length where each barcode has been scanned at least 4 times.
-        //We can run futher processing and clear the backlog.
-        //We can then isolate the barcodes which have moved by comparing their positional vectors with the stored vectors.
-        //We give some degree of error so we dont get false positives.
-        if (allRealInterBarcodeOffsets.length >= barcodes.length * 4) {
-          //Add all unique realInterBarcodeOffsets.
-          Set<RealInterBarcodeOffset> uniqueRealInterBarcodeOffsets = {};
-          uniqueRealInterBarcodeOffsets
-              .addAll(allRealInterBarcodeOffsets.toSet());
-
-          //This adds all builds the tree from all scanned barcodes.
-          finalSetRealInterBarcodeOffsets.addAll(processRealInterBarcodeData(
-              uniqueRealInterBarcodeOffsets:
-                  uniqueRealInterBarcodeOffsets.toList(),
-              allRealInterBarcodeOffsets: allRealInterBarcodeOffsets));
-
-          //Clears the list so it can be repopulated.
-          allRealInterBarcodeOffsets.clear();
-
-          for (RealInterBarcodeOffset realInterBarcodeOffset
-              in finalSetRealInterBarcodeOffsets) {
-            //Retrive stored StartBarcodePosition
-            RealBarcodePostionEntry startBarcodePosition =
-                realBarcodePositionDataBox
-                    .get(realInterBarcodeOffset.uidStart)!;
-            //Retrive stored EndBarcodePosition
-            RealBarcodePostionEntry endBarcodePosition =
-                realBarcodePositionDataBox.get(realInterBarcodeOffset.uidEnd)!;
-            //Calculate the stored RealInterBarcodePosition.
-            Offset storedInterbarcodeOffset =
-                typeOffsetToOffset(endBarcodePosition.offset) -
-                    typeOffsetToOffset(startBarcodePosition.offset);
-
-            //This is to calculate the amount of positional error we allow for.
-            double currentX = realInterBarcodeOffset.realInterBarcodeOffset.dx;
-            double currentXLowerBoundry = currentX - (10);
-            double currentXUpperBoundry = currentX + (10);
-
-            double currentY = realInterBarcodeOffset.realInterBarcodeOffset.dy;
-            double currentYLowerBoundry = currentY - (10);
-            double currentYUpperBoundry = currentY + (10);
-
-            double storedX = storedInterbarcodeOffset.dx;
-            double storedY = storedInterbarcodeOffset.dy;
-
-            allScannedBarcodes.addAll({
-              int.parse(realInterBarcodeOffset.uidStart),
-              int.parse(realInterBarcodeOffset.uidEnd)
-            });
-
-            //This checks if the current positions falls within bounds of the old one.
-            if (storedX <= currentXUpperBoundry &&
-                storedX >= currentXLowerBoundry &&
-                storedY <= currentYUpperBoundry &&
-                storedY >= currentYLowerBoundry) {
-              realInterBarcodeOffset.checksOut = true;
-              checksOut.addAll({
-                int.parse(realInterBarcodeOffset.uidStart),
-                int.parse(realInterBarcodeOffset.uidEnd)
-              });
-            } else {
-              realInterBarcodeOffset.checksOut = false;
-            }
-          }
-        }
-
-        //TODO: implement code that updates barcode position XD.
-        log('These barcodes have moved: ' +
-            allScannedBarcodes
-                .where((element) => !checksOut.contains(element))
-                .toString());
-        final painter = BarcodeDetectorPainterNavigation(
-            barcodes,
-            inputImage.inputImageData!.size,
-            inputImage.inputImageData!.imageRotation,
-            realBarcodePosition,
-            widget.qrcodeID);
-        customPaint = CustomPaint(painter: painter);
-      } else {
-        customPaint = null;
-      }
-      isBusy = false;
-      if (mounted) {
-        setState(() {});
-      }
+    if (isBusy) return;
+    isBusy = true;
+    final barcodes = await barcodeScanner.processImage(inputImage);
+    if (inputImage.inputImageData?.size != null &&
+        inputImage.inputImageData?.imageRotation != null) {
+      final painter = BarcodeDetectorPainterNavigation(
+          barcodes,
+          inputImage.inputImageData!.size,
+          inputImage.inputImageData!.imageRotation,
+          realBarcodePosition,
+          widget.qrcodeID);
+      customPaint = CustomPaint(painter: painter);
+    } else {
+      customPaint = null;
+    }
+    isBusy = false;
+    if (mounted) {
+      setState(() {});
     }
   }
-
-  ///Returns a map of all stored barocodes and their last reported posiitons.
-  Map<String, Offset> getBarcodeRealPositionMap(Box barcodeRealPosition) {
-    Map map = barcodeRealPosition.toMap();
-    Map<String, Offset> barcodeReaPositionMap = {};
-    map.forEach((key, value) {
-      RealBarcodePostionEntry data = value;
-      barcodeReaPositionMap.update(
-        key,
-        (value) => Offset(data.offset.x, data.offset.y),
-        ifAbsent: () => Offset(data.offset.x, data.offset.y),
-      );
-    });
-    return barcodeReaPositionMap;
-  }
-
-  ///This stores the AccelerometerEvent and UserAccelerometerEvent at an instant.
-  AccelerometerData getAccelerometerData() {
-    return AccelerometerData(
-        accelerometerEvent: accelerometerEvent,
-        userAccelerometerEvent: userAccelerometerEvent);
-  }
 }
+  
+
+//   Future<void> processImage(InputImage inputImage) async {
+//     //This list contains all realBarcodePositions.
+//     Box<RealBarcodePostionEntry> realBarcodePositionDataBox =
+//         await Hive.openBox(realPositionDataBoxName);
+
+//     List<RealBarcodePostionEntry> realBarcodePositions =
+//         realBarcodePositionDataBox.values.toList();
+
+//     //This list contains all generated barcodes and their real life sizes.
+//     List<BarcodeDataEntry> barcodeDataEntries = await getAllExistingBarcodes();
+
+//     // List of all matchedCalibration Data aka. Distance lookup table.
+//     List<DistanceFromCameraLookupEntry> matchedCalibrationData =
+//         await getMatchedCalibrationData();
+
+//     if (realBarcodePositionDataBox.isNotEmpty) {
+//       //This map contains all the last reported positions of barcodes.
+//       realBarcodePosition =
+//           getBarcodeRealPositionMap(realBarcodePositionDataBox);
+
+//       if (isBusy) return;
+//       isBusy = true;
+//       final barcodes = await barcodeScanner.processImage(inputImage);
+
+//       if (inputImage.inputImageData?.size != null &&
+//           inputImage.inputImageData?.imageRotation != null) {
+//         if (barcodes.length >= 2) {
+//           //1. Get all the onImageBarcodeData from the current Istance.
+
+//           //OnImageBarcodeData in this istance.
+//           List<RawOnImageBarcodeData> allRawOnImageBarcodeData = [
+//             RawOnImageBarcodeData(
+//                 barcodes: barcodes,
+//                 timestamp: DateTime.now().millisecondsSinceEpoch,
+//                 accelerometerData: getAccelerometerData())
+//           ];
+
+//           // This list contains all onImageInterBarcodeData from the image instant.
+//           List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData =
+//               buildAllOnImageInterBarcodeData(allRawOnImageBarcodeData);
+
+//           // Builds and adds all the real realInterBarcodeOffsets in this instance.
+//           List<RealInterBarcodeOffset> allRealInterBarcodeOffsets =
+//               buildAllRealInterBarcodeOffsets(
+//                   allOnImageInterBarcodeData: allOnImageInterBarcodeData,
+//                   matchedCalibrationData: matchedCalibrationData,
+//                   allBarcodes: barcodeDataEntries);
+
+//           //Add the RealInterBarcodeOffset to the map
+//           for (RealInterBarcodeOffset realInterBarcodeOffset
+//               in allRealInterBarcodeOffsets) {
+//             //This adds data to the map.
+//             String uid = realInterBarcodeOffset.uid;
+//             if (realInterBarcodeOffsetMap
+//                 .containsKey(realInterBarcodeOffset.uid)) {
+//               List<RealInterBarcodeOffset> temp =
+//                   realInterBarcodeOffsetMap[uid]!;
+//               temp.add(realInterBarcodeOffset);
+//               realInterBarcodeOffsetMap.update(uid, (value) => temp);
+//             } else {
+//               realInterBarcodeOffsetMap.putIfAbsent(
+//                   uid, () => [realInterBarcodeOffset]);
+//             }
+
+//             //When there are more than 10 similar RealInterBarcodeOffsets it will calculate an average and add it to the finalSet.
+//             if (realInterBarcodeOffsetMap[uid]!.length >= 5) {
+//               List<RealInterBarcodeOffset> temp =
+//                   realInterBarcodeOffsetMap[uid]!;
+
+//               List<RealInterBarcodeOffset> averagedRealInterBarcodeOffset =
+//                   processRealInterBarcodeData(
+//                       uniqueRealInterBarcodeOffsets: temp.toSet().toList(),
+//                       listOfRealInterBarcodeOffsets: temp);
+
+//               //Retrive stored StartBarcodePosition
+//               RealBarcodePostionEntry startBarcodePosition =
+//                   realBarcodePositionDataBox
+//                       .get(realInterBarcodeOffset.uidStart)!;
+//               //Retrive stored EndBarcodePosition
+//               RealBarcodePostionEntry endBarcodePosition =
+//                   realBarcodePositionDataBox
+//                       .get(realInterBarcodeOffset.uidEnd)!;
+//               //Calculate the stored RealInterBarcodePosition.
+//               Offset storedInterbarcodeOffset =
+//                   typeOffsetToOffset(endBarcodePosition.offset) -
+//                       typeOffsetToOffset(startBarcodePosition.offset);
+
+//               //This is to calculate the amount of positional error we allow for.
+//               double errorValue = 20; // max error value in mm
+//               double currentX =
+//                   averagedRealInterBarcodeOffset[0].realInterBarcodeOffset.dx;
+//               double currentXLowerBoundry = currentX - (errorValue);
+//               double currentXUpperBoundry = currentX + (errorValue);
+
+//               double currentY =
+//                   averagedRealInterBarcodeOffset[0].realInterBarcodeOffset.dy;
+//               double currentYLowerBoundry = currentY - (errorValue);
+//               double currentYUpperBoundry = currentY + (errorValue);
+
+//               double storedX = storedInterbarcodeOffset.dx;
+//               double storedY = storedInterbarcodeOffset.dy;
+
+//               //This checks if the current positions falls within reasonable error from the stored position.
+//               //If it does then mark its checksOut value as true.
+//               //If not mark its checksOut value as false.
+//               if (storedX <= currentXUpperBoundry &&
+//                   storedX >= currentXLowerBoundry &&
+//                   storedY <= currentYUpperBoundry &&
+//                   storedY >= currentYLowerBoundry) {
+//                 offsetsThatDoCheckOut.add(realInterBarcodeOffset);
+//                 checksOut.addAll([
+//                   realInterBarcodeOffset.uidStart,
+//                   realInterBarcodeOffset.uidEnd
+//                 ]);
+//               } else {
+//                 offsetsThatDoNotCheckOut.add(realInterBarcodeOffset);
+//                 doesNotcheckOut.addAll([
+//                   realInterBarcodeOffset.uidStart,
+//                   realInterBarcodeOffset.uidEnd
+//                 ]);
+//               }
+//             }
+
+//             //TODO: implement code that updates barcode position XD.
+//             //Can identify which barcodes do not checkout.
+
+//             for (String barcodeID in doesNotcheckOut) {
+//               int index = offsetsThatDoCheckOut
+//                   .toList()
+//                   .indexWhere((element) => element.uidEnd == barcodeID);
+
+//               if (index != -1) {
+//                 RealInterBarcodeOffset interBarcodeOffset =
+//                     offsetsThatDoCheckOut
+//                         .firstWhere((element) => element.uidEnd == barcodeID);
+
+//                 RealBarcodePostionEntry startBarcodePosition =
+//                     realBarcodePositions.firstWhere((element) =>
+//                         element.uid == interBarcodeOffset.uidStart);
+
+//                 RealBarcodePostionEntry endBarcodePosition =
+//                     RealBarcodePostionEntry(
+//                         uid: uid,
+//                         offset: offsetToTypeOffset(
+//                             typeOffsetToOffset(startBarcodePosition.offset) +
+//                                 interBarcodeOffset.realInterBarcodeOffset),
+//                         distanceFromCamera:
+//                             interBarcodeOffset.zOffsetEndBarcode,
+//                         fixed: false,
+//                         timestamp: interBarcodeOffset.timestamp);
+
+//                 checksOut.add(barcodeID);
+
+//                 // log('does not check out');
+//                 log(endBarcodePosition.toString());
+//               }
+//             }
+//           }
+//         }
+
+//         final painter = BarcodeDetectorPainterNavigation(
+//             barcodes,
+//             inputImage.inputImageData!.size,
+//             inputImage.inputImageData!.imageRotation,
+//             realBarcodePosition,
+//             widget.qrcodeID);
+//         customPaint = CustomPaint(painter: painter);
+//       } else {
+//         customPaint = null;
+//       }
+//       isBusy = false;
+//       if (mounted) {
+//         setState(() {});
+//       }
+//     }
+//   }
+
+//   ///Returns a map of all stored barocodes and their last reported posiitons.
+//   Map<String, Offset> getBarcodeRealPositionMap(Box barcodeRealPosition) {
+//     Map map = barcodeRealPosition.toMap();
+//     Map<String, Offset> barcodeReaPositionMap = {};
+//     map.forEach((key, value) {
+//       RealBarcodePostionEntry data = value;
+//       barcodeReaPositionMap.update(
+//         key,
+//         (value) => Offset(data.offset.x, data.offset.y),
+//         ifAbsent: () => Offset(data.offset.x, data.offset.y),
+//       );
+//     });
+//     return barcodeReaPositionMap;
+//   }
+
+//   ///This stores the AccelerometerEvent and UserAccelerometerEvent at an instant.
+//   AccelerometerData getAccelerometerData() {
+//     return AccelerometerData(
+//         accelerometerEvent: accelerometerEvent,
+//         userAccelerometerEvent: userAccelerometerEvent);
+//   }
+// }
