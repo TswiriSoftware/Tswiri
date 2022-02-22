@@ -168,7 +168,7 @@ Future<List<RealBarcodePosition>> processData(
     return Future.error('Error: Origin Not Scanned.');
   }
 
-    //Set origin distance to 0
+  //Set origin distance to 0
   // realBarcodePositions
   //     .firstWhere((element) => element.uid == '1')
   //     .distanceFromCamera = 0;
@@ -185,7 +185,7 @@ Future<List<RealBarcodePosition>> processData(
         // we are going to add the interbarcode offset between start and end barcodes to obtain the "position" of the end barcode.
 
         //This list contains all RealInterBarcode Offsets that contains the endBarcode.
-        List<RealInterBarcodeOffset> relevantInterBarcodeOffsets =
+        List<RealInterBarcodeOffset> relevantBarcodeOffset =
             getRelevantInterBarcodeOffsets(
                 uniqueRealInterBarcodeOffsets, endBarcodeRealPosition);
 
@@ -194,8 +194,8 @@ Future<List<RealBarcodePosition>> processData(
             getBarcodesWithOffset(realBarcodePositions);
 
         //Finds a relevant startBarcode based on the relevantInterbarcodeOffsets and BarcodesWithOffset.
-        int startBarcodeIndex = findStartBarcodeIndex(
-            barcodesWithOffset, relevantInterBarcodeOffsets);
+        int startBarcodeIndex =
+            findStartBarcodeIndex(barcodesWithOffset, relevantBarcodeOffset);
 
         if (indexIsValid(startBarcodeIndex)) {
           //RealBarcodePosition of startBarcode.
@@ -204,52 +204,29 @@ Future<List<RealBarcodePosition>> processData(
 
           //Index of InterBarcodeOffset which contains startBarcode.
           int interBarcodeOffsetIndex = findInterBarcodeOffset(
-              relevantInterBarcodeOffsets,
-              startBarcode,
-              endBarcodeRealPosition);
+              relevantBarcodeOffset, startBarcode, endBarcodeRealPosition);
 
           if (indexIsValid(interBarcodeOffsetIndex)) {
             //Determine whether to add or subtract the interBarcode Offset.
-            if (relevantInterBarcodeOffsets[interBarcodeOffsetIndex].uidEnd ==
+            endBarcodeRealPosition.timestamp =
+                relevantBarcodeOffset[interBarcodeOffsetIndex].timestamp;
+            if (relevantBarcodeOffset[interBarcodeOffsetIndex].uidEnd ==
                 endBarcodeRealPosition.uid) {
               //Calculate the interBarcodeOffset
-              endBarcodeRealPosition.offset =
-                  startBarcode.offset! +
-                      relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
-                          .offset;
-              //Calculate the z difference from start barcode 
-              endBarcodeRealPosition.zOffset =
-                  startBarcode.zOffset + (relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
-                          .startBarcodeDistanceFromCamera -
-                      relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
-                          .endBarcodeDistanceFromCamera);
-              //TODO: Test Logic & implement below as well
-
-              //Set the timestamp
-              endBarcodeRealPosition.timestamp =
-                  relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
-                      .timestamp;
-            } else if (relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
+              endBarcodeRealPosition.offset = startBarcode.offset! +
+                  relevantBarcodeOffset[interBarcodeOffsetIndex].offset;
+              //Calculate the z difference from start barcode
+              endBarcodeRealPosition.zOffset = startBarcode.zOffset +
+                  relevantBarcodeOffset[interBarcodeOffsetIndex].zOffset;
+            } else if (relevantBarcodeOffset[interBarcodeOffsetIndex]
                     .uidStart ==
                 endBarcodeRealPosition.uid) {
               //Calculate the interBarcodeOffset
-              endBarcodeRealPosition.offset =
-                  startBarcode.offset! -
-                      relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
-                          .offset;
-              //Calculate the z difference from origin
-              endBarcodeRealPosition.zOffset =
-                  relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
-                          .zOffsetEndBarcode -
-                      relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
-                          .zOffsetStartBarcode;
-
-              //TODO: implement here as well. 
-
-              //Set the timestamp
-              endBarcodeRealPosition.timestamp =
-                  relevantInterBarcodeOffsets[interBarcodeOffsetIndex]
-                      .timestamp;
+              endBarcodeRealPosition.offset = startBarcode.offset! -
+                  relevantBarcodeOffset[interBarcodeOffsetIndex].offset;
+              //Calculate the z difference from start barcode
+              endBarcodeRealPosition.zOffset = startBarcode.zOffset -
+                  relevantBarcodeOffset[interBarcodeOffsetIndex].zOffset;
             }
 
             //log(startBarcode.startBarcodeDistanceFromCamera.toString());
