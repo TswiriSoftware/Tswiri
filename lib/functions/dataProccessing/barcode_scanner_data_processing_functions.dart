@@ -76,7 +76,7 @@ void writeValidBarcodePositionsToDatabase(
         RealBarcodePostionEntry(
             uid: realBarcodePosition.uid,
             offset: offsetToTypeOffset(realBarcodePosition.offset!),
-            distanceFromCamera: realBarcodePosition.zOffset,
+            zOffset: realBarcodePosition.zOffset,
             fixed: false,
             timestamp: realBarcodePosition.timestamp!));
   }

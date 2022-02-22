@@ -35,16 +35,42 @@ double translateY(
   }
 }
 
-Offset translateOnImageToOnScreen(
-    Offset onImageOffset, Size screenSize, Size absoluteImageSize) {
-  double dx = onImageOffset.dx *
-      screenSize.width /
-      (Platform.isIOS ? absoluteImageSize.width : absoluteImageSize.height);
+Offset onScreenToOnImage(Offset onScreenOffset, InputImageRotation rotation,
+    Size size, Size absoluteImageSize) {
+  Offset onImageOffset = Offset(
+      translateToImageX(onScreenOffset.dx, rotation, size, absoluteImageSize),
+      translateToImageY(onScreenOffset.dy, rotation, size, absoluteImageSize));
+  return onImageOffset;
+}
 
-  double dy = onImageOffset.dy *
-      screenSize.height /
-      (Platform.isIOS ? absoluteImageSize.height : absoluteImageSize.width);
-  Offset onScreenOffset = Offset(dx, dy);
+double translateToImageX(
+    double x, InputImageRotation rotation, Size size, Size absoluteImageSize) {
+  switch (rotation) {
+    case InputImageRotation.Rotation_90deg:
+      return x *
+          size.width *
+          (Platform.isIOS ? absoluteImageSize.width : absoluteImageSize.height);
+    case InputImageRotation.Rotation_270deg:
+      return size.width -
+          x *
+              size.width /
+              (Platform.isIOS
+                  ? absoluteImageSize.width
+                  : absoluteImageSize.height);
+    default:
+      return x * size.width * absoluteImageSize.width;
+  }
+}
 
-  return onScreenOffset;
+double translateToImageY(
+    double y, InputImageRotation rotation, Size size, Size absoluteImageSize) {
+  switch (rotation) {
+    case InputImageRotation.Rotation_90deg:
+    case InputImageRotation.Rotation_270deg:
+      return y *
+          size.height *
+          (Platform.isIOS ? absoluteImageSize.height : absoluteImageSize.width);
+    default:
+      return y * size.height * absoluteImageSize.height;
+  }
 }

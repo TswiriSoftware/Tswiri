@@ -4,8 +4,14 @@ import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/painter/barcode_navigation_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:vector_math/vector_math.dart';
+import '../../databaseAdapters/allBarcodes/barcode_entry.dart';
+import '../../databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
+import '../../databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
+import '../../functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
+import '../../globalValues/global_hive_databases.dart';
 import '../../objects/real_inter_barcode_offset.dart';
 
 class BarcodeCameraNavigatorView extends StatefulWidget {
@@ -26,20 +32,20 @@ class _BarcodeCameraNavigatorViewState
   bool isBusy = false;
   CustomPaint? customPaint;
 
-  //Used in finding the barcode.
-  Map<String, Offset> realBarcodePosition = {};
+  // //Used in finding the barcode.
+  // Map<String, Offset> realBarcodePosition = {};
 
-  //Map<String, List<RealInterBarcodeOffset>> : String is the startBarcodeUID_endBarcodeUID and then a list of RealInterBarcodeOffsets.
-  Map<String, List<RealInterBarcodeOffset>> realInterBarcodeOffsetMap = {};
-  //List of offsets that are not within error aka. barcode have changed location.
-  Set<RealInterBarcodeOffset> offsetsThatDoNotCheckOut = {};
-  Set<RealInterBarcodeOffset> offsetsThatDoCheckOut = {};
+  // //Map<String, List<RealInterBarcodeOffset>> : String is the startBarcodeUID_endBarcodeUID and then a list of RealInterBarcodeOffsets.
+  // Map<String, List<RealInterBarcodeOffset>> realInterBarcodeOffsetMap = {};
+  // //List of offsets that are not within error aka. barcode have changed location.
+  // Set<RealInterBarcodeOffset> offsetsThatDoNotCheckOut = {};
+  // Set<RealInterBarcodeOffset> offsetsThatDoCheckOut = {};
 
-  //List of Barcodes that have not moved.
-  Set<RealBarcodePosition> realBarcodePositions = {};
+  // //List of Barcodes that have not moved.
+  // Set<RealBarcodePosition> realBarcodePositions = {};
 
-  Set<String> checksOut = {};
-  Set<String> doesNotcheckOut = {};
+  // Set<String> checksOut = {};
+  // Set<String> doesNotcheckOut = {};
 
   Vector3 accelerometerEvent = Vector3(0, 0, 0);
   Vector3 userAccelerometerEvent = Vector3(0, 0, 0);
@@ -104,15 +110,28 @@ class _BarcodeCameraNavigatorViewState
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;
     isBusy = true;
+
+    List<RealBarcodePostionEntry> realBarcodePositions =
+        await getRealBarcodePositions();
+
+    List<DistanceFromCameraLookupEntry> distanceFromCameraLookup =
+        await getMatchedCalibrationData();
+
+    List<BarcodeDataEntry> allBarcodes = await getAllExistingBarcodes();
+
     final barcodes = await barcodeScanner.processImage(inputImage);
+
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
       final painter = BarcodeDetectorPainterNavigation(
-          barcodes,
-          inputImage.inputImageData!.size,
-          inputImage.inputImageData!.imageRotation,
-          realBarcodePosition,
-          widget.qrcodeID);
+          barcodes: barcodes,
+          absoluteImageSize: inputImage.inputImageData!.size,
+          rotation: inputImage.inputImageData!.imageRotation,
+          realBarcodePositions: realBarcodePositions,
+          selectedBarcodeID: widget.qrcodeID,
+          distanceFromCameraLookup: distanceFromCameraLookup,
+          allBarcodes: allBarcodes);
+
       customPaint = CustomPaint(painter: painter);
     } else {
       customPaint = null;
@@ -122,6 +141,15 @@ class _BarcodeCameraNavigatorViewState
       setState(() {});
     }
   }
+}
+
+Future<List<RealBarcodePostionEntry>> getRealBarcodePositions() async {
+//Open realBarcodePositionBox
+  Box<RealBarcodePostionEntry> realBarcodePositionDataBox =
+      await Hive.openBox(realPositionDataBoxName);
+  List<RealBarcodePostionEntry> realBarcodePositions =
+      realBarcodePositionDataBox.values.toList();
+  return realBarcodePositions;
 }
   
 

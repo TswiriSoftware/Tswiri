@@ -129,7 +129,7 @@ List _displayList(
       value.uid,
       roundDouble(value.offset.x, 6),
       roundDouble(value.offset.y, 6),
-      roundDouble(value.distanceFromCamera, 1),
+      roundDouble(value.zOffset, 1),
       value.fixed
     ]);
   });

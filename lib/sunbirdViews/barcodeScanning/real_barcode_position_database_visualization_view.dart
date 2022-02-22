@@ -167,7 +167,7 @@ _getPoints(BuildContext context, List pointNames, List pointData) async {
     pointData.add([
       roundDouble(data.offset.x, 5),
       roundDouble(data.offset.y, 5),
-      roundDouble(data.distanceFromCamera, 5),
+      roundDouble(data.zOffset, 5),
     ]);
     pointNames.add(data.uid);
   }

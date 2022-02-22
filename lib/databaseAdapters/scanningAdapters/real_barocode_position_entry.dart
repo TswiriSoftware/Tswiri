@@ -9,7 +9,7 @@ class RealBarcodePostionEntry extends HiveObject {
   RealBarcodePostionEntry(
       {required this.uid,
       required this.offset,
-      required this.distanceFromCamera,
+      required this.zOffset,
       required this.fixed,
       required this.timestamp});
 
@@ -21,9 +21,9 @@ class RealBarcodePostionEntry extends HiveObject {
   @HiveField(1)
   late TypeOffsetHiveObject offset;
 
-  //Z Offset relative to a fixed barcode
+  //z Offset
   @HiveField(2)
-  late double distanceFromCamera;
+  late double zOffset;
 
   //Is the barcode a fixed barcode ?
   @HiveField(3)

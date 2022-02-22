@@ -20,7 +20,7 @@ class RealBarcodePostionEntryAdapter
     return RealBarcodePostionEntry(
       uid: fields[0] as String,
       offset: fields[1] as TypeOffsetHiveObject,
-      distanceFromCamera: fields[2] as double,
+      zOffset: fields[2] as double,
       fixed: fields[3] as bool,
       timestamp: fields[4] as int,
     );
@@ -35,7 +35,7 @@ class RealBarcodePostionEntryAdapter
       ..writeByte(1)
       ..write(obj.offset)
       ..writeByte(2)
-      ..write(obj.distanceFromCamera)
+      ..write(obj.zOffset)
       ..writeByte(3)
       ..write(obj.fixed)
       ..writeByte(4)
