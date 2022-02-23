@@ -11,6 +11,7 @@ import '../sunbirdViews/barcodeScanning/scanningToolsView/barcode_scanning_tools
 import '../sunbirdViews/cameraCalibration/calibrationToolsView/camera_calibration_tools_view.dart';
 
 //WIP//
+//TODO: list all routes @049er
 var allRoutes = <String, WidgetBuilder>{
   //Main Screen
   '/': (context) => const MyApp(),
