@@ -150,7 +150,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
         Offset onImageScreenCenter =
             Offset(absoluteImageSize.height / 2, absoluteImageSize.width / 2);
 
-        // TODO: Rotate both barcode center vectors by phone angle.
+        // TODO: Rotate both barcode center vectors by phone angle. @049er
         //
         //using rotateOffset().
 
