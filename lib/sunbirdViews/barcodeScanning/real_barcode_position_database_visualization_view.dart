@@ -50,7 +50,7 @@ class _RealBarcodePositionDatabaseVisualizationViewState
                 onPressed: () async {
                   pointNames.clear();
                   Box<RealBarcodePostionEntry> consolidatedDataBox =
-                      await Hive.openBox(realPositionDataBoxName);
+                      await Hive.openBox(realPositionsBoxName);
                   consolidatedDataBox.clear();
                   setState(() {});
                 },
@@ -159,7 +159,7 @@ _getPoints(BuildContext context, List pointNames, List pointData) async {
   List<Offset> points = [];
 
   Box<RealBarcodePostionEntry> consolidatedRealDataBox =
-      await Hive.openBox(realPositionDataBoxName);
+      await Hive.openBox(realPositionsBoxName);
   double width = MediaQuery.of(context).size.width;
   double height = MediaQuery.of(context).size.height;
   for (var i = 0; i < consolidatedRealDataBox.length; i++) {

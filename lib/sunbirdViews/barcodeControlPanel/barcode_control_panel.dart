@@ -93,7 +93,7 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
     List<String> barcodeUnassignedTags = await getUnassignedTags();
 
     Box<BarcodeDataEntry> generatedBarcodesBox =
-        await Hive.openBox(generatedBarcodesBoxName);
+        await Hive.openBox(allBarcodesBoxName);
     BarcodeDataEntry barcodeData = generatedBarcodesBox.get(barcodeID)!;
 
     barcodeUnassignedTags

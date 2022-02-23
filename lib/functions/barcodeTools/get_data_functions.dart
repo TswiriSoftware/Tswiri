@@ -6,7 +6,7 @@ import 'package:hive/hive.dart';
 Future<List<BarcodeDataEntry>> getGeneratedBarcodes() async {
   //Open generatedBarcodesBox.
   Box<BarcodeDataEntry> generatedBarcodesBox =
-      await Hive.openBox(generatedBarcodesBoxName);
+      await Hive.openBox(allBarcodesBoxName);
 
   List<BarcodeDataEntry> generatedBarcodes = [];
 

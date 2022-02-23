@@ -385,7 +385,7 @@ double calculateQuartileValue(
 ///(onImageBarcodeSize , realDistanceFromCamera)
 Future<List<DistanceFromCameraLookupEntry>> getMatchedCalibrationData() async {
   Box<DistanceFromCameraLookupEntry> matchedCalibrationDataBox =
-      await Hive.openBox(matchedDataHiveBoxName);
+      await Hive.openBox(distanceLookupTableBoxName);
 
   return matchedCalibrationDataBox.values.toList();
 }
@@ -396,7 +396,7 @@ Future<List<DistanceFromCameraLookupEntry>> getMatchedCalibrationData() async {
 ///(BarcodeID, realBarcodeSize)
 Future<List<BarcodeDataEntry>> getAllExistingBarcodes() async {
   Box<BarcodeDataEntry> generatedBarcodeData =
-      await Hive.openBox(generatedBarcodesBoxName);
+      await Hive.openBox(allBarcodesBoxName);
   return generatedBarcodeData.values.toList();
 }
 

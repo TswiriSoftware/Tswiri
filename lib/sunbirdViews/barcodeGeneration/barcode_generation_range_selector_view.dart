@@ -179,8 +179,7 @@ class _SelectRangeWidgetState extends State<SelectRangeWidget> {
 
   Future<void> putBarcodeData() async {
     //Open Barcode DataBox
-    Box<BarcodeDataEntry> barcodeData =
-        await Hive.openBox(generatedBarcodesBoxName);
+    Box<BarcodeDataEntry> barcodeData = await Hive.openBox(allBarcodesBoxName);
 
     barcodeData.clear();
 

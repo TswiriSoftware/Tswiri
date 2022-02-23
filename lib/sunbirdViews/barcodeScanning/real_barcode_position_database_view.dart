@@ -44,7 +44,7 @@ class _RealBarcodePositionDatabaseViewState
               onPressed: () async {
                 displayList.clear();
                 Box<RealBarcodePostionEntry> consolidatedDataBox =
-                    await Hive.openBox(realPositionDataBoxName);
+                    await Hive.openBox(realPositionsBoxName);
                 await consolidatedDataBox.clear();
 
                 setState(() {});
@@ -111,7 +111,7 @@ class _RealBarcodePositionDatabaseViewState
 
   Future<List> consolidateData(List displayList) async {
     Box<RealBarcodePostionEntry> consolidatedDataBox =
-        await Hive.openBox(realPositionDataBoxName);
+        await Hive.openBox(realPositionsBoxName);
     Map<String, RealBarcodePostionEntry> consolidatedData = {};
     Map consolidatedDataMap = consolidatedDataBox.toMap();
     consolidatedDataMap.forEach((key, value) {

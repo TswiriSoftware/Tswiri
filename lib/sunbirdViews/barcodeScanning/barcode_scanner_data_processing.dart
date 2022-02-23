@@ -246,7 +246,7 @@ Future<List<RealBarcodePosition>> processData(
 
   //Open realPositionalData box.
   Box<RealBarcodePostionEntry> realPositionalData =
-      await Hive.openBox(realPositionDataBoxName);
+      await Hive.openBox(realPositionsBoxName);
 
   await realPositionalData.clear();
 

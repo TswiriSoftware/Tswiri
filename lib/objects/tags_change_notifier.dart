@@ -16,7 +16,7 @@ class Tags extends ChangeNotifier {
     barcodeSize = newBarcodeSize;
 
     Box<BarcodeDataEntry> generatedBarcodesBox =
-        await Hive.openBox(generatedBarcodesBoxName);
+        await Hive.openBox(allBarcodesBoxName);
     BarcodeDataEntry barcodeDataEntry = generatedBarcodesBox.get(barcodeID)!;
     barcodeDataEntry.barcodeSize = newBarcodeSize;
 
@@ -28,7 +28,7 @@ class Tags extends ChangeNotifier {
     isFixed = !isFixed;
 
     Box<BarcodeDataEntry> generatedBarcodesBox =
-        await Hive.openBox(generatedBarcodesBoxName);
+        await Hive.openBox(allBarcodesBoxName);
     BarcodeDataEntry barcodeDataEntry = generatedBarcodesBox.get(barcodeID)!;
     barcodeDataEntry.isFixed = isFixed;
 

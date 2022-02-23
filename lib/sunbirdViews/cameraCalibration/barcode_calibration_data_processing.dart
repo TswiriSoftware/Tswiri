@@ -191,7 +191,7 @@ class _BarcodeCalibrationDataProcessingViewState
 
       //Box to store valid calibration Data
       Box<DistanceFromCameraLookupEntry> matchedDataHiveBox =
-          await Hive.openBox(matchedDataHiveBoxName);
+          await Hive.openBox(distanceLookupTableBoxName);
 
       //Matches OnImageBarcodeSize and DistanceFromCamera using timestamps and writes to Hive Database
       for (OnImageBarcodeSize onImageBarcodeSize in onImageBarcodeSizes) {

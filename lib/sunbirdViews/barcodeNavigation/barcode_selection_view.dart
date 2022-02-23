@@ -89,7 +89,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
 
   Future<void> runFilter(String enteredKeyword) async {
     Box<RealBarcodePostionEntry> realPositionDataBox =
-        await Hive.openBox(realPositionDataBoxName);
+        await Hive.openBox(realPositionsBoxName);
     //Box that contains all barcodes and Tags assigned to them.
     Box<BarcodeTagEntry> barcodeTagsBox =
         await Hive.openBox(barcodeTagsBoxName);

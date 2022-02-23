@@ -144,7 +144,7 @@ class _BarcodeCameraNavigatorViewState
 Future<List<RealBarcodePostionEntry>> getRealBarcodePositions() async {
 //Open realBarcodePositionBox
   Box<RealBarcodePostionEntry> realBarcodePositionDataBox =
-      await Hive.openBox(realPositionDataBoxName);
+      await Hive.openBox(realPositionsBoxName);
   List<RealBarcodePostionEntry> realBarcodePositions =
       realBarcodePositionDataBox.values.toList();
   return realBarcodePositions;

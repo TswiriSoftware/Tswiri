@@ -43,7 +43,7 @@ class _CalibrationDataVisualizerViewState
                 heroTag: null,
                 onPressed: () async {
                   Box<DistanceFromCameraLookupEntry> matchedDataBox =
-                      await Hive.openBox(matchedDataHiveBoxName);
+                      await Hive.openBox(distanceLookupTableBoxName);
                   matchedDataBox.clear();
                   setState(() {});
                 },
@@ -109,7 +109,7 @@ class OpenPainter extends CustomPainter {
 
 _getPoints(BuildContext context) async {
   Box<DistanceFromCameraLookupEntry> matchedDataBox =
-      await Hive.openBox(matchedDataHiveBoxName);
+      await Hive.openBox(distanceLookupTableBoxName);
 
   Size size = Size(
       MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
