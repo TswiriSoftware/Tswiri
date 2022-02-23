@@ -5,6 +5,7 @@ import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_entry
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/tag_entry.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
+import 'package:flutter_google_ml_kit/globalValues/routes.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/all_barcodes.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_range_selector_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -15,6 +16,9 @@ import 'databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.d
 import 'databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
 import 'sunbirdViews/barcodeNavigation/navigationToolsView/barcode_navigation_tools_view.dart';
+import 'sunbirdViews/barcodeScanning/barcode_scanner_view.dart';
+import 'sunbirdViews/barcodeScanning/real_barcode_position_database_view.dart';
+import 'sunbirdViews/barcodeScanning/real_barcode_position_database_visualization_view.dart';
 import 'sunbirdViews/barcodeScanning/scanningToolsView/barcode_scanning_tools_view.dart';
 import 'sunbirdViews/cameraCalibration/calibrationToolsView/camera_calibration_tools_view.dart';
 
@@ -29,7 +33,7 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  runApp(const MyApp());
+  runApp(MaterialApp(title: 'Sunbird', initialRoute: '/', routes: allRoutes));
 
   var status = await Permission.storage.status;
   if (status.isDenied) {
@@ -94,7 +98,7 @@ class Home extends StatelessWidget {
           children: const [
             CustomCard(
               'Barcode Scanning Tools',
-              BarcodeScanningView(),
+              BarcodeScanningToolsView(),
               Icons.qr_code_scanner_rounded,
               featureCompleted: true,
               tileColor: brightOrange,

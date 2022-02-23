@@ -5,14 +5,15 @@ import '../../../main.dart';
 import '../real_barcode_position_database_view.dart';
 import '../real_barcode_position_database_visualization_view.dart';
 
-class BarcodeScanningView extends StatefulWidget {
-  const BarcodeScanningView({Key? key}) : super(key: key);
+class BarcodeScanningToolsView extends StatefulWidget {
+  const BarcodeScanningToolsView({Key? key}) : super(key: key);
 
   @override
-  _BarcodeScanningViewState createState() => _BarcodeScanningViewState();
+  _BarcodeScanningToolsViewState createState() =>
+      _BarcodeScanningToolsViewState();
 }
 
-class _BarcodeScanningViewState extends State<BarcodeScanningView> {
+class _BarcodeScanningToolsViewState extends State<BarcodeScanningToolsView> {
   @override
   void initState() {
     Hive.close();
@@ -51,7 +52,7 @@ class _BarcodeScanningViewState extends State<BarcodeScanningView> {
               tileColor: Colors.deepOrange,
             ),
             const CustomCard(
-              'Consolidated Data Viewer',
+              'Real Barcode Positions',
               RealBarcodePositionDatabaseView(),
               Icons.view_array,
               featureCompleted: true,

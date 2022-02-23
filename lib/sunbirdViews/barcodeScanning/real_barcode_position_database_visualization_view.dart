@@ -7,6 +7,7 @@ import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.da
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/main.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/scanningToolsView/barcode_scanning_tools_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 // ignore: todo
@@ -59,8 +60,11 @@ class _RealBarcodePositionDatabaseVisualizationViewState
               FloatingActionButton(
                 heroTag: null,
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const Home()));
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (context) => const Home()));
+                  Navigator.pop(context);
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => const BarcodeScanningToolsView()));
                 },
                 child: const Icon(Icons.check_circle_outline_rounded),
               ),

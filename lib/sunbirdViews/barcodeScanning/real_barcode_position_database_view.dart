@@ -55,7 +55,7 @@ class _RealBarcodePositionDatabaseViewState
         ),
       ),
       appBar: AppBar(
-        title: const Text('Consolidated Data'),
+        title: const Text('Real Barcode Positions'),
         centerTitle: true,
         elevation: 0,
       ),
