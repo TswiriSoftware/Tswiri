@@ -4,6 +4,7 @@ import '../../../main.dart';
 import '../camera_calibration_view.dart';
 import '../calibration_data_visualizer_view.dart';
 
+///Shows camera calibration tools.
 class CameraCalibrationToolsView extends StatefulWidget {
   const CameraCalibrationToolsView({Key? key}) : super(key: key);
 

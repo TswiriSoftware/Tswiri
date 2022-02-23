@@ -5,6 +5,7 @@ import 'package:hive/hive.dart';
 
 import 'generated_barcodes_pdf_view.dart';
 
+///Allows the user to select a range of barcodes to generate.
 class BarcodeGenerationRangeSelectorView extends StatefulWidget {
   const BarcodeGenerationRangeSelectorView({Key? key}) : super(key: key);
 

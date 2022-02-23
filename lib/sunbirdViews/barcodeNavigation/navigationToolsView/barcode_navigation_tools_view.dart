@@ -3,6 +3,7 @@ import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import '../../../main.dart';
 import '../barcode_selection_view.dart';
 
+///Shows all barcode navigation tools.
 class BarcodeNavigationToolsView extends StatefulWidget {
   const BarcodeNavigationToolsView({Key? key}) : super(key: key);
 

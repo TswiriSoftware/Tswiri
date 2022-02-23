@@ -5,6 +5,7 @@ import '../../../main.dart';
 import '../real_barcode_position_database_view.dart';
 import '../real_barcode_position_database_visualization_view.dart';
 
+///Displays all barcode scanning tools.
 class BarcodeScanningToolsView extends StatefulWidget {
   const BarcodeScanningToolsView({Key? key}) : super(key: key);
 
