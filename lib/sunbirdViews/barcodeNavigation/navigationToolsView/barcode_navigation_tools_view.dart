@@ -3,14 +3,16 @@ import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import '../../../main.dart';
 import '../barcode_selection_view.dart';
 
-class BarcodeNavigationView extends StatefulWidget {
-  const BarcodeNavigationView({Key? key}) : super(key: key);
+class BarcodeNavigationToolsView extends StatefulWidget {
+  const BarcodeNavigationToolsView({Key? key}) : super(key: key);
 
   @override
-  _BarcodeNavigationViewState createState() => _BarcodeNavigationViewState();
+  _BarcodeNavigationToolsViewState createState() =>
+      _BarcodeNavigationToolsViewState();
 }
 
-class _BarcodeNavigationViewState extends State<BarcodeNavigationView> {
+class _BarcodeNavigationToolsViewState
+    extends State<BarcodeNavigationToolsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

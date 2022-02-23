@@ -10,14 +10,14 @@ import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/painter/bar
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
-class CameraCalibration extends StatefulWidget {
-  const CameraCalibration({Key? key}) : super(key: key);
+class CameraCalibrationView extends StatefulWidget {
+  const CameraCalibrationView({Key? key}) : super(key: key);
 
   @override
-  _CameraCalibrationState createState() => _CameraCalibrationState();
+  _CameraCalibrationViewState createState() => _CameraCalibrationViewState();
 }
 
-class _CameraCalibrationState extends State<CameraCalibration> {
+class _CameraCalibrationViewState extends State<CameraCalibrationView> {
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
 

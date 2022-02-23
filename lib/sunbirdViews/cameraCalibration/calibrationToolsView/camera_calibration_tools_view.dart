@@ -45,7 +45,7 @@ class _CameraCalibrationToolsViewState
           // ignore: prefer_const_literals_to_create_immutables
           children: [
             const CustomCard(
-                'Camera Calibration', CameraCalibration(), Icons.camera,
+                'Camera Calibration', CameraCalibrationView(), Icons.camera,
                 featureCompleted: true, tileColor: skyBlue80),
             const CustomCard('Processed Data Visualizer',
                 CalibrationDataVisualizerView(), Icons.calculate,

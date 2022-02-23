@@ -16,9 +16,6 @@ import 'databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.d
 import 'databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
 import 'sunbirdViews/barcodeNavigation/navigationToolsView/barcode_navigation_tools_view.dart';
-import 'sunbirdViews/barcodeScanning/barcode_scanner_view.dart';
-import 'sunbirdViews/barcodeScanning/real_barcode_position_database_view.dart';
-import 'sunbirdViews/barcodeScanning/real_barcode_position_database_visualization_view.dart';
 import 'sunbirdViews/barcodeScanning/scanningToolsView/barcode_scanning_tools_view.dart';
 import 'sunbirdViews/cameraCalibration/calibrationToolsView/camera_calibration_tools_view.dart';
 
@@ -112,7 +109,7 @@ class Home extends StatelessWidget {
             ),
             CustomCard(
               'Barcode Navigation Tools',
-              BarcodeNavigationView(),
+              BarcodeNavigationToolsView(),
               Icons.qr_code_rounded,
               featureCompleted: true,
               tileColor: limeGreenMuted,

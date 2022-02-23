@@ -6,7 +6,6 @@ import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/real_bar
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
-import 'package:flutter_google_ml_kit/main.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/scanningToolsView/barcode_scanning_tools_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 

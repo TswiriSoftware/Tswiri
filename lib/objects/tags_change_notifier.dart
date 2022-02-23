@@ -3,7 +3,7 @@ import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_e
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:hive/hive.dart';
 
-import '../../databaseAdapters/allBarcodes/barcode_entry.dart';
+import '../databaseAdapters/allBarcodes/barcode_entry.dart';
 
 class Tags extends ChangeNotifier {
   Tags(this.assignedTags, this.unassignedTags, this.isFixed, this.barcodeSize);

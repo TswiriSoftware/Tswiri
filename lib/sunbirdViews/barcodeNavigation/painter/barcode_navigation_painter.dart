@@ -123,7 +123,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
             false, paintSimple(Colors.greenAccent, 5));
       }
     } else {
-      if (barcodes.length >= 1) {
+      if (barcodes.isNotEmpty) {
         BarcodeValue referenceBarcode = barcodes.first.value;
 
         //Calculate referenceBarcode on screen data.

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/camera_view.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/painter/barcode_navigation_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -12,7 +11,6 @@ import '../../databaseAdapters/calibrationAdapters/distance_from_camera_lookup_e
 import '../../databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import '../../functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
 import '../../globalValues/global_hive_databases.dart';
-import '../../objects/real_inter_barcode_offset.dart';
 
 class BarcodeCameraNavigatorView extends StatefulWidget {
   final String qrcodeID;

@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter/widgets.dart';
 import 'package:flutter_google_ml_kit/VisionDetectorViews/painters/coordinates_translator.dart';
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/data_capturing_functions.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_positional_data.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
