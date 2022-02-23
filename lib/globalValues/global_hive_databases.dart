@@ -1,7 +1,20 @@
-///Contains all real positional data
-const String realPositionDataBoxName = 'realPositionalData';
-const String accelerometerDataHiveBox = 'accelerometerDataBox';
-const String matchedDataHiveBoxName = 'matchedCalibrationDataBox';
-const String barcodeTagsBoxName = 'barcodeTags';
-const String tagsBoxName = 'tags';
-const String generatedBarcodesBoxName = 'generatedBarcodes';
+import '../databaseAdapters/allBarcodes/barcode_entry.dart';
+import '../databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
+import '../databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
+import '../databaseAdapters/tagAdapters/barcode_tag_entry.dart';
+import '../databaseAdapters/tagAdapters/tag_entry.dart';
+
+///Contains all real positional data as [RealBarcodePostionEntry]
+const String realPositionsBoxName = 'realPositionsBox';
+
+///Contains camera calibration data as [DistanceFromCameraLookupEntry].
+const String distanceLookupTableBoxName = 'distanceLookupTableBox';
+
+///Contains barcode tags as [BarcodeTagEntry].
+const String barcodeTagsBoxName = 'barcodeTagsBox';
+
+///Contains all barcodes tags as [TagEntry].
+const String tagsBoxName = 'tagsBox';
+
+///Contains all barcodes that have been generated as [BarcodeDataEntry].
+const String allBarcodesBoxName = 'allBarcodesBox';
