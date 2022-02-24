@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/VisionDetectorViews/camera_view.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/cameraView/camera_view_barcode_navigator.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/painter/barcode_navigation_painter.dart';
@@ -40,14 +39,14 @@ class _BarcodeCameraNavigatorViewState
   CustomPaint? customPaint;
 
   //List of offsets that are not within error aka. barcode have changed location.
-  Set<RealInterBarcodeOffset> offsetsThatDoNotCheckOut = {};
-  Set<RealInterBarcodeOffset> offsetsThatDoCheckOut = {};
+  List<RealInterBarcodeOffset> offsetsThatDoNotCheckOut = [];
+  List<RealInterBarcodeOffset> offsetsThatDoCheckOut = [];
 
   // //List of Barcodes that have not moved.
   // Set<RealBarcodePosition> realBarcodePositions = {};
 
-  Set<String> checksOut = {};
-  Set<String> doesNotcheckOut = {};
+  List<String> checksOut = [];
+  List<String> doesNotcheckOut = [];
 
   ///Map<String, List<RealInterBarcodeOffset>> : String is the startBarcodeUID_endBarcodeUID and then a list of RealInterBarcodeOffsets.
   Map<String, List<RealInterBarcodeOffset>> realInterBarcodeOffsetMap = {};
@@ -240,11 +239,68 @@ class _BarcodeCameraNavigatorViewState
               realInterBarcodeOffset.uidStart,
               realInterBarcodeOffset.uidEnd
             ]);
+
+            Set<String> validStartBarcodes = checksOut
+                .where((element) => !doesNotcheckOut.contains(element))
+                .toSet();
+
+            String movedBarcodeID = doesNotcheckOut
+                .firstWhere((element) => !checksOut.contains(element))
+                .toString();
+
+            int indexOfUseableInterBarcodeOffset =
+                offsetsThatDoNotCheckOut.indexWhere((element) =>
+                    !validStartBarcodes.contains(element.uidStart) ||
+                    !validStartBarcodes.contains(element.uidEnd));
+
+            if (indexOfUseableInterBarcodeOffset != -1) {
+              RealInterBarcodeOffset validInterBarcodeOffset =
+                  offsetsThatDoNotCheckOut[indexOfUseableInterBarcodeOffset];
+
+              if (validInterBarcodeOffset.uidEnd == movedBarcodeID) {
+                //log('dont flip: ' + validInterBarcodeOffset.toString());
+
+                RealBarcodePostionEntry x = realBarcodePositions.firstWhere(
+                    (element) =>
+                        element.uid == validInterBarcodeOffset.uidStart);
+                Offset newPosition = typeOffsetToOffset(x.offset) +
+                    validInterBarcodeOffset.offset;
+
+                RealBarcodePostionEntry updatedPosition =
+                    RealBarcodePostionEntry(
+                        uid: uid,
+                        offset: offsetToTypeOffset(newPosition),
+                        zOffset: validInterBarcodeOffset.zOffset,
+                        fixed: false,
+                        timestamp: DateTime.now().millisecondsSinceEpoch);
+
+                log(storedInterbarcodeOffset.toString());
+                log(updatedPosition.toString());
+                //TODO: Write to Database.
+              } else {
+                //log('flip: ' + validInterBarcodeOffset.toString());
+                RealBarcodePostionEntry x = realBarcodePositions.firstWhere(
+                    (element) => element.uid == validInterBarcodeOffset.uidEnd);
+
+                Offset newPosition = typeOffsetToOffset(x.offset) -
+                    validInterBarcodeOffset.offset;
+                RealBarcodePostionEntry updatedPosition =
+                    RealBarcodePostionEntry(
+                        uid: uid,
+                        offset: offsetToTypeOffset(newPosition),
+                        zOffset: -validInterBarcodeOffset.zOffset,
+                        fixed: false,
+                        timestamp: DateTime.now().millisecondsSinceEpoch);
+                //TODO: Write to Database.
+                //TODO: Remove from doesNotCheckOut
+
+                log(storedInterbarcodeOffset.toString());
+                log(updatedPosition.toString());
+              }
+            }
           }
         }
-        log(doesNotcheckOut
-            .where((element) => !checksOut.contains(element))
-            .toString());
+
         //TODO: Code to update barcode Positions.
         //1. Find offset that has the start barcode in checksOut and end barcode in doesNotCheckOut.
         //2. Update realPosition

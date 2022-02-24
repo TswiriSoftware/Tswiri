@@ -1,5 +1,3 @@
-// ignore_for_file: curly_braces_in_flow_control_structures
-
 import 'dart:io';
 
 import 'package:camera/camera.dart';
@@ -8,17 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../main.dart';
+import '../main.dart';
 
 enum ScreenMode { liveFeed, gallery }
 
-class CameraBarcodeScanningView extends StatefulWidget {
-  const CameraBarcodeScanningView(
+class CameraViewStock extends StatefulWidget {
+  const CameraViewStock(
       {Key? key,
       required this.title,
       required this.customPaint,
       required this.onImage,
-      required this.color,
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
 
@@ -26,15 +23,13 @@ class CameraBarcodeScanningView extends StatefulWidget {
   final CustomPaint? customPaint;
   final Function(InputImage inputImage) onImage;
   final CameraLensDirection initialDirection;
-  final Color color;
 
   @override
-  _CameraBarcodeScanningViewState createState() =>
-      _CameraBarcodeScanningViewState();
+  _CameraViewStockState createState() => _CameraViewStockState();
 }
 
-class _CameraBarcodeScanningViewState extends State<CameraBarcodeScanningView> {
-  final ScreenMode _mode = ScreenMode.liveFeed;
+class _CameraViewStockState extends State<CameraViewStock> {
+  ScreenMode _mode = ScreenMode.liveFeed;
   CameraController? _controller;
   File? _image;
   ImagePicker? _imagePicker;
@@ -46,8 +41,6 @@ class _CameraBarcodeScanningViewState extends State<CameraBarcodeScanningView> {
 
     _imagePicker = ImagePicker();
     for (var i = 0; i < cameras.length; i++) {
-      //print(i);
-
       if (cameras[i].lensDirection == widget.initialDirection) {
         _cameraIndex = i;
       }
@@ -66,12 +59,43 @@ class _CameraBarcodeScanningViewState extends State<CameraBarcodeScanningView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        backgroundColor: widget.color,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: GestureDetector(
+              onTap: _switchScreenMode,
+              child: Icon(
+                _mode == ScreenMode.liveFeed
+                    ? Icons.photo_library_outlined
+                    : (Platform.isIOS
+                        ? Icons.camera_alt_outlined
+                        : Icons.camera),
+              ),
+            ),
+          ),
+        ],
       ),
       body: _body(),
-      // floatingActionButton: _floatingActionButton(),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: _floatingActionButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
+  }
+
+  Widget? _floatingActionButton() {
+    if (_mode == ScreenMode.gallery) return null;
+    if (cameras.length == 1) return null;
+    return SizedBox(
+        height: 70.0,
+        width: 70.0,
+        child: FloatingActionButton(
+          child: Icon(
+            Platform.isIOS
+                ? Icons.flip_camera_ios_outlined
+                : Icons.flip_camera_android_outlined,
+            size: 40,
+          ),
+          onPressed: _switchLiveCamera,
+        ));
   }
 
   Widget _body() {
@@ -139,28 +163,26 @@ class _CameraBarcodeScanningViewState extends State<CameraBarcodeScanningView> {
     final pickedFile = await _imagePicker?.getImage(source: source);
     if (pickedFile != null) {
       _processPickedFile(pickedFile);
+    } else {}
+    setState(() {});
+  }
+
+  void _switchScreenMode() async {
+    if (_mode == ScreenMode.liveFeed) {
+      _mode = ScreenMode.gallery;
+      await _stopLiveFeed();
     } else {
-      // ignore: avoid_print
-      print('No image selected.');
+      _mode = ScreenMode.liveFeed;
+      await _startLiveFeed();
     }
     setState(() {});
   }
 
-  // void _switchScreenMode() async {
-  //   if (_mode == ScreenMode.liveFeed) {
-  //     _mode = ScreenMode.gallery;
-  //     await _stopLiveFeed();
-  //   } else {
-  //     _mode = ScreenMode.liveFeed;
-  //     await _startLiveFeed();
-  //   }
-  //   setState(() {});
-  // }
-
   Future _startLiveFeed() async {
+    final camera = cameras[_cameraIndex];
     _controller = CameraController(
-      cameras.first,
-      ResolutionPreset.high,
+      camera,
+      ResolutionPreset.low,
       enableAudio: false,
     );
     _controller?.initialize().then((_) {
@@ -178,12 +200,12 @@ class _CameraBarcodeScanningViewState extends State<CameraBarcodeScanningView> {
     _controller = null;
   }
 
-  // ignore: unused_element
   Future _switchLiveCamera() async {
-    if (_cameraIndex == 0)
+    if (_cameraIndex == 0) {
       _cameraIndex = 1;
-    else
+    } else {
       _cameraIndex = 0;
+    }
     await _stopLiveFeed();
     await _startLiveFeed();
   }
@@ -210,7 +232,6 @@ class _CameraBarcodeScanningViewState extends State<CameraBarcodeScanningView> {
     final imageRotation =
         InputImageRotationMethods.fromRawValue(camera.sensorOrientation) ??
             InputImageRotation.Rotation_0deg;
-    //print(camera.sensorOrientation);
 
     final inputImageFormat =
         InputImageFormatMethods.fromRawValue(image.format.raw) ??
