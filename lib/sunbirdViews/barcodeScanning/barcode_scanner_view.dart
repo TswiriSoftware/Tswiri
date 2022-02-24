@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/objects/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/cameraView/camera_view_barcode_scanning.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/barcode_scanner_data_processing.dart';
@@ -68,7 +69,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
             ],
           ),
         ),
-        body: CameraView(
+        body: CameraBarcodeScanningView(
           color: brightOrange,
           title: 'Barcode Scanner',
           customPaint: customPaint,

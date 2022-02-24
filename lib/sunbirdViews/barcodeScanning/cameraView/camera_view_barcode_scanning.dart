@@ -8,12 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../main.dart';
+import '../../../main.dart';
+import '../../../objects/raw_on_image_barcode_data.dart';
 
 enum ScreenMode { liveFeed, gallery }
 
-class CameraView extends StatefulWidget {
-  const CameraView(
+class CameraBarcodeScanningView extends StatefulWidget {
+  const CameraBarcodeScanningView(
       {Key? key,
       required this.title,
       required this.customPaint,
@@ -29,11 +30,12 @@ class CameraView extends StatefulWidget {
   final Color color;
 
   @override
-  _CameraViewState createState() => _CameraViewState();
+  _CameraBarcodeScanningViewState createState() =>
+      _CameraBarcodeScanningViewState();
 }
 
-class _CameraViewState extends State<CameraView> {
-  ScreenMode _mode = ScreenMode.liveFeed;
+class _CameraBarcodeScanningViewState extends State<CameraBarcodeScanningView> {
+  final ScreenMode _mode = ScreenMode.liveFeed;
   CameraController? _controller;
   File? _image;
   ImagePicker? _imagePicker;
@@ -66,21 +68,6 @@ class _CameraViewState extends State<CameraView> {
       appBar: AppBar(
         title: Text(widget.title),
         backgroundColor: widget.color,
-        // actions: [
-        //   Padding(
-        //     padding: const EdgeInsets.only(right: 20.0),
-        //     child: GestureDetector(
-        //       onTap: _switchScreenMode,
-        //       child: Icon(
-        //         _mode == ScreenMode.liveFeed
-        //             ? Icons.photo_library_outlined
-        //             : (Platform.isIOS
-        //                 ? Icons.camera_alt_outlined
-        //                 : Icons.camera),
-        //       ),
-        //     ),
-        //   ),
-        // ],
       ),
       body: _body(),
       // floatingActionButton: _floatingActionButton(),

@@ -4,8 +4,10 @@ import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/dista
 import 'package:flutter_google_ml_kit/functions/calibrationFunctions/calibration_functions.dart';
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
+import 'package:flutter_google_ml_kit/main.dart';
 
 import 'package:hive/hive.dart';
+import '../../globalValues/global_colours.dart';
 import 'calibrationToolsView/camera_calibration_tools_view.dart';
 
 class CalibrationDataVisualizerView extends StatefulWidget {
@@ -29,6 +31,7 @@ class _CalibrationDataVisualizerViewState
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: skyBlue80,
           title: const Text('Calibration Data Visualizer'),
           centerTitle: true,
           elevation: 0,
@@ -52,10 +55,8 @@ class _CalibrationDataVisualizerViewState
               FloatingActionButton(
                 heroTag: null,
                 onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) =>
-                          const CameraCalibrationToolsView()));
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => const Home()));
                 },
                 child: const Icon(Icons.check_circle_outline_rounded),
               ),

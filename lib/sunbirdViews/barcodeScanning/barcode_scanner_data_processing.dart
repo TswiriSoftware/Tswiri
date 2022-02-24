@@ -138,7 +138,7 @@ Future<List<RealBarcodePosition>> processData(
   List<RealInterBarcodeOffset> allRealInterBarcodeOffsets =
       buildAllRealInterBarcodeOffsets(
           allOnImageInterBarcodeData: allOnImageInterBarcodeData,
-          matchedCalibrationData: distanceFromCameraLookup,
+          calibrationLookupTable: distanceFromCameraLookup,
           allBarcodes: allBarcodes);
 
   //3.2 This list contains only unique realInterBarcodeOffsets

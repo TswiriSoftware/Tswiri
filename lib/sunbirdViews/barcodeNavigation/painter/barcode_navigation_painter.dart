@@ -1,4 +1,3 @@
-import 'dart:developer' as d;
 import 'dart:math';
 import 'dart:ui';
 import 'dart:ui' as ui;
@@ -17,24 +16,25 @@ import '../../../databaseAdapters/calibrationAdapters/distance_from_camera_looku
 import '../../../databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import '../../../functions/barcodeCalculations/data_capturing_functions.dart';
 
-///This Painter is used to gudide the user to the barcode they have indicated.
+///This Painter is used to gudide the user to the barcode they have
 class BarcodeDetectorPainterNavigation extends CustomPainter {
-  BarcodeDetectorPainterNavigation({
-    required this.barcodes,
-    required this.absoluteImageSize,
-    required this.rotation,
-    required this.realBarcodePositions,
-    required this.selectedBarcodeID,
-    required this.distanceFromCameraLookup,
-    required this.allBarcodes,
-  });
+  BarcodeDetectorPainterNavigation(
+      {required this.barcodes,
+      required this.absoluteImageSize,
+      required this.rotation,
+      required this.realBarcodePositions,
+      required this.selectedBarcodeID,
+      required this.distanceFromCameraLookup,
+      required this.allBarcodes,
+      required this.phoneAngle});
   final List<Barcode> barcodes;
   final Size absoluteImageSize;
   final InputImageRotation rotation;
   final List<RealBarcodePostionEntry> realBarcodePositions;
   final String selectedBarcodeID;
   final List<DistanceFromCameraLookupEntry> distanceFromCameraLookup;
-  List<BarcodeDataEntry> allBarcodes;
+  final List<BarcodeDataEntry> allBarcodes;
+  final double phoneAngle;
 
   ///Steps to follow for ///
   ///
@@ -93,15 +93,16 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
       //Draws a Polygon around the selectedBarcode.
       // canvas.drawPoints(PointMode.polygon, barcodeOnScreenData.cornerPoints,
       //     paintLightGreenAccent3);
-      canvas.drawPoints(PointMode.points, [barcodeOnScreenData.center],
-          paintSimple(Colors.greenAccent, 4));
+      // canvas.drawPoints(PointMode.points, [barcodeOnScreenData.center],
+      //     paintSimple(Colors.greenAccent, 4));
 
       //The finder circle's radius is related to the barcode on screen size.
       double finderCircleRadius = barcodeOnScreenData.barcodeOnScreenUnits / 2;
 
       //Check if the selected barcode is within the finder circle.
-      if ((screenCenterPoint - barcodeOnScreenData.center).distance <
-          finderCircleRadius / 2) {
+      double distance =
+          (screenCenterPoint - barcodeOnScreenData.center).distance;
+      if (distance < finderCircleRadius / 2) {
         //Draw the finder circle in blue indicating the barcode is within the finder circle
         canvas.drawCircle(screenCenterPoint, finderCircleRadius, paintBlue3);
       } else {
@@ -110,9 +111,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
 
         //Contstuct the rectangle for the arc.
         Rect rect = Rect.fromCenter(
-            center: screenCenterPoint,
-            width: (screenCenterPoint - barcodeOnScreenData.center).distance,
-            height: (screenCenterPoint - barcodeOnScreenData.center).distance);
+            center: screenCenterPoint, width: distance, height: distance);
 
         //Calculate the angle the selected barcode makes with the center of the screen.
         double selectedBarcodeAngleRadians =
@@ -150,13 +149,16 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
         Offset onImageScreenCenter =
             Offset(absoluteImageSize.height / 2, absoluteImageSize.width / 2);
 
-        // TODO: Rotate both barcode center vectors by phone angle. @049er
-        //
-        //using rotateOffset().
+        //iii. rorate by angle.
+
+        Offset rotatedreferenceBarcodeCenter = rotateOffset(
+            offset: referenceBarcodeCenter, angleRadians: phoneAngle);
+        Offset rotatedonImageScreenCenter =
+            rotateOffset(offset: onImageScreenCenter, angleRadians: phoneAngle);
 
         //2. Calculate the Offset between the centers referenceBarcodeCenter *to* screenCenter
         Offset offsetToScreenCenter =
-            onImageScreenCenter - referenceBarcodeCenter;
+            rotatedonImageScreenCenter - rotatedreferenceBarcodeCenter;
 
         //3. Calculate real offset from reference barcode to screen center.
 
@@ -215,7 +217,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
           double distanceToSelectedBarcode =
               screenCenterToSelectedBarcode.distance;
 
-          d.log(distanceToSelectedBarcode.toString());
+          //d.log(distanceToSelectedBarcode.toString());
 
           //Contstuct the rectangle for the arc.
           Rect rect = Rect.fromCenter(
@@ -240,10 +242,10 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
           tp.paint(canvas, screenCenterPoint);
 
           // Draw some points of intrest :D
-          canvas.drawPoints(
-              PointMode.points,
-              [screenCenterPoint, referenceBarcodeScreenData.center],
-              paintSimple(Colors.red, 5));
+          // canvas.drawPoints(
+          //     PointMode.points,
+          //     [screenCenterPoint, referenceBarcodeScreenData.center],
+          //     paintSimple(Colors.red, 5));
         }
       }
     }

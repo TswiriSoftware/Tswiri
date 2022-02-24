@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
-import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
+import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:hive/hive.dart';
+
+import '../../objects/real_barcode_position.dart';
+import 'widgets/real_position_display_widget.dart';
 
 class RealBarcodePositionDatabaseView extends StatefulWidget {
   const RealBarcodePositionDatabaseView({Key? key}) : super(key: key);
@@ -59,134 +62,54 @@ class _RealBarcodePositionDatabaseViewState
         centerTitle: true,
         elevation: 0,
       ),
-      body: FutureBuilder<List>(
-        future: consolidateData(displayList),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return Column(
-              children: [
-                Form(child: TextFormField(
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter some text';
-                    }
-                    return null;
-                  },
-                )),
-                const Center(child: CircularProgressIndicator()),
-              ],
-            );
-          } else {
-            List myList = snapshot.data ?? [];
-            return ListView.builder(
-                itemCount: myList.length,
-                itemBuilder: (context, index) {
-                  var myText = myList[index]
-                      .toString()
-                      .replaceAll(RegExp(r'\[|\]'), '')
-                      .replaceAll(' ', '')
-                      .split(',')
-                      .toList();
-                  //print(myText);
-                  if (index == 0) {
-                    return Column(
-                      children: <Widget>[
-                        displayDataPoint(
-                            ['UID', 'X', 'Y', 'Distance', 'fixed']),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        displayDataPoint(myText),
-                      ],
-                    );
-                  } else {
-                    return displayDataPoint(myText);
-                  }
-                });
-          }
-        },
+      body: Center(
+        child: FutureBuilder<List<RealBarcodePosition>>(
+          future: getRealPositions(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              List<RealBarcodePosition> data = snapshot.data!;
+              return Padding(
+                padding: const EdgeInsets.only(top: 2.5),
+                child: ListView.builder(
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      return RealPositionDisplayWidget(
+                          realBarcodePosition: data[index]);
+                    }),
+              );
+            } else if (snapshot.hasError) {
+              return Text(
+                "${snapshot.error}",
+                style: const TextStyle(fontSize: 20, color: deeperOrange),
+              );
+            }
+            // By default, show a CircularProgressIndicator
+            return const CircularProgressIndicator();
+          },
+        ),
       ),
     );
   }
 
-  Future<List> consolidateData(List displayList) async {
-    Box<RealBarcodePostionEntry> consolidatedDataBox =
+  Future<List<RealBarcodePosition>> getRealPositions() async {
+    //Open realPositionalData box.
+    Box<RealBarcodePostionEntry> realPositionalData =
         await Hive.openBox(realPositionsBoxName);
-    Map<String, RealBarcodePostionEntry> consolidatedData = {};
-    Map consolidatedDataMap = consolidatedDataBox.toMap();
-    consolidatedDataMap.forEach((key, value) {
-      consolidatedData.putIfAbsent(key, () => value);
-    });
-    return _displayList(consolidatedData, displayList);
+
+    List<RealBarcodePostionEntry> realBarcodePostionEntries =
+        realPositionalData.values.toList();
+
+    List<RealBarcodePosition> realBarcodePositions = [];
+    for (RealBarcodePostionEntry realBarcodePostionEntry
+        in realBarcodePostionEntries) {
+      realBarcodePositions.add(RealBarcodePosition(
+          uid: realBarcodePostionEntry.uid,
+          offset: typeOffsetToOffset(realBarcodePostionEntry.offset),
+          zOffset: realBarcodePostionEntry.zOffset));
+    }
+
+    realBarcodePositions
+        .sort((a, b) => int.parse(a.uid).compareTo(int.parse(b.uid)));
+    return realBarcodePositions;
   }
-}
-
-List _displayList(
-    Map<String, RealBarcodePostionEntry> consolidatedData, List displayList) {
-  displayList.clear();
-  consolidatedData.forEach((key, value) {
-    displayList.add([
-      value.uid,
-      roundDouble(value.offset.x, 6),
-      roundDouble(value.offset.y, 6),
-      roundDouble(value.zOffset, 1),
-      value.fixed
-    ]);
-  });
-  displayList.sort((a, b) => a[0].compareTo(b[0]));
-  return displayList;
-}
-
-displayDataPoint(var myText) {
-  return Container(
-    decoration: const BoxDecoration(
-        border: Border(
-            bottom: BorderSide(color: deepSpaceSparkle),
-            top: BorderSide(color: deepSpaceSparkle),
-            left: BorderSide(color: deepSpaceSparkle),
-            right: BorderSide(color: deepSpaceSparkle))),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      textDirection: TextDirection.ltr,
-      children: [
-        Container(
-          decoration: const BoxDecoration(
-              border: Border(right: BorderSide(color: deepSpaceSparkle))),
-          child: SizedBox(
-            child: Text(myText[0], textAlign: TextAlign.center),
-            width: 45,
-          ),
-        ),
-        Container(
-          decoration: const BoxDecoration(
-              border: Border(right: BorderSide(color: deepSpaceSparkle))),
-          child: SizedBox(
-            child: Text(myText[1], textAlign: TextAlign.center),
-            width: 95,
-          ),
-        ),
-        Container(
-          decoration: const BoxDecoration(
-              border: Border(right: BorderSide(color: deepSpaceSparkle))),
-          child: SizedBox(
-            child: Text(myText[2], textAlign: TextAlign.center),
-            width: 95,
-          ),
-        ),
-        Container(
-          decoration: const BoxDecoration(
-              border: Border(right: BorderSide(color: deepSpaceSparkle))),
-          child: SizedBox(
-            child: Text(myText[3], textAlign: TextAlign.center),
-            width: 60,
-          ),
-        ),
-        SizedBox(
-          child: Text(myText[4], textAlign: TextAlign.center),
-          width: 50,
-        ),
-      ],
-    ),
-  );
 }

@@ -7,6 +7,7 @@ import 'package:hive/hive.dart';
 
 import '../../databaseAdapters/allBarcodes/barcode_entry.dart';
 import '../../functions/barcodeTools/get_data_functions.dart';
+import '../../globalValues/global_colours.dart';
 import 'calibration_data_visualizer_view.dart';
 import 'widgets/calibration_display_widgets.dart';
 
@@ -59,6 +60,7 @@ class _BarcodeCalibrationDataProcessingViewState
         ),
       ),
       appBar: AppBar(
+        backgroundColor: skyBlue80,
         title: const Text('Processing Calibration Data'),
       ),
       body: Center(

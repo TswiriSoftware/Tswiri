@@ -169,7 +169,7 @@ List<RealBarcodePosition> extractListOfScannedBarcodes(
 ///
 List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
     {required List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData,
-    required List<DistanceFromCameraLookupEntry> matchedCalibrationData,
+    required List<DistanceFromCameraLookupEntry> calibrationLookupTable,
     required List<BarcodeDataEntry> allBarcodes}) {
   List<RealInterBarcodeOffset> allRealInterBarcodeData = [];
 
@@ -222,13 +222,13 @@ List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
     //6. Find the distance bewteen the camera and barcodes.
     //startBarcode
     double startBarcodeDistanceFromCamera = findDistanceFromCamera(
-        calibrationLookupTable: matchedCalibrationData,
+        calibrationLookupTable: calibrationLookupTable,
         barcodeDiagonalLength: interBarcodeDataInstance.startDiagonalLength,
         barcodeValue: interBarcodeDataInstance.startBarcode,
         allBarcodes: allBarcodes);
     //endBarcode
     double endBarcodeDistanceFromCamera = findDistanceFromCamera(
-        calibrationLookupTable: matchedCalibrationData,
+        calibrationLookupTable: calibrationLookupTable,
         barcodeDiagonalLength: interBarcodeDataInstance.endDiagonalLength,
         barcodeValue: interBarcodeDataInstance.endBarcode,
         allBarcodes: allBarcodes);

@@ -6,6 +6,7 @@ import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/user_accelerometer_z_axis_data_objects.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/barcode_size_objects.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/barcode_calibration_data_processing.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/cameraView/camera_view_camera_calibration.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/painter/barcode_calibration_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:sensors_plus/sensors_plus.dart';
@@ -27,7 +28,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
   List<RawUserAccelerometerZAxisData> rawAccelerometerData = [];
   //This list contains all the scanned barcode data.
   List<BarcodeData> rawBarcodesData = [];
-
+  bool hasStarted = false;
   bool isBusy = false;
   CustomPaint? customPaint;
   double zAcceleration = 0;
@@ -46,6 +47,8 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
     });
 
     super.initState();
+
+    Future(_showDialog);
   }
 
   @override
@@ -63,31 +66,39 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              FloatingActionButton(
-                heroTag: null,
-                onPressed: () {
-                  startTimeStamp = DateTime.now().millisecondsSinceEpoch;
-                },
-                child: const Icon(Icons.check),
-              ),
-              FloatingActionButton(
-                heroTag: null,
-                onPressed: () {
-                  subscription.cancel();
-                  Navigator.pop(context);
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) =>
-                          BarcodeCalibrationDataProcessingView(
-                              rawBarcodeData: rawBarcodesData,
-                              rawUserAccelerometerData: rawAccelerometerData,
-                              startTimeStamp: startTimeStamp)));
-                },
-                child: const Icon(Icons.done_all_outlined),
-              ),
+              Builder(builder: (context) {
+                if (hasStarted == false) {
+                  return FloatingActionButton(
+                    heroTag: null,
+                    onPressed: () {
+                      hasStarted = !hasStarted;
+                      startTimeStamp =
+                          DateTime.now().millisecondsSinceEpoch + 5;
+                    },
+                    child: const Icon(Icons.check),
+                  );
+                } else {
+                  return FloatingActionButton(
+                    heroTag: null,
+                    onPressed: () {
+                      subscription.cancel();
+                      Navigator.pop(context);
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) =>
+                              BarcodeCalibrationDataProcessingView(
+                                  rawBarcodeData: rawBarcodesData,
+                                  rawUserAccelerometerData:
+                                      rawAccelerometerData,
+                                  startTimeStamp: startTimeStamp)));
+                    },
+                    child: const Icon(Icons.done_all_outlined),
+                  );
+                }
+              }),
             ],
           ),
         ),
-        body: CameraView(
+        body: CameraViewCameraCalibration(
           title: 'Camera Calibration',
           customPaint: customPaint,
           onImage: (inputImage) {
@@ -95,6 +106,33 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
           },
           color: skyBlue,
         ));
+  }
+
+  _showDialog() async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Camera Calibration'),
+            content: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.start,
+              children: const [
+                Text('When ready to start click. '),
+                Icon(Icons.check),
+                Text('When you are done click. '),
+                Icon(Icons.done_all)
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                child: const Text('Ok'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        });
   }
 
   Future<void> processImage(InputImage inputImage) async {
