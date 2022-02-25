@@ -273,9 +273,8 @@ class _BarcodeCameraNavigatorViewState
                         zOffset: validInterBarcodeOffset.zOffset,
                         fixed: false,
                         timestamp: DateTime.now().millisecondsSinceEpoch);
+                log(newPosition.toString());
 
-                log(storedInterbarcodeOffset.toString());
-                log(updatedPosition.toString());
                 //TODO: Write to Database.
               } else {
                 //log('flip: ' + validInterBarcodeOffset.toString());
@@ -294,8 +293,7 @@ class _BarcodeCameraNavigatorViewState
                 //TODO: Write to Database.
                 //TODO: Remove from doesNotCheckOut
 
-                log(storedInterbarcodeOffset.toString());
-                log(updatedPosition.toString());
+                log(newPosition.toString());
               }
             }
           }
