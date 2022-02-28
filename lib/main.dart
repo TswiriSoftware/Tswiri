@@ -12,6 +12,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
+import 'VisionDetectorViews/object_detector_view.dart';
 import 'databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
 import 'databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
@@ -124,6 +125,13 @@ class Home extends StatelessWidget {
             CustomCard(
               'Barcodes List',
               AllBarcodesView(),
+              Icons.emoji_objects_rounded,
+              featureCompleted: true,
+              tileColor: deepSpaceSparkle,
+            ),
+            CustomCard(
+              'Object Detection',
+              ObjectDetectorView(),
               Icons.emoji_objects_rounded,
               featureCompleted: true,
               tileColor: deepSpaceSparkle,

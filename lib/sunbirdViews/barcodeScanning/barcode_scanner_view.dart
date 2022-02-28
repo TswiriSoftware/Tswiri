@@ -93,7 +93,6 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
             sendConfigToIsolate(inputImage);
             if (inputImage.bytes != null) {
               isolateReceivePort.send(['bytes', inputImage.bytes]);
-              Future.delayed(Duration(milliseconds: 100));
             }
 
             //isolateReceivePort.send('Sending DATA');
@@ -156,8 +155,6 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
 
 ///This is the code that runs in the isolate.
 Future<void> imageProcessor(SendPort sendPort) async {
-  WidgetsFlutterBinding.ensureInitialized();
-
   //This SendPort is for sending data to the main loop.
   SendPort isolateSendPort = sendPort;
 
@@ -171,8 +168,6 @@ Future<void> imageProcessor(SendPort sendPort) async {
   bool hasSent = false;
   sendIsolateReceivePort(hasSent, sendPort, isolateReceivePort);
 
-  //runApp(testApp());
-
   BarcodeScanner isolatebarcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
   bool isBusy = false;
@@ -180,7 +175,7 @@ Future<void> imageProcessor(SendPort sendPort) async {
   void processImages(InputImage inputImage) async {
     if (isBusy) return;
     isBusy = true;
-    log('message');
+    log('processing image');
     List<Barcode> barcodes =
         await isolatebarcodeScanner.processImage(inputImage);
     isBusy = false;
