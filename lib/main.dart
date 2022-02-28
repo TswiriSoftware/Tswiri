@@ -8,6 +8,7 @@ import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/routes.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/all_barcodes.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_range_selector_view.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -22,6 +23,7 @@ import 'sunbirdViews/cameraCalibration/calibrationToolsView/camera_calibration_t
 import 'sunbirdViews/objectDetector/object_detector_view.dart';
 
 List<CameraDescription> cameras = [];
+LocalModel model = LocalModel('object_labeler.tflite');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -133,13 +135,6 @@ class Home extends StatelessWidget {
             CustomCard(
               'Object Detection',
               ObjectDetectorView(),
-              Icons.emoji_objects_rounded,
-              featureCompleted: true,
-              tileColor: Colors.orange,
-            ),
-            CustomCard(
-              'Object DetectionML',
-              ObjectDetectorViewML(),
               Icons.emoji_objects_rounded,
               featureCompleted: true,
               tileColor: Colors.orange,

@@ -14,6 +14,7 @@ class ObjectDetectorViewML extends StatefulWidget {
 
 class _ObjectDetectorViewML extends State<ObjectDetectorViewML> {
   LocalModel model = LocalModel("object_labeler.tflite");
+  RemoteModel model1 = RemoteModel('object_labeler.tflite');
 
   late ObjectDetector objectDetector;
 

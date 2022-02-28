@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
+import '../../main.dart';
 import 'painter/object_detector_painter.dart';
 
 ///Displays the cameraView of the object Dectector.
@@ -19,24 +20,25 @@ class ObjectDetectorProcessingView extends StatefulWidget {
 
 class _ObjectDetectorProcessingView
     extends State<ObjectDetectorProcessingView> {
-  LocalModel model = LocalModel("object_labeler.tflite");
   ImageLabeler imageLabeler = GoogleMlKit.vision.imageLabeler();
-
   late ObjectDetector objectDetector;
   late String imagePath;
-
   @override
   void initState() {
     //Image Path.
     imagePath = widget.imagePath;
 
+    //TODO: figure this out
     //Object Detector Config.
+    // objectDetector = GoogleMlKit.vision.objectDetector(ObjectDetectorOptions(
+    //     classifyObjects: true, trackMutipleObjects: true));
+
     objectDetector = GoogleMlKit.vision.objectDetector(ObjectDetectorOptions(
         classifyObjects: true, trackMutipleObjects: true));
 
     //Image labeler Config.
     imageLabeler = GoogleMlKit.vision
-        .imageLabeler(ImageLabelerOptions(confidenceThreshold: 0.2));
+        .imageLabeler(ImageLabelerOptions(confidenceThreshold: 0.5));
 
     super.initState();
   }

@@ -30,8 +30,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -39,7 +37,7 @@ dependencies:
   google_ml_kit:
     git:
       url: https://github.com/WoLpH/Google-Ml-Kit-plugin
-      ref: master # branch name
+      ref: master 
   image_picker: ^0.8.4+2
   camera: ^0.9.4+1
   hive: ^2.0.4
@@ -65,7 +63,12 @@ flutter_icons:
   android: true
   ios: true
   image_path: "assets/icon/ic_launcher.png"
-  
+
+
+
+    
+
+
 
 dev_dependencies:
   flutter_test:
@@ -85,6 +88,9 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
+
+  assets:
+    - assets/object_detector.tflite
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
