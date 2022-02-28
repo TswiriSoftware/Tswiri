@@ -5,25 +5,24 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'camera_view.dart';
 import 'painters/object_detector_painter.dart';
 
-class ObjectDetectorView extends StatefulWidget {
-  const ObjectDetectorView({Key? key}) : super(key: key);
+class ObjectDetectorViewML extends StatefulWidget {
+  const ObjectDetectorViewML({Key? key}) : super(key: key);
 
   @override
-  _ObjectDetectorView createState() => _ObjectDetectorView();
+  _ObjectDetectorViewML createState() => _ObjectDetectorViewML();
 }
 
-class _ObjectDetectorView extends State<ObjectDetectorView> {
+class _ObjectDetectorViewML extends State<ObjectDetectorViewML> {
   LocalModel model = LocalModel("object_labeler.tflite");
+
   late ObjectDetector objectDetector;
 
   @override
   void initState() {
     objectDetector = GoogleMlKit.vision.objectDetector(
         CustomObjectDetectorOptions(model,
-            classifyObjects: false,
-            trackMutipleObjects: true,
-            maximumLabelsPerObject: 5,
-            confidenceThreshold: 0.9));
+            trackMutipleObjects: true, classifyObjects: false));
+
     super.initState();
   }
 
@@ -57,7 +56,7 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null &&
         result.isNotEmpty) {
-      final painter = ObjectDetectorPainter(
+      final painter = ObjectDetectorPainterML(
           result,
           inputImage.inputImageData!.imageRotation,
           inputImage.inputImageData!.size);

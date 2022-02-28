@@ -3,17 +3,19 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-import 'coordinates_translator.dart';
+import '../../../VisionDetectorViews/painters/coordinates_translator.dart';
+import '../object_detector_image_processing.dart';
 
-class ObjectDetectorPainterML extends CustomPainter {
-  ObjectDetectorPainterML(this._objects, this.rotation, this.absoluteSize);
-
-  final List<DetectedObject> _objects;
-  final Size absoluteSize;
-  final InputImageRotation rotation;
+class ObjectDetectorPainter extends CustomPainter {
+  ObjectDetectorPainter({required this.objectData});
+  final ImageObjectData objectData;
 
   @override
   void paint(Canvas canvas, Size size) {
+    List<DetectedObject> _objects = objectData.detectedObjects;
+    Size absoluteSize = objectData.size;
+    InputImageRotation rotation = objectData.imageRotation;
+
     final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.0

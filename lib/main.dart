@@ -19,6 +19,7 @@ import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
 import 'sunbirdViews/barcodeNavigation/navigationToolsView/barcode_navigation_tools_view.dart';
 import 'sunbirdViews/barcodeScanning/scanningToolsView/barcode_scanning_tools_view.dart';
 import 'sunbirdViews/cameraCalibration/calibrationToolsView/camera_calibration_tools_view.dart';
+import 'sunbirdViews/objectDetector/object_detector_view.dart';
 
 List<CameraDescription> cameras = [];
 
@@ -134,7 +135,14 @@ class Home extends StatelessWidget {
               ObjectDetectorView(),
               Icons.emoji_objects_rounded,
               featureCompleted: true,
-              tileColor: deepSpaceSparkle,
+              tileColor: Colors.orange,
+            ),
+            CustomCard(
+              'Object DetectionML',
+              ObjectDetectorViewML(),
+              Icons.emoji_objects_rounded,
+              featureCompleted: true,
+              tileColor: Colors.orange,
             ),
           ],
         ),
