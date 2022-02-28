@@ -41,6 +41,8 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
 
   @override
   void initState() {
+    WidgetsFlutterBinding.ensureInitialized();
+
     //Listen to accelerometer events.
     accelerometerEvents.listen((AccelerometerEvent event) {
       accelerometerEvent = Vector3(event.x, event.y, event.z);
