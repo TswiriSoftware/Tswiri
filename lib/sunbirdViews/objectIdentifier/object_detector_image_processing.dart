@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-import '../../main.dart';
+import '../../objects/image_object_data.dart';
 import 'painter/object_detector_painter.dart';
 
-///Displays the cameraView of the object Dectector.
+//TODO: Implement barcode Scanner before this screen so the user can scan the barcode and then take a photo of what is inside the box.
+
+///Displays the Photo and objects detected
 class ObjectDetectorProcessingView extends StatefulWidget {
   const ObjectDetectorProcessingView({Key? key, required this.imagePath})
       : super(key: key);
@@ -33,6 +35,7 @@ class _ObjectDetectorProcessingView
     // objectDetector = GoogleMlKit.vision.objectDetector(ObjectDetectorOptions(
     //     classifyObjects: true, trackMutipleObjects: true));
 
+    //Object Detector Config.
     objectDetector = GoogleMlKit.vision.objectDetector(ObjectDetectorOptions(
         classifyObjects: true, trackMutipleObjects: true));
 
@@ -126,41 +129,15 @@ class _ObjectDetectorProcessingView
     Size imageSize =
         Size(decodedImage.height.toDouble(), decodedImage.width.toDouble());
 
-    //Create the object that contains all data.
+    //Create the object that contains all data from the object Detector and Image Labeler.
     ImageObjectData processedResult = ImageObjectData(
         detectedObjects: objects,
         detectedLabels: labels,
         imageRotation: InputImageRotation.Rotation_90deg,
         size: imageSize);
 
+    //TODO: The next screen the user will confirm the tags that are aplicable and the photo will be linked to the scanned barcode.
+
     return processedResult;
-  }
-}
-
-///This object will be passed to the painter
-///It contains Lists of objects detected etc...
-///It also contains the Image configuration.
-class ImageObjectData {
-  ImageObjectData({
-    required this.detectedObjects,
-    required this.detectedLabels,
-    required this.imageRotation,
-    required this.size,
-  });
-
-  ///List of detected Objects.
-  final List<DetectedObject> detectedObjects;
-
-  ///List of detected labels.
-  final List<ImageLabel> detectedLabels;
-
-  ///Image rotation.
-  final InputImageRotation imageRotation;
-  //Image Size.
-  final Size size;
-
-  @override
-  String toString() {
-    return 'List of detected Objects: $detectedObjects,\n ImageRotation: $imageRotation,\n ImageSize: $size ';
   }
 }
