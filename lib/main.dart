@@ -7,7 +7,9 @@ import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/tag_entry.dar
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/routes.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/all_barcodes.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/scan_barcode_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_range_selector_view.dart';
+import 'package:flutter_google_ml_kit/widgets/custom_card_widget.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -132,73 +134,16 @@ class Home extends StatelessWidget {
               tileColor: deepSpaceSparkle,
             ),
             CustomCard(
-              'Object Detection',
-              ObjectDetectorView(),
+              'Object Detector',
+              ScanBarcodeView(
+                color: Colors.orange,
+              ),
               Icons.emoji_objects_rounded,
               featureCompleted: true,
               tileColor: Colors.orange,
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class CustomCard extends StatelessWidget {
-  final String _label;
-  final Widget _viewPage;
-  final bool featureCompleted;
-  final IconData _icon;
-  final Color tileColor;
-  // ignore: use_key_in_widget_constructors
-  const CustomCard(this._label, this._viewPage, this._icon,
-      {this.featureCompleted = false, required this.tileColor});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      color: Colors.transparent,
-      margin: const EdgeInsets.only(bottom: 10),
-      child: ListTile(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
-        tileColor: tileColor,
-        title: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                _label,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Icon(
-                  _icon,
-                  color: Colors.white,
-                  size: 45,
-                ),
-              )
-            ],
-          ),
-        ),
-        onTap: () {
-          if (Platform.isIOS && !featureCompleted) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content:
-                    Text('This feature has not been implemented for iOS yet')));
-          } else {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => _viewPage));
-          }
-        },
       ),
     );
   }

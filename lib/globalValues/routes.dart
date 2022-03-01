@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 
 import '../main.dart';
 import '../sunbirdViews/barcodeControlPanel/all_barcodes.dart';
@@ -62,7 +63,9 @@ var allRoutes = <String, WidgetBuilder>{
   '/AllBarcodesView': (context) => const AllBarcodesView(),
 
   ///Allows the user to scan a single barcode or multiple barcodes and then select from a barcode from that.
-  '/ScanBarcodeView': (context) => const ScanBarcodeView(),
+  '/ScanBarcodeView': (context) => ScanBarcodeView(
+        color: brightOrange,
+      ),
 
   ////////////////////////////////////
 

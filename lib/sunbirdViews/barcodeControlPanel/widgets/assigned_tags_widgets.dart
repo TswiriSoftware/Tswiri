@@ -30,11 +30,17 @@ class _AssignedTagsContainerState extends State<AssignedTagsContainer> {
       ),
       child: Wrap(
         children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 5, left: 10),
-            child: Text(
-              'Assigned Tags',
-              style: TextStyle(fontSize: 20),
+          Padding(
+            padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Assigned Tags',
+                  style: TextStyle(fontSize: 20),
+                ),
+                Text('a'),
+              ],
             ),
           ),
           const Divider(

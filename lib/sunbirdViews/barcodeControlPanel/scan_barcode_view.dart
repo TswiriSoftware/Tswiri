@@ -8,8 +8,8 @@ import '../../VisionDetectorViews/camera_view.dart';
 import '../barcodeScanning/painter/barcode_detector_painter.dart';
 
 class ScanBarcodeView extends StatefulWidget {
-  const ScanBarcodeView({Key? key}) : super(key: key);
-
+  const ScanBarcodeView({Key? key, required this.color}) : super(key: key);
+  final Color color;
   @override
   _ScanBarcodeViewState createState() => _ScanBarcodeViewState();
 }
@@ -33,6 +33,7 @@ class _ScanBarcodeViewState extends State<ScanBarcodeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: widget.color,
         floatingActionButton: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Row(
@@ -59,7 +60,7 @@ class _ScanBarcodeViewState extends State<ScanBarcodeView> {
           ),
         ),
         body: CameraView(
-          color: brightOrange,
+          color: widget.color,
           title: 'Barcode Scanner',
           customPaint: customPaint,
           onImage: (inputImage) {

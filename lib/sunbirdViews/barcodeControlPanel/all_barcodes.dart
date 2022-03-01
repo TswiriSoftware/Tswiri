@@ -52,7 +52,9 @@ class _AllBarcodesViewState extends State<AllBarcodesView> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const ScanBarcodeView()));
+                      builder: (context) => const ScanBarcodeView(
+                            color: deepSpaceSparkle,
+                          )));
             },
           )
         ],

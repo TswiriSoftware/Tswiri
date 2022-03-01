@@ -82,22 +82,27 @@ class _ObjectDetectorCameraViewState extends State<ObjectDetectorCameraView> {
           backgroundColor: Colors.orange,
           heroTag: null,
           onPressed: () async {
-            // Ensure that the camera is initialized.
-            await _initializeControllerFuture;
+            try {
+              // Ensure that the camera is initialized.
+              await _initializeControllerFuture;
 
-            // Attempt to take a picture and then get the location
-            // where the image file is saved.
-            final image = await _controller.takePicture();
+              // Attempt to take a picture and then get the location
+              // Get the photo's location.
+              final image = await _controller.takePicture();
 
-            //Pass the image to the processing screen :D
-            Navigator.pop(context);
-            await Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => ObjectDetectorProcessingView(
-                  imagePath: image.path,
+              //Pass the image to the processing screen :D
+              Navigator.pop(context);
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ObjectDetectorProcessingView(
+                    imagePath: image.path,
+                  ),
                 ),
-              ),
-            );
+              );
+            } catch (e) {
+              // If an error occurs, log the error to the console.
+              print(e);
+            }
           },
           child: const Icon(
             Icons.photo_camera,
