@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-import '../../../main.dart';
+
 import '../../../widgets/custom_card_widget.dart';
 import '../barcode_selection_view.dart';
 

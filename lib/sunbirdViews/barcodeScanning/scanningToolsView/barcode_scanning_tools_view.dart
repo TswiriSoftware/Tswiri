@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import '../../../widgets/custom_card_widget.dart';
-import '../barcode_scanner_view_copy copy.dart';
+import '../barcode_scanner_view.dart';
 import '../real_barcode_position_database_view.dart';
 import '../real_barcode_position_database_visualization_view.dart';
 

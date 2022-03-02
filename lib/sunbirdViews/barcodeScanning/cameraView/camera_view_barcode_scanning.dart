@@ -6,7 +6,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:image_picker/image_picker.dart';
+//import 'package:image_picker/image_picker.dart';
 
 import '../../../main.dart';
 
@@ -37,21 +37,21 @@ class _CameraBarcodeScanningViewState extends State<CameraBarcodeScanningView> {
   final ScreenMode _mode = ScreenMode.liveFeed;
   CameraController? _controller;
   File? _image;
-  ImagePicker? _imagePicker;
+  //ImagePicker? _imagePicker;
   int _cameraIndex = 0;
 
   @override
   void initState() {
     super.initState();
 
-    _imagePicker = ImagePicker();
-    for (var i = 0; i < cameras.length; i++) {
-      //print(i);
+    // _imagePicker = ImagePicker();
+    // for (var i = 0; i < cameras.length; i++) {
+    //   //print(i);
 
-      if (cameras[i].lensDirection == widget.initialDirection) {
-        _cameraIndex = i;
-      }
-    }
+    //   if (cameras[i].lensDirection == widget.initialDirection) {
+    //     _cameraIndex = i;
+    //   }
+    // }
     _startLiveFeed();
   }
 
@@ -122,29 +122,33 @@ class _CameraBarcodeScanningViewState extends State<CameraBarcodeScanningView> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: ElevatedButton(
           child: const Text('From Gallery'),
-          onPressed: () => _getImage(ImageSource.gallery),
+          onPressed: () {
+            // _getImage(ImageSource.gallery)
+          },
         ),
       ),
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: ElevatedButton(
           child: const Text('Take a picture'),
-          onPressed: () => _getImage(ImageSource.camera),
+          onPressed: () {
+            // _getImage(ImageSource.camera)
+          },
         ),
       ),
     ]);
   }
 
-  Future _getImage(ImageSource source) async {
-    final pickedFile = await _imagePicker?.getImage(source: source);
-    if (pickedFile != null) {
-      _processPickedFile(pickedFile);
-    } else {
-      // ignore: avoid_print
-      print('No image selected.');
-    }
-    setState(() {});
-  }
+  // Future _getImage(ImageSource source) async {
+  //   final pickedFile = await _imagePicker?.getImage(source: source);
+  //   if (pickedFile != null) {
+  //     _processPickedFile(pickedFile);
+  //   } else {
+  //     // ignore: avoid_print
+  //     print('No image selected.');
+  //   }
+  //   setState(() {});
+  // }
 
   // void _switchScreenMode() async {
   //   if (_mode == ScreenMode.liveFeed) {
@@ -188,13 +192,13 @@ class _CameraBarcodeScanningViewState extends State<CameraBarcodeScanningView> {
     await _startLiveFeed();
   }
 
-  Future _processPickedFile(PickedFile pickedFile) async {
-    setState(() {
-      _image = File(pickedFile.path);
-    });
-    final inputImage = InputImage.fromFilePath(pickedFile.path);
-    widget.onImage(inputImage);
-  }
+  // Future _processPickedFile(PickedFile pickedFile) async {
+  //   setState(() {
+  //     _image = File(pickedFile.path);
+  //   });
+  //   final inputImage = InputImage.fromFilePath(pickedFile.path);
+  //   widget.onImage(inputImage);
+  // }
 
   Future _processCameraImage(CameraImage image) async {
     final WriteBuffer allBytes = WriteBuffer();

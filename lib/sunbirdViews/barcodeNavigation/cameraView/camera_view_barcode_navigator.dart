@@ -6,7 +6,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:image_picker/image_picker.dart';
+//import 'package:image_picker/image_picker.dart';
 
 import '../../../globalValues/app_settings.dart';
 import '../../../main.dart';
@@ -39,21 +39,21 @@ class _CameraBarcodeNavigationViewState
   final ScreenMode _mode = ScreenMode.liveFeed;
   CameraController? _controller;
   File? _image;
-  ImagePicker? _imagePicker;
+  //ImagePicker? _imagePicker;
   int _cameraIndex = 0;
 
   @override
   void initState() {
     super.initState();
 
-    _imagePicker = ImagePicker();
-    for (var i = 0; i < cameras.length; i++) {
-      //print(i);
+    // _imagePicker = ImagePicker();
+    // for (var i = 0; i < cameras.length; i++) {
+    //   //print(i);
 
-      if (cameras[i].lensDirection == widget.initialDirection) {
-        _cameraIndex = i;
-      }
-    }
+    //   if (cameras[i].lensDirection == widget.initialDirection) {
+    //     _cameraIndex = i;
+    //   }
+    // }
     _startLiveFeed();
   }
 
@@ -192,13 +192,13 @@ class _CameraBarcodeNavigationViewState
     await _startLiveFeed();
   }
 
-  Future _processPickedFile(PickedFile pickedFile) async {
-    setState(() {
-      _image = File(pickedFile.path);
-    });
-    final inputImage = InputImage.fromFilePath(pickedFile.path);
-    widget.onImage(inputImage);
-  }
+  // Future _processPickedFile(PickedFile pickedFile) async {
+  //   setState(() {
+  //     _image = File(pickedFile.path);
+  //   });
+  //   final inputImage = InputImage.fromFilePath(pickedFile.path);
+  //   widget.onImage(inputImage);
+  // }
 
   Future _processCameraImage(CameraImage image) async {
     final WriteBuffer allBytes = WriteBuffer();
