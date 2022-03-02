@@ -8,7 +8,6 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../globalValues/global_hive_databases.dart';
 import '../../objects/image_object_data.dart';
-import '../barcodeControlPanel/barcode_control_panel.dart';
 import 'painter/object_detector_painter.dart';
 
 //TODO: Implement barcode Scanner before this screen so the user can scan the barcode and then take a photo of what is inside the box.

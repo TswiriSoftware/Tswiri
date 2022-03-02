@@ -10,7 +10,6 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../globalValues/app_settings.dart';
 import '../../../main.dart';
-import '../../../objects/raw_on_image_barcode_data.dart';
 
 enum ScreenMode { liveFeed, gallery }
 
@@ -139,6 +138,7 @@ class _CameraViewCameraCalibrationState
   }
 
   Future _getImage(ImageSource source) async {
+    // ignore: deprecated_member_use
     final pickedFile = await _imagePicker?.getImage(source: source);
     if (pickedFile != null) {
       _processPickedFile(pickedFile);

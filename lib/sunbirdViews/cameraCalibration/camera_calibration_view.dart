@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/VisionDetectorViews/camera_view.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/user_accelerometer_z_axis_data_objects.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/barcode_size_objects.dart';

@@ -5,7 +5,6 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 
 import '../../../VisionDetectorViews/painters/coordinates_translator.dart';
 import '../../../objects/image_object_data.dart';
-import '../object_detector_image_processing.dart';
 
 class ObjectDetectorPainter extends CustomPainter {
   ObjectDetectorPainter({required this.objectData});

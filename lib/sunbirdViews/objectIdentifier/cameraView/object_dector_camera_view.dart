@@ -104,7 +104,7 @@ class _ObjectDetectorCameraViewState extends State<ObjectDetectorCameraView> {
               );
             } catch (e) {
               // If an error occurs, log the error to the console.
-              print(e);
+              //print(e);
             }
           },
           child: const Icon(
