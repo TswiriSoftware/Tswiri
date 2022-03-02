@@ -66,8 +66,6 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
               FloatingActionButton(
                 heroTag: null,
                 onPressed: () {
-                  //Kills the Isolate.
-                  //killImageProcessor();
                   Navigator.pop(context);
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
                       builder: (context) => BarcodeScannerDataProcessingView(
