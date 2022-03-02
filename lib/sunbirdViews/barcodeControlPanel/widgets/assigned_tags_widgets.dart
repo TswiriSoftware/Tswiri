@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/objectIdentifier/object_detector_view.dart';
 import 'package:provider/provider.dart';
 
 import '../../../objects/tags_change_notifier.dart';
@@ -39,7 +40,16 @@ class _AssignedTagsContainerState extends State<AssignedTagsContainer> {
                   'Assigned Tags',
                   style: TextStyle(fontSize: 20),
                 ),
-                Text('a'),
+                IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ObjectDetectorView(
+                                    barcodeID: widget.barcodeID,
+                                  )));
+                    },
+                    icon: const Icon(Icons.photo_camera))
               ],
             ),
           ),

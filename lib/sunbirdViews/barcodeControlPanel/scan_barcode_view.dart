@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/barcode_control_panel.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/scanned_barcodes_selection.dart';

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../globalValues/app_settings.dart';
 import '../../../main.dart';
 
 enum ScreenMode { liveFeed, gallery }
@@ -122,30 +123,32 @@ class _CameraBarcodeNavigationViewState
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: ElevatedButton(
-          child: const Text('From Gallery'),
-          onPressed: () => _getImage(ImageSource.gallery),
-        ),
+            child: const Text('From Gallery'),
+            onPressed: () {
+              /*_getImage(ImageSource.gallery)*/
+            }),
       ),
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: ElevatedButton(
-          child: const Text('Take a picture'),
-          onPressed: () => _getImage(ImageSource.camera),
-        ),
+            child: const Text('Take a picture'),
+            onPressed: () {
+              /*_getImage(ImageSource.camera)*/
+            }),
       ),
     ]);
   }
 
-  Future _getImage(ImageSource source) async {
-    final pickedFile = await _imagePicker?.getImage(source: source);
-    if (pickedFile != null) {
-      _processPickedFile(pickedFile);
-    } else {
-      // ignore: avoid_print
-      print('No image selected.');
-    }
-    setState(() {});
-  }
+  // Future _getImage(ImageSource source) async {
+  //   final pickedFile = await _imagePicker?.getImage(source: source);
+  //   if (pickedFile != null) {
+  //     _processPickedFile(pickedFile);
+  //   } else {
+  //     // ignore: avoid_print
+  //     print('No image selected.');
+  //   }
+  //   setState(() {});
+  // }
 
   // void _switchScreenMode() async {
   //   if (_mode == ScreenMode.liveFeed) {
@@ -161,7 +164,7 @@ class _CameraBarcodeNavigationViewState
   Future _startLiveFeed() async {
     _controller = CameraController(
       cameras.first,
-      ResolutionPreset.high,
+      cameraResolution ?? ResolutionPreset.high,
       enableAudio: false,
     );
     _controller?.initialize().then((_) {

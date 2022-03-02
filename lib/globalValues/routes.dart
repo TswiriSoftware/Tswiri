@@ -28,7 +28,7 @@ var allRoutes = <String, WidgetBuilder>{
   '/BarcodeScanningToolsView': (context) => const BarcodeScanningToolsView(),
 
   ///Camera widget that allows for scanning.
-  '/BarcodeScannerView': (context) => const BarcodeScannerView(),
+  '/BarcodeScannerView': (context) => const BarcodeScannerIsolateView(),
 
   ///Shows a list of all real barcode positions.
   '/RealBarcodePositionDatabaseView': (context) =>
@@ -63,7 +63,7 @@ var allRoutes = <String, WidgetBuilder>{
   '/AllBarcodesView': (context) => const AllBarcodesView(),
 
   ///Allows the user to scan a single barcode or multiple barcodes and then select from a barcode from that.
-  '/ScanBarcodeView': (context) => ScanBarcodeView(
+  '/ScanBarcodeView': (context) => const ScanBarcodeView(
         color: brightOrange,
       ),
 

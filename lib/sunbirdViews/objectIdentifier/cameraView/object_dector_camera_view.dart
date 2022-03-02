@@ -3,6 +3,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
+import '../../../globalValues/app_settings.dart';
 import '../../../main.dart';
 import '../object_detector_image_processing.dart';
 
@@ -15,6 +16,7 @@ class ObjectDetectorCameraView extends StatefulWidget {
       required this.customPaint,
       required this.onImage,
       required this.color,
+      required this.barcodeID,
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
 
@@ -23,7 +25,7 @@ class ObjectDetectorCameraView extends StatefulWidget {
   final Function(InputImage inputImage) onImage;
   final CameraLensDirection initialDirection;
   final Color color;
-
+  final int barcodeID;
   @override
   _ObjectDetectorCameraViewState createState() =>
       _ObjectDetectorCameraViewState();
@@ -39,7 +41,7 @@ class _ObjectDetectorCameraViewState extends State<ObjectDetectorCameraView> {
 
     _controller = CameraController(
       cameras.first,
-      ResolutionPreset.high,
+      cameraResolution ?? ResolutionPreset.high,
     );
 
     // Next, initialize the controller. This returns a Future.
@@ -96,6 +98,7 @@ class _ObjectDetectorCameraViewState extends State<ObjectDetectorCameraView> {
                 MaterialPageRoute(
                   builder: (context) => ObjectDetectorProcessingView(
                     imagePath: image.path,
+                    barcodeID: widget.barcodeID,
                   ),
                 ),
               );

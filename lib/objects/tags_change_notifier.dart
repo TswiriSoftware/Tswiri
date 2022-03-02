@@ -6,7 +6,13 @@ import 'package:hive/hive.dart';
 import '../databaseAdapters/allBarcodes/barcode_entry.dart';
 
 class Tags extends ChangeNotifier {
-  Tags(this.assignedTags, this.unassignedTags, this.isFixed, this.barcodeSize);
+  Tags(
+    this.assignedTags,
+    this.unassignedTags,
+    this.isFixed,
+    this.barcodeSize,
+  );
+
   List<String> assignedTags;
   List<String> unassignedTags;
   double barcodeSize;

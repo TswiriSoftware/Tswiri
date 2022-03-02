@@ -92,10 +92,10 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
     List<String> barcodeTags = await getCurrentBarcodeTags(barcodeID);
     List<String> barcodeUnassignedTags = await getUnassignedTags();
 
-    Box<BarcodeDataEntry> generatedBarcodesBox =
-        await Hive.openBox(allBarcodesBoxName);
-    BarcodeDataEntry barcodeData = generatedBarcodesBox.get(barcodeID)!;
-
+    //Get all generated barcodes.
+    Box<BarcodeDataEntry> allBarcodes = await Hive.openBox(allBarcodesBoxName);
+    BarcodeDataEntry barcodeData = allBarcodes.get(barcodeID)!;
+    //Remove the assigned tags from unassigned tags.
     barcodeUnassignedTags
         .removeWhere((element) => barcodeTags.contains(element));
 

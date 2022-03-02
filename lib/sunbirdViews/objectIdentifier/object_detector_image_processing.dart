@@ -1,20 +1,25 @@
 import 'dart:developer';
 import 'dart:io';
-
+import 'package:flutter_google_ml_kit/databaseAdapters/barcodePhotos/barcode_photo_entry.dart';
+import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:path_provider/path_provider.dart';
 
+import '../../globalValues/global_hive_databases.dart';
 import '../../objects/image_object_data.dart';
+import '../barcodeControlPanel/barcode_control_panel.dart';
 import 'painter/object_detector_painter.dart';
 
 //TODO: Implement barcode Scanner before this screen so the user can scan the barcode and then take a photo of what is inside the box.
 
 ///Displays the Photo and objects detected
 class ObjectDetectorProcessingView extends StatefulWidget {
-  const ObjectDetectorProcessingView({Key? key, required this.imagePath})
+  const ObjectDetectorProcessingView(
+      {Key? key, required this.imagePath, required this.barcodeID})
       : super(key: key);
   final String imagePath;
+  final int barcodeID;
   @override
   _ObjectDetectorProcessingView createState() =>
       _ObjectDetectorProcessingView();
@@ -25,6 +30,8 @@ class _ObjectDetectorProcessingView
   ImageLabeler imageLabeler = GoogleMlKit.vision.imageLabeler();
   late ObjectDetector objectDetector;
   late String imagePath;
+  //LocalModel model = LocalModel('object_detector.tflite');
+
   @override
   void initState() {
     //Image Path.
@@ -32,8 +39,9 @@ class _ObjectDetectorProcessingView
 
     //TODO: figure this out
     //Object Detector Config.
-    // objectDetector = GoogleMlKit.vision.objectDetector(ObjectDetectorOptions(
-    //     classifyObjects: true, trackMutipleObjects: true));
+    // objectDetector = GoogleMlKit.vision.objectDetector(
+    //     CustomObjectDetectorOptions(model,
+    //         classifyObjects: true, trackMutipleObjects: true));
 
     //Object Detector Config.
     objectDetector = GoogleMlKit.vision.objectDetector(ObjectDetectorOptions(
@@ -67,7 +75,9 @@ class _ObjectDetectorProcessingView
               FloatingActionButton(
                 backgroundColor: Colors.orange,
                 heroTag: null,
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pop(context);
+                },
                 child: const Icon(Icons.check_circle_outline_rounded),
               ),
             ],
@@ -102,24 +112,48 @@ class _ObjectDetectorProcessingView
   }
 
   Future<ImageObjectData> processImage(String imagePath) async {
-    //Get Image File
+    //Get Image File.
     File imageFile = File(imagePath);
 
-    //Create InputImage
+    //Get the Storage Path if it does not exist create it.
+    String storagePath = await getStorageDirectory();
+    if (!await Directory('$storagePath/sunbird').exists()) {
+      Directory('$storagePath/sunbird').create();
+    }
+
+    //Create the photo file path.
+    String photoFilePath = '$storagePath/sunbird/${widget.barcodeID}.jpg';
+
+    //Copy the image to it. (For now only allowing 1 image per Barcode)
+    if (await File(photoFilePath).exists()) {
+      File(photoFilePath).delete();
+      await imageFile.copy(photoFilePath);
+    } else {
+      await imageFile.copy(photoFilePath);
+    }
+
+    //Create InputImage.
     InputImage inputImage = InputImage.fromFile(imageFile);
 
+    List<String> photoTags = [];
+
     //Image Processing:
-    //Objects
+    ///Objects
     final objects = await objectDetector.processImage(inputImage);
 
     for (DetectedObject object in objects) {
       log('Object label: ' + object.getLabels().toList().toString());
+      List<Label> objectLabels = object.getLabels();
+      for (Label objectLabel in objectLabels) {
+        photoTags.add(objectLabel.getText());
+      }
     }
 
-    //Labels
+    ///Labels
     final labels = await imageLabeler.processImage(inputImage);
     for (ImageLabel label in labels) {
       log('Image Label: ' + label.label);
+      photoTags.add(label.label);
     }
 
     //Decode Image for properties
@@ -136,8 +170,26 @@ class _ObjectDetectorProcessingView
         imageRotation: InputImageRotation.Rotation_90deg,
         size: imageSize);
 
-    //TODO: The next screen the user will confirm the tags that are aplicable and the photo will be linked to the scanned barcode.
+    BarcodePhotoEntry barcodePhotoEntry = BarcodePhotoEntry(
+        barcodeID: widget.barcodeID,
+        photoPath: photoFilePath,
+        photoTags: photoTags);
+
+    Box<BarcodePhotoEntry> barcodePhotoEntries =
+        await Hive.openBox(barcodePhotosBoxName);
+
+    barcodePhotoEntries.put(widget.barcodeID, barcodePhotoEntry);
+
+    log(barcodePhotoEntries.values.toString());
 
     return processedResult;
+  }
+}
+
+Future<String> getStorageDirectory() async {
+  if (Platform.isAndroid) {
+    return (await getExternalStorageDirectory())!.path;
+  } else {
+    return (await getApplicationDocumentsDirectory()).path;
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/widgets/barcode_photo_view.dart';
 import 'package:provider/provider.dart';
 
 import '../../../objects/tags_change_notifier.dart';
@@ -49,11 +50,27 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 5, left: 10),
-            child: Text(
-              'Barcode Data',
-              style: TextStyle(fontSize: 20),
+          Padding(
+            padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Barcode Data',
+                  style: TextStyle(fontSize: 20),
+                ),
+                IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BarcodePhotoView(
+                                    barcodeID:
+                                        widget.barcodeAndTagData.barcodeID,
+                                  )));
+                    },
+                    icon: const Icon(Icons.photo))
+              ],
             ),
           ),
           const Divider(

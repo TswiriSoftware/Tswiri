@@ -4,8 +4,9 @@ import 'cameraView/object_dector_camera_view.dart';
 
 ///Displays the cameraView of the object Dectector.
 class ObjectDetectorView extends StatefulWidget {
-  const ObjectDetectorView({Key? key}) : super(key: key);
-
+  const ObjectDetectorView({Key? key, required this.barcodeID})
+      : super(key: key);
+  final int barcodeID;
   @override
   _ObjectDetectorView createState() => _ObjectDetectorView();
 }
@@ -32,6 +33,7 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
       customPaint: customPaint,
       onImage: (inputImage) {},
       initialDirection: CameraLensDirection.back,
+      barcodeID: widget.barcodeID,
     );
   }
 }

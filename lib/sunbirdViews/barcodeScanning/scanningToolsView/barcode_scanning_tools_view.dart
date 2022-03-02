@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/barcode_scanner_view.dart';
 import 'package:hive/hive.dart';
-import '../../../main.dart';
 import '../../../widgets/custom_card_widget.dart';
+import '../barcode_scanner_view_copy copy.dart';
 import '../real_barcode_position_database_view.dart';
 import '../real_barcode_position_database_visualization_view.dart';
 

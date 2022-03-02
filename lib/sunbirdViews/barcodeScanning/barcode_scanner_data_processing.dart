@@ -64,6 +64,7 @@ class _BarcodeScannerDataProcessingViewState
         ),
       ),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Processing Data'),
       ),
       body: Center(

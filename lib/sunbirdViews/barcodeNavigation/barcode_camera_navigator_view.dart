@@ -266,13 +266,6 @@ class _BarcodeCameraNavigatorViewState
                 Offset newPosition = typeOffsetToOffset(x.offset) +
                     validInterBarcodeOffset.offset;
 
-                RealBarcodePostionEntry updatedPosition =
-                    RealBarcodePostionEntry(
-                        uid: uid,
-                        offset: offsetToTypeOffset(newPosition),
-                        zOffset: validInterBarcodeOffset.zOffset,
-                        fixed: false,
-                        timestamp: DateTime.now().millisecondsSinceEpoch);
                 log(newPosition.toString());
 
                 //TODO: Write to Database.
@@ -283,16 +276,9 @@ class _BarcodeCameraNavigatorViewState
 
                 Offset newPosition = typeOffsetToOffset(x.offset) -
                     validInterBarcodeOffset.offset;
-                RealBarcodePostionEntry updatedPosition =
-                    RealBarcodePostionEntry(
-                        uid: uid,
-                        offset: offsetToTypeOffset(newPosition),
-                        zOffset: -validInterBarcodeOffset.zOffset,
-                        fixed: false,
-                        timestamp: DateTime.now().millisecondsSinceEpoch);
                 //TODO: Write to Database.
                 //TODO: Remove from doesNotCheckOut
-
+                log(x.uid);
                 log(newPosition.toString());
               }
             }

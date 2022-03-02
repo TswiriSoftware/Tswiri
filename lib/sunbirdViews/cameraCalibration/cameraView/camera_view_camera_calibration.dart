@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../globalValues/app_settings.dart';
 import '../../../main.dart';
 import '../../../objects/raw_on_image_barcode_data.dart';
 
@@ -162,7 +163,7 @@ class _CameraViewCameraCalibrationState
   Future _startLiveFeed() async {
     _controller = CameraController(
       cameras.first,
-      ResolutionPreset.high,
+      cameraResolution ?? ResolutionPreset.high,
       enableAudio: false,
     );
     _controller?.initialize().then((_) {
