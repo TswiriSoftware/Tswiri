@@ -34,7 +34,12 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  runApp(MaterialApp(title: 'Sunbird', initialRoute: '/', routes: allRoutes));
+  runApp(MaterialApp(
+    title: 'Sunbird',
+    initialRoute: '/',
+    routes: allRoutes,
+    debugShowCheckedModeBanner: false,
+  ));
 
   //Request Permissions.
   var status = await Permission.storage.status;
