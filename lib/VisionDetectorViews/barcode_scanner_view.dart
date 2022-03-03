@@ -39,7 +39,6 @@ class _BarcodeScannerStockViewState extends State<BarcodeScannerStockView> {
     if (isBusy) return;
     isBusy = true;
     final barcodes = await barcodeScanner.processImage(inputImage);
-    print('Found ${barcodes.length} barcodes');
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
       final painter = BarcodeDetectorPainter(

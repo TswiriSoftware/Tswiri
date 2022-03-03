@@ -34,7 +34,7 @@ class CameraView extends StatefulWidget {
 }
 
 class _CameraViewState extends State<CameraView> {
-  ScreenMode _mode = ScreenMode.liveFeed;
+  final ScreenMode _mode = ScreenMode.liveFeed;
   CameraController? _controller;
   File? _image;
   ImagePicker? _imagePicker;
