@@ -8,13 +8,14 @@ import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/routes.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/all_barcodes.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_range_selector_view.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/gettingStarted/getting_started_view.dart';
 import 'package:flutter_google_ml_kit/widgets/custom_card_widget.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
-import 'app_settings_view.dart';
+import 'sunbirdViews/appSettings/app_settings_functions.dart';
+import 'sunbirdViews/appSettings/app_settings_view.dart';
 import 'databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
 import 'databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
@@ -23,7 +24,6 @@ import 'sunbirdViews/barcodeScanning/scanningToolsView/barcode_scanning_tools_vi
 import 'sunbirdViews/cameraCalibration/calibrationToolsView/camera_calibration_tools_view.dart';
 
 List<CameraDescription> cameras = [];
-LocalModel model = LocalModel('object_labeler.tflite');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -142,9 +142,16 @@ class Home extends StatelessWidget {
             CustomCard(
               'Barcodes List',
               AllBarcodesView(),
-              Icons.emoji_objects_rounded,
+              Icons.list_alt,
               featureCompleted: true,
               tileColor: deepSpaceSparkle,
+            ),
+            CustomCard(
+              'Getting Started',
+              GettingStartedView(),
+              Icons.emoji_objects_rounded,
+              featureCompleted: true,
+              tileColor: skyBlue80,
             ),
           ],
         ),

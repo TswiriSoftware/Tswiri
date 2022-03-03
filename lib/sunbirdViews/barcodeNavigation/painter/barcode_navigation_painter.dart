@@ -9,7 +9,9 @@ import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.da
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_paints.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_positional_data.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/appSettings/app_settings.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:flutter/services.dart';
 
 import '../../../databaseAdapters/allBarcodes/barcode_entry.dart';
 import '../../../databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
@@ -89,6 +91,10 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
           rotation: rotation,
           size: size,
           absoluteImageSize: absoluteImageSize);
+
+      if (hapticFeedBack == true) {
+        HapticFeedback.lightImpact();
+      }
 
       //Draws a Polygon around the selectedBarcode.
       // canvas.drawPoints(PointMode.polygon, barcodeOnScreenData.cornerPoints,

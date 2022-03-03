@@ -5,6 +5,16 @@ import 'package:hive/hive.dart';
 
 import '../databaseAdapters/allBarcodes/barcode_entry.dart';
 
+class Photo extends ChangeNotifier {
+  Photo(this.photoPath, this.photoTags);
+  String photoPath;
+  List<String> photoTags;
+
+  Future<void> updatePhoto() async {
+    notifyListeners();
+  }
+}
+
 class Tags extends ChangeNotifier {
   Tags(
     this.assignedTags,

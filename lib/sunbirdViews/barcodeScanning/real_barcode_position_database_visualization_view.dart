@@ -60,9 +60,9 @@ class _RealBarcodePositionDatabaseVisualizationViewState
               FloatingActionButton(
                 heroTag: null,
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const Home()));
-                  // Navigator.pop(context);
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (context) => const Home()));
+                  Navigator.pop(context);
                   // Navigator.of(context).pushReplacement(MaterialPageRoute(
                   //     builder: (context) => const BarcodeScanningToolsView()));
                 },

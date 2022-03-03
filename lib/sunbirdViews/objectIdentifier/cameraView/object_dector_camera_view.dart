@@ -3,7 +3,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import '../../../globalValues/app_settings.dart';
+import '../../appSettings/app_settings.dart';
 import '../../../main.dart';
 import '../object_detector_image_processing.dart';
 

@@ -307,7 +307,7 @@ double findDistanceFromCamera(
     }
     return distanceFromCamera;
   } else {
-    developer.log('Error barcode size not calibrated');
+    //developer.log('Error barcode size not calibrated');
     return 0;
   }
 }

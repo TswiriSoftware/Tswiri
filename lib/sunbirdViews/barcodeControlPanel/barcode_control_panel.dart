@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
@@ -6,6 +8,7 @@ import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/widgets/u
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import '../../databaseAdapters/allBarcodes/barcode_entry.dart';
+import '../../databaseAdapters/barcodePhotos/barcode_photo_entry.dart';
 import '../../functions/barcodeTools/get_data_functions.dart';
 import '../../globalValues/global_hive_databases.dart';
 import '../../objects/tags_change_notifier.dart';
@@ -25,6 +28,9 @@ class BarcodeControlPanelView extends StatefulWidget {
 class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
   List<String> assignedTags = [];
   List<String> unassignedTags = [];
+  List<String> photoTags = [];
+  String photoPath = '';
+
   bool isFixed = false;
   double barcodeSize = 0;
 
@@ -65,6 +71,8 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
                         barcodeAndTagData: snapshot.data!,
                         isFixed: isFixed,
                         barcodeSize: barcodeSize,
+                        photoPath: photoPath,
+                        photoTags: photoTags,
                       ),
                       AssignedTagsContainer(
                         assignedTags: assignedTags,
@@ -95,9 +103,24 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
     //Get all generated barcodes.
     Box<BarcodeDataEntry> allBarcodes = await Hive.openBox(allBarcodesBoxName);
     BarcodeDataEntry barcodeData = allBarcodes.get(barcodeID)!;
+
     //Remove the assigned tags from unassigned tags.
     barcodeUnassignedTags
         .removeWhere((element) => barcodeTags.contains(element));
+
+    //Photo entry box.
+    Box<BarcodePhotoEntry> barcodePhotoEntries =
+        await Hive.openBox(barcodePhotosBoxName);
+
+    //Declaire BarcodePhotoEntry.
+    late BarcodePhotoEntry barcodePhotoEntry;
+    if (barcodePhotoEntries.get(widget.barcodeID) != null) {
+      barcodePhotoEntry = barcodePhotoEntries.get(widget.barcodeID)!;
+      setState(() {
+        photoTags = barcodePhotoEntry.photoTags;
+        photoPath = barcodePhotoEntry.photoPath;
+      });
+    }
 
     BarcodeAndTagData barcodeAndTagData = BarcodeAndTagData(
         barcodeID: barcodeID,
@@ -105,10 +128,12 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
         fixed: barcodeData.isFixed,
         tags: barcodeTags);
 
-    unassignedTags = barcodeUnassignedTags;
-    assignedTags = barcodeTags;
-    isFixed = barcodeData.isFixed;
-    barcodeSize = barcodeData.barcodeSize;
+    setState(() {
+      unassignedTags = barcodeUnassignedTags;
+      assignedTags = barcodeTags;
+      isFixed = barcodeData.isFixed;
+      barcodeSize = barcodeData.barcodeSize;
+    });
 
     return barcodeAndTagData;
   }

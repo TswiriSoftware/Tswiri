@@ -50,6 +50,7 @@ class _BarcodeScannerDataProcessingViewState
             FloatingActionButton(
               heroTag: null,
               onPressed: () {
+                Navigator.pop(context);
                 Navigator.push(
                         context,
                         MaterialPageRoute(

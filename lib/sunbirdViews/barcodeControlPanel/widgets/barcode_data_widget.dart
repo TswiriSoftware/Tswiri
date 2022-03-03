@@ -11,11 +11,15 @@ class BarcodeDataContainer extends StatefulWidget {
       {Key? key,
       required this.barcodeAndTagData,
       required this.isFixed,
-      required this.barcodeSize})
+      required this.barcodeSize,
+      required this.photoPath,
+      required this.photoTags})
       : super(key: key);
   final BarcodeAndTagData barcodeAndTagData;
   final bool isFixed;
   final double barcodeSize;
+  final String photoPath;
+  final List<String> photoTags;
 
   @override
   State<BarcodeDataContainer> createState() => _BarcodeDataContainerState();
@@ -24,12 +28,16 @@ class BarcodeDataContainer extends StatefulWidget {
 class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
   bool isFixed = false;
   double barcodeSize = 0;
+  String photoPath = '';
+  List<String> photoTags = [];
   final TextEditingController _textFieldController = TextEditingController();
 
   @override
   void initState() {
     isFixed = widget.isFixed;
     barcodeSize = widget.barcodeSize;
+    photoPath = widget.photoPath;
+    photoTags = widget.photoTags;
     super.initState();
   }
 
@@ -65,9 +73,7 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => BarcodePhotoView(
-                                    barcodeID:
-                                        widget.barcodeAndTagData.barcodeID,
-                                  )));
+                                  photoPath: photoPath, photoTags: photoTags)));
                     },
                     icon: const Icon(Icons.photo))
               ],

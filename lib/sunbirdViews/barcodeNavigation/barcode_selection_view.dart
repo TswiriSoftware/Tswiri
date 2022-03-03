@@ -5,7 +5,6 @@ import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
 import 'package:hive/hive.dart';
-
 import 'barcode_camera_navigator_view.dart';
 
 class BarcodeSelectionView extends StatefulWidget {
@@ -167,7 +166,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
             context,
             MaterialPageRoute(
                 builder: (context) => BarcodeCameraNavigatorView(
-                    qrcodeID: barcodeAndTagData.barcodeID.toString())));
+                    barcodeID: barcodeAndTagData.barcodeID.toString())));
       },
       child: Container(
         //Outer Container Decoration

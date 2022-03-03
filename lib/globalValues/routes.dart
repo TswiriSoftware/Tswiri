@@ -7,7 +7,7 @@ import '../sunbirdViews/barcodeControlPanel/scan_barcode_view.dart';
 import '../sunbirdViews/barcodeGeneration/barcode_generation_range_selector_view.dart';
 import '../sunbirdViews/barcodeNavigation/barcode_selection_view.dart';
 import '../sunbirdViews/barcodeNavigation/navigationToolsView/barcode_navigation_tools_view.dart';
-import '../sunbirdViews/barcodeScanning/barcode_scanner_isolate_view.dart';
+
 import '../sunbirdViews/barcodeScanning/real_barcode_position_database_view.dart';
 import '../sunbirdViews/barcodeScanning/real_barcode_position_database_visualization_view.dart';
 import '../sunbirdViews/barcodeScanning/scanningToolsView/barcode_scanning_tools_view.dart';
@@ -26,9 +26,6 @@ var allRoutes = <String, WidgetBuilder>{
 
   ///Displays all barcode scanning tools.
   '/BarcodeScanningToolsView': (context) => const BarcodeScanningToolsView(),
-
-  ///Camera widget that allows for scanning.
-  '/BarcodeScannerView': (context) => const BarcodeScannerIsolateView(),
 
   ///Shows a list of all real barcode positions.
   '/RealBarcodePositionDatabaseView': (context) =>
