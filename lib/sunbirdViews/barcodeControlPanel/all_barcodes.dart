@@ -102,7 +102,7 @@ class _AllBarcodesViewState extends State<AllBarcodesView> {
       results.add(BarcodeAndTagData(
           barcodeID: barcodeData.barcodeID,
           barcodeSize: barcodeData.barcodeSize,
-          fixed: barcodeData.isFixed,
+          isFixed: barcodeData.isFixed,
           tags: relevantTags));
 
       results.sort((a, b) => a.barcodeID.compareTo(b.barcodeID));

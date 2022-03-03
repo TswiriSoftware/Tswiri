@@ -58,7 +58,7 @@ Future<void> main() async {
   Hive.registerAdapter(BarcodeTagEntryAdapter());
   Hive.registerAdapter(TagEntryAdapter());
   Hive.registerAdapter(BarcodeDataEntryAdapter());
-  Hive.registerAdapter(BarcodePhotoEntryAdapter());
+  Hive.registerAdapter(BarcodePhotosEntryAdapter());
 }
 
 class MyApp extends StatelessWidget {

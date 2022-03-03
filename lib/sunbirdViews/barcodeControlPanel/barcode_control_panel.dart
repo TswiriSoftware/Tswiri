@@ -1,19 +1,22 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
-import 'package:flutter_google_ml_kit/objects/tags_change_notifier.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/widgets/unassigned_tags_widget.dart';
+import 'package:flutter_google_ml_kit/objects/change_notifiers.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/widgets/tags_widget.dart';
+
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import '../../databaseAdapters/allBarcodes/barcode_entry.dart';
 import '../../databaseAdapters/barcodePhotos/barcode_photo_entry.dart';
 import '../../functions/barcodeTools/get_data_functions.dart';
 import '../../globalValues/global_hive_databases.dart';
-import '../../objects/tags_change_notifier.dart';
-import 'widgets/assigned_tags_widgets.dart';
+import '../../objects/change_notifiers.dart';
+
 import 'widgets/barcode_data_widget.dart';
+import 'widgets/barcode_photo_view.dart';
 
 class BarcodeControlPanelView extends StatefulWidget {
   const BarcodeControlPanelView({Key? key, required this.barcodeID})
@@ -26,14 +29,6 @@ class BarcodeControlPanelView extends StatefulWidget {
 }
 
 class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
-  List<String> assignedTags = [];
-  List<String> unassignedTags = [];
-  List<String> photoTags = [];
-  String photoPath = '';
-
-  bool isFixed = false;
-  double barcodeSize = 0;
-
   @override
   void initState() {
     super.initState();
@@ -60,32 +55,41 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
         future: getCurrentBarcodeData(widget.barcodeID),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return Column(
-              children: [
-                ChangeNotifierProvider(
-                  create: (_) =>
-                      Tags(assignedTags, unassignedTags, isFixed, barcodeSize),
-                  child: Column(
-                    children: [
-                      BarcodeDataContainer(
-                        barcodeAndTagData: snapshot.data!,
-                        isFixed: isFixed,
-                        barcodeSize: barcodeSize,
-                        photoPath: photoPath,
-                        photoTags: photoTags,
-                      ),
-                      AssignedTagsContainer(
-                        assignedTags: assignedTags,
-                        barcodeID: widget.barcodeID,
-                      ),
-                      UnassignedTagsContainer(
-                        unassignedTags: unassignedTags,
-                        barcodeID: widget.barcodeID,
-                      )
-                    ],
+            int barcodeID = snapshot.data!.barcodeID;
+            bool isFixed = snapshot.data!.isFixed;
+            double barcodeSize = snapshot.data!.barcodeSize;
+            List<String> tags = snapshot.data!.tags ?? [];
+            List<String> unassignedTags = snapshot.data!.unassignedTags ?? [];
+            Map<String, List<String>> barcodePhotoData =
+                snapshot.data?.barcodePhotoData ?? {};
+            log(snapshot.data.toString());
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  ChangeNotifierProvider<BarcodeDataChangeNotifier>(
+                      create: (_) => BarcodeDataChangeNotifier(
+                          barcodeSize: barcodeSize, isFixed: isFixed),
+                      child: BarcodeDataContainer(
+                        barcodeID: barcodeID,
+                      )),
+                  ChangeNotifierProvider<Tags>(
+                    create: (_) => Tags(
+                      tags,
+                      unassignedTags,
+                    ),
+                    child: Column(
+                      children: [
+                        TagsContainerWidget(barcodeID: barcodeID),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  ChangeNotifierProvider(
+                    create: (_) => PhotoDataChangeNotifier(
+                        barcodePhotoData: barcodePhotoData),
+                    child: BarcodePhotoView(barcodeID: barcodeID),
+                  )
+                ],
+              ),
             );
           } else {
             return const CircularProgressIndicator();
@@ -108,32 +112,25 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
     barcodeUnassignedTags
         .removeWhere((element) => barcodeTags.contains(element));
 
-    //Photo entry box.
-    Box<BarcodePhotoEntry> barcodePhotoEntries =
+    //Photos entry box.
+    Box<BarcodePhotosEntry> barcodePhotoEntries =
         await Hive.openBox(barcodePhotosBoxName);
 
-    //Declaire BarcodePhotoEntry.
-    late BarcodePhotoEntry barcodePhotoEntry;
-    if (barcodePhotoEntries.get(widget.barcodeID) != null) {
-      barcodePhotoEntry = barcodePhotoEntries.get(widget.barcodeID)!;
-      setState(() {
-        photoTags = barcodePhotoEntry.photoTags;
-        photoPath = barcodePhotoEntry.photoPath;
-      });
+    BarcodePhotosEntry? currentBarcodePhotosEntry =
+        barcodePhotoEntries.get(barcodeID);
+
+    Map<String, List<String>> barcodePhotos = {};
+    if (currentBarcodePhotosEntry != null) {
+      barcodePhotos = currentBarcodePhotosEntry.photoData;
     }
 
     BarcodeAndTagData barcodeAndTagData = BarcodeAndTagData(
         barcodeID: barcodeID,
         barcodeSize: barcodeData.barcodeSize,
-        fixed: barcodeData.isFixed,
-        tags: barcodeTags);
-
-    setState(() {
-      unassignedTags = barcodeUnassignedTags;
-      assignedTags = barcodeTags;
-      isFixed = barcodeData.isFixed;
-      barcodeSize = barcodeData.barcodeSize;
-    });
+        isFixed: barcodeData.isFixed,
+        tags: barcodeTags,
+        unassignedTags: barcodeUnassignedTags,
+        barcodePhotoData: barcodePhotos);
 
     return barcodeAndTagData;
   }

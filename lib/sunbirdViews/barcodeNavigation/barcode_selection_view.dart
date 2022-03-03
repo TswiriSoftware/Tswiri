@@ -116,7 +116,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
       results.add(BarcodeAndTagData(
           barcodeID: int.parse(realBarcodePosition.uid),
           barcodeSize: 70.0,
-          fixed: false,
+          isFixed: false,
           tags: relevantTags));
       results.sort((a, b) => a.barcodeID.compareTo(b.barcodeID));
     }

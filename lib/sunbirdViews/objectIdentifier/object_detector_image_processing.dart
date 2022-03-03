@@ -1,10 +1,12 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter_google_ml_kit/databaseAdapters/barcodePhotos/barcode_photo_entry.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/barcode_control_panel.dart';
 import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 
 import '../../globalValues/global_hive_databases.dart';
 import '../../objects/image_object_data.dart';
@@ -75,7 +77,16 @@ class _ObjectDetectorProcessingView
                 backgroundColor: Colors.orange,
                 heroTag: null,
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pop(
+                    context,
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          BarcodeControlPanelView(barcodeID: widget.barcodeID),
+                    ),
+                  );
                 },
                 child: const Icon(Icons.check_circle_outline_rounded),
               ),
@@ -113,7 +124,9 @@ class _ObjectDetectorProcessingView
   Future<ImageObjectData> processImage(String imagePath) async {
     //Get Image File.
     File imageFile = File(imagePath);
-
+    String fileExtention = imageFile.path.split('.').last;
+    String fileName =
+        '${widget.barcodeID}_${DateTime.now().millisecondsSinceEpoch}';
     //Get the Storage Path if it does not exist create it.
     String storagePath = await getStorageDirectory();
     if (!await Directory('$storagePath/sunbird').exists()) {
@@ -121,15 +134,17 @@ class _ObjectDetectorProcessingView
     }
 
     //Create the photo file path.
-    String photoFilePath = '$storagePath/sunbird/${widget.barcodeID}.jpg';
+    String photoFilePath = '$storagePath/sunbird/$fileName' + fileExtention;
+    log(photoFilePath);
 
     //Copy the image to it. (For now only allowing 1 image per Barcode)
-    if (await File(photoFilePath).exists()) {
-      File(photoFilePath).delete();
-      await imageFile.copy(photoFilePath);
-    } else {
-      await imageFile.copy(photoFilePath);
-    }
+    // if (await File(photoFilePath).exists()) {
+    //   File(photoFilePath).delete();
+    //   await imageFile.copy(photoFilePath);
+    // } else {
+    //   await imageFile.copy(photoFilePath);
+    // }
+    await imageFile.copy(photoFilePath);
 
     //Create InputImage.
     InputImage inputImage = InputImage.fromFile(imageFile);
@@ -141,7 +156,7 @@ class _ObjectDetectorProcessingView
     final objects = await objectDetector.processImage(inputImage);
 
     for (DetectedObject object in objects) {
-      log('Object label: ' + object.getLabels().toList().toString());
+      //log('Object label: ' + object.getLabels().toList().toString());
       List<Label> objectLabels = object.getLabels();
       for (Label objectLabel in objectLabels) {
         photoTags.add(objectLabel.getText());
@@ -151,7 +166,7 @@ class _ObjectDetectorProcessingView
     ///Labels
     final labels = await imageLabeler.processImage(inputImage);
     for (ImageLabel label in labels) {
-      log('Image Label: ' + label.label);
+      //log('Image Label: ' + label.label);
       photoTags.add(label.label);
     }
 
@@ -169,18 +184,24 @@ class _ObjectDetectorProcessingView
         imageRotation: InputImageRotation.Rotation_90deg,
         size: imageSize);
 
-    BarcodePhotoEntry barcodePhotoEntry = BarcodePhotoEntry(
-        barcodeID: widget.barcodeID,
-        photoPath: photoFilePath,
-        photoTags: photoTags);
+    Map<String, List<String>> currentPhotoDataMap = {};
+    currentPhotoDataMap.putIfAbsent(photoFilePath, () => photoTags);
 
-    Box<BarcodePhotoEntry> barcodePhotoEntries =
+    Box<BarcodePhotosEntry> barcodePhotoEntries =
         await Hive.openBox(barcodePhotosBoxName);
 
-    barcodePhotoEntries.put(widget.barcodeID, barcodePhotoEntry);
+    BarcodePhotosEntry? barcodePhotoEntry =
+        barcodePhotoEntries.get(widget.barcodeID);
+
+    if (barcodePhotoEntry == null) {
+      BarcodePhotosEntry newBarcodePhotosEntry = BarcodePhotosEntry(
+          barcodeID: widget.barcodeID, photoData: currentPhotoDataMap);
+      barcodePhotoEntries.put(widget.barcodeID, newBarcodePhotosEntry);
+    } else {
+      barcodePhotoEntry.photoData.addAll(currentPhotoDataMap);
+    }
 
     log(barcodePhotoEntries.values.toString());
-
     return processedResult;
   }
 }

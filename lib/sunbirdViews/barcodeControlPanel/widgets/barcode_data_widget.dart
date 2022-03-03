@@ -4,40 +4,27 @@ import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/widgets/barcode_photo_view.dart';
 import 'package:provider/provider.dart';
 
-import '../../../objects/tags_change_notifier.dart';
+import '../../../objects/change_notifiers.dart';
 
 class BarcodeDataContainer extends StatefulWidget {
-  const BarcodeDataContainer(
-      {Key? key,
-      required this.barcodeAndTagData,
-      required this.isFixed,
-      required this.barcodeSize,
-      required this.photoPath,
-      required this.photoTags})
-      : super(key: key);
-  final BarcodeAndTagData barcodeAndTagData;
-  final bool isFixed;
-  final double barcodeSize;
-  final String photoPath;
-  final List<String> photoTags;
+  const BarcodeDataContainer({
+    Key? key,
+    required this.barcodeID,
+  }) : super(key: key);
+
+  //final BarcodeAndTagData barcodeAndTagData;
+  final int barcodeID;
 
   @override
   State<BarcodeDataContainer> createState() => _BarcodeDataContainerState();
 }
 
 class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
-  bool isFixed = false;
   double barcodeSize = 0;
-  String photoPath = '';
-  List<String> photoTags = [];
   final TextEditingController _textFieldController = TextEditingController();
 
   @override
   void initState() {
-    isFixed = widget.isFixed;
-    barcodeSize = widget.barcodeSize;
-    photoPath = widget.photoPath;
-    photoTags = widget.photoTags;
     super.initState();
   }
 
@@ -62,20 +49,11 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
             padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
+              children: const [
+                Text(
                   'Barcode Data',
                   style: TextStyle(fontSize: 20),
                 ),
-                IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => BarcodePhotoView(
-                                  photoPath: photoPath, photoTags: photoTags)));
-                    },
-                    icon: const Icon(Icons.photo))
               ],
             ),
           ),
@@ -86,7 +64,7 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
             padding:
                 const EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 10),
             child: Text(
-              'Barcode ID:  ' + widget.barcodeAndTagData.barcodeID.toString(),
+              'Barcode ID:  ' + widget.barcodeID.toString(),
               style: const TextStyle(fontSize: 18),
             ),
           ),
@@ -133,7 +111,9 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
                 },
                 child: Text(
                   'Barcode Size:  ' +
-                      Provider.of<Tags>(context).barcodeSize.toString(),
+                      Provider.of<BarcodeDataChangeNotifier>(context)
+                          .barcodeSize
+                          .toString(),
                   style: const TextStyle(fontSize: 18),
                 ),
               ),
@@ -153,11 +133,14 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
               ),
               child: InkWell(
                 onTap: () {
-                  Provider.of<Tags>(context, listen: false)
-                      .changeFixed(widget.barcodeAndTagData.barcodeID);
+                  Provider.of<BarcodeDataChangeNotifier>(context, listen: false)
+                      .changeFixed(widget.barcodeID);
                 },
                 child: Text(
-                  'Fixed :  ' + Provider.of<Tags>(context).isFixed.toString(),
+                  'Fixed :  ' +
+                      Provider.of<BarcodeDataChangeNotifier>(context)
+                          .isFixed
+                          .toString(),
                   style: const TextStyle(fontSize: 18),
                 ),
               ),
@@ -169,7 +152,7 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
   }
 
   setBarcodeSize() {
-    Provider.of<Tags>(context, listen: false)
-        .changeBarcodeSize(widget.barcodeAndTagData.barcodeID, barcodeSize);
+    Provider.of<BarcodeDataChangeNotifier>(context, listen: false)
+        .changeBarcodeSize(widget.barcodeID, barcodeSize);
   }
 }

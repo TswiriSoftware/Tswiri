@@ -20,5 +20,5 @@ const String tagsBoxName = 'tagsBox';
 ///Contains all barcodes that have been generated as [BarcodeDataEntry].
 const String allBarcodesBoxName = 'allBarcodesBox';
 
-///Contains all barcodes Photos as [BarcodePhotoEntry].
+///Contains all barcodes Photos as [BarcodePhotosEntry].
 const String barcodePhotosBoxName = 'barcodePhotos';

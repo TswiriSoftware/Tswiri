@@ -6,33 +6,31 @@ part of 'barcode_photo_entry.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class BarcodePhotoEntryAdapter extends TypeAdapter<BarcodePhotoEntry> {
+class BarcodePhotosEntryAdapter extends TypeAdapter<BarcodePhotosEntry> {
   @override
   final int typeId = 7;
 
   @override
-  BarcodePhotoEntry read(BinaryReader reader) {
+  BarcodePhotosEntry read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return BarcodePhotoEntry(
+    return BarcodePhotosEntry(
       barcodeID: fields[0] as int,
-      photoPath: fields[1] as String,
-      photoTags: (fields[2] as List).cast<String>(),
+      photoData: (fields[1] as Map).map((dynamic k, dynamic v) =>
+          MapEntry(k as String, (v as List).cast<String>())),
     );
   }
 
   @override
-  void write(BinaryWriter writer, BarcodePhotoEntry obj) {
+  void write(BinaryWriter writer, BarcodePhotosEntry obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(2)
       ..writeByte(0)
       ..write(obj.barcodeID)
       ..writeByte(1)
-      ..write(obj.photoPath)
-      ..writeByte(2)
-      ..write(obj.photoTags);
+      ..write(obj.photoData);
   }
 
   @override
@@ -41,7 +39,7 @@ class BarcodePhotoEntryAdapter extends TypeAdapter<BarcodePhotoEntry> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is BarcodePhotoEntryAdapter &&
+      other is BarcodePhotosEntryAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

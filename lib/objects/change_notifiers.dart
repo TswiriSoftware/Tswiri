@@ -4,27 +4,10 @@ import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:hive/hive.dart';
 
 import '../databaseAdapters/allBarcodes/barcode_entry.dart';
+import '../databaseAdapters/barcodePhotos/barcode_photo_entry.dart';
 
-class Photo extends ChangeNotifier {
-  Photo(this.photoPath, this.photoTags);
-  String photoPath;
-  List<String> photoTags;
-
-  Future<void> updatePhoto() async {
-    notifyListeners();
-  }
-}
-
-class Tags extends ChangeNotifier {
-  Tags(
-    this.assignedTags,
-    this.unassignedTags,
-    this.isFixed,
-    this.barcodeSize,
-  );
-
-  List<String> assignedTags;
-  List<String> unassignedTags;
+class BarcodeDataChangeNotifier extends ChangeNotifier {
+  BarcodeDataChangeNotifier({required this.barcodeSize, required this.isFixed});
   double barcodeSize;
   bool isFixed;
 
@@ -51,6 +34,16 @@ class Tags extends ChangeNotifier {
     generatedBarcodesBox.put(barcodeID, barcodeDataEntry);
     notifyListeners();
   }
+}
+
+class Tags extends ChangeNotifier {
+  Tags(
+    this.assignedTags,
+    this.unassignedTags,
+  );
+
+  List<String> assignedTags;
+  List<String> unassignedTags;
 
   Future<void> deleteTag(String tag, int barcodeID) async {
     Box<BarcodeTagEntry> currentTagsBox =
@@ -109,4 +102,39 @@ class Tags extends ChangeNotifier {
       }
     }
   }
+}
+
+class PhotoDataChangeNotifier extends ChangeNotifier {
+  PhotoDataChangeNotifier({this.barcodePhotoData});
+  Map<String, List<String>>? barcodePhotoData;
+
+  Future<void> updatePhotos(int barcodeID) async {
+    Box<BarcodePhotosEntry> barcodePhotoEntries =
+        await Hive.openBox(barcodePhotosBoxName);
+
+    BarcodePhotosEntry? currentBarcodePhotosEntry =
+        barcodePhotoEntries.get(barcodeID);
+
+    Map<String, List<String>> barcodePhotos = {};
+    if (currentBarcodePhotosEntry != null) {
+      barcodePhotos = currentBarcodePhotosEntry.photoData;
+      barcodePhotoData = barcodePhotos;
+    }
+  }
+
+  Future<void> deletePhoto(int barcodeID, String photoPath) async {
+    Box<BarcodePhotosEntry> barcodePhotoEntries =
+        await Hive.openBox(barcodePhotosBoxName);
+
+    BarcodePhotosEntry? currentBarcodePhotosEntry =
+        barcodePhotoEntries.get(barcodeID);
+
+    if (currentBarcodePhotosEntry != null) {
+      currentBarcodePhotosEntry.photoData
+          .removeWhere((key, value) => key == photoPath);
+    }
+    notifyListeners();
+  }
+
+  Future<void> changeFixed(int barcodeID) async {}
 }
