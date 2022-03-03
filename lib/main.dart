@@ -36,14 +36,16 @@ Future<void> main() async {
 
   runApp(MaterialApp(title: 'Sunbird', initialRoute: '/', routes: allRoutes));
 
+  //Request Permissions.
   var status = await Permission.storage.status;
   if (status.isDenied) {
     Permission.storage.request();
   }
-
-  final directory = await getApplicationDocumentsDirectory();
+  //Get App Settings.
   getCurrentAppSettings();
 
+  //Initiate Hive.
+  final directory = await getApplicationDocumentsDirectory();
   await Hive.initFlutter(directory.path);
   Hive.registerAdapter(TypeOffsetHiveObjectAdapter());
   Hive.registerAdapter(RealBarcodePostionEntryAdapter());
