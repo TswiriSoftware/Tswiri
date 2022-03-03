@@ -11,7 +11,7 @@ Future getCurrentAppSettings() async {
   final prefs = await SharedPreferences.getInstance();
   //Get Camera Resolution.
   cameraResolution = getCameraResolution(prefs);
-  hapticFeedBack = await getHapticFeedback();
+  hapticFeedBack = getHapticFeedback(prefs);
 }
 
 ///Returns the [ResolutionPreset]
@@ -61,8 +61,7 @@ Future setHapticFeedback(bool vibration) async {
 }
 
 ///Sets the Camera Resolution in shared Prefs.
-Future<bool> getHapticFeedback() async {
-  final prefs = await SharedPreferences.getInstance();
+bool getHapticFeedback(SharedPreferences prefs) {
   hapticFeedBack = (prefs.getBool('hapticFeedBack') ?? true);
   return hapticFeedBack!;
 }

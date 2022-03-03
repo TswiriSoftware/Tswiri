@@ -2,6 +2,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
 ///Add any settings here.
+///1. Add to app_settings_class
+///2. Add to app_settings_view.dart
 
 ///The cameras resolution. (Changeable From App Settings)
 ResolutionPreset? cameraResolution;
