@@ -3,7 +3,7 @@ import 'package:flutter_google_ml_kit/sunbirdViews/appSettings/app_settings.dart
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app_settings_functions.dart';
-import 'app_settings_class.dart';
+import '../../objects/app_settings_class.dart';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({Key? key}) : super(key: key);
