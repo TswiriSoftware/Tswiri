@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -146,6 +145,10 @@ class PhotoItem extends StatelessWidget {
                     ),
                   ),
                 ),
+                const Padding(
+                  padding: EdgeInsets.all(2.0),
+                  child: Text('Tag sugestions: '),
+                ),
                 SizedBox(
                   width: width * 0.25,
                   child: Text(photoTags.toString()),
@@ -158,7 +161,7 @@ class PhotoItem extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => PhotoScreen2(photoPath: photoPath),
+                  builder: (context) => PhotoFullScreen(photoPath: photoPath),
                 ),
               );
             },
@@ -184,35 +187,8 @@ class PhotoItem extends StatelessWidget {
   }
 }
 
-class PhotoScreen extends StatelessWidget {
-  const PhotoScreen(this.photoPath);
-  final String photoPath;
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(0.8),
-          margin: const EdgeInsets.all(5),
-          decoration: BoxDecoration(
-            color: deepSpaceSparkle[200],
-            border: Border.all(color: Colors.black45, width: 2),
-            borderRadius: const BorderRadius.all(
-              Radius.circular(5),
-            ),
-          ),
-          child: Image.file(
-            File(photoPath),
-            fit: BoxFit.fill,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class PhotoScreen2 extends StatelessWidget {
-  const PhotoScreen2({required this.photoPath});
+class PhotoFullScreen extends StatelessWidget {
+  const PhotoFullScreen({Key? key, required this.photoPath}) : super(key: key);
   final String photoPath;
   @override
   Widget build(BuildContext context) {
@@ -225,7 +201,7 @@ class PhotoScreen2 extends StatelessWidget {
               width: MediaQuery.of(context).size.width,
               child: Hero(tag: 'imageHero', child: Image.file(File(photoPath))),
             ),
-            Text('Tap to close'),
+            const Text('Tap to close'),
           ],
         ),
         onTap: () {

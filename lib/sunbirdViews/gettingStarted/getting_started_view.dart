@@ -5,7 +5,6 @@ import 'package:flutter_google_ml_kit/sunbirdViews/gettingStarted/barcode_list_i
 import 'package:flutter_google_ml_kit/sunbirdViews/gettingStarted/barcode_navigation_info_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/gettingStarted/barcode_scanning_info_view.dart';
 import '../../../widgets/custom_card_widget.dart';
-import '../barcodeNavigation/barcode_selection_view.dart';
 import 'camera_calibration_info_view.dart';
 
 ///Shows camera calibration tools.

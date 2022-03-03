@@ -1,7 +1,6 @@
 import 'package:hive/hive.dart';
 part 'barcode_photo_entry.g.dart';
 
-//TODO: change to lists
 @HiveType(typeId: 7)
 
 ///Contains data related to a barcode such as size and name

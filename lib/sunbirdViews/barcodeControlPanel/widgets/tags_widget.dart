@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/objectIdentifier/object_detector_view.dart';
 import 'package:provider/provider.dart';
 
 import '../../../objects/change_notifiers.dart';

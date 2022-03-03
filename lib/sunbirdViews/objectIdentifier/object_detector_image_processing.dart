@@ -6,13 +6,10 @@ import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart';
 
 import '../../globalValues/global_hive_databases.dart';
 import '../../objects/image_object_data.dart';
 import 'painter/object_detector_painter.dart';
-
-//TODO: Implement barcode Scanner before this screen so the user can scan the barcode and then take a photo of what is inside the box.
 
 ///Displays the Photo and objects detected
 class ObjectDetectorProcessingView extends StatefulWidget {

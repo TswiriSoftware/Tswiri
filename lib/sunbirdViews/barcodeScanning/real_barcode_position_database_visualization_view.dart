@@ -8,8 +8,6 @@ import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import '../../main.dart';
-
 // ignore: todo
 //TODO: Refactor this @049er
 

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-import '../../../widgets/custom_card_widget.dart';
-import '../barcodeNavigation/barcode_selection_view.dart';
 
 class CameraCalibrationInfoView extends StatefulWidget {
   const CameraCalibrationInfoView({Key? key}) : super(key: key);

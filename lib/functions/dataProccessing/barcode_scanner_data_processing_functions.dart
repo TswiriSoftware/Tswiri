@@ -1,5 +1,3 @@
-import 'dart:developer' as developer;
-
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_entry.dart';

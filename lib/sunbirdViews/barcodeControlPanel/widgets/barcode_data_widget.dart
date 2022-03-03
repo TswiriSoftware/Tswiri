@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/widgets/barcode_photo_view.dart';
 import 'package:provider/provider.dart';
 
 import '../../../objects/change_notifiers.dart';

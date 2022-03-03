@@ -8,7 +8,6 @@ import '../../../main.dart';
 import '../object_detector_image_processing.dart';
 
 ///This displays the camera view and allows for taking photos.
-///TODO: allow the user to take Multiple Photos for labeling.
 class ObjectDetectorCameraView extends StatefulWidget {
   const ObjectDetectorCameraView(
       {Key? key,

@@ -330,10 +330,6 @@ class _BarcodeCameraNavigatorViewState
             }
           }
         }
-
-        //TODO: Code to update barcode Positions.
-        //1. Find offset that has the start barcode in checksOut and end barcode in doesNotCheckOut.
-        //2. Update realPosition
       }
     }
   }

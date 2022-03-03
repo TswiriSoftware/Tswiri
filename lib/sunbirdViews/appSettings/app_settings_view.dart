@@ -88,7 +88,7 @@ class _SettingsViewState extends State<SettingsView> {
                 ],
               );
             } else {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
           }),
     );
