@@ -218,37 +218,35 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
         if (hasPhoneDiverted == false) {
           showDialog(
             barrierDismissible: false,
+            useRootNavigator: false,
             context: context,
             builder: (dialogContext) {
-              return AlertDialog(
-                title: const Text('Camera Calibration'),
-                content: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.start,
-                  children: const [
-                    Text(
-                        'You have changed your phones direction too much you need to restart the calibraton process D:'),
+              return WillPopScope(
+                onWillPop: () => Future.value(false),
+                child: AlertDialog(
+                  title: const Text('Camera Calibration'),
+                  content: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.start,
+                    children: const [
+                      Text(
+                          'You have changed your phones direction too much you need to restart the calibraton process D:'),
+                    ],
+                  ),
+                  actions: [
+                    ElevatedButton(
+                        child: const Text('Restart Calibration'),
+                        onPressed: () {
+                          accelerometerEventsSub.cancel();
+                          userAccelerometerEventsSub.cancel();
+                          gyroscopeEventsSub.cancel();
+                          barcodeScanner.close();
+                          Navigator.pop(context);
+                          Navigator.pop(dialogContext);
+                        },
+                        style:
+                            ElevatedButton.styleFrom(primary: deepSpaceSparkle))
                   ],
                 ),
-                actions: [
-                  ElevatedButton(
-                      child: const Text('Restart Calibration'),
-                      onPressed: () {
-                        accelerometerEventsSub.cancel();
-                        userAccelerometerEventsSub.cancel();
-                        gyroscopeEventsSub.cancel();
-                        barcodeScanner.close();
-                        Navigator.pop(context);
-                        Navigator.pop(dialogContext);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  CameraCalibrationToolsView()),
-                        );
-                      },
-                      style:
-                          ElevatedButton.styleFrom(primary: deepSpaceSparkle))
-                ],
               );
             },
           );
