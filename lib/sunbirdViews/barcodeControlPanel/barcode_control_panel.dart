@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
+import 'package:flutter_google_ml_kit/objects/all_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/change_notifiers.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/widgets/tags_widget.dart';
 
@@ -50,7 +50,7 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
         centerTitle: true,
         elevation: 3,
       ),
-      body: FutureBuilder<BarcodeAndTagData>(
+      body: FutureBuilder<AllBarcodeData>(
         future: getCurrentBarcodeData(widget.barcodeID),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -61,13 +61,17 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
             List<String> unassignedTags = snapshot.data!.unassignedTags ?? [];
             Map<String, List<String>> barcodePhotoData =
                 snapshot.data?.barcodePhotoData ?? {};
+            String description =
+                snapshot.data?.description ?? 'Add a description';
             log(snapshot.data.toString());
             return SingleChildScrollView(
               child: Column(
                 children: [
                   ChangeNotifierProvider<BarcodeDataChangeNotifier>(
                       create: (_) => BarcodeDataChangeNotifier(
-                          barcodeSize: barcodeSize, isFixed: isFixed),
+                          barcodeSize: barcodeSize,
+                          isFixed: isFixed,
+                          description: description),
                       child: BarcodeDataContainer(
                         barcodeID: barcodeID,
                       )),
@@ -98,7 +102,7 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
     );
   }
 
-  Future<BarcodeAndTagData> getCurrentBarcodeData(int barcodeID) async {
+  Future<AllBarcodeData> getCurrentBarcodeData(int barcodeID) async {
     //Gets a list of all barcodeTagEntries
     List<String> barcodeTags = await getCurrentBarcodeTags(barcodeID);
     List<String> barcodeUnassignedTags = await getUnassignedTags();
@@ -123,13 +127,14 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
       barcodePhotos = currentBarcodePhotosEntry.photoData;
     }
 
-    BarcodeAndTagData barcodeAndTagData = BarcodeAndTagData(
+    AllBarcodeData barcodeAndTagData = AllBarcodeData(
         barcodeID: barcodeID,
         barcodeSize: barcodeData.barcodeSize,
         isFixed: barcodeData.isFixed,
         tags: barcodeTags,
         unassignedTags: barcodeUnassignedTags,
-        barcodePhotoData: barcodePhotos);
+        barcodePhotoData: barcodePhotos,
+        description: barcodeData.description);
 
     return barcodeAndTagData;
   }

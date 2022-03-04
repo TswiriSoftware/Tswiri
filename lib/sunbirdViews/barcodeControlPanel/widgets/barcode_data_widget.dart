@@ -19,7 +19,11 @@ class BarcodeDataContainer extends StatefulWidget {
 
 class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
   double barcodeSize = 0;
-  final TextEditingController _textFieldController = TextEditingController();
+  String description = '';
+  final TextEditingController _barcodeDiagonalLengthController =
+      TextEditingController();
+  final TextEditingController _barcodeDescriptionController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -43,6 +47,7 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          //Heading
           Padding(
             padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
             child: Row(
@@ -58,6 +63,7 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
           const Divider(
             color: Colors.white,
           ),
+          //ID
           Padding(
             padding:
                 const EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 10),
@@ -66,6 +72,7 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
               style: const TextStyle(fontSize: 18),
             ),
           ),
+          //Diagonal Length
           Padding(
             padding:
                 const EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 10),
@@ -84,39 +91,43 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: const Text('Enter Barcode diagonal length'),
+                          title: const Text(
+                              'Enter Barcode diagonal length in mm.'),
                           content: TextField(
-                            controller: _textFieldController,
+                            controller: _barcodeDiagonalLengthController,
                             textInputAction: TextInputAction.go,
                             keyboardType:
                                 const TextInputType.numberWithOptions(),
                             decoration: const InputDecoration(
-                                hintText: "Enter barcode size"),
+                                hintText: "Enter barcode size."),
                           ),
                           actions: [
                             ElevatedButton(
-                              child: const Text('Submit'),
-                              onPressed: () {
-                                barcodeSize =
-                                    double.parse(_textFieldController.text);
-                                setBarcodeSize();
-                                Navigator.of(context).pop();
-                              },
-                            )
+                                child: const Text('Submit'),
+                                onPressed: () {
+                                  barcodeSize = double.parse(
+                                      _barcodeDiagonalLengthController.text);
+                                  setBarcodeSize();
+                                  Navigator.of(context).pop();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    primary: deepSpaceSparkle))
                           ],
                         );
                       });
                 },
                 child: Text(
-                  'Barcode Size:  ' +
+                  'Barcode Diagonal Length:  ' +
                       Provider.of<BarcodeDataChangeNotifier>(context)
                           .barcodeSize
-                          .toString(),
+                          .toString() +
+                      ' mm',
                   style: const TextStyle(fontSize: 18),
                 ),
               ),
             ),
           ),
+          //isFixed
           Padding(
             padding:
                 const EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 10),
@@ -143,7 +154,58 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
                 ),
               ),
             ),
-          )
+          ),
+          //Description
+          Padding(
+            padding:
+                const EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 10),
+            child: Container(
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: deepSpaceSparkle[200],
+                border: Border.all(color: Colors.white60, width: 2),
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(5),
+                ),
+              ),
+              child: InkWell(
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text('Enter Barcode Description.'),
+                          content: TextField(
+                            controller: _barcodeDescriptionController,
+                            textInputAction: TextInputAction.go,
+                            decoration: const InputDecoration(
+                                hintText: "Enter barcode description."),
+                          ),
+                          actions: [
+                            ElevatedButton(
+                                child: const Text('Submit'),
+                                onPressed: () {
+                                  description =
+                                      _barcodeDescriptionController.text;
+
+                                  setBarcodeDescription();
+                                  Navigator.of(context).pop();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    primary: deepSpaceSparkle))
+                          ],
+                        );
+                      });
+                },
+                child: Text(
+                  'Description:  ' +
+                      Provider.of<BarcodeDataChangeNotifier>(context)
+                          .description,
+                  style: const TextStyle(fontSize: 18),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -152,5 +214,10 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
   setBarcodeSize() {
     Provider.of<BarcodeDataChangeNotifier>(context, listen: false)
         .changeBarcodeSize(widget.barcodeID, barcodeSize);
+  }
+
+  setBarcodeDescription() {
+    Provider.of<BarcodeDataChangeNotifier>(context, listen: false)
+        .changeBarcodeDescription(widget.barcodeID, description);
   }
 }

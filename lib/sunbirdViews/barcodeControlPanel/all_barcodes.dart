@@ -4,9 +4,12 @@ import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_e
 import 'package:flutter_google_ml_kit/functions/barcodeTools/get_data_functions.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeTools/hide_keyboard.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
+import 'package:flutter_google_ml_kit/objects/all_barcode_data.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/barcode_control_panel.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/scan_barcode_view.dart';
+import 'package:hive/hive.dart';
+
+import '../../globalValues/global_hive_databases.dart';
 
 class AllBarcodesView extends StatefulWidget {
   const AllBarcodesView({Key? key}) : super(key: key);
@@ -16,7 +19,7 @@ class AllBarcodesView extends StatefulWidget {
 }
 
 class _AllBarcodesViewState extends State<AllBarcodesView> {
-  List<BarcodeAndTagData> foundBarcodes = [];
+  List<AllBarcodeData> foundBarcodes = [];
   List<String> unassignedTags = [];
 
   @override
@@ -63,14 +66,32 @@ class _AllBarcodesViewState extends State<AllBarcodesView> {
         children: [
           searchBar(context),
           const SizedBox(height: 10),
+          Text('swipe to delete'),
+          const SizedBox(height: 10),
           Expanded(
             child: foundBarcodes.isNotEmpty
                 ? ListView.builder(
                     physics: const BouncingScrollPhysics(),
                     itemCount: foundBarcodes.length,
                     itemBuilder: (context, index) {
-                      return displayBarcodeDataWidget(
-                          context, foundBarcodes[index], runFilter(''));
+                      final foundBarcode = foundBarcodes[index];
+                      return Dismissible(
+                        key: Key(foundBarcode.barcodeID.toString()),
+                        onDismissed: (direction) {
+                          deleteBarcode(foundBarcode.barcodeID);
+                          // Remove the item from the data source.
+                          setState(() {
+                            foundBarcodes.removeAt(index);
+                          });
+
+                          // // Then show a snackbar.
+                          // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          //     content: Text(
+                          //         'Barcode: ${foundBarcode.barcodeID} Deleted')));
+                        },
+                        child: displayBarcodeDataWidget(
+                            context, foundBarcodes[index], runFilter('')),
+                      );
                     })
                 : const Text(
                     'No results found',
@@ -82,6 +103,15 @@ class _AllBarcodesViewState extends State<AllBarcodesView> {
     );
   }
 
+  void deleteBarcode(int barcodeID) async {
+    //Open generatedBarcodesBox.
+    Box<BarcodeDataEntry> generatedBarcodesBox =
+        await Hive.openBox(allBarcodesBoxName);
+    if (barcodeID != 1) {
+      generatedBarcodesBox.delete(barcodeID);
+    } else {}
+  }
+
   Future<void> runFilter(String enteredKeyword) async {
     //Gets a list of all generated Barcodes.
     List<BarcodeDataEntry> allBarcodes = [];
@@ -91,7 +121,7 @@ class _AllBarcodesViewState extends State<AllBarcodesView> {
     List<BarcodeTagEntry> barcodeTagEntries = await getAllBarcodeTags();
 
     //Filter results.
-    List<BarcodeAndTagData> results = [];
+    List<AllBarcodeData> results = [];
 
     //Iterate through generatedBarcodes and compile all relevant data and tags into a list.
     for (BarcodeDataEntry barcodeData in allBarcodes) {
@@ -99,7 +129,7 @@ class _AllBarcodesViewState extends State<AllBarcodesView> {
       List<String> relevantTags =
           findRelevantBarcodeTags(barcodeTagEntries, barcodeData);
 
-      results.add(BarcodeAndTagData(
+      results.add(AllBarcodeData(
           barcodeID: barcodeData.barcodeID,
           barcodeSize: barcodeData.barcodeSize,
           isFixed: barcodeData.isFixed,
@@ -156,7 +186,7 @@ class _AllBarcodesViewState extends State<AllBarcodesView> {
 ///Displays a inkwell widget containing the barcodeID and all relevant tags.
 InkWell displayBarcodeDataWidget(
   BuildContext context,
-  BarcodeAndTagData barcodeAndTagData,
+  AllBarcodeData barcodeAndTagData,
   Future<void> runFilter,
 ) {
   //Create a Color Pattern.

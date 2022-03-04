@@ -50,7 +50,9 @@ class _SelectRangeWidgetState extends State<SelectRangeWidget> {
   int rangeStart = 1;
   int rangeEnd = 1;
   int totalNumberOfBarcodes = 100;
-  List<int> totalBarcodes = List.generate(10, (index) => (index + 1) * 100);
+  List<int> totalBarcodes = [
+    100
+  ]; //List.generate(10, (index) => (index + 1) * 100);
   List<int> numbers = List.generate(100, (index) => index + 1);
 
   @override
@@ -162,7 +164,7 @@ class _SelectRangeWidgetState extends State<SelectRangeWidget> {
                       MaterialStateProperty.all(Colors.deepOrange)),
               onPressed: () async {
                 //Save Barcode data in box
-                await putBarcodeData();
+                await addBarcodeData();
 
                 Navigator.push(
                     context,
@@ -178,20 +180,33 @@ class _SelectRangeWidgetState extends State<SelectRangeWidget> {
     );
   }
 
-  Future<void> putBarcodeData() async {
+  Future<void> addBarcodeData() async {
     //Open Barcode DataBox
     Box<BarcodeDataEntry> barcodeData = await Hive.openBox(allBarcodesBoxName);
 
-    barcodeData.clear();
+    //barcodeData.clear();
 
     //Put barcode data
+
     for (int i = rangeStart; i <= rangeEnd; i++) {
-      if (i == 1) {
-        await barcodeData.put(
-            i, BarcodeDataEntry(barcodeID: i, barcodeSize: 100, isFixed: true));
-      } else {
-        await barcodeData.put(i,
-            BarcodeDataEntry(barcodeID: i, barcodeSize: 100, isFixed: false));
+      if (!barcodeData.containsKey(i)) {
+        if (i == 1) {
+          await barcodeData.put(
+              i,
+              BarcodeDataEntry(
+                  barcodeID: i,
+                  barcodeSize: 100,
+                  isFixed: true,
+                  description: 'Add a description'));
+        } else {
+          await barcodeData.put(
+              i,
+              BarcodeDataEntry(
+                  barcodeID: i,
+                  barcodeSize: 100,
+                  isFixed: false,
+                  description: 'Add a description'));
+        }
       }
     }
     //close Box

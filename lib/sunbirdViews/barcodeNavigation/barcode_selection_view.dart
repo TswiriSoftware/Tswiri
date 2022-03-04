@@ -3,7 +3,7 @@ import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/real_bar
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_entry.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
-import 'package:flutter_google_ml_kit/objects/barcode_and_tag_data.dart';
+import 'package:flutter_google_ml_kit/objects/all_barcode_data.dart';
 import 'package:hive/hive.dart';
 import 'barcode_camera_navigator_view.dart';
 
@@ -15,7 +15,7 @@ class BarcodeSelectionView extends StatefulWidget {
 }
 
 class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
-  List<BarcodeAndTagData> _foundBarcodes = [];
+  List<AllBarcodeData> _foundBarcodes = [];
 
   @override
   void initState() {
@@ -100,7 +100,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
     List<BarcodeTagEntry> barcodesAssignedTags = barcodeTagsBox.values.toList();
 
     //The DisplayList.
-    List<BarcodeAndTagData> results = [];
+    List<AllBarcodeData> results = [];
 
     for (RealBarcodePostionEntry realBarcodePosition in realBarcodesPositions) {
       //To set to remove any duplicates if there are any.
@@ -113,7 +113,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
       List<String> relevantTags =
           getRelevantBarcodes(relevantBarcodeTagEntries);
 
-      results.add(BarcodeAndTagData(
+      results.add(AllBarcodeData(
           barcodeID: int.parse(realBarcodePosition.uid),
           barcodeSize: 70.0,
           isFixed: false,
@@ -151,7 +151,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
   }
 
   displayDataPointWidget(
-      BuildContext context, BarcodeAndTagData barcodeAndTagData) {
+      BuildContext context, AllBarcodeData barcodeAndTagData) {
     Color color;
     if (barcodeAndTagData.barcodeID.isEven) {
       color = deepSpaceSparkle;

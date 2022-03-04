@@ -7,9 +7,26 @@ import '../databaseAdapters/allBarcodes/barcode_entry.dart';
 import '../databaseAdapters/barcodePhotos/barcode_photo_entry.dart';
 
 class BarcodeDataChangeNotifier extends ChangeNotifier {
-  BarcodeDataChangeNotifier({required this.barcodeSize, required this.isFixed});
+  BarcodeDataChangeNotifier(
+      {required this.barcodeSize,
+      required this.isFixed,
+      required this.description});
   double barcodeSize;
   bool isFixed;
+  String description;
+
+  Future<void> changeBarcodeDescription(
+      int barcodeID, String newDescription) async {
+    description = newDescription;
+
+    Box<BarcodeDataEntry> generatedBarcodesBox =
+        await Hive.openBox(allBarcodesBoxName);
+    BarcodeDataEntry barcodeDataEntry = generatedBarcodesBox.get(barcodeID)!;
+    barcodeDataEntry.description = newDescription;
+
+    generatedBarcodesBox.put(barcodeID, barcodeDataEntry);
+    notifyListeners();
+  }
 
   Future<void> changeBarcodeSize(int barcodeID, double newBarcodeSize) async {
     barcodeSize = newBarcodeSize;

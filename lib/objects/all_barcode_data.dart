@@ -1,12 +1,13 @@
 ///Contains a barcodeID and a list of tags
-class BarcodeAndTagData {
-  BarcodeAndTagData(
+class AllBarcodeData {
+  AllBarcodeData(
       {required final this.barcodeID,
       required final this.barcodeSize,
       required final this.isFixed,
       final this.tags,
       final this.unassignedTags,
-      final this.barcodePhotoData});
+      final this.barcodePhotoData,
+      final this.description});
 
   ///BarcodeID
   final int barcodeID;
@@ -19,11 +20,14 @@ class BarcodeAndTagData {
   ///List of tags
   final List<String>? tags;
 
-  //List of unassigned Tags.
+  ///List of unassigned Tags.
   final List<String>? unassignedTags;
 
-  //Barcode Photo Entries.
+  ///Barcode Photo Entries.
   final Map<String, List<String>>? barcodePhotoData;
+
+  ///Barcode's description.
+  final String? description;
 
   @override
   String toString() {
