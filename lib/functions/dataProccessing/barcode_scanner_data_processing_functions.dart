@@ -262,10 +262,15 @@ double calculateBacodeMMperOIU(
     {required List<BarcodeDataEntry> barcodeDataEntries,
     required double diagonalLength,
     required String barcodeID}) {
-  return diagonalLength /
-      barcodeDataEntries
-          .firstWhere((element) => element.barcodeID == int.parse(barcodeID))
-          .barcodeSize;
+  diagonalLength = 0;
+  int index = barcodeDataEntries
+      .indexWhere((element) => element.barcodeID == int.parse(barcodeID));
+
+  if (index != -1) {
+    diagonalLength = diagonalLength / barcodeDataEntries[index].barcodeSize;
+  }
+
+  return diagonalLength;
 }
 
 //Uses the lookup table matchedCalibration data to find the distance from camera.
