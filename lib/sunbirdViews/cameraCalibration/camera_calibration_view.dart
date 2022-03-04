@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer' as d;
 import 'dart:math';
+import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/calibrationToolsView/camera_calibration_tools_view.dart';
 import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/cameraView/
 import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/painter/barcode_calibration_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'package:vector_math/vector_math.dart';
 
 class CameraCalibrationView extends StatefulWidget {
   const CameraCalibrationView({Key? key}) : super(key: key);
@@ -23,6 +25,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
 
+  //This is the timestamp that indicates at what time the calibration started.
   int startTimeStamp = 0;
 
   //This list contains all the rawUserAccelerometerData.
@@ -30,20 +33,38 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
 
   //This list contains all the scanned barcode data.
   List<BarcodeData> rawBarcodesData = [];
+
+  //Used to determine if the calibration process has started.
   bool hasStartedCalibration = false;
+
+  //Used to determine if the calibration process has been initialized.
   bool initializeCalibration = false;
-  bool isBusy = false;
-  int noBarcodesScanned = 0;
+
+  //Used to determine if the instuction dialog is displayed.
   bool isShowingDialog = false;
 
+  //This is a counter used to determine if the barcode is still within range of the camera.
+  int noBarcodesScanned = 0;
+
+  bool isBusy = false;
   CustomPaint? customPaint;
+
+  //The acceleration of the phone in the Z axis.
   double zAcceleration = 0;
   int? barcodeID;
-  late StreamSubscription<UserAccelerometerEvent> subscription;
+  late StreamSubscription<UserAccelerometerEvent> userAccelerometerEventsSub;
+  late StreamSubscription<AccelerometerEvent> accelerometerEventsSub;
+  late StreamSubscription<GyroscopeEvent> gyroscopeEventsSub;
+  Vector3 accelerometerEvent = Vector3(0, 0, 0);
+
+  Vector3? initialPhoneOrientation;
+  Vector3? gyroScopeOrientation;
+
+  bool hasPhoneDiverted = false;
 
   @override
   void initState() {
-    subscription =
+    userAccelerometerEventsSub =
         userAccelerometerEvents.listen((UserAccelerometerEvent event) {
       zAcceleration = event.z;
       setState(() {
@@ -52,6 +73,18 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
             timestamp: timestamp, rawAcceleration: zAcceleration));
       });
     });
+    accelerometerEventsSub =
+        accelerometerEvents.listen((AccelerometerEvent event) {
+      accelerometerEvent = Vector3(event.x, event.y, event.z);
+    });
+
+    gyroscopeEventsSub = gyroscopeEvents.listen((GyroscopeEvent event) {
+      if (gyroScopeOrientation != null) {
+        gyroScopeOrientation =
+            gyroScopeOrientation! + Vector3(event.x, event.y, event.z);
+      }
+    });
+
     super.initState();
 
     //Future(_showCalibrationInstuctions);
@@ -60,7 +93,9 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
   @override
   void dispose() {
     barcodeScanner.close();
-    subscription.cancel();
+    accelerometerEventsSub.cancel();
+    userAccelerometerEventsSub.cancel();
+    gyroscopeEventsSub.cancel();
     super.dispose();
   }
 
@@ -77,23 +112,13 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
     ));
   }
 
-  AlertDialog myAlertDialog() {
-    return AlertDialog(
-      title: const Text('Camera Calibration'),
-      content: Wrap(
-        crossAxisAlignment: WrapCrossAlignment.start,
-        children: const [
-          Text(
-              '1. Place the camera directly on the barcode, so that the feed goes black \n\n2. Then slowly move the phone backwards until it no longer detects the barcode.'),
-        ],
-      ),
-    );
-  }
+  //Instruction dialog context
+  BuildContext? instructionDialogContext;
 
-  BuildContext? myDialogContext;
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;
     isBusy = true;
+    bool cameraFeedisBlack = false;
 
     final barcodes = await barcodeScanner.processImage(inputImage);
     int timestamp = DateTime.now().millisecondsSinceEpoch;
@@ -102,12 +127,41 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
       //This initializes the Instruction Dialog.
       showInitialInstructionDialog();
 
-      checkIfCameraFeedIsBlack(inputImage);
+      //Check if camera feed is black.
+      cameraFeedisBlack = checkIfCameraFeedIsBlack(inputImage);
+
+      //If it is black....
+      if (cameraFeedisBlack) {
+        setState(() {
+          //Initilize the calibration.
+          initializeCalibration = true;
+
+          //Set initialPhoneOrientation
+          initialPhoneOrientation = accelerometerEvent;
+
+          //Initialize gyroscope tracking :D Big brother is watching dont be naughty.
+          gyroScopeOrientation = Vector3(0, 0, 0);
+
+          //Close instruction dialog.
+          closeInstructionDialog();
+
+          //Display a snackbar message.
+          SnackBar snackBar = const SnackBar(
+            content: Text('Calibration Starting'),
+            duration: Duration(milliseconds: 500),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+          //Start the calibration.
+          hasStartedCalibration = true;
+          //Set the start timestamp for use in the processing screen.
+          startTimeStamp = DateTime.now().millisecondsSinceEpoch;
+        });
+      }
     }
 
-    if (hasStartedCalibration == true && isShowingDialog == true) {
-      closeInstructionDialog();
-    }
+    //Detects phone diversions and restarts the calibration.
+    checkIfPhoneHasDiverted();
 
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null &&
@@ -118,16 +172,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
             .add(BarcodeData(timestamp: timestamp, barcode: barcodes.first));
       }
 
-      //This checks if the barcode has a display value and sets it.
-      // if (mounted) {
-      //   if (barcodes.first.value.displayValue != null) {
-      //     setState(() {
-      //       barcodeID = int.parse(barcodes.first.value.displayValue!);
-      //     });
-      //   }
-
-      // }
-
+      //Initialize the painter.
       final painter = BarcodeDetectorPainterCalibration(
           barcodes,
           inputImage.inputImageData!.size,
@@ -135,10 +180,12 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
 
       customPaint = CustomPaint(painter: painter);
 
+      //Reset the barcode scanned counter.
       resetNoBarcodesScanned();
     } else {
       customPaint = null;
       if (mounted) {
+        //Add to the no barcode scanned counter.
         noBarcodesScannedThisFrame();
 
         //If:
@@ -158,15 +205,70 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
     }
   }
 
+  void checkIfPhoneHasDiverted() {
+    //Detects Z axis diversions.
+    double maxDiversion = 15;
+    if (gyroScopeOrientation != null) {
+      if (-maxDiversion > gyroScopeOrientation!.x ||
+          maxDiversion < gyroScopeOrientation!.x ||
+          -maxDiversion > gyroScopeOrientation!.y ||
+          maxDiversion < gyroScopeOrientation!.y ||
+          -maxDiversion > gyroScopeOrientation!.z ||
+          maxDiversion < gyroScopeOrientation!.z) {
+        if (hasPhoneDiverted == false) {
+          showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (dialogContext) {
+              return AlertDialog(
+                title: const Text('Camera Calibration'),
+                content: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.start,
+                  children: const [
+                    Text(
+                        'You have changed your phones direction too much you need to restart the calibraton process D:'),
+                  ],
+                ),
+                actions: [
+                  ElevatedButton(
+                      child: const Text('Restart Calibration'),
+                      onPressed: () {
+                        accelerometerEventsSub.cancel();
+                        userAccelerometerEventsSub.cancel();
+                        gyroscopeEventsSub.cancel();
+                        barcodeScanner.close();
+                        Navigator.pop(context);
+                        Navigator.pop(dialogContext);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  CameraCalibrationToolsView()),
+                        );
+                      },
+                      style:
+                          ElevatedButton.styleFrom(primary: deepSpaceSparkle))
+                ],
+              );
+            },
+          );
+        }
+
+        //Sets the bool
+        hasPhoneDiverted = true;
+      }
+    }
+  }
+
+  ///Shows the Instruction Dialog only once.
   void showInitialInstructionDialog() {
     if (isShowingDialog == false && initializeCalibration == false) {
       isShowingDialog = true;
-
       showDialog(
         barrierDismissible: false,
         context: context,
         builder: (dialogContext) {
-          myDialogContext = dialogContext;
+          instructionDialogContext = dialogContext;
 
           return AlertDialog(
             title: const Text('Camera Calibration'),
@@ -183,10 +285,11 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
     }
   }
 
+  ///Close the instruction dialog.
   void closeInstructionDialog() {
-    if (myDialogContext != null) {
+    if (instructionDialogContext != null) {
       isShowingDialog = false;
-      Navigator.pop(myDialogContext!);
+      Navigator.pop(instructionDialogContext!);
     }
   }
 
@@ -210,18 +313,27 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
 
   ///Proceed to data processing screen.
   void continueToProcessingScreen() {
+    //Cancel all subscriptions.
+    accelerometerEventsSub.cancel();
+    userAccelerometerEventsSub.cancel();
+    gyroscopeEventsSub.cancel();
+
+    //Navigation.
     Navigator.pop(context);
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
         builder: (context) => BarcodeCalibrationDataProcessingView(
-              rawBarcodeData: rawBarcodesData,
-              rawUserAccelerometerData: rawAccelerometerData,
-              startTimeStamp: startTimeStamp,
-              barcodeID: barcodeID ?? 1,
-            )));
+          rawBarcodeData: rawBarcodesData,
+          rawUserAccelerometerData: rawAccelerometerData,
+          startTimeStamp: startTimeStamp,
+          barcodeID: barcodeID ?? 1,
+        ),
+      ),
+    );
   }
 
   ///Checks if the input image has is black.
-  void checkIfCameraFeedIsBlack(InputImage inputImage) {
+  bool checkIfCameraFeedIsBlack(InputImage inputImage) {
     //Convert the image to a bitmap 100x100
     img.Image bitmap = img.Image.fromBytes(100, 100, inputImage.bytes!,
         format: img.Format.rgba);
@@ -254,28 +366,10 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
             (blueBucket / pixelCount)) /
         3;
 
-    if (mounted) {
-      if (averageColorValue <= 15 && initializeCalibration == false) {
-        setState(() {
-          //Initilize the calibration.
-          initializeCalibration = true;
-
-          d.log('d');
-          //Display a snackbar message.
-          SnackBar snackBar = const SnackBar(
-            content: Text('Calibration will start in 1 second.'),
-            duration: Duration(milliseconds: 100),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-          //Wait 1 second.
-          //Future.delayed(const Duration(seconds: 1));
-          //Start the calibration.
-          hasStartedCalibration = true;
-          //Set the start timestamp for use in the processing screen.
-          startTimeStamp = DateTime.now().millisecondsSinceEpoch;
-        });
-      }
+    if (averageColorValue <= 15 && initializeCalibration == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }
