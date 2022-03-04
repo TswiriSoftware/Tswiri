@@ -2,6 +2,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
+import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app_settings.dart';
@@ -16,7 +17,8 @@ Future getCurrentAppSettings() async {
 
 ///Returns the [ResolutionPreset]
 ResolutionPreset getCameraResolution(SharedPreferences prefs) {
-  String cameraPreset = prefs.getString('cameraResolutionPreset') ?? 'high';
+  String cameraPreset =
+      prefs.getString(cameraResolutionPresetPreference) ?? 'high';
   ResolutionPreset selectedCameraResolution = ResolutionPreset.high;
   switch (cameraPreset) {
     case 'high':
@@ -37,7 +39,7 @@ ResolutionPreset getCameraResolution(SharedPreferences prefs) {
 ///Sets the Camera Resolution in shared Prefs.
 Future setCameraResolution(String selectedCameraResolution) async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setString('cameraResolutionPreset', selectedCameraResolution);
+  prefs.setString(cameraResolutionPresetPreference, selectedCameraResolution);
   switch (selectedCameraResolution) {
     case 'high':
       cameraResolution = ResolutionPreset.high;
@@ -57,12 +59,12 @@ Future setCameraResolution(String selectedCameraResolution) async {
 Future setHapticFeedback(bool vibration) async {
   final prefs = await SharedPreferences.getInstance();
   hapticFeedBack = vibration;
-  prefs.setBool('hapticFeedBack', vibration);
+  prefs.setBool(hapticFeedBackPreference, vibration);
 }
 
 ///Sets the Camera Resolution in shared Prefs.
 bool getHapticFeedback(SharedPreferences prefs) {
-  hapticFeedBack = (prefs.getBool('hapticFeedBack') ?? true);
+  hapticFeedBack = (prefs.getBool(hapticFeedBackPreference) ?? true);
   return hapticFeedBack!;
 }
 

@@ -6,11 +6,13 @@ import 'package:flutter_google_ml_kit/functions/dataProccessing/barcode_scanner_
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/globalValues/origin_data.dart';
+import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
 import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'real_barcode_position_database_visualization_view.dart';
 import 'widgets/real_position_display_widget.dart';
 
@@ -136,12 +138,20 @@ Future<List<RealBarcodePosition>> processData(
       buildAllOnImageInterBarcodeData(allRawOnImageBarcodeData);
 
   //3.1 Calculates all real interBarcodeOffsets.
+  //Get the camera's focal length
+  final prefs = await SharedPreferences.getInstance();
+  double focalLength = prefs.getDouble('focalLength') ?? 0;
+  double defaultBarcodeDiagonalLength =
+      prefs.getDouble(defaultBarcodeDiagonalLengthPreference) ?? 100;
+
   //Check Function for details.
   List<RealInterBarcodeOffset> allRealInterBarcodeOffsets =
-      buildAllRealInterBarcodeOffsets(
+      await buildAllRealInterBarcodeOffsets(
           allOnImageInterBarcodeData: allOnImageInterBarcodeData,
           calibrationLookupTable: distanceFromCameraLookup,
-          allBarcodes: allBarcodes);
+          allBarcodes: allBarcodes,
+          focalLength: focalLength,
+          defaultBarcodeDiagonalLength: defaultBarcodeDiagonalLength);
 
   //3.2 This list contains only unique realInterBarcodeOffsets
   List<RealInterBarcodeOffset> uniqueRealInterBarcodeOffsets =

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
+import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/user_accelerometer_z_axis_data_objects.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/barcode_size_objects.dart';
 import 'package:hive/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../databaseAdapters/allBarcodes/barcode_entry.dart';
 import '../../functions/barcodeTools/get_data_functions.dart';
@@ -16,12 +18,14 @@ class BarcodeCalibrationDataProcessingView extends StatefulWidget {
       {Key? key,
       required this.rawBarcodeData,
       required this.rawUserAccelerometerData,
-      required this.startTimeStamp})
+      required this.startTimeStamp,
+      required this.barcodeID})
       : super(key: key);
 
   final List<BarcodeData> rawBarcodeData;
   final List<RawUserAccelerometerZAxisData> rawUserAccelerometerData;
   final int startTimeStamp;
+  final int barcodeID;
 
   @override
   _BarcodeCalibrationDataProcessingViewState createState() =>
@@ -136,13 +140,29 @@ class _BarcodeCalibrationDataProcessingViewState
       List<BarcodeDataEntry> allBarcodes = [];
       allBarcodes.addAll(await getGeneratedBarcodes());
       double currentBarcodeSize = 0;
+      List<double> focalLengths = [];
 
-      if (rawBarcodesData.first.barcode.value.displayValue != null) {
+      int index = rawBarcodesData.indexWhere((element) =>
+          element.barcode.value.displayValue != null &&
+          element.timestamp >= widget.startTimeStamp);
+      if (index != -1) {
+        //Get scanned barcodeID.
         int currentBarcodeID =
-            int.parse(rawBarcodesData.first.barcode.value.displayValue!);
-        currentBarcodeSize = allBarcodes
-            .firstWhere((element) => element.barcodeID == currentBarcodeID)
-            .barcodeSize;
+            int.parse(rawBarcodesData[index].barcode.value.displayValue!);
+
+        //Get the index of currentBarcodeID
+        int indexOfcurrentBarcode = allBarcodes
+            .indexWhere((element) => element.barcodeID == currentBarcodeID);
+
+        //If it exists get it's size.
+        if (indexOfcurrentBarcode != -1) {
+          currentBarcodeSize = allBarcodes[indexOfcurrentBarcode].barcodeSize;
+        } else {
+          //Get the default barcode Size.
+          final prefs = await SharedPreferences.getInstance();
+          currentBarcodeSize =
+              prefs.getDouble(defaultBarcodeDiagonalLengthPreference) ?? 100;
+        }
       } else {
         return Future.error('Error: Unkown barcode scanned.');
       }
@@ -153,15 +173,15 @@ class _BarcodeCalibrationDataProcessingViewState
 
       //3. Get range of relevant rawAccelerometer data
       List<RawUserAccelerometerZAxisData> relevantRawAccelerometData =
-          getRelevantRawAccelerometerData(rawAccelerometData,
-              widget.startTimeStamp, onImageBarcodeSizes.last.timestamp);
+          getRelevantRawAccelerometerData(
+              rawAccelerometData, widget.startTimeStamp);
 
-      //List that contains processed accelerometer data//
+      //List that contains processed accelerometer data
       List<ProcessedUserAccelerometerZAxisData> processedAccelerometerData = [];
 
       //4. Set the starting distance as 0
       processedAccelerometerData.add(ProcessedUserAccelerometerZAxisData(
-          timestamp: rawAccelerometData.first.timestamp,
+          timestamp: relevantRawAccelerometData.first.timestamp,
           barcodeDistanceFromCamera: 0));
 
       //Used to keep track of total distance from barcode.
@@ -179,7 +199,7 @@ class _BarcodeCalibrationDataProcessingViewState
               (-relevantRawAccelerometData[i].rawAcceleration * deltaT);
 
           processedAccelerometerData.add(ProcessedUserAccelerometerZAxisData(
-              timestamp: rawAccelerometData[i].timestamp,
+              timestamp: relevantRawAccelerometData[i].timestamp,
               barcodeDistanceFromCamera: totalDistanceMoved));
         }
       }
@@ -212,6 +232,13 @@ class _BarcodeCalibrationDataProcessingViewState
                           .barcodeDistanceFromCamera,
                   actualBarcodeDiagonalLengthKey: currentBarcodeSize);
 
+          double focalLength = onImageBarcodeSize.averageBarcodeDiagonalLength *
+              (processedAccelerometerData[distanceFromCameraIndex]
+                      .barcodeDistanceFromCamera /
+                  currentBarcodeSize);
+
+          focalLengths.add(focalLength);
+
           matchedDataHiveBox.put(onImageBarcodeSize.timestamp.toString(),
               matchedCalibrationDataHiveObject);
 
@@ -220,6 +247,19 @@ class _BarcodeCalibrationDataProcessingViewState
           displayList.add(matchedCalibrationDataHiveObject);
         }
       }
+      final prefs = await SharedPreferences.getInstance();
+
+      //Calculate the average focal length.
+      double sumOfFocalLengths = prefs.getDouble('focalLength') ?? 0;
+      for (double focalLength in focalLengths) {
+        sumOfFocalLengths = sumOfFocalLengths + focalLength;
+      }
+      double finalFocalLength = sumOfFocalLengths / focalLengths.length;
+      //Set the focal Length of the camera
+
+      prefs.setDouble('focalLength', finalFocalLength);
+      //log('focal length: ' + finalFocalLength.toString());
+      //log(currentBarcodeSize.toString());
     }
     return displayList;
   }
@@ -239,16 +279,12 @@ bool checkMovementDirection(
 //Get rawAccelerationData that falls in the timerange of the scanned Barcodes
 List<RawUserAccelerometerZAxisData> getRelevantRawAccelerometerData(
     List<RawUserAccelerometerZAxisData> allRawAccelerometData,
-    int timeRangeStart,
-    int timeRangeEnd) {
+    int timeRangeStart) {
   //Sort rawAccelerometerData by timestamp descending.
   allRawAccelerometData.sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
-  //The +10 includes a couple of extra measurements.
   return allRawAccelerometData
-      .where((element) =>
-          element.timestamp >= timeRangeStart &&
-          element.timestamp + 10 <= timeRangeEnd)
+      .where((element) => element.timestamp >= timeRangeStart)
       .toList();
 }
 

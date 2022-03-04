@@ -66,7 +66,7 @@ class _AllBarcodesViewState extends State<AllBarcodesView> {
         children: [
           searchBar(context),
           const SizedBox(height: 10),
-          Text('swipe to delete'),
+          const Text('swipe to delete'),
           const SizedBox(height: 10),
           Expanded(
             child: foundBarcodes.isNotEmpty

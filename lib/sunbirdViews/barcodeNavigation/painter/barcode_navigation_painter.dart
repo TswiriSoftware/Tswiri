@@ -8,10 +8,12 @@ import 'package:flutter_google_ml_kit/functions/dataProccessing/barcode_scanner_
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_paints.dart';
+import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_positional_data.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/appSettings/app_settings.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../databaseAdapters/allBarcodes/barcode_entry.dart';
 import '../../../databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
@@ -75,7 +77,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
   ///
 
   @override
-  void paint(Canvas canvas, Size size) {
+  Future<void> paint(Canvas canvas, Size size) async {
     //Calculate screen center offset.
     Offset screenCenterPoint = calculateScreenCenterPoint(size);
 
@@ -169,11 +171,17 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
         //3. Calculate real offset from reference barcode to screen center.
 
         //i. Calculate the mm value of 1 on image unit.
+        final prefs = await SharedPreferences.getInstance();
+
+        double defaultBarcodeDiagonalLength =
+            prefs.getDouble(defaultBarcodeDiagonalLengthPreference) ?? 100;
+
         double referenceBarcodeMMperOIU = calculateBacodeMMperOIU(
             barcodeDataEntries: allBarcodes,
             diagonalLength:
                 calculateAverageBarcodeDiagonalLength(referenceBarcode),
-            barcodeID: referenceBarcode.displayValue!);
+            barcodeID: referenceBarcode.displayValue!,
+            defaultBarcodeDiagonalLength: defaultBarcodeDiagonalLength);
 
         //ii. Calculate the real distance of the offset.
         Offset referenceBarcodeTOScreenCenter =

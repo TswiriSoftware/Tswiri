@@ -109,7 +109,19 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
 
     //Get all generated barcodes.
     Box<BarcodeDataEntry> allBarcodes = await Hive.openBox(allBarcodesBoxName);
-    BarcodeDataEntry barcodeData = allBarcodes.get(barcodeID)!;
+
+    BarcodeDataEntry? barcodeData = allBarcodes.get(barcodeID);
+    if (allBarcodes.get(barcodeID) == null) {
+      barcodeData = BarcodeDataEntry(
+          barcodeID: barcodeID,
+          barcodeSize: 100,
+          isFixed: false,
+          description: '');
+
+      allBarcodes.put(barcodeID, barcodeData);
+    } else {
+      barcodeData = allBarcodes.get(barcodeID)!;
+    }
 
     //Remove the assigned tags from unassigned tags.
     barcodeUnassignedTags

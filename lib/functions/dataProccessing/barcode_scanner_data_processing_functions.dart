@@ -165,10 +165,12 @@ List<RealBarcodePosition> extractListOfScannedBarcodes(
 ///iii. It calculates the distance between the camera and the barcode.
 ///
 ///
-List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
+Future<List<RealInterBarcodeOffset>> buildAllRealInterBarcodeOffsets(
     {required List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData,
     required List<DistanceFromCameraLookupEntry> calibrationLookupTable,
-    required List<BarcodeDataEntry> allBarcodes}) {
+    required List<BarcodeDataEntry> allBarcodes,
+    required double focalLength,
+    required double defaultBarcodeDiagonalLength}) async {
   List<RealInterBarcodeOffset> allRealInterBarcodeData = [];
 
   for (RawOnImageInterBarcodeData interBarcodeDataInstance
@@ -203,12 +205,14 @@ List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
     double startBarcodeMMperPX = calculateBacodeMMperOIU(
         barcodeDataEntries: allBarcodes,
         diagonalLength: interBarcodeDataInstance.startDiagonalLength,
-        barcodeID: interBarcodeDataInstance.uidStart);
+        barcodeID: interBarcodeDataInstance.uidStart,
+        defaultBarcodeDiagonalLength: defaultBarcodeDiagonalLength);
 
     double endBarcodeMMperPX = calculateBacodeMMperOIU(
         barcodeDataEntries: allBarcodes,
         diagonalLength: interBarcodeDataInstance.endDiagonalLength,
-        barcodeID: interBarcodeDataInstance.uidEnd);
+        barcodeID: interBarcodeDataInstance.uidEnd,
+        defaultBarcodeDiagonalLength: defaultBarcodeDiagonalLength);
 
     //Calculate the real distance of the offset.
     Offset realOffsetStartBarcode = interBarcodeOffset / startBarcodeMMperPX;
@@ -217,19 +221,24 @@ List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
     Offset averageRealInterBarcodeOffset =
         (realOffsetStartBarcode + realOffsetEndBarcode) / 2;
 
+    //Use focal length
     //6. Find the distance bewteen the camera and barcodes.
     //startBarcode
     double startBarcodeDistanceFromCamera = findDistanceFromCamera(
-        calibrationLookupTable: calibrationLookupTable,
-        barcodeDiagonalLength: interBarcodeDataInstance.startDiagonalLength,
+        barcodeOnImageDiagonalLength:
+            interBarcodeDataInstance.startDiagonalLength,
         barcodeValue: interBarcodeDataInstance.startBarcode,
-        allBarcodes: allBarcodes);
+        allBarcodes: allBarcodes,
+        focalLength: focalLength,
+        defaultBarcodeSize: defaultBarcodeDiagonalLength);
     //endBarcode
     double endBarcodeDistanceFromCamera = findDistanceFromCamera(
-        calibrationLookupTable: calibrationLookupTable,
-        barcodeDiagonalLength: interBarcodeDataInstance.endDiagonalLength,
+        barcodeOnImageDiagonalLength:
+            interBarcodeDataInstance.endDiagonalLength,
         barcodeValue: interBarcodeDataInstance.endBarcode,
-        allBarcodes: allBarcodes);
+        allBarcodes: allBarcodes,
+        focalLength: focalLength,
+        defaultBarcodeSize: defaultBarcodeDiagonalLength);
 
     //Calculate the zOffset
     double zOffset =
@@ -261,52 +270,39 @@ Offset rotateOffset({required Offset offset, required double angleRadians}) {
 double calculateBacodeMMperOIU(
     {required List<BarcodeDataEntry> barcodeDataEntries,
     required double diagonalLength,
-    required String barcodeID}) {
-  return diagonalLength /
-      barcodeDataEntries
-          .firstWhere((element) => element.barcodeID == int.parse(barcodeID))
-          .barcodeSize;
+    required String barcodeID,
+    required double defaultBarcodeDiagonalLength}) {
+  //If the barcode has not been generated. use default barcode size.
+  int index = barcodeDataEntries
+      .indexWhere((element) => element.barcodeID == int.parse(barcodeID));
+
+  if (index != -1) {
+    return diagonalLength / barcodeDataEntries[index].barcodeSize;
+  } else {
+    //get shared prefs.
+    return diagonalLength / defaultBarcodeDiagonalLength;
+  }
 }
 
 //Uses the lookup table matchedCalibration data to find the distance from camera.
 double findDistanceFromCamera(
-    {required List<DistanceFromCameraLookupEntry> calibrationLookupTable,
-    required double barcodeDiagonalLength,
+    {required double barcodeOnImageDiagonalLength,
     required BarcodeValue barcodeValue,
-    required List<BarcodeDataEntry> allBarcodes}) {
-  //Get the real barcode diagonalLength
-  double barcodeRealDiagonalLength = allBarcodes
-      .firstWhere((element) =>
-          element.barcodeID == int.parse(barcodeValue.displayValue!))
-      .barcodeSize;
+    required List<BarcodeDataEntry> allBarcodes,
+    required double focalLength,
+    required double defaultBarcodeSize}) {
+  int index = allBarcodes.indexWhere(
+      (element) => element.barcodeID == int.parse(barcodeValue.displayValue!));
 
-  //Get relevant lookupTable values
-  List<DistanceFromCameraLookupEntry> relevantLookupTable =
-      calibrationLookupTable
-          .where((element) =>
-              element.actualBarcodeDiagonalLengthKey ==
-              barcodeRealDiagonalLength)
-          .toList();
-
-  if (relevantLookupTable.isNotEmpty) {
-    //sort in descending order
-    relevantLookupTable.sort((a, b) => a.onImageBarcodeDiagonalLength
-        .compareTo(b.onImageBarcodeDiagonalLength));
-
-    //First index
-    int distanceFromCameraIndex = relevantLookupTable.indexWhere((element) =>
-        element.onImageBarcodeDiagonalLength >= barcodeDiagonalLength);
-    double distanceFromCamera = 0;
-
-    //checks if index is valid
-    if (distanceFromCameraIndex != -1) {
-      distanceFromCamera =
-          relevantLookupTable[distanceFromCameraIndex].distanceFromCamera;
-    }
+  if (index != -1) {
+    double barcodeRealDiagonalLength = allBarcodes[index].barcodeSize;
+    double distanceFromCamera =
+        focalLength * barcodeRealDiagonalLength / barcodeOnImageDiagonalLength;
     return distanceFromCamera;
   } else {
-    //developer.log('Error barcode size not calibrated');
-    return 0;
+    double distanceFromCamera =
+        focalLength * defaultBarcodeSize / barcodeOnImageDiagonalLength;
+    return distanceFromCamera;
   }
 }
 

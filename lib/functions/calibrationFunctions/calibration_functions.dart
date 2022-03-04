@@ -9,11 +9,12 @@ List<Offset> listOfPoints(Box matchedDataBox, Size screenSize) {
   matchedDataMap.forEach((key, value) {
     DistanceFromCameraLookupEntry data = value;
 
-    Offset offsetData = Offset(data.onImageBarcodeDiagonalLength, data.distanceFromCamera);
+    Offset offsetData =
+        Offset(data.onImageBarcodeDiagonalLength, data.distanceFromCamera);
 
     points.add(Offset(
         ((offsetData.dx + screenSize.width / 2) / (screenSize.width / 50)),
-        ((offsetData.dy + screenSize.height / 2) / (screenSize.height / 200))));
+        ((offsetData.dy + screenSize.height / 2) / (screenSize.height / 50))));
   });
   return points;
 }
