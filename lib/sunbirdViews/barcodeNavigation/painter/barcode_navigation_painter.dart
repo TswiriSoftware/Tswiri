@@ -30,7 +30,8 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
       required this.selectedBarcodeID,
       required this.distanceFromCameraLookup,
       required this.allBarcodes,
-      required this.phoneAngle});
+      required this.phoneAngle,
+      required this.defaultBarcodeDiagonalLength});
   final List<Barcode> barcodes;
   final Size absoluteImageSize;
   final InputImageRotation rotation;
@@ -39,6 +40,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
   final List<DistanceFromCameraLookupEntry> distanceFromCameraLookup;
   final List<BarcodeDataEntry> allBarcodes;
   final double phoneAngle;
+  final double defaultBarcodeDiagonalLength;
 
   ///Steps to follow for ///
   ///
@@ -77,7 +79,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
   ///
 
   @override
-  Future<void> paint(Canvas canvas, Size size) async {
+  void paint(Canvas canvas, Size size) {
     //Calculate screen center offset.
     Offset screenCenterPoint = calculateScreenCenterPoint(size);
 
@@ -171,10 +173,6 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
         //3. Calculate real offset from reference barcode to screen center.
 
         //i. Calculate the mm value of 1 on image unit.
-        final prefs = await SharedPreferences.getInstance();
-
-        double defaultBarcodeDiagonalLength =
-            prefs.getDouble(defaultBarcodeDiagonalLengthPreference) ?? 100;
 
         double referenceBarcodeMMperOIU = calculateBacodeMMperOIU(
             barcodeDataEntries: allBarcodes,

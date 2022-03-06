@@ -207,7 +207,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
 
   void checkIfPhoneHasDiverted() {
     //Detects Z axis diversions.
-    double maxDiversion = 15;
+    double maxDiversion = 30;
     if (gyroScopeOrientation != null) {
       if (-maxDiversion > gyroScopeOrientation!.x ||
           maxDiversion < gyroScopeOrientation!.x ||

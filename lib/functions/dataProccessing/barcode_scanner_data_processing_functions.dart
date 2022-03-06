@@ -165,12 +165,12 @@ List<RealBarcodePosition> extractListOfScannedBarcodes(
 ///iii. It calculates the distance between the camera and the barcode.
 ///
 ///
-Future<List<RealInterBarcodeOffset>> buildAllRealInterBarcodeOffsets(
+List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
     {required List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData,
     required List<DistanceFromCameraLookupEntry> calibrationLookupTable,
     required List<BarcodeDataEntry> allBarcodes,
     required double focalLength,
-    required double defaultBarcodeDiagonalLength}) async {
+    required double defaultBarcodeDiagonalLength}) {
   List<RealInterBarcodeOffset> allRealInterBarcodeData = [];
 
   for (RawOnImageInterBarcodeData interBarcodeDataInstance

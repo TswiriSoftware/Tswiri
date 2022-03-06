@@ -78,16 +78,12 @@ class _AllBarcodesViewState extends State<AllBarcodesView> {
                       return Dismissible(
                         key: Key(foundBarcode.barcodeID.toString()),
                         onDismissed: (direction) {
-                          deleteBarcode(foundBarcode.barcodeID);
+                          deleteBarcode(foundBarcode.barcodeID,
+                              foundBarcodes[index].isFixed);
                           // Remove the item from the data source.
                           setState(() {
                             foundBarcodes.removeAt(index);
                           });
-
-                          // // Then show a snackbar.
-                          // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          //     content: Text(
-                          //         'Barcode: ${foundBarcode.barcodeID} Deleted')));
                         },
                         child: displayBarcodeDataWidget(
                             context, foundBarcodes[index], runFilter('')),
@@ -103,13 +99,23 @@ class _AllBarcodesViewState extends State<AllBarcodesView> {
     );
   }
 
-  void deleteBarcode(int barcodeID) async {
+  void deleteBarcode(int barcodeID, bool isFixed) async {
     //Open generatedBarcodesBox.
     Box<BarcodeDataEntry> generatedBarcodesBox =
         await Hive.openBox(allBarcodesBoxName);
-    if (barcodeID != 1) {
+    if (isFixed == false) {
       generatedBarcodesBox.delete(barcodeID);
-    } else {}
+
+      // Then show snackbar message Deleted.
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          duration: const Duration(milliseconds: 200),
+          content: Text('Barcode: $barcodeID Deleted')));
+    } else {
+      // Then show a snackbar message could not delete.
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          duration: Duration(milliseconds: 200),
+          content: Text('Cannot Delete barcode becuase it is fixed')));
+    }
   }
 
   Future<void> runFilter(String enteredKeyword) async {
@@ -189,9 +195,11 @@ InkWell displayBarcodeDataWidget(
   AllBarcodeData barcodeAndTagData,
   Future<void> runFilter,
 ) {
-  //Create a Color Pattern.
+  //Create a Color Pattern
   Color color;
-  if (barcodeAndTagData.barcodeID.isEven) {
+  if (barcodeAndTagData.isFixed == true) {
+    color = deeperOrange;
+  } else if (barcodeAndTagData.barcodeID.isEven) {
     color = darkPinkish;
   } else {
     color = deepSpaceSparkle;

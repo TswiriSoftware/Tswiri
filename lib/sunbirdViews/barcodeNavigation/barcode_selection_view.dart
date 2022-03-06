@@ -153,7 +153,10 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
   displayDataPointWidget(
       BuildContext context, AllBarcodeData barcodeAndTagData) {
     Color color;
-    if (barcodeAndTagData.barcodeID.isEven) {
+
+    if (barcodeAndTagData.isFixed == true) {
+      color = deeperOrange;
+    } else if (barcodeAndTagData.barcodeID.isEven) {
       color = deepSpaceSparkle;
     } else {
       color = limeGreenMuted;

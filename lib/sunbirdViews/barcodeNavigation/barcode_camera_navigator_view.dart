@@ -139,7 +139,7 @@ class _BarcodeCameraNavigatorViewState
     if (isBusy) return;
     isBusy = true;
 
-    //Ensures data is fetched only once from hive database.
+    //Ensures data is fetched only once from hive database and sharedpreferences.
     if (realBarcodePositionsUpdated.isEmpty &&
         calibrationLookupTable.isEmpty &&
         allBarcodes.isEmpty) {
@@ -150,8 +150,6 @@ class _BarcodeCameraNavigatorViewState
       focalLength = prefs.getDouble(focalLengthPreference) ?? 0;
       defaultBarcodeDiagonalLength =
           prefs.getDouble(defaultBarcodeDiagonalLengthPreference) ?? 100;
-
-      log('Fetching data');
     }
 
     final barcodes = await barcodeScanner.processImage(inputImage);
@@ -169,7 +167,8 @@ class _BarcodeCameraNavigatorViewState
           selectedBarcodeID: widget.barcodeID,
           distanceFromCameraLookup: calibrationLookupTable,
           allBarcodes: allBarcodes,
-          phoneAngle: angleRadians);
+          phoneAngle: angleRadians,
+          defaultBarcodeDiagonalLength: defaultBarcodeDiagonalLength);
 
       checkBarcodePositions(
           barcodes: barcodes,
@@ -189,12 +188,12 @@ class _BarcodeCameraNavigatorViewState
   }
 
   ///Checks if any barcodes have moved.
-  Future<void> checkBarcodePositions(
+  void checkBarcodePositions(
       {required List<Barcode> barcodes,
       required List<RealBarcodePostionEntry> realBarcodePositions,
       required List<BarcodeDataEntry> allBarcodes,
       required double focalLength,
-      required double defaultBarcodeDiagonalLength}) async {
+      required double defaultBarcodeDiagonalLength}) {
     if (barcodes.length >= 2) {
       //Checks that there are more than 2 barcodes in list.
 
@@ -218,7 +217,7 @@ class _BarcodeCameraNavigatorViewState
       //Get the camera's focal length
 
       List<RealInterBarcodeOffset> allRealInterBarcodeOffsets =
-          await buildAllRealInterBarcodeOffsets(
+          buildAllRealInterBarcodeOffsets(
               allOnImageInterBarcodeData: allOnImageInterBarcodeData,
               calibrationLookupTable: calibrationLookupTable,
               allBarcodes: allBarcodes,
