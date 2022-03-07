@@ -128,6 +128,7 @@ class PhotosAndTags extends ChangeNotifier {
   }
 
   Map<String, List<String>>? barcodePhotoData;
+  List<String>? photoTags;
 
   Future<void> updatePhotos(int barcodeID) async {
     Box<BarcodePhotosEntry> barcodePhotoEntries =
