@@ -153,14 +153,20 @@ class PhotoItem extends StatelessWidget {
                 ),
                 SizedBox(
                   width: width * 0.25,
-                  child: Wrap(
-                    spacing: 5,
-                    runSpacing: 5,
-                    children: photoTags
-                        .map((tag) => UnassignedPhotoTagButton(
-                            tag: tag, barcodeID: barcodeID))
-                        .toList(),
-                  ),
+                  child: Builder(builder: (context) {
+                    Provider.of<PhotosAndTags>(context).assignedTags;
+                    Provider.of<PhotosAndTags>(context).assignedTags;
+                    //List<String> displayedPhotoTags =
+
+                    return Wrap(
+                      spacing: 5,
+                      runSpacing: 5,
+                      children: photoTags
+                          .map((tag) => UnassignedPhotoTagButton(
+                              tag: tag, barcodeID: barcodeID))
+                          .toList(),
+                    );
+                  }),
                 ),
               ],
             ),
