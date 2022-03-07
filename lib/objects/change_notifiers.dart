@@ -1,3 +1,6 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_entry.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
@@ -53,11 +56,11 @@ class BarcodeDataChangeNotifier extends ChangeNotifier {
   }
 }
 
-class Tags extends ChangeNotifier {
-  Tags(
-    this.assignedTags,
-    this.unassignedTags,
-  );
+class PhotosAndTags extends ChangeNotifier {
+  PhotosAndTags(
+      {required this.assignedTags,
+      required this.unassignedTags,
+      this.barcodePhotoData});
 
   List<String> assignedTags;
   List<String> unassignedTags;
@@ -78,11 +81,14 @@ class Tags extends ChangeNotifier {
     Box<BarcodeTagEntry> currentTagsBox =
         await Hive.openBox(barcodeTagsBoxName);
 
-    currentTagsBox.put(
-        '${barcodeID}_$tag', BarcodeTagEntry(barcodeID: barcodeID, tag: tag));
+    if (!currentTagsBox.containsKey('${barcodeID}_$tag')) {
+      currentTagsBox.delete('${barcodeID}_$tag');
+      currentTagsBox.put(
+          '${barcodeID}_$tag', BarcodeTagEntry(barcodeID: barcodeID, tag: tag));
+      unassignedTags.remove(tag);
+      assignedTags.add(tag);
+    }
 
-    unassignedTags.remove(tag);
-    assignedTags.add(tag);
     notifyListeners();
   }
 
@@ -90,10 +96,11 @@ class Tags extends ChangeNotifier {
     if (!assignedTags.contains(enteredKeyword) &&
         !unassignedTags.contains(enteredKeyword)) {
       Box<String> tagsBox = await Hive.openBox(tagsBoxName);
-      //tagsBox.clear();
-      tagsBox.put(enteredKeyword, enteredKeyword);
 
-      unassignedTags.add(enteredKeyword);
+      if (!tagsBox.containsKey(enteredKeyword)) {
+        tagsBox.put(enteredKeyword, enteredKeyword);
+        unassignedTags.add(enteredKeyword);
+      }
 
       notifyListeners();
     }
@@ -119,10 +126,7 @@ class Tags extends ChangeNotifier {
       }
     }
   }
-}
 
-class PhotoDataChangeNotifier extends ChangeNotifier {
-  PhotoDataChangeNotifier({this.barcodePhotoData});
   Map<String, List<String>>? barcodePhotoData;
 
   Future<void> updatePhotos(int barcodeID) async {
@@ -146,12 +150,17 @@ class PhotoDataChangeNotifier extends ChangeNotifier {
     BarcodePhotosEntry? currentBarcodePhotosEntry =
         barcodePhotoEntries.get(barcodeID);
 
+    if (await File(photoPath).exists()) {
+      File photoFile = File(photoPath);
+      await photoFile.delete();
+    }
+
     if (currentBarcodePhotosEntry != null) {
       currentBarcodePhotosEntry.photoData
           .removeWhere((key, value) => key == photoPath);
+      barcodePhotoEntries.put(barcodeID, currentBarcodePhotosEntry);
     }
+
     notifyListeners();
   }
-
-  Future<void> changeFixed(int barcodeID) async {}
 }

@@ -75,22 +75,18 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
                       child: BarcodeDataContainer(
                         barcodeID: barcodeID,
                       )),
-                  ChangeNotifierProvider<Tags>(
-                    create: (_) => Tags(
-                      tags,
-                      unassignedTags,
-                    ),
+                  ChangeNotifierProvider<PhotosAndTags>(
+                    create: (_) => PhotosAndTags(
+                        assignedTags: tags,
+                        unassignedTags: unassignedTags,
+                        barcodePhotoData: barcodePhotoData),
                     child: Column(
                       children: [
                         TagsContainerWidget(barcodeID: barcodeID),
+                        BarcodePhotoView(barcodeID: barcodeID)
                       ],
                     ),
                   ),
-                  ChangeNotifierProvider(
-                    create: (_) => PhotoDataChangeNotifier(
-                        barcodePhotoData: barcodePhotoData),
-                    child: BarcodePhotoView(barcodeID: barcodeID),
-                  )
                 ],
               ),
             );

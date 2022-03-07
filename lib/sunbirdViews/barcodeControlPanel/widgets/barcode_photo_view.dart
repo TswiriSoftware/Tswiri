@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/widgets/tags_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../../objects/change_notifiers.dart';
@@ -26,16 +27,16 @@ class _BarcodePhotoViewState extends State<BarcodePhotoView> {
     super.dispose();
   }
 
-  List itemList = ['a', 'b'];
   bool isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
     List<Widget> photos = [];
 
-    Map<String, List<String>> x =
-        Provider.of<PhotoDataChangeNotifier>(context).barcodePhotoData ?? {};
-    x.forEach((key, value) {
+    Map<String, List<String>> barcodePhotoData =
+        Provider.of<PhotosAndTags>(context).barcodePhotoData ?? {};
+
+    barcodePhotoData.forEach((key, value) {
       photos.add(PhotoItem(
         photoPath: key,
         photoTags: value,
@@ -94,9 +95,11 @@ class PhotoItem extends StatelessWidget {
       required this.photoTags,
       required this.barcodeID})
       : super(key: key);
+
   final int barcodeID;
   final String photoPath;
   final List<String> photoTags;
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.height;
@@ -125,8 +128,7 @@ class PhotoItem extends StatelessWidget {
                 SizedBox(
                   child: ElevatedButton(
                     onPressed: () {
-                      Provider.of<PhotoDataChangeNotifier>(context,
-                              listen: false)
+                      Provider.of<PhotosAndTags>(context, listen: false)
                           .deletePhoto(barcodeID, photoPath);
                     },
                     child: const Icon(Icons.delete),
@@ -151,7 +153,14 @@ class PhotoItem extends StatelessWidget {
                 ),
                 SizedBox(
                   width: width * 0.25,
-                  child: Text(photoTags.toString()),
+                  child: Wrap(
+                    spacing: 5,
+                    runSpacing: 5,
+                    children: photoTags
+                        .map((tag) => UnassignedPhotoTagButton(
+                            tag: tag, barcodeID: barcodeID))
+                        .toList(),
+                  ),
                 ),
               ],
             ),
@@ -208,6 +217,46 @@ class PhotoFullScreen extends StatelessWidget {
           Navigator.pop(context);
         },
       ),
+    );
+  }
+}
+
+class UnassignedPhotoTagButton extends StatelessWidget {
+  final String tag;
+  final int barcodeID;
+  const UnassignedPhotoTagButton({
+    required this.tag,
+    required this.barcodeID,
+    Key? key,
+  }) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      //width: 40,
+      height: 30,
+      child: ElevatedButton(
+          onPressed: () {
+            if (tag.isNotEmpty) {
+              Provider.of<PhotosAndTags>(context, listen: false).addNewTag(tag);
+              Provider.of<PhotosAndTags>(context, listen: false)
+                  .addTag(tag, barcodeID);
+            }
+          },
+          child: Text(
+            tag,
+            style: const TextStyle(color: Colors.black, fontSize: 10),
+          ),
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(Colors.white),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                  side: const BorderSide(
+                    color: Colors.teal,
+                    width: 2.0,
+                  ),
+                ),
+              ))),
     );
   }
 }

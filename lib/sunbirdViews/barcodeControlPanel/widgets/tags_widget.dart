@@ -53,7 +53,7 @@ class _TagsContainerWidgetState extends State<TagsContainerWidget> {
                 padding: const EdgeInsets.all(5.0),
                 child: Wrap(
                     spacing: 5,
-                    children: Provider.of<Tags>(context)
+                    children: Provider.of<PhotosAndTags>(context)
                         .assignedTags
                         .map((tag) => AssignedTagButton(
                               tag: tag,
@@ -71,7 +71,7 @@ class _TagsContainerWidgetState extends State<TagsContainerWidget> {
                   padding: const EdgeInsets.only(left: 5.0, right: 5.0),
                   child: Wrap(
                       spacing: 5,
-                      children: Provider.of<Tags>(context)
+                      children: Provider.of<PhotosAndTags>(context)
                           .filter(searchValue)
                           .map((tag) => UnassignedTagButton(
                               tag: tag,
@@ -120,7 +120,8 @@ class AssignedTagButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
         onPressed: () {
-          Provider.of<Tags>(context, listen: false).deleteTag(tag, barcodeID);
+          Provider.of<PhotosAndTags>(context, listen: false)
+              .deleteTag(tag, barcodeID);
         },
         child: Text(
           tag,
@@ -155,7 +156,8 @@ class UnassignedTagButton extends StatelessWidget {
     if (tag != '+') {
       return ElevatedButton(
         onPressed: () {
-          Provider.of<Tags>(context, listen: false).addTag(tag, barcodeID);
+          Provider.of<PhotosAndTags>(context, listen: false)
+              .addTag(tag, barcodeID);
         },
         child: Text(
           tag,
@@ -180,7 +182,7 @@ class UnassignedTagButton extends StatelessWidget {
         child: ElevatedButton(
             onPressed: () {
               if (searchValue.isNotEmpty) {
-                Provider.of<Tags>(context, listen: false)
+                Provider.of<PhotosAndTags>(context, listen: false)
                     .addNewTag(searchValue);
               }
             },

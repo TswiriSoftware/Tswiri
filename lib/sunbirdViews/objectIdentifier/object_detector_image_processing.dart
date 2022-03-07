@@ -105,9 +105,9 @@ class _ObjectDetectorProcessingView
             FutureBuilder<ImageObjectData>(
                 future: processImage(imagePath),
                 builder: (context, snapshot) {
-                  if (snapshot.hasData &&
-                      snapshot.data!.detectedObjects.isNotEmpty &&
-                      snapshot.data != null) {
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasData && snapshot.data != null) {
                     return CustomPaint(
                       painter:
                           ObjectDetectorPainter(objectData: snapshot.data!),
