@@ -6,24 +6,24 @@ part of 'type_offset_adapter.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TypeOffsetHiveObjectAdapter extends TypeAdapter<TypeOffsetHiveObject> {
+class TypeOffsetHiveObjectAdapter extends TypeAdapter<TypeOffset> {
   @override
   final int typeId = 5;
 
   @override
-  TypeOffsetHiveObject read(BinaryReader reader) {
+  TypeOffset read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return TypeOffsetHiveObject(
+    return TypeOffset(
       x: fields[0] as double,
       y: fields[1] as double,
     );
   }
 
   @override
-  void write(BinaryWriter writer, TypeOffsetHiveObject obj) {
+  void write(BinaryWriter writer, TypeOffset obj) {
     writer
       ..writeByte(2)
       ..writeByte(0)

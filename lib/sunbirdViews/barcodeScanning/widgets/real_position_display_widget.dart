@@ -35,7 +35,7 @@ class RealPositionDisplayWidget extends StatelessWidget {
             Container(
               margin: const EdgeInsets.all(2),
               height: 28,
-              width: (MediaQuery.of(context).size.width * 0.25),
+              width: (MediaQuery.of(context).size.width * 0.195),
               decoration: BoxDecoration(
                   color: deepSpaceSparkle[100],
                   shape: BoxShape.rectangle,
@@ -51,7 +51,7 @@ class RealPositionDisplayWidget extends StatelessWidget {
             Container(
               margin: const EdgeInsets.all(2),
               height: 28,
-              width: (MediaQuery.of(context).size.width * 0.25),
+              width: (MediaQuery.of(context).size.width * 0.195),
               decoration: BoxDecoration(
                   color: deepSpaceSparkle[100],
                   shape: BoxShape.rectangle,
@@ -67,7 +67,7 @@ class RealPositionDisplayWidget extends StatelessWidget {
             Container(
               margin: const EdgeInsets.all(2),
               height: 28,
-              width: (MediaQuery.of(context).size.width * 0.325),
+              width: (MediaQuery.of(context).size.width * 0.195),
               decoration: BoxDecoration(
                   color: deepSpaceSparkle[100],
                   shape: BoxShape.rectangle,
@@ -77,6 +77,22 @@ class RealPositionDisplayWidget extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Z: ${roundDouble(realBarcodePosition.zOffset, 2)}',
+                ),
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.all(2),
+              height: 28,
+              width: (MediaQuery.of(context).size.width * 0.2),
+              decoration: BoxDecoration(
+                  color: deepSpaceSparkle[100],
+                  shape: BoxShape.rectangle,
+                  borderRadius: const BorderRadius.all(Radius.circular(3))),
+              child: Container(
+                margin: const EdgeInsets.all(5),
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'fixed: ${realBarcodePosition.isFixed}',
                 ),
               ),
             ),

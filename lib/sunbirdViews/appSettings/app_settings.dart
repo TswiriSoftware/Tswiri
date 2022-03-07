@@ -17,3 +17,6 @@ List<DropdownMenuItem<String>> cameraResolutionPresets = [
 
 //Haptic feedback in camera navigation.
 bool? hapticFeedBack;
+
+//defaultBarcodeDiagonalLengthPreference
+double? defaultBarcodeDiagonalLength;

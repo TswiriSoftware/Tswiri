@@ -1,6 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_entry.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/barcodePhotos/barcode_photo_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/tag_entry.dart';

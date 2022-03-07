@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/appSettings/app_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,7 +16,9 @@ class SettingsView extends StatefulWidget {
 class _SettingsViewState extends State<SettingsView> {
   late String selectedCameraPreset;
   late bool vibration;
+  late double getDefaultBarcodeDiagonalLength;
 
+  final TextEditingController barcodeSizeController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,6 +34,8 @@ class _SettingsViewState extends State<SettingsView> {
           future: getCurrentAppSettingsInView(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
+              barcodeSizeController.text =
+                  snapshot.data!.defaultBarcodeDiagonalLength.toString();
               return Column(
                 children: [
                   Container(
@@ -46,7 +51,7 @@ class _SettingsViewState extends State<SettingsView> {
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           children: [
-                            //Vibration.
+                            //Camera Resolution.
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -63,6 +68,37 @@ class _SettingsViewState extends State<SettingsView> {
                                 ),
                               ],
                             ),
+                            const Divider(),
+
+                            //Default barcode size
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text('Default Barcode Size: '),
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.38,
+                                ),
+                                Expanded(
+                                  child: TextFormField(
+                                    onFieldSubmitted: (value) {
+                                      setDefaultBarcodeDiagonalLength(
+                                          double.parse(value));
+                                      barcodeSizeController.text =
+                                          double.parse(value).toString();
+                                    },
+                                    textAlign: TextAlign.start,
+                                    keyboardType: TextInputType.number,
+                                    controller: barcodeSizeController,
+                                    decoration: const InputDecoration(
+                                      border: UnderlineInputBorder(),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            const Divider(),
+
                             //HapticFeedBack.
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -96,12 +132,18 @@ class _SettingsViewState extends State<SettingsView> {
 
   Future<Settings> getCurrentAppSettingsInView() async {
     final prefs = await SharedPreferences.getInstance();
-    String cameraPreset = prefs.getString('cameraResolutionPreset') ?? 'high';
+    String cameraPreset =
+        prefs.getString(cameraResolutionPresetPreference) ?? 'high';
     await setCameraResolution(cameraPreset);
-    bool hapticFeedback = prefs.getBool('hapticFeedBack') ?? true;
+    bool hapticFeedback = prefs.getBool(hapticFeedBackPreference) ?? true;
+    double defaultBarcodeDiagonalLength =
+        prefs.getDouble(defaultBarcodeDiagonalLengthPreference) ?? 100;
 
-    Settings appSettings =
-        Settings(cameraPreset: cameraPreset, hapticFeedback: hapticFeedback);
+    Settings appSettings = Settings(
+        cameraPreset: cameraPreset,
+        hapticFeedback: hapticFeedback,
+        defaultBarcodeDiagonalLength: defaultBarcodeDiagonalLength);
+
     return appSettings;
   }
 }

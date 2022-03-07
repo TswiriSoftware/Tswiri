@@ -1,4 +1,4 @@
-import '../databaseAdapters/allBarcodes/barcode_entry.dart';
+import '../databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import '../databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
 import '../databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import '../databaseAdapters/tagAdapters/barcode_tag_entry.dart';

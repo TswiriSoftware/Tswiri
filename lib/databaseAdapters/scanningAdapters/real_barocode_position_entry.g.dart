@@ -19,9 +19,9 @@ class RealBarcodePostionEntryAdapter
     };
     return RealBarcodePostionEntry(
       uid: fields[0] as String,
-      offset: fields[1] as TypeOffsetHiveObject,
+      offset: fields[1] as TypeOffset,
       zOffset: fields[2] as double,
-      fixed: fields[3] as bool,
+      isFixed: fields[3] as bool,
       timestamp: fields[4] as int,
     );
   }
@@ -37,7 +37,7 @@ class RealBarcodePostionEntryAdapter
       ..writeByte(2)
       ..write(obj.zOffset)
       ..writeByte(3)
-      ..write(obj.fixed)
+      ..write(obj.isFixed)
       ..writeByte(4)
       ..write(obj.timestamp);
   }

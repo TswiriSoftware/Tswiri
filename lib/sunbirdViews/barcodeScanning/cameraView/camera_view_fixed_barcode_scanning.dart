@@ -13,8 +13,8 @@ import '../../appSettings/app_settings.dart';
 
 enum ScreenMode { liveFeed, gallery }
 
-class CameraBarcodeScanningView extends StatefulWidget {
-  const CameraBarcodeScanningView(
+class CameraFixedBarcodeScanningView extends StatefulWidget {
+  const CameraFixedBarcodeScanningView(
       {Key? key,
       required this.title,
       required this.customPaint,
@@ -30,11 +30,12 @@ class CameraBarcodeScanningView extends StatefulWidget {
   final Color color;
 
   @override
-  _CameraBarcodeScanningViewState createState() =>
-      _CameraBarcodeScanningViewState();
+  _CameraFixedBarcodeScanningViewState createState() =>
+      _CameraFixedBarcodeScanningViewState();
 }
 
-class _CameraBarcodeScanningViewState extends State<CameraBarcodeScanningView> {
+class _CameraFixedBarcodeScanningViewState
+    extends State<CameraFixedBarcodeScanningView> {
   CameraController? _controller;
   int _cameraIndex = 0;
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;

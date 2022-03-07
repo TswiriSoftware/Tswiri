@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_entry.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import 'package:flutter_google_ml_kit/functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
@@ -140,18 +140,16 @@ Future<List<RealBarcodePosition>> processData(
   //3.1 Calculates all real interBarcodeOffsets.
   //Get the camera's focal length
   final prefs = await SharedPreferences.getInstance();
-  double focalLength = prefs.getDouble('focalLength') ?? 0;
-  double defaultBarcodeDiagonalLength =
-      prefs.getDouble(defaultBarcodeDiagonalLengthPreference) ?? 100;
+  double focalLength = prefs.getDouble(focalLengthPreference) ?? 0;
 
   //Check Function for details.
   List<RealInterBarcodeOffset> allRealInterBarcodeOffsets =
-      await buildAllRealInterBarcodeOffsets(
-          allOnImageInterBarcodeData: allOnImageInterBarcodeData,
-          calibrationLookupTable: distanceFromCameraLookup,
-          allBarcodes: allBarcodes,
-          focalLength: focalLength,
-          defaultBarcodeDiagonalLength: defaultBarcodeDiagonalLength);
+      buildAllRealInterBarcodeOffsets(
+    allOnImageInterBarcodeData: allOnImageInterBarcodeData,
+    calibrationLookupTable: distanceFromCameraLookup,
+    allBarcodes: allBarcodes,
+    focalLength: focalLength,
+  );
 
   //3.2 This list contains only unique realInterBarcodeOffsets
   List<RealInterBarcodeOffset> uniqueRealInterBarcodeOffsets =
@@ -168,22 +166,24 @@ Future<List<RealBarcodePosition>> processData(
 
   //List of unique barcodes that we want to write the positions of.
   List<RealBarcodePosition> realBarcodePositions =
-      extractListOfScannedBarcodes(finalRealInterBarcodeOffsets);
+      extractListOfScannedBarcodes(finalRealInterBarcodeOffsets, allBarcodes);
 
   //Populate origin
-  if (realBarcodePositions.any((element) => element.uid == '1')) {
-    realBarcodePositions[
-            realBarcodePositions.indexWhere((element) => element.uid == '1')] =
-        origin(realBarcodePositions);
+  if (realBarcodePositions.any((element) => element.isFixed == true)) {
+    int index =
+        realBarcodePositions.indexWhere((element) => element.isFixed == true);
+    RealBarcodePosition origin = realBarcodePositions[index];
+
+    realBarcodePositions[index] = RealBarcodePosition(
+        uid: origin.uid,
+        zOffset: 0,
+        offset: const Offset(0, 0),
+        isFixed: true,
+        timestamp: 0);
   } else {
     //If the origin was not scanned then the app will throw an error
-    return Future.error('Error: Origin Not Scanned.');
+    return Future.error('Error: No Fixed Barcodes.');
   }
-
-  //Set origin distance to 0
-  // realBarcodePositions
-  //     .firstWhere((element) => element.uid == '1')
-  //     .distanceFromCamera = 0;
 
   int nonNullPositions = 1;
   int nonNullPositionsInPreviousIteration = realBarcodePositions.length - 1;
@@ -271,5 +271,6 @@ Future<List<RealBarcodePosition>> processData(
   //Sort realBarcodePositions by uid numericalvalue.
   realBarcodePositions
       .sort((a, b) => int.parse(a.uid).compareTo(int.parse(b.uid)));
+
   return realBarcodePositions;
 }

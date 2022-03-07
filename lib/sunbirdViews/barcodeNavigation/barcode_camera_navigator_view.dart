@@ -12,7 +12,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vector_math/vector_math.dart';
-import '../../databaseAdapters/allBarcodes/barcode_entry.dart';
+import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import '../../databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
 import '../../databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import '../../functions/barcodeCalculations/type_offset_converters.dart';
@@ -69,8 +69,7 @@ class _BarcodeCameraNavigatorViewState
 
   //Camera focalLength.
   double focalLength = 0;
-  //Default barcode diagonal length.
-  double defaultBarcodeDiagonalLength = 0;
+
   @override
   void initState() {
     accelerometerEvents.listen((AccelerometerEvent event) {
@@ -148,8 +147,6 @@ class _BarcodeCameraNavigatorViewState
       allBarcodes = await getAllExistingBarcodes();
       final prefs = await SharedPreferences.getInstance();
       focalLength = prefs.getDouble(focalLengthPreference) ?? 0;
-      defaultBarcodeDiagonalLength =
-          prefs.getDouble(defaultBarcodeDiagonalLengthPreference) ?? 100;
     }
 
     final barcodes = await barcodeScanner.processImage(inputImage);
@@ -160,22 +157,22 @@ class _BarcodeCameraNavigatorViewState
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
       final painter = BarcodeDetectorPainterNavigation(
-          barcodes: barcodes,
-          absoluteImageSize: inputImage.inputImageData!.size,
-          rotation: inputImage.inputImageData!.imageRotation,
-          realBarcodePositions: realBarcodePositionsUpdated,
-          selectedBarcodeID: widget.barcodeID,
-          distanceFromCameraLookup: calibrationLookupTable,
-          allBarcodes: allBarcodes,
-          phoneAngle: angleRadians,
-          defaultBarcodeDiagonalLength: defaultBarcodeDiagonalLength);
+        barcodes: barcodes,
+        absoluteImageSize: inputImage.inputImageData!.size,
+        rotation: inputImage.inputImageData!.imageRotation,
+        realBarcodePositions: realBarcodePositionsUpdated,
+        selectedBarcodeID: widget.barcodeID,
+        distanceFromCameraLookup: calibrationLookupTable,
+        allBarcodes: allBarcodes,
+        phoneAngle: angleRadians,
+      );
 
       checkBarcodePositions(
-          barcodes: barcodes,
-          realBarcodePositions: realBarcodePositionsUpdated,
-          allBarcodes: allBarcodes,
-          focalLength: focalLength,
-          defaultBarcodeDiagonalLength: defaultBarcodeDiagonalLength);
+        barcodes: barcodes,
+        realBarcodePositions: realBarcodePositionsUpdated,
+        allBarcodes: allBarcodes,
+        focalLength: focalLength,
+      );
 
       customPaint = CustomPaint(painter: painter);
     } else {
@@ -188,12 +185,12 @@ class _BarcodeCameraNavigatorViewState
   }
 
   ///Checks if any barcodes have moved.
-  void checkBarcodePositions(
-      {required List<Barcode> barcodes,
-      required List<RealBarcodePostionEntry> realBarcodePositions,
-      required List<BarcodeDataEntry> allBarcodes,
-      required double focalLength,
-      required double defaultBarcodeDiagonalLength}) {
+  void checkBarcodePositions({
+    required List<Barcode> barcodes,
+    required List<RealBarcodePostionEntry> realBarcodePositions,
+    required List<BarcodeDataEntry> allBarcodes,
+    required double focalLength,
+  }) {
     if (barcodes.length >= 2) {
       //Checks that there are more than 2 barcodes in list.
 
@@ -218,11 +215,11 @@ class _BarcodeCameraNavigatorViewState
 
       List<RealInterBarcodeOffset> allRealInterBarcodeOffsets =
           buildAllRealInterBarcodeOffsets(
-              allOnImageInterBarcodeData: allOnImageInterBarcodeData,
-              calibrationLookupTable: calibrationLookupTable,
-              allBarcodes: allBarcodes,
-              focalLength: focalLength,
-              defaultBarcodeDiagonalLength: defaultBarcodeDiagonalLength);
+        allOnImageInterBarcodeData: allOnImageInterBarcodeData,
+        calibrationLookupTable: calibrationLookupTable,
+        allBarcodes: allBarcodes,
+        focalLength: focalLength,
+      );
 
       //Add the RealInterBarcodeOffset to the map
       for (RealInterBarcodeOffset realInterBarcodeOffset
@@ -289,7 +286,7 @@ class _BarcodeCameraNavigatorViewState
                               averagedRealInterBarcodeOffset[0].offset),
                       zOffset: startBarcodePosition.zOffset +
                           averagedRealInterBarcodeOffset[0].zOffset,
-                      fixed: false,
+                      isFixed: false,
                       timestamp: averagedRealInterBarcodeOffset[0].timestamp);
 
               //Remove all incorrect interBarcodeOffsets.
@@ -321,7 +318,7 @@ class _BarcodeCameraNavigatorViewState
                               averagedRealInterBarcodeOffset[0].offset),
                       zOffset: endBarcodePosition.zOffset +
                           averagedRealInterBarcodeOffset[0].zOffset,
-                      fixed: false,
+                      isFixed: false,
                       timestamp: averagedRealInterBarcodeOffset[0].timestamp);
 
               //Remove all incorrect interBarcodeOffsets.

@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-part 'barcode_entry.g.dart';
+part 'barcode_data_entry.g.dart';
 
 @HiveType(typeId: 6)
 

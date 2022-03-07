@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'barcode_entry.dart';
+part of 'barcode_data_entry.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator

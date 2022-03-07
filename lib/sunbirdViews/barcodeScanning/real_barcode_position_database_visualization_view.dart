@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
+import 'dart:developer';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
@@ -154,18 +155,28 @@ class OpenPainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
 
+//Get all points that should be plotted.
 _getPoints(BuildContext context, List pointNames, List pointData) async {
   List<Offset> points = [];
 
-  Box<RealBarcodePostionEntry> consolidatedRealDataBox =
+  //Open realPositionBox.
+  Box<RealBarcodePostionEntry> realPositionsBox =
       await Hive.openBox(realPositionsBoxName);
+
+  //Get Screen width and height.
   double width = MediaQuery.of(context).size.width;
   double height = MediaQuery.of(context).size.height;
-  for (var i = 0; i < consolidatedRealDataBox.length; i++) {
-    RealBarcodePostionEntry data = consolidatedRealDataBox.getAt(i)!;
 
-    points.add(Offset(
-        (data.offset.x / 5) + (width / 2), (data.offset.y / 5) + (height / 2)));
+  //Calculate the unit vectors for the screen.
+  List<double> unitVector = unitVectors(
+      realPositionsBox: realPositionsBox, width: width, height: height);
+
+  for (var i = 0; i < realPositionsBox.length; i++) {
+    RealBarcodePostionEntry data = realPositionsBox.getAt(i)!;
+
+    //Scale points so they fit on screen.
+    points.add(Offset((data.offset.x / unitVector[0]) + (width / 2),
+        (data.offset.y / unitVector[1]) + (height / 2)));
     pointData.add([
       roundDouble(data.offset.x, 5),
       roundDouble(data.offset.y, 5),
@@ -175,4 +186,40 @@ _getPoints(BuildContext context, List pointNames, List pointData) async {
   }
 
   return points;
+}
+
+List<double> unitVectors(
+    {required Box<RealBarcodePostionEntry> realPositionsBox,
+    required double width,
+    required double height}) {
+  double sX = 0;
+  double bX = 0;
+  double sY = 0;
+  double bY = 0;
+
+  for (var i = 0; i < realPositionsBox.length; i++) {
+    RealBarcodePostionEntry data = realPositionsBox.getAt(i)!;
+    double xDistance = data.offset.x;
+    double yDistance = data.offset.y;
+    if (xDistance < sX) {
+      sX = xDistance;
+    }
+    if (xDistance > bX) {
+      bX = xDistance;
+    }
+    if (yDistance < sY) {
+      sY = yDistance;
+    }
+    if (yDistance > bY) {
+      bY = yDistance;
+    }
+  }
+
+  double totalXdistance = (sX - bX).abs();
+  double totalYdistance = (sY - bY).abs();
+
+  double unitX = width / totalXdistance;
+  double unitY = width / totalYdistance;
+
+  return [unitX, unitY];
 }

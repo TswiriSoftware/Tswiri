@@ -1,37 +1,37 @@
 import 'dart:math';
 import 'dart:ui';
 import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_barcode_positional_data.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
 import 'package:flutter_google_ml_kit/functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_paints.dart';
-import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_positional_data.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/appSettings/app_settings.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../databaseAdapters/allBarcodes/barcode_entry.dart';
+import '../../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import '../../../databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
 import '../../../databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import '../../../functions/barcodeCalculations/data_capturing_functions.dart';
 
 ///This Painter is used to gudide the user to the barcode they have
 class BarcodeDetectorPainterNavigation extends CustomPainter {
-  BarcodeDetectorPainterNavigation(
-      {required this.barcodes,
-      required this.absoluteImageSize,
-      required this.rotation,
-      required this.realBarcodePositions,
-      required this.selectedBarcodeID,
-      required this.distanceFromCameraLookup,
-      required this.allBarcodes,
-      required this.phoneAngle,
-      required this.defaultBarcodeDiagonalLength});
+  BarcodeDetectorPainterNavigation({
+    required this.barcodes,
+    required this.absoluteImageSize,
+    required this.rotation,
+    required this.realBarcodePositions,
+    required this.selectedBarcodeID,
+    required this.distanceFromCameraLookup,
+    required this.allBarcodes,
+    required this.phoneAngle,
+  });
   final List<Barcode> barcodes;
   final Size absoluteImageSize;
   final InputImageRotation rotation;
@@ -40,7 +40,6 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
   final List<DistanceFromCameraLookupEntry> distanceFromCameraLookup;
   final List<BarcodeDataEntry> allBarcodes;
   final double phoneAngle;
-  final double defaultBarcodeDiagonalLength;
 
   ///Steps to follow for ///
   ///
@@ -121,15 +120,20 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
 
         //Contstuct the rectangle for the arc.
         Rect rect = Rect.fromCenter(
-            center: screenCenterPoint, width: distance, height: distance);
+            center: screenCenterPoint,
+            width: finderCircleRadius * 2 + 3,
+            height: finderCircleRadius * 2 + 3);
 
         //Calculate the angle the selected barcode makes with the center of the screen.
         double selectedBarcodeAngleRadians =
             (barcodeOnScreenData.center - screenCenterPoint).direction;
 
-        //Draw the direction indicator.
+        //canvas.rotate(selectedBarcodeAngleRadians);
+        //canvas.drawLine(screenCenterPoint, Offset(0, 100), paintRed3);
+
+        // //Draw the direction indicator.
         canvas.drawArc(rect, selectedBarcodeAngleRadians - pi / 10, pi / 5,
-            false, paintSimple(Colors.greenAccent, 5));
+            false, paintSimple(Colors.greenAccent, 10));
       }
     } else {
       if (barcodes.isNotEmpty) {
@@ -175,11 +179,11 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
         //i. Calculate the mm value of 1 on image unit.
 
         double referenceBarcodeMMperOIU = calculateBacodeMMperOIU(
-            barcodeDataEntries: allBarcodes,
-            diagonalLength:
-                calculateAverageBarcodeDiagonalLength(referenceBarcode),
-            barcodeID: referenceBarcode.displayValue!,
-            defaultBarcodeDiagonalLength: defaultBarcodeDiagonalLength);
+          barcodeDataEntries: allBarcodes,
+          diagonalLength:
+              calculateAverageBarcodeDiagonalLength(referenceBarcode),
+          barcodeID: referenceBarcode.displayValue!,
+        );
 
         //ii. Calculate the real distance of the offset.
         Offset referenceBarcodeTOScreenCenter =
@@ -231,33 +235,28 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
 
           //d.log(distanceToSelectedBarcode.toString());
 
+          double rectSize = referenceBarcodeScreenData.barcodeOnScreenUnits + 3;
           //Contstuct the rectangle for the arc.
           Rect rect = Rect.fromCenter(
-              center: screenCenterPoint,
-              width: distanceToSelectedBarcode,
-              height: distanceToSelectedBarcode);
-
-          //Draw the direction indicator.
-          canvas.drawArc(rect, angleToSelectedBarcode - pi / 10, pi / 5, false,
-              paintSimple(Colors.greenAccent, 5));
+              center: screenCenterPoint, width: rectSize, height: rectSize);
 
           //Display the screen center's real position.
           TextSpan span = TextSpan(
-              style: TextStyle(color: Colors.red[800], fontSize: 20),
-              text:
-                  'X: ${roundDouble(screenCenterRealPosition.dx, 1)} \n Y: ${roundDouble(screenCenterRealPosition.dy, 1)}');
+              style: const TextStyle(
+                  color: Colors.orange,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
+              text: '${roundDouble(distanceToSelectedBarcode / 1000, 3)} m');
           TextPainter tp = TextPainter(
               text: span,
-              textAlign: TextAlign.left,
+              textAlign: TextAlign.start,
               textDirection: TextDirection.ltr);
           tp.layout();
-          tp.paint(canvas, screenCenterPoint);
+          tp.paint(canvas, screenCenterPoint - const Offset(20, 0));
 
-          // Draw some points of intrest :D
-          // canvas.drawPoints(
-          //     PointMode.points,
-          //     [screenCenterPoint, referenceBarcodeScreenData.center],
-          //     paintSimple(Colors.red, 5));
+          //Draw the direction indicator.
+          canvas.drawArc(rect, angleToSelectedBarcode - pi / 10, pi / 5, false,
+              paintSimple(Colors.greenAccent, 30));
         }
       }
     }

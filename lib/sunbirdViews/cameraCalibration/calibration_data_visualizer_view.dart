@@ -4,11 +4,12 @@ import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/dista
 import 'package:flutter_google_ml_kit/functions/calibrationFunctions/calibration_functions.dart';
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
+import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/main.dart';
 
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../databaseAdapters/allBarcodes/barcode_entry.dart';
+import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import '../../functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
 import '../../globalValues/global_colours.dart';
 
@@ -51,7 +52,7 @@ class _CalibrationDataVisualizerViewState
                       await Hive.openBox(distanceLookupTableBoxName);
                   matchedDataBox.clear();
                   final prefs = await SharedPreferences.getInstance();
-                  prefs.setDouble('focalLength', 0);
+                  prefs.setDouble(focalLengthPreference, 0);
                   setState(() {});
                 },
                 child: const Icon(Icons.delete),
@@ -126,7 +127,7 @@ Future<List<List<Offset>>> _getPoints(BuildContext context) async {
   List<BarcodeDataEntry> allBarcodes = await getAllExistingBarcodes();
   int index = allBarcodes.indexWhere((element) => element.barcodeID == 1);
   final prefs = await SharedPreferences.getInstance();
-  double focalLength = prefs.getDouble('focalLength') ?? 1;
+  double focalLength = prefs.getDouble(focalLengthPreference) ?? 0;
   List<Offset> equationPoints = [];
   if (index != -1) {
     double barcodeSize = allBarcodes[index].barcodeSize;

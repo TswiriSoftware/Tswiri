@@ -12,7 +12,10 @@ Future getCurrentAppSettings() async {
   final prefs = await SharedPreferences.getInstance();
   //Get Camera Resolution.
   cameraResolution = getCameraResolution(prefs);
+  //Get Haptic feedback
   hapticFeedBack = getHapticFeedback(prefs);
+  //Get default getDefaultBarcodeDiagonalLength
+  defaultBarcodeDiagonalLength = getDefaultBarcodeDiagonalLength(prefs);
 }
 
 ///Returns the [ResolutionPreset]
@@ -78,4 +81,16 @@ Color getColor(Set<MaterialState> states) {
     return Colors.blue;
   }
   return brightOrange;
+}
+
+double getDefaultBarcodeDiagonalLength(SharedPreferences prefs) {
+  double defaultBarcodeDiagonalLength =
+      prefs.getDouble(defaultBarcodeDiagonalLengthPreference) ?? 100;
+
+  return defaultBarcodeDiagonalLength;
+}
+
+Future<void> setDefaultBarcodeDiagonalLength(double value) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setDouble(defaultBarcodeDiagonalLengthPreference, value);
 }

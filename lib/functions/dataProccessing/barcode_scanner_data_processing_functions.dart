@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_entry.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/data_capturing_functions.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
@@ -13,6 +13,7 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
 
 import '../../databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
+import '../../sunbirdViews/appSettings/app_settings.dart';
 
 ///Calculates the average interBarcodeOffset.
 /// i. Takes into account for offset direction.
@@ -75,7 +76,7 @@ void writeValidBarcodePositionsToDatabase(
             uid: realBarcodePosition.uid,
             offset: offsetToTypeOffset(realBarcodePosition.offset!),
             zOffset: realBarcodePosition.zOffset,
-            fixed: false,
+            isFixed: realBarcodePosition.isFixed,
             timestamp: realBarcodePosition.timestamp!));
   }
 }
@@ -135,20 +136,34 @@ List<RealInterBarcodeOffset> getRelevantInterBarcodeOffsets(
 
 ///Creates a list of all scanned barcodes , but with null positions , they still need to be populated.
 List<RealBarcodePosition> extractListOfScannedBarcodes(
-  List<RealInterBarcodeOffset> allRealInterBarcodeData,
-) {
+    List<RealInterBarcodeOffset> allRealInterBarcodeData,
+    List<BarcodeDataEntry> allBarcodes) {
   List<RealBarcodePosition> realPositionData = [];
   List<RealBarcodePosition> allBarcodesInScan = [];
   for (RealInterBarcodeOffset interBarcodeData in allRealInterBarcodeData) {
+    int startIndex = allBarcodes.indexWhere(
+        (element) => element.barcodeID.toString() == interBarcodeData.uidStart);
+    int endIndex = allBarcodes.indexWhere(
+        (element) => element.barcodeID.toString() == interBarcodeData.uidEnd);
+
+    bool startIsFixed = false;
+    bool endIsFixed = false;
+    if (startIndex != -1) {
+      startIsFixed = allBarcodes[startIndex].isFixed;
+    }
+    if (endIndex != -1) {
+      endIsFixed = allBarcodes[endIndex].isFixed;
+    }
+
     allBarcodesInScan.addAll([
       RealBarcodePosition(
-        uid: interBarcodeData.uidStart,
-        zOffset: interBarcodeData.zOffset,
-      ),
+          uid: interBarcodeData.uidStart,
+          zOffset: interBarcodeData.zOffset,
+          isFixed: startIsFixed),
       RealBarcodePosition(
-        uid: interBarcodeData.uidEnd,
-        zOffset: interBarcodeData.zOffset,
-      )
+          uid: interBarcodeData.uidEnd,
+          zOffset: interBarcodeData.zOffset,
+          isFixed: endIsFixed)
     ]);
   }
 
@@ -165,12 +180,12 @@ List<RealBarcodePosition> extractListOfScannedBarcodes(
 ///iii. It calculates the distance between the camera and the barcode.
 ///
 ///
-List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
-    {required List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData,
-    required List<DistanceFromCameraLookupEntry> calibrationLookupTable,
-    required List<BarcodeDataEntry> allBarcodes,
-    required double focalLength,
-    required double defaultBarcodeDiagonalLength}) {
+List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets({
+  required List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData,
+  required List<DistanceFromCameraLookupEntry> calibrationLookupTable,
+  required List<BarcodeDataEntry> allBarcodes,
+  required double focalLength,
+}) {
   List<RealInterBarcodeOffset> allRealInterBarcodeData = [];
 
   for (RawOnImageInterBarcodeData interBarcodeDataInstance
@@ -203,16 +218,16 @@ List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
     //5. Calculate real life offset.
     //Calculate the milimeter value of 1 on image unit (OIU). (Pixel ?)
     double startBarcodeMMperPX = calculateBacodeMMperOIU(
-        barcodeDataEntries: allBarcodes,
-        diagonalLength: interBarcodeDataInstance.startDiagonalLength,
-        barcodeID: interBarcodeDataInstance.uidStart,
-        defaultBarcodeDiagonalLength: defaultBarcodeDiagonalLength);
+      barcodeDataEntries: allBarcodes,
+      diagonalLength: interBarcodeDataInstance.startDiagonalLength,
+      barcodeID: interBarcodeDataInstance.uidStart,
+    );
 
     double endBarcodeMMperPX = calculateBacodeMMperOIU(
-        barcodeDataEntries: allBarcodes,
-        diagonalLength: interBarcodeDataInstance.endDiagonalLength,
-        barcodeID: interBarcodeDataInstance.uidEnd,
-        defaultBarcodeDiagonalLength: defaultBarcodeDiagonalLength);
+      barcodeDataEntries: allBarcodes,
+      diagonalLength: interBarcodeDataInstance.endDiagonalLength,
+      barcodeID: interBarcodeDataInstance.uidEnd,
+    );
 
     //Calculate the real distance of the offset.
     Offset realOffsetStartBarcode = interBarcodeOffset / startBarcodeMMperPX;
@@ -225,20 +240,19 @@ List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
     //6. Find the distance bewteen the camera and barcodes.
     //startBarcode
     double startBarcodeDistanceFromCamera = findDistanceFromCamera(
-        barcodeOnImageDiagonalLength:
-            interBarcodeDataInstance.startDiagonalLength,
-        barcodeValue: interBarcodeDataInstance.startBarcode,
-        allBarcodes: allBarcodes,
-        focalLength: focalLength,
-        defaultBarcodeSize: defaultBarcodeDiagonalLength);
+      barcodeOnImageDiagonalLength:
+          interBarcodeDataInstance.startDiagonalLength,
+      barcodeValue: interBarcodeDataInstance.startBarcode,
+      allBarcodes: allBarcodes,
+      focalLength: focalLength,
+    );
     //endBarcode
     double endBarcodeDistanceFromCamera = findDistanceFromCamera(
-        barcodeOnImageDiagonalLength:
-            interBarcodeDataInstance.endDiagonalLength,
-        barcodeValue: interBarcodeDataInstance.endBarcode,
-        allBarcodes: allBarcodes,
-        focalLength: focalLength,
-        defaultBarcodeSize: defaultBarcodeDiagonalLength);
+      barcodeOnImageDiagonalLength: interBarcodeDataInstance.endDiagonalLength,
+      barcodeValue: interBarcodeDataInstance.endBarcode,
+      allBarcodes: allBarcodes,
+      focalLength: focalLength,
+    );
 
     //Calculate the zOffset
     double zOffset =
@@ -267,11 +281,11 @@ Offset rotateOffset({required Offset offset, required double angleRadians}) {
 }
 
 //calculates the mm per OIU for the given barcodeID.
-double calculateBacodeMMperOIU(
-    {required List<BarcodeDataEntry> barcodeDataEntries,
-    required double diagonalLength,
-    required String barcodeID,
-    required double defaultBarcodeDiagonalLength}) {
+double calculateBacodeMMperOIU({
+  required List<BarcodeDataEntry> barcodeDataEntries,
+  required double diagonalLength,
+  required String barcodeID,
+}) {
   //If the barcode has not been generated. use default barcode size.
   int index = barcodeDataEntries
       .indexWhere((element) => element.barcodeID == int.parse(barcodeID));
@@ -280,17 +294,17 @@ double calculateBacodeMMperOIU(
     return diagonalLength / barcodeDataEntries[index].barcodeSize;
   } else {
     //get shared prefs.
-    return diagonalLength / defaultBarcodeDiagonalLength;
+    return diagonalLength / defaultBarcodeDiagonalLength!;
   }
 }
 
 //Uses the lookup table matchedCalibration data to find the distance from camera.
-double findDistanceFromCamera(
-    {required double barcodeOnImageDiagonalLength,
-    required BarcodeValue barcodeValue,
-    required List<BarcodeDataEntry> allBarcodes,
-    required double focalLength,
-    required double defaultBarcodeSize}) {
+double findDistanceFromCamera({
+  required double barcodeOnImageDiagonalLength,
+  required BarcodeValue barcodeValue,
+  required List<BarcodeDataEntry> allBarcodes,
+  required double focalLength,
+}) {
   int index = allBarcodes.indexWhere(
       (element) => element.barcodeID == int.parse(barcodeValue.displayValue!));
 
@@ -300,8 +314,9 @@ double findDistanceFromCamera(
         focalLength * barcodeRealDiagonalLength / barcodeOnImageDiagonalLength;
     return distanceFromCamera;
   } else {
-    double distanceFromCamera =
-        focalLength * defaultBarcodeSize / barcodeOnImageDiagonalLength;
+    double distanceFromCamera = focalLength *
+        defaultBarcodeDiagonalLength! /
+        barcodeOnImageDiagonalLength;
     return distanceFromCamera;
   }
 }

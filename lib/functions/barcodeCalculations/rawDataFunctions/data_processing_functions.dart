@@ -8,18 +8,6 @@ double calcAveDisFromCamera(
   return (qrCodeStartDistanceFromCamera + qrCodeEndDistanceFromCamera) / 2;
 }
 
-///Calculates how far the barcode is from the camera given calibration data (imageSizes: for sorting, Lookuptable: for Distance from camera)
-double calaculateDistanceFormCamera(
-    double barcodeDiagonalSizeOnImage, SharedPreferences prefs) {
-  double m = prefs.getDouble('m') ?? 0;
-  double c = prefs.getDouble('c') ?? 0;
-  debugPrint('y = x*$m +$c');
-
-  double distanceFromCamera = barcodeDiagonalSizeOnImage * m + c;
-
-  return distanceFromCamera;
-}
-
 ///Returns the list of imageSizes
 List<double> getImageSizes(Map lookupTableMap) {
   List<double> imageSizesLookupTable = [];

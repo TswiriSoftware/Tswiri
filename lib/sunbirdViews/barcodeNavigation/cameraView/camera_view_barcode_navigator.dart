@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 //import 'package:image_picker/image_picker.dart';
 
+import '../../../globalValues/global_colours.dart';
 import '../../appSettings/app_settings.dart';
 import '../../../main.dart';
 
@@ -36,24 +37,19 @@ class CameraBarcodeNavigationView extends StatefulWidget {
 
 class _CameraBarcodeNavigationViewState
     extends State<CameraBarcodeNavigationView> {
-  final ScreenMode _mode = ScreenMode.liveFeed;
   CameraController? _controller;
-  File? _image;
-  //ImagePicker? _imagePicker;
   int _cameraIndex = 0;
+  double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
+  bool flash = false;
 
   @override
   void initState() {
     super.initState();
-
-    // _imagePicker = ImagePicker();
-    // for (var i = 0; i < cameras.length; i++) {
-    //   //print(i);
-
-    //   if (cameras[i].lensDirection == widget.initialDirection) {
-    //     _cameraIndex = i;
-    //   }
-    // }
+    for (var i = 0; i < cameras.length; i++) {
+      if (cameras[i].lensDirection == widget.initialDirection) {
+        _cameraIndex = i;
+      }
+    }
     _startLiveFeed();
   }
 
@@ -71,18 +67,72 @@ class _CameraBarcodeNavigationViewState
         backgroundColor: widget.color,
       ),
       body: _body(),
-      // floatingActionButton: _floatingActionButton(),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: _floatingActionButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  Widget? _floatingActionButton() {
+    if (cameras.length == 1) return null;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16),
+          child: SizedBox(
+            height: 50.0,
+            width: 50.0,
+            child: FloatingActionButton(
+              backgroundColor: limeGreen,
+              heroTag: 'flash',
+              child: Icon(
+                Platform.isIOS
+                    ? Icons.flip_camera_ios_outlined
+                    : Icons.flash_on_rounded,
+                size: 30,
+              ),
+              onPressed: () {
+                if (flash == true) {
+                  _controller!.setFlashMode(FlashMode.off);
+                  flash = false;
+                } else {
+                  flash = true;
+                  _controller!.setFlashMode(FlashMode.torch);
+                }
+              },
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16),
+          child: SizedBox(
+            height: 70.0,
+            width: 70.0,
+            child: FloatingActionButton(
+              backgroundColor: limeGreen,
+              heroTag: 'camera selection',
+              child: Icon(
+                Platform.isIOS
+                    ? Icons.flip_camera_ios_outlined
+                    : Icons.flip_camera_android_outlined,
+                size: 30,
+              ),
+              onPressed: _switchLiveCamera,
+            ),
+          ),
+        ),
+        const SizedBox(
+          width: 86,
+        ),
+      ],
     );
   }
 
   Widget _body() {
     Widget body;
-    if (_mode == ScreenMode.liveFeed) {
-      body = _liveFeedBody();
-    } else {
-      body = _galleryBody();
-    }
+
+    body = _liveFeedBody();
+
     return body;
   }
 
@@ -102,87 +152,29 @@ class _CameraBarcodeNavigationViewState
     );
   }
 
-  Widget _galleryBody() {
-    return ListView(shrinkWrap: true, children: [
-      _image != null
-          ? SizedBox(
-              height: 400,
-              width: 400,
-              child: Stack(
-                fit: StackFit.expand,
-                children: <Widget>[
-                  Image.file(_image!),
-                  if (widget.customPaint != null) widget.customPaint!,
-                ],
-              ),
-            )
-          : const Icon(
-              Icons.image,
-              size: 200,
-            ),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: ElevatedButton(
-            child: const Text('From Gallery'),
-            onPressed: () {
-              /*_getImage(ImageSource.gallery)*/
-            }),
-      ),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: ElevatedButton(
-            child: const Text('Take a picture'),
-            onPressed: () {
-              /*_getImage(ImageSource.camera)*/
-            }),
-      ),
-    ]);
-  }
-
-  // Future _getImage(ImageSource source) async {
-  //   final pickedFile = await _imagePicker?.getImage(source: source);
-  //   if (pickedFile != null) {
-  //     _processPickedFile(pickedFile);
-  //   } else {
-  //     // ignore: avoid_print
-  //     print('No image selected.');
-  //   }
-  //   setState(() {});
-  // }
-
-  // void _switchScreenMode() async {
-  //   if (_mode == ScreenMode.liveFeed) {
-  //     _mode = ScreenMode.gallery;
-  //     await _stopLiveFeed();
-  //   } else {
-  //     _mode = ScreenMode.liveFeed;
-  //     await _startLiveFeed();
-  //   }
-  //   setState(() {});
-  // }
-
   Future _startLiveFeed() async {
+    final camera = cameras[_cameraIndex];
     _controller = CameraController(
-      cameras.first,
-      cameraResolution ?? ResolutionPreset.high,
+      camera,
+      cameraResolution!,
       enableAudio: false,
     );
-    _controller?.initialize().then((_) {
+    await _controller?.initialize().then((_) {
       if (!mounted) {
         return;
       }
+      _controller?.getMinZoomLevel().then((value) {
+        zoomLevel = value;
+        minZoomLevel = value;
+      });
+      _controller?.getMaxZoomLevel().then((value) {
+        maxZoomLevel = value;
+      });
       _controller?.startImageStream(_processCameraImage);
       setState(() {});
     });
   }
 
-  Future _stopLiveFeed() async {
-    await _controller?.stopImageStream();
-    await _controller?.dispose();
-    _controller = null;
-  }
-
-  // ignore: unused_element
   Future _switchLiveCamera() async {
     if (_cameraIndex == 0)
       _cameraIndex = 1;
@@ -192,13 +184,11 @@ class _CameraBarcodeNavigationViewState
     await _startLiveFeed();
   }
 
-  // Future _processPickedFile(PickedFile pickedFile) async {
-  //   setState(() {
-  //     _image = File(pickedFile.path);
-  //   });
-  //   final inputImage = InputImage.fromFilePath(pickedFile.path);
-  //   widget.onImage(inputImage);
-  // }
+  Future _stopLiveFeed() async {
+    await _controller?.stopImageStream();
+    await _controller?.dispose();
+    _controller = null;
+  }
 
   Future _processCameraImage(CameraImage image) async {
     final WriteBuffer allBytes = WriteBuffer();

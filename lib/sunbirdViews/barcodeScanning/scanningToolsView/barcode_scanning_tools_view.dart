@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/barcode_scanner_fixed_view%20.dart';
 import 'package:hive/hive.dart';
 import '../../../widgets/custom_card_widget.dart';
 import '../barcode_scanner_view.dart';
@@ -45,6 +46,13 @@ class _BarcodeScanningToolsViewState extends State<BarcodeScanningToolsView> {
           crossAxisCount: 2,
           // ignore: prefer_const_literals_to_create_immutables
           children: [
+            const CustomCard(
+              'Select Fixed Barcodes',
+              BarcodeScannerFixedBarcodesView(),
+              Icons.map_outlined,
+              featureCompleted: true,
+              tileColor: Colors.deepOrange,
+            ),
             const CustomCard(
               'Barcode Scanner',
               BarcodeScannerView(),

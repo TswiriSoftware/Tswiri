@@ -7,7 +7,7 @@ import 'package:flutter_google_ml_kit/objects/calibration/barcode_size_objects.d
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../databaseAdapters/allBarcodes/barcode_entry.dart';
+import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import '../../functions/barcodeTools/get_data_functions.dart';
 import '../../globalValues/global_colours.dart';
 import 'calibration_data_visualizer_view.dart';
@@ -110,6 +110,8 @@ class _BarcodeCalibrationDataProcessingViewState
       ),
     );
   }
+
+  //TODO: Problem with distance.
 
   // Data that we are working with:
 
@@ -250,14 +252,14 @@ class _BarcodeCalibrationDataProcessingViewState
       final prefs = await SharedPreferences.getInstance();
 
       //Calculate the average focal length.
-      double sumOfFocalLengths = prefs.getDouble('focalLength') ?? 0;
+      double sumOfFocalLengths = prefs.getDouble(focalLengthPreference) ?? 0;
       for (double focalLength in focalLengths) {
         sumOfFocalLengths = sumOfFocalLengths + focalLength;
       }
       double finalFocalLength = sumOfFocalLengths / focalLengths.length;
       //Set the focal Length of the camera
 
-      prefs.setDouble('focalLength', finalFocalLength);
+      prefs.setDouble(focalLengthPreference, finalFocalLength);
       //log('focal length: ' + finalFocalLength.toString());
       //log(currentBarcodeSize.toString());
     }

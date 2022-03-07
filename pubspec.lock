@@ -29,6 +29,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.3.0"
+  arrow_path:
+    dependency: "direct main"
+    description:
+      name: arrow_path
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   async:
     dependency: transitive
     description:
@@ -846,6 +853,13 @@ packages:
     dependency: transitive
     description:
       name: timing
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
+  touchable:
+    dependency: "direct main"
+    description:
+      name: touchable
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"

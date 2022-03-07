@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_entry.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_entry.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeTools/get_data_functions.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeTools/hide_keyboard.dart';

@@ -4,8 +4,8 @@ part 'type_offset_adapter.g.dart';
 @HiveType(typeId: 5)
 
 ///Stores the Type offset in the hive database
-class TypeOffsetHiveObject extends HiveObject {
-  TypeOffsetHiveObject({
+class TypeOffset extends HiveObject {
+  TypeOffset({
     required this.x,
     required this.y,
   });

@@ -8,7 +8,7 @@ import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/widgets/t
 
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
-import '../../databaseAdapters/allBarcodes/barcode_entry.dart';
+import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import '../../databaseAdapters/barcodePhotos/barcode_photo_entry.dart';
 import '../../functions/barcodeTools/get_data_functions.dart';
 import '../../globalValues/global_hive_databases.dart';
