@@ -53,9 +53,9 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
   double zAcceleration = 0;
   int? barcodeID;
   late StreamSubscription<UserAccelerometerEvent> userAccelerometerEventsSub;
-  late StreamSubscription<AccelerometerEvent> accelerometerEventsSub;
+  //late StreamSubscription<AccelerometerEvent> accelerometerEventsSub;
   late StreamSubscription<GyroscopeEvent> gyroscopeEventsSub;
-  Vector3 accelerometerEvent = Vector3(0, 0, 0);
+  //Vector3 accelerometerEvent = Vector3(0, 0, 0);
 
   Vector3? initialPhoneOrientation;
   Vector3? gyroScopeOrientation;
@@ -73,10 +73,10 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
             timestamp: timestamp, rawAcceleration: zAcceleration));
       });
     });
-    accelerometerEventsSub =
-        accelerometerEvents.listen((AccelerometerEvent event) {
-      accelerometerEvent = Vector3(event.x, event.y, event.z);
-    });
+    // accelerometerEventsSub =
+    //     accelerometerEvents.listen((AccelerometerEvent event) {
+    //   accelerometerEvent = Vector3(event.x, event.y, event.z);
+    // });
 
     gyroscopeEventsSub = gyroscopeEvents.listen((GyroscopeEvent event) {
       if (gyroScopeOrientation != null) {
@@ -93,7 +93,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
   @override
   void dispose() {
     barcodeScanner.close();
-    accelerometerEventsSub.cancel();
+    //accelerometerEventsSub.cancel();
     userAccelerometerEventsSub.cancel();
     gyroscopeEventsSub.cancel();
     super.dispose();
@@ -137,7 +137,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
           initializeCalibration = true;
 
           //Set initialPhoneOrientation
-          initialPhoneOrientation = accelerometerEvent;
+          //initialPhoneOrientation = accelerometerEvent;
 
           //Initialize gyroscope tracking :D Big brother is watching dont be naughty.
           gyroScopeOrientation = Vector3(0, 0, 0);
@@ -236,7 +236,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
                     ElevatedButton(
                         child: const Text('Restart Calibration'),
                         onPressed: () {
-                          accelerometerEventsSub.cancel();
+                          //accelerometerEventsSub.cancel();
                           userAccelerometerEventsSub.cancel();
                           gyroscopeEventsSub.cancel();
                           barcodeScanner.close();
@@ -312,7 +312,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
   ///Proceed to data processing screen.
   void continueToProcessingScreen() {
     //Cancel all subscriptions.
-    accelerometerEventsSub.cancel();
+    //accelerometerEventsSub.cancel();
     userAccelerometerEventsSub.cancel();
     gyroscopeEventsSub.cancel();
 

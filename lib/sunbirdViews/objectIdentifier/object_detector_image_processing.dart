@@ -25,8 +25,17 @@ class ObjectDetectorProcessingView extends StatefulWidget {
 
 class _ObjectDetectorProcessingView
     extends State<ObjectDetectorProcessingView> {
-  ImageLabeler imageLabeler = GoogleMlKit.vision.imageLabeler();
-  late ObjectDetector objectDetector;
+  //Object detector config
+  ObjectDetector objectDetector = GoogleMlKit.vision.objectDetector(
+      ObjectDetectorOptions(classifyObjects: true, trackMutipleObjects: true));
+
+  //Image labeler Config.
+  ImageLabeler imageLabeler = GoogleMlKit.vision
+      .imageLabeler(ImageLabelerOptions(confidenceThreshold: 0.6));
+
+  //Text Detector
+  TextDetector textDetector = GoogleMlKit.vision.textDetector();
+
   late String imagePath;
   //LocalModel model = LocalModel('object_detector.tflite');
 
@@ -40,14 +49,6 @@ class _ObjectDetectorProcessingView
     // objectDetector = GoogleMlKit.vision.objectDetector(
     //     CustomObjectDetectorOptions(model,
     //         classifyObjects: true, trackMutipleObjects: true));
-
-    //Object Detector Config.
-    objectDetector = GoogleMlKit.vision.objectDetector(ObjectDetectorOptions(
-        classifyObjects: true, trackMutipleObjects: true));
-
-    //Image labeler Config.
-    imageLabeler = GoogleMlKit.vision
-        .imageLabeler(ImageLabelerOptions(confidenceThreshold: 0.5));
 
     super.initState();
   }
@@ -124,6 +125,7 @@ class _ObjectDetectorProcessingView
     String fileExtention = imageFile.path.split('.').last;
     String fileName =
         '${widget.barcodeID}_${DateTime.now().millisecondsSinceEpoch}';
+
     //Get the Storage Path if it does not exist create it.
     String storagePath = await getStorageDirectory();
     if (!await Directory('$storagePath/sunbird').exists()) {
@@ -132,15 +134,8 @@ class _ObjectDetectorProcessingView
 
     //Create the photo file path.
     String photoFilePath = '$storagePath/sunbird/$fileName' + fileExtention;
-    log(photoFilePath);
+    //log(photoFilePath);
 
-    //Copy the image to it. (For now only allowing 1 image per Barcode)
-    // if (await File(photoFilePath).exists()) {
-    //   File(photoFilePath).delete();
-    //   await imageFile.copy(photoFilePath);
-    // } else {
-    //   await imageFile.copy(photoFilePath);
-    // }
     await imageFile.copy(photoFilePath);
 
     //Create InputImage.
@@ -149,9 +144,9 @@ class _ObjectDetectorProcessingView
     List<String> photoTags = [];
 
     //Image Processing:
+
     ///Objects
     final objects = await objectDetector.processImage(inputImage);
-
     for (DetectedObject object in objects) {
       //log('Object label: ' + object.getLabels().toList().toString());
       List<Label> objectLabels = object.getLabels();
@@ -167,6 +162,21 @@ class _ObjectDetectorProcessingView
       photoTags.add(label.label);
     }
 
+    ///Text
+    final RecognisedText recognisedText =
+        await textDetector.processImage(inputImage);
+    for (TextBlock block in recognisedText.blocks) {
+      for (TextLine line in block.lines) {
+        if (line.text.length >= 3) {
+          photoTags.add(line.text.toLowerCase());
+        }
+
+        // for (TextElement element in line.elements) {
+        //   log(element.text.toString());
+        // }
+      }
+    }
+
     //Decode Image for properties
     var decodedImage = await decodeImageFromList(imageFile.readAsBytesSync());
 
@@ -178,6 +188,7 @@ class _ObjectDetectorProcessingView
     ImageObjectData processedResult = ImageObjectData(
         detectedObjects: objects,
         detectedLabels: labels,
+        detectedText: recognisedText,
         imageRotation: InputImageRotation.Rotation_90deg,
         size: imageSize);
 
@@ -198,7 +209,7 @@ class _ObjectDetectorProcessingView
       barcodePhotoEntry.photoData.addAll(currentPhotoDataMap);
     }
 
-    log(barcodePhotoEntries.values.toString());
+    //log(barcodePhotoEntries.values.toString());
     return processedResult;
   }
 }

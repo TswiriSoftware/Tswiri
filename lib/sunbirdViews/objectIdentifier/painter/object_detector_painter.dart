@@ -13,6 +13,7 @@ class ObjectDetectorPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     List<DetectedObject> _objects = objectData.detectedObjects;
+    List<TextBlock> _textData = objectData.detectedText.blocks;
     Size absoluteSize = objectData.size;
     InputImageRotation rotation = objectData.imageRotation;
 
@@ -30,6 +31,7 @@ class ObjectDetectorPainter extends CustomPainter {
             fontSize: 16,
             textDirection: TextDirection.ltr),
       );
+
       builder.pushStyle(
           ui.TextStyle(color: Colors.lightGreenAccent, background: background));
 
@@ -47,6 +49,40 @@ class ObjectDetectorPainter extends CustomPainter {
           detectedObject.getBoundinBox().right, rotation, size, absoluteSize);
       final bottom = translateY(
           detectedObject.getBoundinBox().bottom, rotation, size, absoluteSize);
+
+      canvas.drawRect(
+        Rect.fromLTRB(left, top, right, bottom),
+        paint,
+      );
+
+      canvas.drawParagraph(
+        builder.build()
+          ..layout(ParagraphConstraints(
+            width: right - left,
+          )),
+        Offset(left, top),
+      );
+    }
+
+    for (final textBlock in _textData) {
+      final ParagraphBuilder builder = ParagraphBuilder(
+        ParagraphStyle(
+            textAlign: TextAlign.left,
+            fontSize: 10,
+            textDirection: TextDirection.ltr),
+      );
+      builder.pushStyle(
+          ui.TextStyle(color: Colors.lightGreenAccent, background: background));
+      builder.addText(textBlock.text);
+      builder.pop();
+
+      final left =
+          translateX(textBlock.rect.left, rotation, size, absoluteSize);
+      final top = translateY(textBlock.rect.top, rotation, size, absoluteSize);
+      final right =
+          translateX(textBlock.rect.right, rotation, size, absoluteSize);
+      final bottom =
+          translateY(textBlock.rect.bottom, rotation, size, absoluteSize);
 
       canvas.drawRect(
         Rect.fromLTRB(left, top, right, bottom),

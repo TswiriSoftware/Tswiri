@@ -11,6 +11,7 @@ class ImageObjectData {
   ImageObjectData({
     required this.detectedObjects,
     required this.detectedLabels,
+    required this.detectedText,
     required this.imageRotation,
     required this.size,
   });
@@ -21,8 +22,12 @@ class ImageObjectData {
   ///List of detected labels.
   final List<ImageLabel> detectedLabels;
 
+  ///List of detected Text.
+  final RecognisedText detectedText;
+
   ///Image rotation.
   final InputImageRotation imageRotation;
+
   //Image Size.
   final Size size;
 
