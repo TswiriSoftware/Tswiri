@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
+import '../../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 import '../../../globalValues/global_colours.dart';
 
 class DisplayMatchedDataWidget extends StatelessWidget {
@@ -29,7 +29,8 @@ class DisplayMatchedDataWidget extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(right: 10, left: 10),
                 child: SizedBox(
-                  child: Text(dataObject.onImageBarcodeDiagonalLength.toString(),
+                  child: Text(
+                      dataObject.onImageBarcodeDiagonalLength.toString(),
                       textAlign: TextAlign.start),
                   width: 150,
                 ),

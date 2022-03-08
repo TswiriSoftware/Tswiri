@@ -60,6 +60,7 @@ dependencies:
   palette_generator: ^0.3.3
   arrow_path: ^2.0.0
   touchable: ^1.0.0
+  timelines: ^0.1.0
 
 
 

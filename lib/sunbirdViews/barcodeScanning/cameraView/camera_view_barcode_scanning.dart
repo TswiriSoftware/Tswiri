@@ -73,7 +73,7 @@ class _CameraBarcodeScanningViewState extends State<CameraBarcodeScanningView> {
   Widget? _floatingActionButton() {
     if (cameras.length == 1) return null;
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 16, right: 16),
@@ -100,26 +100,26 @@ class _CameraBarcodeScanningViewState extends State<CameraBarcodeScanningView> {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16),
-          child: SizedBox(
-            height: 70.0,
-            width: 70.0,
-            child: FloatingActionButton(
-              heroTag: 'camera selection',
-              child: Icon(
-                Platform.isIOS
-                    ? Icons.flip_camera_ios_outlined
-                    : Icons.flip_camera_android_outlined,
-                size: 30,
-              ),
-              onPressed: _switchLiveCamera,
-            ),
-          ),
-        ),
-        const SizedBox(
-          width: 86,
-        ),
+        // Padding(
+        //   padding: const EdgeInsets.only(left: 16, right: 16),
+        //   child: SizedBox(
+        //     height: 70.0,
+        //     width: 70.0,
+        //     child: FloatingActionButton(
+        //       heroTag: 'camera selection',
+        //       child: Icon(
+        //         Platform.isIOS
+        //             ? Icons.flip_camera_ios_outlined
+        //             : Icons.flip_camera_android_outlined,
+        //         size: 30,
+        //       ),
+        //       onPressed: _switchLiveCamera,
+        //     ),
+        //   ),
+        // ),
+        // const SizedBox(
+        //   width: 86,
+        // ),
       ],
     );
   }

@@ -7,13 +7,13 @@ class BarcodeTagEntry extends HiveObject {
   ///
   ///ex. 7_tools, 1_documents
   BarcodeTagEntry({
-    required this.barcodeID,
+    required this.id,
     required this.tag,
   });
 
   //Barcode's ID or Displayvalue
   @HiveField(0)
-  late int barcodeID;
+  late int id;
 
   //tag
   @HiveField(1)

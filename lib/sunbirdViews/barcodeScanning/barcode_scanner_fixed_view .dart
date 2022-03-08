@@ -56,8 +56,8 @@ class _BarcodeScannerFixedBarcodesViewState
                       //Ensure list has been fetched.
                       if (allBarcodes != null) {
                         //Get the index of the current barcode.
-                        int index = allBarcodes!.indexWhere(
-                            (element) => element.barcodeID == barcodeID);
+                        int index = allBarcodes!
+                            .indexWhere((element) => element.uid == barcodeID);
                         if (index != -1) {
                           //Get the genrated barcodeData.
                           Box<BarcodeDataEntry> generatedBarcodeData =

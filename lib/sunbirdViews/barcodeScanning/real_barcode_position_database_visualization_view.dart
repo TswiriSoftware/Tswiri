@@ -3,11 +3,12 @@
 import 'dart:developer';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
+import '../../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
 
 // ignore: todo
 //TODO: Refactor this @049er

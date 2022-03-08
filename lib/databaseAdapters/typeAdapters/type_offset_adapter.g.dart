@@ -6,7 +6,7 @@ part of 'type_offset_adapter.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TypeOffsetHiveObjectAdapter extends TypeAdapter<TypeOffset> {
+class TypeOffsetAdapter extends TypeAdapter<TypeOffset> {
   @override
   final int typeId = 5;
 
@@ -38,7 +38,7 @@ class TypeOffsetHiveObjectAdapter extends TypeAdapter<TypeOffset> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is TypeOffsetHiveObjectAdapter &&
+      other is TypeOffsetAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

@@ -13,8 +13,10 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vector_math/vector_math.dart';
 import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
-import '../../databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
-import '../../databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
+
+import '../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
+import '../../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
+
 import '../../functions/barcodeCalculations/type_offset_converters.dart';
 import '../../functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
 import '../../globalValues/global_hive_databases.dart';

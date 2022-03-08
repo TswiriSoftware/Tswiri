@@ -1,7 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_data_entry.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/barcodePhotos/barcode_photo_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/tag_entry.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
@@ -10,14 +9,17 @@ import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/all_barco
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generation_range_selector_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/gettingStarted/getting_started_view.dart';
 import 'package:flutter_google_ml_kit/widgets/custom_card_widget.dart';
+import 'package:flutter_google_ml_kit/zDemoView/main_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
+import 'databaseAdapters/barcodePhotoAdapter/barcode_photo_entry.dart';
+import 'databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
+import 'databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
+import 'databaseAdapters/shelfAdapter/shelf_entry.dart';
 import 'sunbirdViews/appSettings/app_settings_functions.dart';
 import 'sunbirdViews/appSettings/app_settings_view.dart';
-import 'databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
-import 'databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
 import 'sunbirdViews/barcodeNavigation/navigationToolsView/barcode_navigation_tools_view.dart';
 import 'sunbirdViews/barcodeScanning/scanningToolsView/barcode_scanning_tools_view.dart';
@@ -52,13 +54,15 @@ Future<void> main() async {
   //Initiate Hive.
   final directory = await getApplicationDocumentsDirectory();
   await Hive.initFlutter(directory.path);
-  Hive.registerAdapter(TypeOffsetHiveObjectAdapter());
-  Hive.registerAdapter(RealBarcodePostionEntryAdapter());
-  Hive.registerAdapter(DistanceFromCameraLookupEntryAdapter());
-  Hive.registerAdapter(BarcodeTagEntryAdapter());
-  Hive.registerAdapter(TagEntryAdapter());
-  Hive.registerAdapter(BarcodeDataEntryAdapter());
-  Hive.registerAdapter(BarcodePhotosEntryAdapter());
+
+  Hive.registerAdapter(RealBarcodePostionEntryAdapter()); //0
+  Hive.registerAdapter(DistanceFromCameraLookupEntryAdapter()); //1
+  Hive.registerAdapter(BarcodeTagEntryAdapter()); //3
+  Hive.registerAdapter(TagEntryAdapter()); //4
+  Hive.registerAdapter(TypeOffsetAdapter()); //5
+  Hive.registerAdapter(BarcodeDataEntryAdapter()); //6
+  Hive.registerAdapter(BarcodePhotosEntryAdapter()); //7
+  Hive.registerAdapter(ShelfEntryAdapter()); //8
 }
 
 class MyApp extends StatelessWidget {
@@ -67,19 +71,42 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        brightness: Brightness.light,
+        primaryColor: Colors.deepOrange[500],
+        appBarTheme: AppBarTheme(
+          //foregroundColor: Colors.deepOrange[900],
+          backgroundColor: Colors.deepOrange[500],
+        ),
+        buttonTheme: const ButtonThemeData(
+          buttonColor: Colors.deepOrangeAccent,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+            style: TextButton.styleFrom(
+          backgroundColor: Colors.deepOrange[500],
+        )),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+            foregroundColor: Colors.black, backgroundColor: Colors.deepOrange),
+      ),
       darkTheme: ThemeData(
-          brightness: Brightness.dark,
-          primaryColor: Colors.deepOrange[500],
-          appBarTheme: AppBarTheme(
-            //foregroundColor: Colors.deepOrange[900],
+        brightness: Brightness.dark,
+        backgroundColor: Colors.black12,
+        primaryColor: Colors.deepOrange[500],
+        appBarTheme: AppBarTheme(
+          //foregroundColor: Colors.deepOrange[900],
+          backgroundColor: Colors.deepOrange[500],
+        ),
+        buttonTheme: const ButtonThemeData(
+          buttonColor: Colors.deepOrangeAccent,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: TextButton.styleFrom(
             backgroundColor: Colors.deepOrange[500],
           ),
-          buttonTheme: const ButtonThemeData(
-            buttonColor: Colors.deepOrangeAccent,
-          ),
-          floatingActionButtonTheme: const FloatingActionButtonThemeData(
-              foregroundColor: Colors.black,
-              backgroundColor: Colors.deepOrange)),
+        ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+            foregroundColor: Colors.black, backgroundColor: Colors.deepOrange),
+      ),
       debugShowCheckedModeBanner: false,
       home: const Home(),
     );
@@ -118,6 +145,13 @@ class Home extends StatelessWidget {
           crossAxisSpacing: 16,
           crossAxisCount: 2,
           children: const [
+            CustomCard(
+              'Demo',
+              HomeView(),
+              Icons.qr_code_scanner_rounded,
+              featureCompleted: true,
+              tileColor: brightOrange,
+            ),
             CustomCard(
               'Barcode Scanning Tools',
               BarcodeScanningToolsView(),

@@ -1,6 +1,7 @@
 import 'package:flutter/rendering.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 
 ///Calculates the average distance from the camera of 2 barcodes
 double calcAveDisFromCamera(

@@ -9,7 +9,7 @@ import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/widgets/t
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
-import '../../databaseAdapters/barcodePhotos/barcode_photo_entry.dart';
+import '../../databaseAdapters/barcodePhotoAdapter/barcode_photo_entry.dart';
 import '../../functions/barcodeTools/get_data_functions.dart';
 import '../../globalValues/global_hive_databases.dart';
 import '../../objects/change_notifiers.dart';
@@ -109,10 +109,7 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
     BarcodeDataEntry? barcodeData = allBarcodes.get(barcodeID);
     if (allBarcodes.get(barcodeID) == null) {
       barcodeData = BarcodeDataEntry(
-          barcodeID: barcodeID,
-          barcodeSize: 100,
-          isFixed: false,
-          description: '');
+          uid: barcodeID, barcodeSize: 100, isFixed: false, description: '');
 
       allBarcodes.put(barcodeID, barcodeData);
     } else {

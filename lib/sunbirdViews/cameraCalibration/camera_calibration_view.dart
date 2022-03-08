@@ -96,6 +96,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
     //accelerometerEventsSub.cancel();
     userAccelerometerEventsSub.cancel();
     gyroscopeEventsSub.cancel();
+
     super.dispose();
   }
 
@@ -235,7 +236,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
                   actions: [
                     ElevatedButton(
                         child: const Text('Restart Calibration'),
-                        onPressed: () {
+                        onPressed: () async {
                           //accelerometerEventsSub.cancel();
                           userAccelerometerEventsSub.cancel();
                           gyroscopeEventsSub.cancel();
@@ -310,15 +311,16 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
   }
 
   ///Proceed to data processing screen.
-  void continueToProcessingScreen() {
+  Future<void> continueToProcessingScreen() async {
     //Cancel all subscriptions.
     //accelerometerEventsSub.cancel();
     userAccelerometerEventsSub.cancel();
     gyroscopeEventsSub.cancel();
 
     //Navigation.
-    Navigator.pop(context);
-    Navigator.of(context).pushReplacement(
+
+    await Navigator.push(
+      context,
       MaterialPageRoute(
         builder: (context) => BarcodeCalibrationDataProcessingView(
           rawBarcodeData: rawBarcodesData,
@@ -328,6 +330,18 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
         ),
       ),
     );
+
+    Navigator.pop(context);
+    // Navigator.of(context).pushReplacement(
+    //   MaterialPageRoute(
+    //     builder: (context) => BarcodeCalibrationDataProcessingView(
+    //       rawBarcodeData: rawBarcodesData,
+    //       rawUserAccelerometerData: rawAccelerometerData,
+    //       startTimeStamp: startTimeStamp,
+    //       barcodeID: barcodeID ?? 1,
+    //     ),
+    //   ),
+    // );
   }
 
   ///Checks if the input image has is black.

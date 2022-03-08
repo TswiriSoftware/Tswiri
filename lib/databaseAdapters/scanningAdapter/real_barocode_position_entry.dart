@@ -14,7 +14,6 @@ class RealBarcodePostionEntry extends HiveObject {
       required this.timestamp});
 
   //Barcode's ID or Displayvalue
-  //TODO: Convert to int.
   @HiveField(0)
   late String uid;
 

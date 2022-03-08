@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_data_entry.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
+
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/data_capturing_functions.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
@@ -12,7 +12,8 @@ import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
 
-import '../../databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
+import '../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
+import '../../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
 import '../../sunbirdViews/appSettings/app_settings.dart';
 
 ///Calculates the average interBarcodeOffset.
@@ -142,9 +143,9 @@ List<RealBarcodePosition> extractListOfScannedBarcodes(
   List<RealBarcodePosition> allBarcodesInScan = [];
   for (RealInterBarcodeOffset interBarcodeData in allRealInterBarcodeData) {
     int startIndex = allBarcodes.indexWhere(
-        (element) => element.barcodeID.toString() == interBarcodeData.uidStart);
+        (element) => element.uid.toString() == interBarcodeData.uidStart);
     int endIndex = allBarcodes.indexWhere(
-        (element) => element.barcodeID.toString() == interBarcodeData.uidEnd);
+        (element) => element.uid.toString() == interBarcodeData.uidEnd);
 
     bool startIsFixed = false;
     bool endIsFixed = false;
@@ -288,7 +289,7 @@ double calculateBacodeMMperOIU({
 }) {
   //If the barcode has not been generated. use default barcode size.
   int index = barcodeDataEntries
-      .indexWhere((element) => element.barcodeID == int.parse(barcodeID));
+      .indexWhere((element) => element.uid == int.parse(barcodeID));
 
   if (index != -1) {
     return diagonalLength / barcodeDataEntries[index].barcodeSize;
@@ -306,7 +307,7 @@ double findDistanceFromCamera({
   required double focalLength,
 }) {
   int index = allBarcodes.indexWhere(
-      (element) => element.barcodeID == int.parse(barcodeValue.displayValue!));
+      (element) => element.uid == int.parse(barcodeValue.displayValue!));
 
   if (index != -1) {
     double barcodeRealDiagonalLength = allBarcodes[index].barcodeSize;

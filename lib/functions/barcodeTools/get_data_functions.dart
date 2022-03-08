@@ -39,8 +39,7 @@ List<String> findRelevantBarcodeTags(
 ) {
   //List containing all relevant TagEntries to current barcode.
   List<BarcodeTagEntry> relevantBarcodeTagEntries = barcodeTagEntries
-      .where((barcodeTagEntry) =>
-          barcodeTagEntry.barcodeID == barcodeData.barcodeID)
+      .where((barcodeTagEntry) => barcodeTagEntry.id == barcodeData.uid)
       .toList();
 
   //List of all relevant Tags.
@@ -56,11 +55,11 @@ Future<List<String>> getCurrentBarcodeTags(int currentBarcode) async {
   Box<BarcodeTagEntry> barcodeTagsBox = await Hive.openBox(barcodeTagsBoxName);
   Set<BarcodeTagEntry> barcodeTags = barcodeTagsBox.values
       .toSet()
-      .where((element) => element.barcodeID == currentBarcode)
+      .where((element) => element.id == currentBarcode)
       .toSet();
 
   for (BarcodeTagEntry barcodeTag in barcodeTags) {
-    if (barcodeTag.barcodeID == currentBarcode) {
+    if (barcodeTag.id == currentBarcode) {
       currentBarcodeTags.add(barcodeTag.tag);
     }
   }
@@ -73,7 +72,7 @@ Future<List<String>> getAssignedTags(int barcodeID) async {
 
   List<BarcodeTagEntry> barcodesAssignedTags = barcodeTagsBox.values
       .toList()
-      .where((element) => element.barcodeID == barcodeID)
+      .where((element) => element.id == barcodeID)
       .toList();
 
   List<String> assignedTags = [];

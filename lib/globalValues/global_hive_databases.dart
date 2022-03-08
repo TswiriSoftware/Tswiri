@@ -1,9 +1,10 @@
 import '../databaseAdapters/allBarcodes/barcode_data_entry.dart';
-import '../databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
-import '../databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
+import '../databaseAdapters/barcodePhotoAdapter/barcode_photo_entry.dart';
+import '../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
+import '../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
+import '../databaseAdapters/shelfAdapter/shelf_entry.dart';
 import '../databaseAdapters/tagAdapters/barcode_tag_entry.dart';
 import '../databaseAdapters/tagAdapters/tag_entry.dart';
-import '../databaseAdapters/barcodePhotos/barcode_photo_entry.dart';
 
 ///Contains all real positional data as [RealBarcodePostionEntry]
 const String realPositionsBoxName = 'realPositionsBox';
@@ -21,4 +22,7 @@ const String tagsBoxName = 'tagsBox';
 const String allBarcodesBoxName = 'allBarcodesBox';
 
 ///Contains all barcodes Photos as [BarcodePhotosEntry].
-const String barcodePhotosBoxName = 'barcodePhotos';
+const String barcodePhotosBoxName = 'barcodePhotosBox';
+
+///Contains all barcodes Photos as [ShelfEntry].
+const String shelvesBoxName = 'shelvesBox';

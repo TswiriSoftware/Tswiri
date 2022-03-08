@@ -17,7 +17,7 @@ class BarcodeTagEntryAdapter extends TypeAdapter<BarcodeTagEntry> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return BarcodeTagEntry(
-      barcodeID: fields[0] as int,
+      id: fields[0] as int,
       tag: fields[1] as String,
     );
   }
@@ -27,7 +27,7 @@ class BarcodeTagEntryAdapter extends TypeAdapter<BarcodeTagEntry> {
     writer
       ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.barcodeID)
+      ..write(obj.id)
       ..writeByte(1)
       ..write(obj.tag);
   }

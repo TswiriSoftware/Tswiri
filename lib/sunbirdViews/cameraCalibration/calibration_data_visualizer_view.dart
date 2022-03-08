@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
 import 'package:flutter_google_ml_kit/functions/calibrationFunctions/calibration_functions.dart';
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
@@ -10,6 +9,7 @@ import 'package:flutter_google_ml_kit/main.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
+import '../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 import '../../functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
 import '../../globalValues/global_colours.dart';
 
@@ -125,7 +125,7 @@ Future<List<List<Offset>>> _getPoints(BuildContext context) async {
 
   //Plot equation using focal length
   List<BarcodeDataEntry> allBarcodes = await getAllExistingBarcodes();
-  int index = allBarcodes.indexWhere((element) => element.barcodeID == 1);
+  int index = allBarcodes.indexWhere((element) => element.uid == 1);
   final prefs = await SharedPreferences.getInstance();
   double focalLength = prefs.getDouble(focalLengthPreference) ?? 0;
   List<Offset> equationPoints = [];

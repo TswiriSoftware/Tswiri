@@ -54,8 +54,8 @@ class FixedBarcodeDetectorPainter extends CustomPainter {
 
         offsetPoints.add(offsetPoints.first);
 
-        int index = allBarcodes.indexWhere((element) =>
-            element.barcodeID.toString() == barcode.value.displayValue);
+        int index = allBarcodes.indexWhere(
+            (element) => element.uid.toString() == barcode.value.displayValue);
 
         canvas.drawPoints(PointMode.polygon, offsetPoints, paint);
         if (index != -1) {

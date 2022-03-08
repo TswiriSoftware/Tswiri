@@ -6,14 +6,14 @@ part 'barcode_data_entry.g.dart';
 ///Contains data related to a barcode such as size and name
 class BarcodeDataEntry extends HiveObject {
   BarcodeDataEntry(
-      {required this.barcodeID,
+      {required this.uid,
       required this.barcodeSize,
       required this.isFixed,
       required this.description});
 
   ///Barcode's ID
   @HiveField(0)
-  late int barcodeID;
+  late int uid;
 
   ///Barcode Diagonal side length in mm.
   @HiveField(1)

@@ -16,8 +16,8 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:flutter/services.dart';
 
 import '../../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
-import '../../../databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
-import '../../../databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
+import '../../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
+import '../../../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
 import '../../../functions/barcodeCalculations/data_capturing_functions.dart';
 
 ///This Painter is used to gudide the user to the barcode they have
@@ -100,10 +100,8 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
       }
 
       //Draws a Polygon around the selectedBarcode.
-      // canvas.drawPoints(PointMode.polygon, barcodeOnScreenData.cornerPoints,
-      //     paintLightGreenAccent3);
-      // canvas.drawPoints(PointMode.points, [barcodeOnScreenData.center],
-      //     paintSimple(Colors.greenAccent, 4));
+      canvas.drawPoints(PointMode.polygon, barcodeOnScreenData.cornerPoints,
+          paintLightGreenAccent3);
 
       //The finder circle's radius is related to the barcode on screen size.
       double finderCircleRadius = barcodeOnScreenData.barcodeOnScreenUnits / 2;

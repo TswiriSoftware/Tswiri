@@ -136,7 +136,7 @@ class _AllBarcodesViewState extends State<AllBarcodesView> {
           findRelevantBarcodeTags(barcodeTagEntries, barcodeData);
 
       results.add(AllBarcodeData(
-          barcodeID: barcodeData.barcodeID,
+          barcodeID: barcodeData.uid,
           barcodeSize: barcodeData.barcodeSize,
           isFixed: barcodeData.isFixed,
           tags: relevantTags));

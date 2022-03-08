@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_entry.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/objects/all_barcode_data.dart';
 import 'package:hive/hive.dart';
+import '../../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
 import 'barcode_camera_navigator_view.dart';
 
 class BarcodeSelectionView extends StatefulWidget {
@@ -105,8 +105,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
     for (RealBarcodePostionEntry realBarcodePosition in realBarcodesPositions) {
       //To set to remove any duplicates if there are any.
       Set<BarcodeTagEntry> relevantBarcodeTagEntries = barcodesAssignedTags
-          .where((element) =>
-              element.barcodeID == int.parse(realBarcodePosition.uid))
+          .where((element) => element.id == int.parse(realBarcodePosition.uid))
           .toSet();
 
       //List containing all tags relevant to current barcode.

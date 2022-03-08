@@ -1,6 +1,7 @@
 import 'dart:ui';
-import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
 import 'package:hive/hive.dart';
+
+import '../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 
 ///Generates a list of points to display with painter
 List<Offset> listOfPoints(Box matchedDataBox, Size screenSize) {

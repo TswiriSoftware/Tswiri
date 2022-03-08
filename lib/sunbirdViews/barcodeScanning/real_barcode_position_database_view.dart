@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapters/real_barocode_position_entry.dart';
+
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:hive/hive.dart';
 
+import '../../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
 import '../../objects/real_barcode_position.dart';
 import 'widgets/real_position_display_widget.dart';
 

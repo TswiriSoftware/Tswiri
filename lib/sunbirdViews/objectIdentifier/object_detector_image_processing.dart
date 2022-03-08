@@ -1,12 +1,12 @@
 import 'dart:developer';
 import 'dart:io';
-import 'package:flutter_google_ml_kit/databaseAdapters/barcodePhotos/barcode_photo_entry.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/barcode_control_panel.dart';
 import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../databaseAdapters/barcodePhotoAdapter/barcode_photo_entry.dart';
 import '../../globalValues/global_hive_databases.dart';
 import '../../objects/image_object_data.dart';
 import 'painter/object_detector_painter.dart';
@@ -203,7 +203,7 @@ class _ObjectDetectorProcessingView
 
     if (barcodePhotoEntry == null) {
       BarcodePhotosEntry newBarcodePhotosEntry = BarcodePhotosEntry(
-          barcodeID: widget.barcodeID, photoData: currentPhotoDataMap);
+          uid: widget.barcodeID, photoData: currentPhotoDataMap);
       barcodePhotoEntries.put(widget.barcodeID, newBarcodePhotosEntry);
     } else {
       barcodePhotoEntry.photoData.addAll(currentPhotoDataMap);

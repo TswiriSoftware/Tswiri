@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/calibrationAdapters/distance_from_camera_lookup_entry.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/user_accelerometer_z_axis_data_objects.dart';
@@ -8,6 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
+import '../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 import '../../functions/barcodeTools/get_data_functions.dart';
 import '../../globalValues/global_colours.dart';
 import 'calibration_data_visualizer_view.dart';
@@ -54,9 +54,9 @@ class _BarcodeCalibrationDataProcessingViewState
               heroTag: null,
               onPressed: () {
                 Navigator.pop(context);
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) =>
-                        const CalibrationDataVisualizerView()));
+                // Navigator.of(context).pushReplacement(MaterialPageRoute(
+                //     builder: (context) =>
+                //         const CalibrationDataVisualizerView()));
               },
               child: const Icon(Icons.check_circle_outline_rounded),
             ),
@@ -154,7 +154,7 @@ class _BarcodeCalibrationDataProcessingViewState
 
         //Get the index of currentBarcodeID
         int indexOfcurrentBarcode = allBarcodes
-            .indexWhere((element) => element.barcodeID == currentBarcodeID);
+            .indexWhere((element) => element.uid == currentBarcodeID);
 
         //If it exists get it's size.
         if (indexOfcurrentBarcode != -1) {

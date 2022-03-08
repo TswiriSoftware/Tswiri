@@ -17,7 +17,7 @@ class BarcodePhotosEntryAdapter extends TypeAdapter<BarcodePhotosEntry> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return BarcodePhotosEntry(
-      barcodeID: fields[0] as int,
+      uid: fields[0] as int,
       photoData: (fields[1] as Map).map((dynamic k, dynamic v) =>
           MapEntry(k as String, (v as List).cast<String>())),
     );
@@ -28,7 +28,7 @@ class BarcodePhotosEntryAdapter extends TypeAdapter<BarcodePhotosEntry> {
     writer
       ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.barcodeID)
+      ..write(obj.uid)
       ..writeByte(1)
       ..write(obj.photoData);
   }
