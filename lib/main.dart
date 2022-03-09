@@ -3,11 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/tag_entry.dart';
-
 import 'package:flutter_google_ml_kit/globalValues/routes.dart';
-
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/barcode_selection_view.dart';
 import 'package:flutter_google_ml_kit/widgets/custom_card_widget.dart';
-
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -19,7 +17,7 @@ import 'databaseAdapters/shelfAdapter/shelf_entry.dart';
 import 'sunbirdViews/appSettings/app_settings_functions.dart';
 import 'sunbirdViews/appSettings/app_settings_view.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
-import 'sunbirdViews/demoViews/shelves/shelves_view.dart';
+import 'sunbirdViews/shelves/shelves_view.dart';
 
 List<CameraDescription> cameras = [];
 
@@ -150,6 +148,13 @@ class HomeView extends StatelessWidget {
             CustomCard(
               'Shelves',
               ShelvesView(),
+              Icons.qr_code_scanner_rounded,
+              featureCompleted: true,
+              tileColor: Colors.deepOrange,
+            ),
+            CustomCard(
+              'Navigator',
+              BarcodeSelectionView(),
               Icons.qr_code_scanner_rounded,
               featureCompleted: true,
               tileColor: Colors.deepOrange,

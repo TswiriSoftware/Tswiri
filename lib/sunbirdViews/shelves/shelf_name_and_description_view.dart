@@ -16,7 +16,9 @@ class ShelfNameAndDescriptionView extends StatefulWidget {
 
 class _ShelfNameAndDescriptionViewState
     extends State<ShelfNameAndDescriptionView> {
+  //Name controller.
   final TextEditingController _nameController = TextEditingController();
+  //Description contoller.
   final TextEditingController _descriptionController = TextEditingController();
 
   @override

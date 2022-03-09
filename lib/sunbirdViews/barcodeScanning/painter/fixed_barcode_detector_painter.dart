@@ -3,12 +3,10 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 import '../../../VisionDetectorViews/painters/coordinates_translator.dart';
 import '../../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
-import '../../../functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
 
 class FixedBarcodeDetectorPainter extends CustomPainter {
   FixedBarcodeDetectorPainter(

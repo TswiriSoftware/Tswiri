@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 
-import '../../../../databaseAdapters/shelfAdapter/shelf_entry.dart';
-import '../../../../globalValues/global_hive_databases.dart';
+import '../../databaseAdapters/shelfAdapter/shelf_entry.dart';
+import '../../globalValues/global_hive_databases.dart';
 
 Future<List<ShelfEntry>> getAllShelves() async {
   //Open generatedBarcodesBox.

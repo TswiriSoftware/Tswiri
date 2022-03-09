@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/barcode_control_panel.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/scanned_barcodes_selection.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import '../../VisionDetectorViews/camera_view.dart';
 import '../barcodeScanning/painter/barcode_detector_painter.dart';
+import 'barcode_control_panel.dart';
 
 class ScanBarcodeView extends StatefulWidget {
   const ScanBarcodeView({Key? key, required this.color}) : super(key: key);

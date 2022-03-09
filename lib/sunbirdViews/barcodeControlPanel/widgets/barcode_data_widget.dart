@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_dark_container.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_light_container.dart';
 import 'package:provider/provider.dart';
 
 import '../../../objects/change_notifiers.dart';
@@ -34,7 +36,6 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      //height: 150,
       margin: const EdgeInsets.only(bottom: 5, top: 5),
       decoration: BoxDecoration(
         color: deepSpaceSparkle[200],
@@ -88,42 +89,41 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
               child: InkWell(
                 onTap: () {
                   showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: const Text(
-                              'Enter Barcode diagonal length in mm.'),
-                          content: TextField(
-                            controller: _barcodeDiagonalLengthController,
-                            textInputAction: TextInputAction.go,
-                            keyboardType:
-                                const TextInputType.numberWithOptions(),
-                            decoration: const InputDecoration(
-                                hintText: "Enter barcode size."),
-                          ),
-                          actions: [
-                            ElevatedButton(
-                                child: const Text('Submit'),
-                                onPressed: () {
-                                  barcodeSize = double.parse(
-                                      _barcodeDiagonalLengthController.text);
-                                  setBarcodeSize();
-                                  Navigator.of(context).pop();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    primary: deepSpaceSparkle))
-                          ],
-                        );
-                      });
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title:
+                            const Text('Enter Barcode diagonal length in mm.'),
+                        content: TextField(
+                          controller: _barcodeDiagonalLengthController,
+                          textInputAction: TextInputAction.go,
+                          keyboardType: const TextInputType.numberWithOptions(),
+                          decoration: const InputDecoration(
+                              hintText: "Enter barcode size."),
+                        ),
+                        actions: [
+                          ElevatedButton(
+                              child: const Text('Submit'),
+                              onPressed: () {
+                                barcodeSize = double.parse(
+                                    _barcodeDiagonalLengthController.text);
+                                setBarcodeSize();
+                                Navigator.of(context).pop();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  primary: deepSpaceSparkle))
+                        ],
+                      );
+                    },
+                  );
                 },
                 child: Text(
-                  'Barcode Diagonal Length:  ' +
-                      Provider.of<BarcodeDataChangeNotifier>(context)
-                          .barcodeSize
-                          .toString() +
-                      ' mm',
-                  style: const TextStyle(fontSize: 18),
-                ),
+                    'Barcode diagonal length: ' +
+                        Provider.of<BarcodeDataChangeNotifier>(context)
+                            .barcodeSize
+                            .toString() +
+                        ' mm',
+                    style: const TextStyle(fontSize: 18)),
               ),
             ),
           ),

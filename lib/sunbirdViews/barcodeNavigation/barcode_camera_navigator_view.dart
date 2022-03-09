@@ -2,16 +2,14 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/barcode_control_panel.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/cameraView/camera_view_barcode_navigator.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/painter/barcode_navigation_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:vector_math/vector_math.dart';
+import 'package:vector_math/vector_math.dart' as vm;
 import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
 
 import '../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
@@ -24,10 +22,13 @@ import '../../objects/accelerometer_data.dart';
 import '../../objects/raw_on_image_barcode_data.dart';
 import '../../objects/raw_on_image_inter_barcode_data.dart';
 import '../../objects/real_inter_barcode_offset.dart';
+import '../barcodeControlPanel/barcode_control_panel.dart';
 
 class BarcodeCameraNavigatorView extends StatefulWidget {
   final String barcodeID;
-  const BarcodeCameraNavigatorView({Key? key, required this.barcodeID})
+  final bool? pop;
+  const BarcodeCameraNavigatorView(
+      {Key? key, required this.barcodeID, this.pop})
       : super(key: key);
 
   @override
@@ -54,8 +55,8 @@ class _BarcodeCameraNavigatorViewState
   Map<String, List<RealInterBarcodeOffset>> realInterBarcodeOffsetMap = {};
 
   //Accelerometer initial values.
-  Vector3 accelerometerEvent = Vector3(0, 0, 0);
-  Vector3 userAccelerometerEvent = Vector3(0, 0, 0);
+  vm.Vector3 accelerometerEvent = vm.Vector3(0, 0, 0);
+  vm.Vector3 userAccelerometerEvent = vm.Vector3(0, 0, 0);
 
   //This is the original list of barcode positions.
   List<RealBarcodePostionEntry> realBarcodePositionsOriginal = [];
@@ -75,10 +76,10 @@ class _BarcodeCameraNavigatorViewState
   @override
   void initState() {
     accelerometerEvents.listen((AccelerometerEvent event) {
-      accelerometerEvent = Vector3(event.x, event.y, event.z);
+      accelerometerEvent = vm.Vector3(event.x, event.y, event.z);
     });
     userAccelerometerEvents.listen((UserAccelerometerEvent event) {
-      userAccelerometerEvent = Vector3(event.x, event.y, event.z);
+      userAccelerometerEvent = vm.Vector3(event.x, event.y, event.z);
     });
 
     super.initState();
@@ -99,7 +100,7 @@ class _BarcodeCameraNavigatorViewState
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             FloatingActionButton(
-              backgroundColor: limeGreen,
+              backgroundColor: Colors.deepOrange,
               heroTag: null,
               onPressed: () async {
                 //Update the positions in the realBarcodePositionDataBox.
@@ -113,12 +114,19 @@ class _BarcodeCameraNavigatorViewState
                   log('updated Positions.');
                 }
 
-                Navigator.pop(context);
-                Navigator.push(
+                if (widget.pop != null) {
+                  Navigator.pop(context);
+                } else {
+                  Navigator.pop(context);
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => BarcodeControlPanelView(
-                            barcodeID: int.parse(widget.barcodeID))));
+                      builder: (context) => BarcodeControlPanelView(
+                        barcodeID: int.parse(widget.barcodeID),
+                      ),
+                    ),
+                  );
+                }
               },
               child: const Icon(Icons.check_circle_outline_rounded),
             ),
@@ -126,7 +134,6 @@ class _BarcodeCameraNavigatorViewState
         ),
       ),
       body: CameraBarcodeNavigationView(
-        color: limeGreenMuted,
         title: 'Barcode Finder',
         customPaint: customPaint,
         onImage: (inputImage) {
@@ -153,7 +160,7 @@ class _BarcodeCameraNavigatorViewState
 
     final barcodes = await barcodeScanner.processImage(inputImage);
 
-    Vector3 gravityDirection3D = accelerometerEvent - userAccelerometerEvent;
+    vm.Vector3 gravityDirection3D = accelerometerEvent - userAccelerometerEvent;
     double angleRadians = calculatePhoneAngle(gravityDirection3D);
 
     if (inputImage.inputImageData?.size != null &&
@@ -354,11 +361,11 @@ class _BarcodeCameraNavigatorViewState
   }
 }
 
-double calculatePhoneAngle(Vector3 gravityDirection3D) {
+double calculatePhoneAngle(vm.Vector3 gravityDirection3D) {
   //Convert to 2D plane X-Y
-  Vector2 gravityDirection2D =
-      Vector2(gravityDirection3D.x, gravityDirection3D.y);
-  Vector2 zero = Vector2(0, 1);
+  vm.Vector2 gravityDirection2D =
+      vm.Vector2(gravityDirection3D.x, gravityDirection3D.y);
+  vm.Vector2 zero = vm.Vector2(0, 1);
   double angleRadians = gravityDirection2D.angleTo(zero);
   if (gravityDirection2D.x >= 0) {
     angleRadians = -angleRadians;
@@ -377,7 +384,7 @@ Future<List<RealBarcodePostionEntry>> getRealBarcodePositions() async {
 
 ///This stores the AccelerometerEvent and UserAccelerometerEvent at an instant.
 AccelerometerData getAccelerometerData(
-    Vector3 accelerometerEvent, Vector3 userAccelerometerEvent) {
+    vm.Vector3 accelerometerEvent, vm.Vector3 userAccelerometerEvent) {
   return AccelerometerData(
       accelerometerEvent: accelerometerEvent,
       userAccelerometerEvent: userAccelerometerEvent);

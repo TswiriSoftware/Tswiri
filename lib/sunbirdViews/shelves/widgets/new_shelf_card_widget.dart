@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class NewShelfCardWidget extends StatelessWidget {
-  NewShelfCardWidget(
+class StepCardWidget extends StatelessWidget {
+  const StepCardWidget(
       {Key? key,
       required this.stepNumber,
       required this.label,
@@ -18,10 +18,10 @@ class NewShelfCardWidget extends StatelessWidget {
 
   final void Function() onDonePressed;
   final void Function()? onSkipPressed;
-  Color buttonColor = Colors.deepOrange;
 
   @override
   Widget build(BuildContext context) {
+    Color buttonColor = Colors.deepOrange;
     if (hasCompleted) {
       buttonColor = Colors.green;
     }
@@ -66,7 +66,7 @@ class NewShelfCardWidget extends StatelessWidget {
                   child: Text(
                     label,
                     textAlign: TextAlign.start,
-                    style: TextStyle(fontSize: 15),
+                    style: const TextStyle(fontSize: 15),
                     maxLines: 2,
                   ),
                 ),

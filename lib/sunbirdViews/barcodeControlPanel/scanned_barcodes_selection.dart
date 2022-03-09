@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/barcode_control_panel.dart';
-import '../../globalValues/global_colours.dart';
+import 'barcode_control_panel.dart';
 
 class ScannedBarcodesView extends StatefulWidget {
   const ScannedBarcodesView({Key? key, required this.scannedBarcodes})
@@ -28,7 +27,7 @@ class _ScannedBarcodesViewState extends State<ScannedBarcodesView> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: deepSpaceSparkle,
+          backgroundColor: Colors.deepOrange,
           title: const Text(
             'Barcodes',
             style: TextStyle(fontSize: 25),
@@ -72,7 +71,7 @@ class BarcodeDisplayWidget extends StatelessWidget {
             height: 60,
             width: (MediaQuery.of(context).size.width * 0.13),
             decoration: const BoxDecoration(
-                color: deepSpaceSparkle, shape: BoxShape.circle),
+                color: Colors.deepOrange, shape: BoxShape.circle),
             child: Center(
               child: Text(barcodeID.toString()),
             ),

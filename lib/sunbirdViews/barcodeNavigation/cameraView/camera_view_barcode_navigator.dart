@@ -20,7 +20,6 @@ class CameraBarcodeNavigationView extends StatefulWidget {
       required this.title,
       required this.customPaint,
       required this.onImage,
-      required this.color,
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
 
@@ -28,7 +27,6 @@ class CameraBarcodeNavigationView extends StatefulWidget {
   final CustomPaint? customPaint;
   final Function(InputImage inputImage) onImage;
   final CameraLensDirection initialDirection;
-  final Color color;
 
   @override
   _CameraBarcodeNavigationViewState createState() =>
@@ -64,7 +62,7 @@ class _CameraBarcodeNavigationViewState
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        backgroundColor: widget.color,
+        backgroundColor: Colors.deepOrange,
       ),
       body: _body(),
       floatingActionButton: _floatingActionButton(),
@@ -83,7 +81,7 @@ class _CameraBarcodeNavigationViewState
             height: 50.0,
             width: 50.0,
             child: FloatingActionButton(
-              backgroundColor: limeGreen,
+              backgroundColor: Colors.deepOrange,
               heroTag: 'flash',
               child: Icon(
                 Platform.isIOS
@@ -173,15 +171,6 @@ class _CameraBarcodeNavigationViewState
       _controller?.startImageStream(_processCameraImage);
       setState(() {});
     });
-  }
-
-  Future _switchLiveCamera() async {
-    if (_cameraIndex == 0)
-      _cameraIndex = 1;
-    else
-      _cameraIndex = 0;
-    await _stopLiveFeed();
-    await _startLiveFeed();
   }
 
   Future _stopLiveFeed() async {

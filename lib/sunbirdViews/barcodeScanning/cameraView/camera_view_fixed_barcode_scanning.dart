@@ -172,15 +172,6 @@ class _CameraFixedBarcodeScanningViewState
     });
   }
 
-  Future _switchLiveCamera() async {
-    if (_cameraIndex == 0)
-      _cameraIndex = 1;
-    else
-      _cameraIndex = 0;
-    await _stopLiveFeed();
-    await _startLiveFeed();
-  }
-
   Future _stopLiveFeed() async {
     await _controller?.stopImageStream();
     await _controller?.dispose();

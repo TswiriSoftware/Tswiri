@@ -1,5 +1,4 @@
 import 'package:flutter/rendering.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 

@@ -9,7 +9,7 @@ class BasicLightContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         width: double.infinity,
-        margin: const EdgeInsets.all(10),
+        margin: const EdgeInsets.all(6),
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.white60, width: 1),

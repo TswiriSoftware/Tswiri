@@ -1,10 +1,10 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/demoViews/shelves/shelfFunctions/get_all_shelves.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/demoViews/shelves/shelfWidgets/shelf_card_widget.dart';
-import '../../../databaseAdapters/shelfAdapter/shelf_entry.dart';
-import '../../../functions/barcodeTools/hide_keyboard.dart';
+import 'package:flutter_google_ml_kit/functions/shelves/get_all_shelves.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/shelves/widgets/shelf_card_widget.dart';
+import '../../databaseAdapters/shelfAdapter/shelf_entry.dart';
+import '../../functions/barcodeTools/hide_keyboard.dart';
 import 'new_shelf_view.dart';
 
 class ShelvesView extends StatefulWidget {
@@ -49,7 +49,7 @@ class _ShelvesViewState extends State<ShelvesView> {
                 await Navigator.push(
                   context,
                   (MaterialPageRoute(
-                    builder: (context) => NewShelfView(),
+                    builder: (context) => const NewShelfView(),
                   )),
                 );
                 setState(() {

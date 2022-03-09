@@ -4,7 +4,6 @@ import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_data_
 import 'package:flutter_google_ml_kit/functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
-import 'package:flutter_google_ml_kit/globalValues/origin_data.dart';
 import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_inter_barcode_data.dart';
@@ -57,11 +56,12 @@ class _BarcodeScannerDataProcessingViewState
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const RealBarcodePositionDatabaseVisualizationView()))
-                    .then((value) => processData(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            RealBarcodePositionDatabaseVisualizationView(
+                                shelfUID: widget.shelfUID))).then((value) =>
+                    processData(
                         widget.allRawOnImageBarcodeData, widget.shelfUID));
               },
               child: const Icon(Icons.check_circle_outline_rounded),

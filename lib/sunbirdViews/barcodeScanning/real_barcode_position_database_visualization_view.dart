@@ -11,8 +11,11 @@ import '../../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart
 //TODO: Refactor this @049er
 
 class RealBarcodePositionDatabaseVisualizationView extends StatefulWidget {
-  const RealBarcodePositionDatabaseVisualizationView({Key? key})
+  const RealBarcodePositionDatabaseVisualizationView(
+      {Key? key, required this.shelfUID})
       : super(key: key);
+
+  final int shelfUID;
 
   @override
   _RealBarcodePositionDatabaseVisualizationViewState createState() =>
@@ -46,11 +49,13 @@ class _RealBarcodePositionDatabaseVisualizationViewState
               FloatingActionButton(
                 heroTag: null,
                 onPressed: () async {
-                  pointNames.clear();
-                  Box<RealBarcodePostionEntry> consolidatedDataBox =
-                      await Hive.openBox(realPositionsBoxName);
-                  consolidatedDataBox.clear();
-                  setState(() {});
+                  //TODO: implemt stuff
+
+                  // pointNames.clear();
+                  // Box<RealBarcodePostionEntry> consolidatedDataBox =
+                  //     await Hive.openBox(realPositionsBoxName);
+                  // consolidatedDataBox.clear();
+                  // setState(() {});
                 },
                 child: const Icon(Icons.refresh),
               ),
@@ -66,14 +71,15 @@ class _RealBarcodePositionDatabaseVisualizationViewState
         ),
         appBar: AppBar(
           title: const Text(
-            'Consolidated Data Visualizer',
+            'Position Visualizer',
             style: TextStyle(fontSize: 25),
           ),
           centerTitle: true,
           elevation: 0,
         ),
         body: FutureBuilder(
-            future: _getPoints(context, pointNames, pointRelativePositions),
+            future: _getPoints(
+                context, pointNames, pointRelativePositions, widget.shelfUID),
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
                 return const Center(child: CircularProgressIndicator());
@@ -150,12 +156,18 @@ class OpenPainter extends CustomPainter {
 }
 
 //Get all points that should be plotted.
-_getPoints(BuildContext context, List pointNames, List pointData) async {
+_getPoints(
+    BuildContext context, List pointNames, List pointData, int shelfUID) async {
   List<Offset> points = [];
 
   //Open realPositionBox.
   Box<RealBarcodePostionEntry> realPositionsBox =
       await Hive.openBox(realPositionsBoxName);
+
+  List<RealBarcodePostionEntry> realPositionsShelf = realPositionsBox.values
+      .toList()
+      .where((element) => element.shelfUID == shelfUID)
+      .toList();
 
   //Get Screen width and height.
   double width = MediaQuery.of(context).size.width;
@@ -165,7 +177,7 @@ _getPoints(BuildContext context, List pointNames, List pointData) async {
   List<double> unitVector = unitVectors(
       realPositionsBox: realPositionsBox, width: width, height: height);
 
-  for (var i = 0; i < realPositionsBox.length; i++) {
+  for (var i = 0; i < realPositionsShelf.length; i++) {
     RealBarcodePostionEntry data = realPositionsBox.getAt(i)!;
 
     //Scale points so they fit on screen.

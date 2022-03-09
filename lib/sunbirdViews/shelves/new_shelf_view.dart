@@ -3,16 +3,17 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/shelfAdapter/shelf_entry.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/cameraCalibration/camera_calibration_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/demoViews/tutorial/tutorial_view.dart';
 import 'package:hive/hive.dart';
-import '../../../globalValues/global_colours.dart';
+import '../../globalValues/global_colours.dart';
 
-import '../../../globalValues/global_hive_databases.dart';
-import '../../barcodeGeneration/barcode_generation_range_selector_view.dart';
-import '../../barcodeScanning/barcode_scanner_fixed_view .dart';
-import '../../barcodeScanning/barcode_scanner_view.dart';
+import '../../globalValues/global_hive_databases.dart';
+import '../barcodeControlPanel/barcode_list_view.dart';
+import '../barcodeGeneration/barcode_generation_range_selector_view.dart';
+import '../barcodeScanning/barcode_scanner_fixed_view .dart';
+import '../barcodeScanning/barcode_scanner_view.dart';
+import '../tutorial/tutorial_view.dart';
 import 'shelf_name_and_description_view.dart';
-import 'shelfWidgets/new_shelf_card_widget.dart';
+import 'widgets/new_shelf_card_widget.dart';
 
 class NewShelfView extends StatefulWidget {
   const NewShelfView({Key? key}) : super(key: key);
@@ -42,6 +43,8 @@ class _NewShelfViewState extends State<NewShelfView> {
 
   //Scanning barcodes.
   bool hasTaggedBoxes = false;
+
+  ShelfEntry? shelfEntry;
 
   String shelfName = 'Name';
   String shelfDescription = 'Description';
@@ -77,7 +80,7 @@ class _NewShelfViewState extends State<NewShelfView> {
   }
 
   Widget shelfNameAndDescriptionWidget() {
-    return NewShelfCardWidget(
+    return StepCardWidget(
       stepNumber: '1',
       label: 'Name: $shelfName\nDescription: $shelfDescription',
       hasCompleted: shelfSetup,
@@ -104,7 +107,7 @@ class _NewShelfViewState extends State<NewShelfView> {
   }
 
   Widget barcodeGeneratorWidget() {
-    return NewShelfCardWidget(
+    return StepCardWidget(
       stepNumber: '2',
       label: 'Generate and print barcodes.',
       hasCompleted: barcodesGenerated,
@@ -129,7 +132,7 @@ class _NewShelfViewState extends State<NewShelfView> {
   }
 
   Widget howToPlaceBarcodesWidget() {
-    return NewShelfCardWidget(
+    return StepCardWidget(
       stepNumber: '3',
       label: 'Learn how to place barcodes.',
       hasCompleted: howToPlaceBarcodes,
@@ -154,7 +157,7 @@ class _NewShelfViewState extends State<NewShelfView> {
   }
 
   Widget cameraCalibrationWidget() {
-    return NewShelfCardWidget(
+    return StepCardWidget(
       stepNumber: '4',
       label: 'Calibrate your camera.',
       hasCompleted: hasCalibratedCamera,
@@ -181,7 +184,7 @@ class _NewShelfViewState extends State<NewShelfView> {
   }
 
   Widget scanningFixedBarcodesWidget() {
-    return NewShelfCardWidget(
+    return StepCardWidget(
       stepNumber: '5',
       label: 'Scan fixed barcodes.',
       hasCompleted: hasScannedFixedBarcodes,
@@ -193,6 +196,7 @@ class _NewShelfViewState extends State<NewShelfView> {
           ),
         );
         setState(() {
+          //Implement Check to ensure at least 1 barcode is fixed in this shelf.
           hasScannedFixedBarcodes = true;
         });
       },
@@ -201,7 +205,7 @@ class _NewShelfViewState extends State<NewShelfView> {
   }
 
   Widget scanningBarcodesWidget() {
-    return NewShelfCardWidget(
+    return StepCardWidget(
       stepNumber: '6',
       label: 'Scan barcodes',
       hasCompleted: hasScannedBarcodes,
@@ -211,8 +215,12 @@ class _NewShelfViewState extends State<NewShelfView> {
         if (shelfEntriesBox.isNotEmpty) {
           newShelfUID = shelfEntriesBox.values.last.uid + 1;
         }
-        log(newShelfUID.toString());
 
+        setState(() {
+          shelfEntry = ShelfEntry(
+              uid: newShelfUID, name: shelfName, description: shelfDescription);
+        });
+        log(shelfEntry.toString());
         await Navigator.push(
           context,
           MaterialPageRoute(
@@ -230,22 +238,24 @@ class _NewShelfViewState extends State<NewShelfView> {
   }
 
   Widget tagBoxesAndPhotographContentWidget() {
-    return NewShelfCardWidget(
+    return StepCardWidget(
       stepNumber: '7',
       label: 'Tag boxes and photograph content',
       hasCompleted: hasTaggedBoxes,
       onDonePressed: () async {
-        //TODO: implement navigator and return
-
-        // await Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => const CameraCalibrationView(),
-        //   ),
-        // );
-        setState(() {
-          hasTaggedBoxes = true;
-        });
+        if (shelfEntry != null) {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BarcodeListView(
+                shelfEntry: shelfEntry,
+              ),
+            ),
+          );
+          setState(() {
+            hasTaggedBoxes = true;
+          });
+        }
       },
       showSkipButton: true,
       onSkipPressed: () {

@@ -8,7 +8,6 @@ import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_
 import 'package:flutter_google_ml_kit/functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_paints.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_positional_data.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/appSettings/app_settings.dart';

@@ -32,7 +32,6 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: limeGreenMuted,
           title: const Text(
             'Barcode Navigator',
             style: TextStyle(fontSize: 25),
@@ -153,13 +152,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
       BuildContext context, AllBarcodeData barcodeAndTagData) {
     Color color;
 
-    if (barcodeAndTagData.isFixed == true) {
-      color = deeperOrange;
-    } else if (barcodeAndTagData.barcodeID.isEven) {
-      color = deepSpaceSparkle;
-    } else {
-      color = limeGreenMuted;
-    }
+    color = deeperOrange;
 
     return InkWell(
       onTap: () {
