@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/shelfAdapter/shelf_entry.dart';
-import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/demoViews/shelves/shelf_name_and_description_view.dart';
 import 'package:hive/hive.dart';
 

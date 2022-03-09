@@ -1,15 +1,11 @@
 import 'dart:developer';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/demoViews/shelves/shelfFunctions/get_all_shelves.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/demoViews/shelves/shelfWidgets/shelf_card_widget.dart';
-
 import '../../../databaseAdapters/shelfAdapter/shelf_entry.dart';
 import '../../../functions/barcodeTools/hide_keyboard.dart';
 import 'new_shelf_view.dart';
-import 'shelf_view.dart';
 
 class ShelvesView extends StatefulWidget {
   const ShelvesView({Key? key}) : super(key: key);

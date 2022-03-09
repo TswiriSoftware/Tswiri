@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_light_container.dart';
 
 class ShelfNameAndDescriptionView extends StatefulWidget {
   const ShelfNameAndDescriptionView(
@@ -49,78 +50,64 @@ class _ShelfNameAndDescriptionViewState
         centerTitle: true,
         elevation: 0,
       ),
-      body: Container(
-        width: double.infinity,
-        margin: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.white60, width: 1),
-          borderRadius: const BorderRadius.all(
-            Radius.circular(5),
-          ),
-        ),
-        child: Container(
-          margin: const EdgeInsets.all(8),
-          child: Column(
+      body: BasicLightContainer(
+        children: [
+          Column(
             mainAxisSize: MainAxisSize.min,
-            children: [
-              const Padding(
+            children: const [
+              Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Text(
                   'Shelf Name:',
                   style: TextStyle(fontSize: 18),
                 ),
               ),
-              Container(
-                color: Colors.black38,
-                child: TextFormField(
-                  textCapitalization: TextCapitalization.sentences,
-                  controller: _nameController,
-                  decoration:
-                      const InputDecoration(border: OutlineInputBorder()),
-                  onFieldSubmitted: (name) {
-                    _nameController.text = name;
-                  },
-                  // onTap: () {
-                  //   FocusScope.of(context).unfocus();
-                  // },
-                ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  'Shelf Description:',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-              Container(
-                color: Colors.black38,
-                child: TextFormField(
-                  keyboardType: TextInputType.multiline,
-                  textCapitalization: TextCapitalization.sentences,
-                  maxLines: 3,
-                  controller: _descriptionController,
-                  decoration:
-                      const InputDecoration(border: OutlineInputBorder()),
-                  onFieldSubmitted: (name) {
-                    _nameController.text = name;
-                  },
-                  onTap: () {
-                    FocusScope.of(context).unfocus();
-                  },
-                ),
-              ),
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context,
-                        [_nameController.text, _descriptionController.text]);
-                  },
-                  child: const Text('continue'))
             ],
           ),
-        ),
+          Container(
+            color: Colors.black38,
+            child: TextFormField(
+              textCapitalization: TextCapitalization.sentences,
+              controller: _nameController,
+              decoration: const InputDecoration(border: OutlineInputBorder()),
+              onFieldSubmitted: (name) {
+                _nameController.text = name;
+              },
+            ),
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              'Shelf Description:',
+              style: TextStyle(fontSize: 18),
+            ),
+          ),
+          Container(
+            color: Colors.black38,
+            child: TextFormField(
+              keyboardType: TextInputType.multiline,
+              textCapitalization: TextCapitalization.sentences,
+              maxLines: 3,
+              controller: _descriptionController,
+              decoration: const InputDecoration(border: OutlineInputBorder()),
+              onFieldSubmitted: (name) {
+                _nameController.text = name;
+              },
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+            ),
+          ),
+          ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context,
+                    [_nameController.text, _descriptionController.text]);
+              },
+              child: const Text('continue'))
+        ],
       ),
     );
   }
