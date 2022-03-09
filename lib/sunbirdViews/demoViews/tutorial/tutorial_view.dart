@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../globalValues/global_colours.dart';
+import '../../../globalValues/global_colours.dart';
 
 class TutorialView extends StatefulWidget {
   TutorialView({Key? key}) : super(key: key);

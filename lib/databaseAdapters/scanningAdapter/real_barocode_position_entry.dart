@@ -11,6 +11,7 @@ class RealBarcodePostionEntry extends HiveObject {
       required this.offset,
       required this.zOffset,
       required this.isFixed,
+      required this.shelfUID,
       required this.timestamp});
 
   //Barcode's ID or Displayvalue
@@ -31,9 +32,11 @@ class RealBarcodePostionEntry extends HiveObject {
 
   //The timestamp
   @HiveField(4)
-  late int timestamp;
+  late int shelfUID;
 
-  //TODO: Implement Shelf.
+  //The timestamp
+  @HiveField(5)
+  late int timestamp;
 
   @override
   String toString() {

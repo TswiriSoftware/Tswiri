@@ -53,13 +53,13 @@ class _BarcodeScanningToolsViewState extends State<BarcodeScanningToolsView> {
               featureCompleted: true,
               tileColor: Colors.deepOrange,
             ),
-            const CustomCard(
-              'Barcode Scanner',
-              BarcodeScannerView(),
-              Icons.camera,
-              featureCompleted: true,
-              tileColor: Colors.deepOrange,
-            ),
+            // const CustomCard(
+            //   'Barcode Scanner',
+            //   BarcodeScannerView(),
+            //   Icons.camera,
+            //   featureCompleted: true,
+            //   tileColor: Colors.deepOrange,
+            // ),
             const CustomCard(
               'Real Barcode Positions',
               RealBarcodePositionDatabaseView(),

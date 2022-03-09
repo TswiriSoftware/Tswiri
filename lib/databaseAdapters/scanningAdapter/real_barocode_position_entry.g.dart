@@ -22,14 +22,15 @@ class RealBarcodePostionEntryAdapter
       offset: fields[1] as TypeOffset,
       zOffset: fields[2] as double,
       isFixed: fields[3] as bool,
-      timestamp: fields[4] as int,
+      shelfUID: fields[4] as int,
+      timestamp: fields[5] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, RealBarcodePostionEntry obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.uid)
       ..writeByte(1)
@@ -39,6 +40,8 @@ class RealBarcodePostionEntryAdapter
       ..writeByte(3)
       ..write(obj.isFixed)
       ..writeByte(4)
+      ..write(obj.shelfUID)
+      ..writeByte(5)
       ..write(obj.timestamp);
   }
 

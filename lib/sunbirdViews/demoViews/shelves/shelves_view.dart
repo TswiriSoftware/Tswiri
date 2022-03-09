@@ -1,14 +1,15 @@
+import 'dart:developer';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
-import 'package:flutter_google_ml_kit/objects/all_barcode_data.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/scan_barcode_view.dart';
-import 'package:flutter_google_ml_kit/zDemoView/shelves/shelfFunctions/get_all_shelves.dart';
-import 'package:hive/hive.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/demoViews/shelves/shelfFunctions/get_all_shelves.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/demoViews/shelves/shelfWidgets/shelf_card_widget.dart';
 
-import '../../databaseAdapters/shelfAdapter/shelf_entry.dart';
-import '../../functions/barcodeTools/hide_keyboard.dart';
+import '../../../databaseAdapters/shelfAdapter/shelf_entry.dart';
+import '../../../functions/barcodeTools/hide_keyboard.dart';
 import 'new_shelf_view.dart';
+import 'shelf_view.dart';
 
 class ShelvesView extends StatefulWidget {
   const ShelvesView({Key? key}) : super(key: key);
@@ -21,6 +22,7 @@ class _ShelvesViewState extends State<ShelvesView> {
   List<ShelfEntry> searchResults = [];
   @override
   void initState() {
+    runFilter('');
     super.initState();
   }
 
@@ -47,54 +49,53 @@ class _ShelvesViewState extends State<ShelvesView> {
           children: [
             FloatingActionButton(
               heroTag: null,
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                await Navigator.push(
                   context,
                   (MaterialPageRoute(
                     builder: (context) => NewShelfView(),
                   )),
                 );
+                setState(() {
+                  runFilter('');
+                });
               },
               child: const Icon(Icons.add),
             ),
           ],
         ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 10),
-          const Text('swipe to delete'),
-          const SizedBox(height: 10),
-          Expanded(
-            child: searchResults.isNotEmpty
-                ? ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: searchResults.length,
-                    itemBuilder: (context, index) {
-                      final searchResult = searchResults[index];
-                      return Dismissible(
-                        key: Key(searchResult.uid.toString()),
-                        // onDismissed: (direction) {
-                        //   deleteBarcode(foundBarcode.barcodeID,
-                        //       foundBarcodes[index].isFixed);
-                        //   // Remove the item from the data source.
-                        //   setState(() {
-                        //     foundBarcodes.removeAt(index);
-                        //   });
-                        // },
-                        // child: displayBarcodeDataWidget(
-                        //     context, foundBarcodes[index], runFilter('')),
-                        child: Text('Shelve Card'),
-                      );
-                    })
-                : const Text(
-                    'No results found',
-                    style: TextStyle(fontSize: 24),
-                  ),
-          ),
-        ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 10),
+            const Text('Hold for more options'),
+            const SizedBox(height: 10),
+            searchBar(context),
+            const SizedBox(height: 10),
+            Expanded(
+              child: searchResults.isNotEmpty
+                  ? ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: searchResults.length,
+                      itemBuilder: (context, index) {
+                        final searchResult = searchResults[index];
+                        return Dismissible(
+                          key: Key(searchResult.uid.toString()),
+                          child: ShelfCard(
+                            shelfEntry: searchResult,
+                          ),
+                        );
+                      })
+                  : const Text(
+                      'No results found',
+                      style: TextStyle(fontSize: 24),
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -102,15 +103,15 @@ class _ShelvesViewState extends State<ShelvesView> {
   List<ShelfEntry>? shelfEntries;
   Future<void> runFilter(String enteredKeyword) async {
     //Gets a list of all shelves.
-    shelfEntries ??= await getAllShelves();
+    shelfEntries = await getAllShelves();
 
     //Filter results.
     List<ShelfEntry> results = [];
 
     if (enteredKeyword.isNotEmpty) {
-      //The search algorithm.
+      // The search algorithm.
       // we use the toLowerCase() method to make it case-insensitive
-      results = results
+      results = shelfEntries!
           .where((element) =>
               element.uid.toString().toLowerCase().contains(enteredKeyword) ||
               element.name
@@ -122,11 +123,14 @@ class _ShelvesViewState extends State<ShelvesView> {
                   .toLowerCase()
                   .contains(enteredKeyword.toLowerCase()))
           .toList();
+    } else {
+      results.addAll(shelfEntries!);
     }
 
     //Refresh the UI
     setState(() {
       searchResults = results;
+      log(searchResults.toString());
     });
   }
 

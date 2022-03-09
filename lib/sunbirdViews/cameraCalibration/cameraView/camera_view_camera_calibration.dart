@@ -68,7 +68,6 @@ class _CameraViewCameraCalibrationState
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        backgroundColor: widget.color,
       ),
       body: _body(),
       // floatingActionButton: _floatingActionButton(),

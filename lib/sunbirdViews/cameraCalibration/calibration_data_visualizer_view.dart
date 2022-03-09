@@ -60,8 +60,8 @@ class _CalibrationDataVisualizerViewState
               FloatingActionButton(
                 heroTag: null,
                 onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => const Home()));
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => const HomeView()));
                 },
                 child: const Icon(Icons.check_circle_outline_rounded),
               ),

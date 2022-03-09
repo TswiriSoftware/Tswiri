@@ -64,7 +64,6 @@ class _BarcodeCalibrationDataProcessingViewState
         ),
       ),
       appBar: AppBar(
-        backgroundColor: skyBlue80,
         title: const Text('Processing Calibration Data'),
       ),
       body: Center(

@@ -19,11 +19,13 @@ import 'widgets/real_position_display_widget.dart';
 
 class BarcodeScannerDataProcessingView extends StatefulWidget {
   const BarcodeScannerDataProcessingView(
-      {Key? key, required this.allRawOnImageBarcodeData})
+      {Key? key,
+      required this.allRawOnImageBarcodeData,
+      required this.shelfUID})
       : super(key: key);
 
   final List<RawOnImageBarcodeData> allRawOnImageBarcodeData;
-
+  final int shelfUID;
   @override
   _BarcodeScannerDataProcessingViewState createState() =>
       _BarcodeScannerDataProcessingViewState();
@@ -59,8 +61,8 @@ class _BarcodeScannerDataProcessingViewState
                         MaterialPageRoute(
                             builder: (context) =>
                                 const RealBarcodePositionDatabaseVisualizationView()))
-                    .then((value) =>
-                        processData(widget.allRawOnImageBarcodeData));
+                    .then((value) => processData(
+                        widget.allRawOnImageBarcodeData, widget.shelfUID));
               },
               child: const Icon(Icons.check_circle_outline_rounded),
             ),
@@ -73,7 +75,7 @@ class _BarcodeScannerDataProcessingViewState
       ),
       body: Center(
         child: FutureBuilder<List<RealBarcodePosition>>(
-          future: processData(widget.allRawOnImageBarcodeData),
+          future: processData(widget.allRawOnImageBarcodeData, widget.shelfUID),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               List<RealBarcodePosition> data = snapshot.data!;
@@ -126,7 +128,7 @@ class _BarcodeScannerDataProcessingViewState
 //
 
 Future<List<RealBarcodePosition>> processData(
-    List<RawOnImageBarcodeData> allRawOnImageBarcodeData) async {
+    List<RawOnImageBarcodeData> allRawOnImageBarcodeData, int shelfUID) async {
   //1.1 List of all matchedCalibration Data
   List<DistanceFromCameraLookupEntry> distanceFromCameraLookup =
       await getMatchedCalibrationData();
@@ -266,7 +268,7 @@ Future<List<RealBarcodePosition>> processData(
   //Writes data to Hive Database
   for (RealBarcodePosition realBarcodePosition in realBarcodePositions) {
     writeValidBarcodePositionsToDatabase(
-        realBarcodePosition, realPositionalData);
+        realBarcodePosition, realPositionalData, shelfUID);
   }
 
   //Sort realBarcodePositions by uid numericalvalue.

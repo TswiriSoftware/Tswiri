@@ -1,6 +1,3 @@
-// ignore_for_file: prefer_typing_uninitialized_variables
-
-import 'dart:developer';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
@@ -60,11 +57,7 @@ class _RealBarcodePositionDatabaseVisualizationViewState
               FloatingActionButton(
                 heroTag: null,
                 onPressed: () {
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => const Home()));
                   Navigator.pop(context);
-                  // Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  //     builder: (context) => const BarcodeScanningToolsView()));
                 },
                 child: const Icon(Icons.check_circle_outline_rounded),
               ),

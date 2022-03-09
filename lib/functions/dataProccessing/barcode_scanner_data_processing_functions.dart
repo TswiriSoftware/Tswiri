@@ -68,7 +68,8 @@ List<RealInterBarcodeOffset> findSimilarInterBarcodeOffsets(
 ///Writes all valid barcode positions to the Hive database.
 void writeValidBarcodePositionsToDatabase(
     RealBarcodePosition realBarcodePosition,
-    Box<RealBarcodePostionEntry> realPositionalData) {
+    Box<RealBarcodePostionEntry> realPositionalData,
+    int shelfUID) {
   if (realBarcodePosition.offset != null) {
     //Creates an entry for each realBarcodePosition
     realPositionalData.put(
@@ -78,6 +79,7 @@ void writeValidBarcodePositionsToDatabase(
             offset: offsetToTypeOffset(realBarcodePosition.offset!),
             zOffset: realBarcodePosition.zOffset,
             isFixed: realBarcodePosition.isFixed,
+            shelfUID: shelfUID,
             timestamp: realBarcodePosition.timestamp!));
   }
 }

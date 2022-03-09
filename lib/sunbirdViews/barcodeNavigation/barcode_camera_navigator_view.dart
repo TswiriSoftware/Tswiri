@@ -289,6 +289,7 @@ class _BarcodeCameraNavigatorViewState
                       zOffset: startBarcodePosition.zOffset +
                           averagedRealInterBarcodeOffset[0].zOffset,
                       isFixed: false,
+                      shelfUID: 1, //TODO: Implement Shelf UID
                       timestamp: averagedRealInterBarcodeOffset[0].timestamp);
 
               //Remove all incorrect interBarcodeOffsets.
@@ -321,6 +322,7 @@ class _BarcodeCameraNavigatorViewState
                       zOffset: endBarcodePosition.zOffset +
                           averagedRealInterBarcodeOffset[0].zOffset,
                       isFixed: false,
+                      shelfUID: 1, //TODO: Implement shelfUID
                       timestamp: averagedRealInterBarcodeOffset[0].timestamp);
 
               //Remove all incorrect interBarcodeOffsets.

@@ -1,8 +1,4 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/zDemoView/shelves/shelfFunctions/shelfProvider.dart';
-import 'package:provider/provider.dart';
 
 class ShelfNameAndDescriptionView extends StatefulWidget {
   const ShelfNameAndDescriptionView(

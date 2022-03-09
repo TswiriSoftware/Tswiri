@@ -11,7 +11,10 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:isolate';
 
 class BarcodeScannerView extends StatefulWidget {
-  const BarcodeScannerView({Key? key}) : super(key: key);
+  const BarcodeScannerView({Key? key, required this.shelfUID})
+      : super(key: key);
+
+  final int shelfUID;
 
   @override
   _BarcodeScannerViewState createState() => _BarcodeScannerViewState();
@@ -67,9 +70,19 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
                 heroTag: null,
                 onPressed: () {
                   Navigator.pop(context);
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => BarcodeScannerDataProcessingView(
-                          allRawOnImageBarcodeData: allRawOnImageBarcodeData)));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              BarcodeScannerDataProcessingView(
+                                allRawOnImageBarcodeData:
+                                    allRawOnImageBarcodeData,
+                                shelfUID: widget.shelfUID,
+                              )));
+
+                  // Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  //     builder: (context) => BarcodeScannerDataProcessingView(
+                  //         allRawOnImageBarcodeData: allRawOnImageBarcodeData)));
                 },
                 child: const Icon(Icons.check_circle_outline_rounded),
               ),
