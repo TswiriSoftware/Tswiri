@@ -23,29 +23,38 @@ class BarcodeDisplayWidget extends StatelessWidget {
         );
       },
       child: BasicLightContainer(
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              IDdisplayWidget(
-                id: barcodeAndTagData.barcodeID.toString(),
-                size: 40,
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            IDdisplayWidget(
+              id: barcodeAndTagData.barcodeID.toString(),
+              size: 40,
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: BasicDarkContainer(
+                child: Row(
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Tags: ' + checkIfEmpty(barcodeAndTagData.tags!),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(
-                width: 10,
-              ),
-              Expanded(
-                child: BasicDarkContainer(children: [
-                  Text(
-                    'Tags: ' + checkIfEmpty(barcodeAndTagData.tags!),
-                    textAlign: TextAlign.center,
-                  ),
-                ]),
-              ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }

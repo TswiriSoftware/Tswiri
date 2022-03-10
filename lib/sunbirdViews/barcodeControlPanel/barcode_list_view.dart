@@ -44,7 +44,7 @@ class _BarcodeListViewState extends State<BarcodeListView> {
       appBar: AppBar(
         backgroundColor: Colors.deepOrange,
         title: Text(
-          widget.shelfEntry!.name + ' Barcodes',
+          widget.shelfEntry!.name + "'s" + ' Boxes',
           style: const TextStyle(fontSize: 25),
         ),
         actions: [

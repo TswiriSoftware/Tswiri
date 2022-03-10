@@ -1,11 +1,13 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/functions/shelves/get_all_shelves.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/shelves/widgets/shelf_card_widget.dart';
+import 'package:flutter_google_ml_kit/widgets/shelf_card_widget.dart';
+import 'package:hive/hive.dart';
 import '../../databaseAdapters/shelfAdapter/shelf_entry.dart';
-import '../../functions/barcodeTools/hide_keyboard.dart';
+import '../../globalValues/global_hive_databases.dart';
+import '../../widgets/search_bar_widget.dart';
 import 'new_shelf_view.dart';
+import 'shelf_view.dart';
 
 class ShelvesView extends StatefulWidget {
   const ShelvesView({Key? key}) : super(key: key);
@@ -35,6 +37,13 @@ class _ShelvesViewState extends State<ShelvesView> {
           'Shelves',
           style: TextStyle(fontSize: 25),
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                showInfoDialog(context);
+              },
+              icon: const Icon(Icons.info))
+        ],
         centerTitle: true,
         elevation: 0,
       ),
@@ -69,7 +78,9 @@ class _ShelvesViewState extends State<ShelvesView> {
             const SizedBox(height: 10),
             const Text('Hold for more options'),
             const SizedBox(height: 10),
-            searchBar(context),
+            SearchBarWidget(onChanged: (value) {
+              runFilter(value);
+            }),
             const SizedBox(height: 10),
             Expanded(
               child: searchResults.isNotEmpty
@@ -78,8 +89,23 @@ class _ShelvesViewState extends State<ShelvesView> {
                       itemCount: searchResults.length,
                       itemBuilder: (context, index) {
                         final searchResult = searchResults[index];
-                        return Dismissible(
-                          key: Key(searchResult.uid.toString()),
+                        return InkWell(
+                          onTap: () async {
+                            //Navigate to shelfView.
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ShelfView(
+                                  shelfEntry: searchResult,
+                                ),
+                              ),
+                            );
+                            //On return refresh filter.
+                            runFilter('');
+                          },
+                          onLongPress: () {
+                            showDeleteDialog(context, searchResult);
+                          },
                           child: ShelfCard(
                             shelfEntry: searchResult,
                           ),
@@ -92,6 +118,54 @@ class _ShelvesViewState extends State<ShelvesView> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void showInfoDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Shelf ?'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Text(
+                'What is a shelf ? those are the real questions. All I know is that it contains boxes and markers.\n '),
+            Text('What is a marker ? it is a qrcode that never moves.\n'),
+            Text(
+                'What is a box ? it is a box with a qrcode stuck to it that can move.\n'),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+              onPressed: () {
+                Navigator.pop(_);
+              },
+              child: const Text('ok'))
+        ],
+      ),
+    );
+  }
+
+  Future<void> showDeleteDialog(
+      BuildContext context, ShelfEntry searchResult) async {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(searchResult.name),
+        content: const Text('Do you want to delete this shelf ?'),
+        actions: [
+          ElevatedButton(
+              onPressed: () async {
+                Box<ShelfEntry> shelfEntriesBox =
+                    await Hive.openBox(shelvesBoxName);
+                shelfEntriesBox.delete(searchResult.uid);
+                runFilter('');
+                Navigator.pop(_);
+              },
+              child: const Text('delete'))
+        ],
       ),
     );
   }
@@ -128,27 +202,5 @@ class _ShelvesViewState extends State<ShelvesView> {
       searchResults = results;
       log(searchResults.toString());
     });
-  }
-
-  ///This is the searchBar widge where you can search for ID or Tags.
-  TextField searchBar(BuildContext context) {
-    return TextField(
-      onChanged: (value) {
-        runFilter(value);
-      },
-      onEditingComplete: () => hideKeyboard(context),
-      decoration: InputDecoration(
-          focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white)),
-          hoverColor: deepSpaceSparkle[700],
-          focusColor: deepSpaceSparkle[700],
-          contentPadding: const EdgeInsets.all(10),
-          labelStyle: const TextStyle(color: Colors.white),
-          labelText: 'Search',
-          suffixIcon: const Icon(
-            Icons.search,
-            color: Colors.white,
-          )),
-    );
   }
 }

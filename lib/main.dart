@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/tag_entry.dart';
+import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/routes.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/barcode_selection_view.dart';
 import 'package:flutter_google_ml_kit/widgets/custom_card_widget.dart';
@@ -65,30 +66,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      ///
       theme: ThemeData(
-        brightness: Brightness.light,
-        primaryColor: Colors.deepOrange[500],
-        appBarTheme: AppBarTheme(
-          //foregroundColor: Colors.deepOrange[900],
-          backgroundColor: Colors.deepOrange[500],
-        ),
-        buttonTheme: const ButtonThemeData(
-          buttonColor: Colors.deepOrangeAccent,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-            style: TextButton.styleFrom(
-          backgroundColor: Colors.deepOrange[500],
-        )),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-            foregroundColor: Colors.black, backgroundColor: Colors.deepOrange),
-      ),
-
-      ///
-      darkTheme: ThemeData(
         brightness: Brightness.dark,
         backgroundColor: Colors.black12,
         primaryColor: Colors.deepOrange[500],
+        colorScheme: ColorScheme.fromSwatch(
+            primarySwatch: Colors.deepOrange, brightness: Brightness.dark),
         appBarTheme: AppBarTheme(
           //foregroundColor: Colors.deepOrange[900],
           backgroundColor: Colors.deepOrange[500],
@@ -103,6 +86,8 @@ class MyApp extends StatelessWidget {
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
             foregroundColor: Colors.black, backgroundColor: Colors.deepOrange),
+        textSelectionTheme:
+            const TextSelectionThemeData(cursorColor: Colors.deepOrange),
       ),
 
       debugShowCheckedModeBanner: false,
@@ -153,9 +138,9 @@ class HomeView extends StatelessWidget {
               tileColor: Colors.deepOrange,
             ),
             CustomCard(
-              'Navigator',
+              'Find a box',
               BarcodeSelectionView(),
-              Icons.qr_code_scanner_rounded,
+              Icons.navigation,
               featureCompleted: true,
               tileColor: Colors.deepOrange,
             ),

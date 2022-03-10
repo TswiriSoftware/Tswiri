@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
 class BasicLightContainer extends StatelessWidget {
-  const BasicLightContainer({Key? key, required this.children})
-      : super(key: key);
-  final List<Widget> children;
+  const BasicLightContainer({Key? key, required this.child}) : super(key: key);
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +17,6 @@ class BasicLightContainer extends StatelessWidget {
           ),
           color: Colors.grey[800],
         ),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: children));
+        child: child);
   }
 }

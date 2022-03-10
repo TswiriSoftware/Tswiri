@@ -39,21 +39,33 @@ class _ShelfViewState extends State<ShelfView> {
         children: [
           //Name and Description.
           BasicLightContainer(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               BasicDarkContainer(
-                children: [
-                  Text(
-                    'Name: ' + widget.shelfEntry.name,
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    'Description: ' + widget.shelfEntry.description,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
+                child: Row(
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Name: ' + widget.shelfEntry.name,
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          'Description: ' + widget.shelfEntry.description,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -82,35 +94,52 @@ class _ShelfViewState extends State<ShelfView> {
                 ],
               ),
             ],
-          ),
+          )),
           //Barcode Stats/Rescan
           BasicLightContainer(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               BasicDarkContainer(
-                children: [
-                  FutureBuilder<List<int>>(
-                    future: getShelfStats(),
-                    builder: ((context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Barcodes ',
-                              style: TextStyle(fontSize: 18),
-                            ),
-                            Text(
-                              'Boxes: ${snapshot.data![0]}',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        );
-                      } else {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                    }),
-                  ),
-                ],
+                child: Row(
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        FutureBuilder<List<int>>(
+                          future: getShelfStats(),
+                          builder: ((context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Boxes ',
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                  Text(
+                                    'Number of Markers: ${snapshot.data![1]}',
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                  Text(
+                                    'Number of Boxes: ${snapshot.data![0]}',
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
+                          }),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -138,7 +167,7 @@ class _ShelfViewState extends State<ShelfView> {
                         ),
                       );
                     },
-                    child: const Text('Barcodes'),
+                    child: const Text('Boxes'),
                   ),
                 ],
               ),
@@ -173,7 +202,7 @@ class _ShelfViewState extends State<ShelfView> {
                 ],
               )
             ],
-          ),
+          )),
         ],
       ),
     );
@@ -185,6 +214,9 @@ class _ShelfViewState extends State<ShelfView> {
     int numberOfBoxes = realBarcodePositions.values
         .where((element) => element.shelfUID == widget.shelfEntry.uid)
         .length;
-    return [numberOfBoxes];
+    int numberOfMarkers = realBarcodePositions.values
+        .where((element) => element.isFixed == true)
+        .length;
+    return [numberOfBoxes, numberOfMarkers];
   }
 }

@@ -38,78 +38,84 @@ class _ShelfNameAndDescriptionViewState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'New Shelf',
-          style: TextStyle(fontSize: 25),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'New Shelf',
+            style: TextStyle(fontSize: 25),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.chevron_left),
+            onPressed: () => Navigator.pop(
+                context, [_nameController.text, _descriptionController.text]),
+          ),
+          centerTitle: true,
+          elevation: 0,
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.chevron_left),
-          onPressed: () => Navigator.pop(
-              context, [_nameController.text, _descriptionController.text]),
-        ),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: BasicLightContainer(
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  'Shelf Name:',
-                  style: TextStyle(fontSize: 18),
+        body: BasicLightContainer(
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Shelf Name:',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
+              ],
+            ),
+            Container(
+              color: Colors.black38,
+              child: TextFormField(
+                textCapitalization: TextCapitalization.sentences,
+                controller: _nameController,
+                decoration: const InputDecoration(border: OutlineInputBorder()),
+                onFieldSubmitted: (name) {
+                  _nameController.text = name;
+                },
               ),
-            ],
-          ),
-          Container(
-            color: Colors.black38,
-            child: TextFormField(
-              textCapitalization: TextCapitalization.sentences,
-              controller: _nameController,
-              decoration: const InputDecoration(border: OutlineInputBorder()),
-              onFieldSubmitted: (name) {
-                _nameController.text = name;
-              },
             ),
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              'Shelf Description:',
-              style: TextStyle(fontSize: 18),
+            const SizedBox(
+              height: 5,
             ),
-          ),
-          Container(
-            color: Colors.black38,
-            child: TextFormField(
-              keyboardType: TextInputType.multiline,
-              textCapitalization: TextCapitalization.sentences,
-              maxLines: 3,
-              controller: _descriptionController,
-              decoration: const InputDecoration(border: OutlineInputBorder()),
-              onFieldSubmitted: (name) {
-                _nameController.text = name;
-              },
-              onTap: () {
-                FocusScope.of(context).unfocus();
-              },
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'Shelf Description:',
+                style: TextStyle(fontSize: 18),
+              ),
             ),
-          ),
-          ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context,
-                    [_nameController.text, _descriptionController.text]);
-              },
-              child: const Text('continue'))
-        ],
+            Container(
+              color: Colors.black38,
+              child: TextFormField(
+                keyboardType: TextInputType.multiline,
+                textCapitalization: TextCapitalization.sentences,
+                maxLines: 3,
+                minLines: 1,
+                controller: _descriptionController,
+                decoration: const InputDecoration(border: OutlineInputBorder()),
+                onFieldSubmitted: (name) {
+                  _nameController.text = name;
+                },
+              ),
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context,
+                      [_nameController.text, _descriptionController.text]);
+                },
+                child: const Text('continue'))
+          ],
+        )),
       ),
     );
   }

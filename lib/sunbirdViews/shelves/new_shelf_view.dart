@@ -13,7 +13,7 @@ import '../barcodeScanning/barcode_scanner_fixed_view .dart';
 import '../barcodeScanning/barcode_scanner_view.dart';
 import '../tutorial/tutorial_view.dart';
 import 'shelf_name_and_description_view.dart';
-import 'widgets/new_shelf_card_widget.dart';
+import '../../widgets/new_shelf_card_widget.dart';
 
 class NewShelfView extends StatefulWidget {
   const NewShelfView({Key? key}) : super(key: key);
@@ -186,7 +186,7 @@ class _NewShelfViewState extends State<NewShelfView> {
   Widget scanningFixedBarcodesWidget() {
     return StepCardWidget(
       stepNumber: '5',
-      label: 'Scan fixed barcodes.',
+      label: 'Scan/Select Markers (These are fixed barcodes).',
       hasCompleted: hasScannedFixedBarcodes,
       onDonePressed: () async {
         await Navigator.push(
@@ -207,7 +207,7 @@ class _NewShelfViewState extends State<NewShelfView> {
   Widget scanningBarcodesWidget() {
     return StepCardWidget(
       stepNumber: '6',
-      label: 'Scan barcodes',
+      label: 'Scan barcodes (These will become boxes)',
       hasCompleted: hasScannedBarcodes,
       onDonePressed: () async {
         Box<ShelfEntry> shelfEntriesBox = await Hive.openBox(shelvesBoxName);
