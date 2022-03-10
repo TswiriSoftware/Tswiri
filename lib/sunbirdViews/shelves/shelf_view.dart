@@ -35,30 +35,7 @@ class _ShelfViewState extends State<ShelfView> {
         actions: [
           IconButton(
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (_) => AlertDialog(
-                  title: const Text('Boxes'),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Text(
-                          '1. You can rescan your Boxes if you have moved your Markers with "Rescan Boxes"\n'),
-                      Text(
-                          '2. You can rescan your Markers if you have changed them with "Rescan Markers"\nYou will then have to rescan the boxes aswell.\n'),
-                      Text(
-                          "3. You can create tags and add them to boxes.\nOR\nYou can photograph the box's content and use the generated tags\nJust Click on 'Boxes'"),
-                    ],
-                  ),
-                  actions: [
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(_);
-                        },
-                        child: const Text('ok'))
-                  ],
-                ),
-              );
+              boxesInfoDialog(context);
             },
             icon: const Icon(Icons.info_outline_rounded),
           ),
@@ -243,6 +220,33 @@ class _ShelfViewState extends State<ShelfView> {
               ))
             ],
           ))
+        ],
+      ),
+    );
+  }
+
+  void boxesInfoDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Boxes'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Text(
+                '1. You can rescan your Boxes if you have moved your Markers with "Rescan Boxes"\n'),
+            Text(
+                '2. You can rescan your Markers if you have changed them with "Rescan Markers"\nYou will then have to rescan the boxes aswell.\n'),
+            Text(
+                "3. You can create tags and add them to boxes.\nOR\nYou can photograph the box's content and use the generated tags\nJust Click on 'Boxes'"),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+              onPressed: () {
+                Navigator.pop(_);
+              },
+              child: const Text('ok'))
         ],
       ),
     );
