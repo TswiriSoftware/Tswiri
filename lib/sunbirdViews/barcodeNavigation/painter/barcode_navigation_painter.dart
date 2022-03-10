@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 import 'dart:ui' as ui;
 
@@ -7,7 +6,7 @@ import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_ba
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
 import 'package:flutter_google_ml_kit/functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
-import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
+
 import 'package:flutter_google_ml_kit/globalValues/global_paints.dart';
 import 'package:flutter_google_ml_kit/objects/barcode_positional_data.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/appSettings/app_settings.dart';
@@ -108,29 +107,46 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
       //Check if the selected barcode is within the finder circle.
       double distance =
           (screenCenterPoint - barcodeOnScreenData.center).distance;
-      if (distance < finderCircleRadius / 2) {
+
+      if (distance < finderCircleRadius) {
         //Draw the finder circle in blue indicating the barcode is within the finder circle
         canvas.drawCircle(screenCenterPoint, finderCircleRadius, paintBlue3);
       } else {
         //Draw finder circle in red when the barcode is not within the finder circle.
         canvas.drawCircle(screenCenterPoint, finderCircleRadius, paintRed3);
 
-        //Contstuct the rectangle for the arc.
-        Rect rect = Rect.fromCenter(
-            center: screenCenterPoint,
-            width: finderCircleRadius * 2 + 3,
-            height: finderCircleRadius * 2 + 3);
-
         //Calculate the angle the selected barcode makes with the center of the screen.
         double selectedBarcodeAngleRadians =
             (barcodeOnScreenData.center - screenCenterPoint).direction;
 
-        //canvas.rotate(selectedBarcodeAngleRadians);
-        //canvas.drawLine(screenCenterPoint, Offset(0, 100), paintRed3);
+        //Start position of the arrow line.
+        Offset arrowLineStart = Offset(
+            screenCenterPoint.dx + finderCircleRadius, screenCenterPoint.dy);
 
-        // //Draw the direction indicator.
-        canvas.drawArc(rect, selectedBarcodeAngleRadians - pi / 10, pi / 5,
-            false, paintSimple(Colors.greenAccent, 10));
+        //End position of the arrow line
+        Offset arrowLineHead = Offset(
+            arrowLineStart.dx + distance - finderCircleRadius,
+            screenCenterPoint.dy);
+        //ArrowHeadtop
+
+        Offset arrowHeadtop =
+            Offset(arrowLineHead.dx - 30, arrowLineHead.dy + 20);
+
+        //ArrowHeadBottom
+        Offset arrowHeadbottom =
+            Offset(arrowLineHead.dx - 30, arrowLineHead.dy - 20);
+
+        //Translate canvas to screen center.
+        canvas.translate(screenCenterPoint.dx, screenCenterPoint.dy);
+        //Rotate the canvas.
+        canvas.rotate(selectedBarcodeAngleRadians);
+        //Translate the canvas back to original position
+        canvas.translate(-screenCenterPoint.dx, -screenCenterPoint.dy);
+
+        //Draw the arrow
+        canvas.drawLine(arrowLineStart, arrowLineHead, paintBlue4);
+        canvas.drawLine(arrowLineHead, arrowHeadtop, paintBlue3);
+        canvas.drawLine(arrowLineHead, arrowHeadbottom, paintBlue3);
       }
     } else {
       if (barcodes.isNotEmpty) {
@@ -230,13 +246,6 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
           double distanceToSelectedBarcode =
               screenCenterToSelectedBarcode.distance;
 
-          //d.log(distanceToSelectedBarcode.toString());
-
-          double rectSize = referenceBarcodeScreenData.barcodeOnScreenUnits + 3;
-          //Contstuct the rectangle for the arc.
-          Rect rect = Rect.fromCenter(
-              center: screenCenterPoint, width: rectSize, height: rectSize);
-
           //Display the screen center's real position.
           TextSpan span = TextSpan(
               style: const TextStyle(
@@ -251,9 +260,62 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
           tp.layout();
           tp.paint(canvas, screenCenterPoint - const Offset(20, 0));
 
-          //Draw the direction indicator.
-          canvas.drawArc(rect, angleToSelectedBarcode - pi / 10, pi / 5, false,
-              paintSimple(Colors.greenAccent, 30));
+          //Calculate the finderCircle Radius.
+          double finderCircleRadius =
+              (referenceBarcodeScreenData.barcodeOnScreenUnits + 3) / 2;
+
+          //Constaints for arrow.
+          double screenWidth = (size.width - finderCircleRadius) / 2;
+
+          //Applying contraints.
+          if (distanceToSelectedBarcode > screenWidth) {
+            if (distanceToSelectedBarcode / 2 < 150) {
+              distanceToSelectedBarcode = 150;
+            } else {
+              distanceToSelectedBarcode = distanceToSelectedBarcode / 2;
+            }
+          }
+
+          //Start position of the arrow line.
+          Offset arrowLineStart = Offset(
+              screenCenterPoint.dx + finderCircleRadius, screenCenterPoint.dy);
+
+          //End position of the arrow line
+          Offset arrowLineHead = Offset(
+              arrowLineStart.dx +
+                  distanceToSelectedBarcode -
+                  finderCircleRadius,
+              screenCenterPoint.dy);
+
+          //ArrowHeadtop
+          Offset arrowHeadtop =
+              Offset(arrowLineHead.dx - 30, arrowLineHead.dy + 20);
+
+          //ArrowHeadBottom
+          Offset arrowHeadbottom =
+              Offset(arrowLineHead.dx - 30, arrowLineHead.dy - 20);
+
+          //Translate canvas to screen center.
+          canvas.translate(screenCenterPoint.dx, screenCenterPoint.dy);
+          //Rotate the canvas.
+          canvas.rotate(angleToSelectedBarcode);
+          //Translate the canvas back to original position
+          canvas.translate(-screenCenterPoint.dx, -screenCenterPoint.dy);
+
+          //Draw the arrow
+          canvas.drawLine(arrowLineStart, arrowLineHead, paintBlue4);
+          canvas.drawLine(arrowLineHead, arrowHeadtop, paintBlue3);
+          canvas.drawLine(arrowLineHead, arrowHeadbottom, paintBlue3);
+
+          //d.log(distanceToSelectedBarcode.toString());
+
+          //Contstuct the rectangle for the arc.
+          // Rect rect = Rect.fromCenter(
+          //     center: screenCenterPoint, width: rectSize, height: rectSize);
+
+          // //Draw the direction indicator.
+          // canvas.drawArc(rect, angleToSelectedBarcode - pi / 10, pi / 5, false,
+          //     paintSimple(Colors.greenAccent, 30));
         }
       }
     }

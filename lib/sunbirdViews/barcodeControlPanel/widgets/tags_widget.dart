@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_light_container.dart';
 import 'package:provider/provider.dart';
 
 import '../../../objects/change_notifiers.dart';
@@ -20,16 +21,7 @@ class _TagsContainerWidgetState extends State<TagsContainerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 5),
-      decoration: BoxDecoration(
-        color: deepSpaceSparkle[200],
-        border: Border.all(color: Colors.white60, width: 2),
-        borderRadius: const BorderRadius.all(
-          Radius.circular(5),
-        ),
-      ),
+    return BasicLightContainer(
       child: Wrap(
         children: [
           Padding(
@@ -43,11 +35,11 @@ class _TagsContainerWidgetState extends State<TagsContainerWidget> {
               trailing: isExpanded
                   ? const Icon(
                       Icons.arrow_drop_up,
-                      color: Colors.white,
+                      color: Colors.deepOrange,
                     )
                   : const Icon(
                       Icons.add_circle_outline_outlined,
-                      color: Colors.white,
+                      color: Colors.deepOrange,
                     ),
               subtitle: Padding(
                 padding: const EdgeInsets.all(5.0),
@@ -94,9 +86,9 @@ class _TagsContainerWidgetState extends State<TagsContainerWidget> {
                       contentPadding: const EdgeInsets.all(10),
                       labelStyle: const TextStyle(color: Colors.white),
                       labelText: 'Search Tags or Enter new tag',
-                      suffixIcon: Icon(
+                      suffixIcon: const Icon(
                         Icons.search,
-                        color: deepSpaceSparkle[700],
+                        color: Colors.deepOrange,
                       )),
                 ),
               ],
@@ -125,15 +117,15 @@ class AssignedTagButton extends StatelessWidget {
         },
         child: Text(
           tag,
-          style: const TextStyle(color: Colors.black),
+          style: const TextStyle(),
         ),
         style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.white),
+            backgroundColor: MaterialStateProperty.all(Colors.transparent),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18.0),
                 side: const BorderSide(
-                  color: Colors.teal,
+                  color: Colors.deepOrange,
                   width: 2.0,
                 ),
               ),
@@ -161,15 +153,15 @@ class UnassignedTagButton extends StatelessWidget {
         },
         child: Text(
           tag,
-          style: const TextStyle(color: Colors.black),
+          style: const TextStyle(),
         ),
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(Colors.white),
+          backgroundColor: MaterialStateProperty.all(Colors.transparent),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18.0),
               side: const BorderSide(
-                color: Colors.teal,
+                color: Colors.deepOrange,
                 width: 2.0,
               ),
             ),
@@ -188,15 +180,15 @@ class UnassignedTagButton extends StatelessWidget {
             },
             child: Text(
               tag,
-              style: const TextStyle(color: Colors.black),
+              style: const TextStyle(),
             ),
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.white),
+                backgroundColor: MaterialStateProperty.all(Colors.transparent),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
                     side: const BorderSide(
-                      color: Colors.teal,
+                      color: Colors.deepOrange,
                       width: 2.0,
                     ),
                   ),

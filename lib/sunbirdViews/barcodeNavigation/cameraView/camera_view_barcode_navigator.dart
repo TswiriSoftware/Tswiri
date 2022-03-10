@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 //import 'package:image_picker/image_picker.dart';
 
-import '../../../globalValues/global_colours.dart';
 import '../../appSettings/app_settings.dart';
 import '../../../main.dart';
 
@@ -66,7 +65,7 @@ class _CameraBarcodeNavigationViewState
       ),
       body: _body(),
       floatingActionButton: _floatingActionButton(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 
@@ -75,31 +74,23 @@ class _CameraBarcodeNavigationViewState
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16),
-          child: SizedBox(
-            height: 50.0,
-            width: 50.0,
-            child: FloatingActionButton(
-              backgroundColor: Colors.deepOrange,
-              heroTag: 'flash',
-              child: Icon(
-                Platform.isIOS
-                    ? Icons.flip_camera_ios_outlined
-                    : Icons.flash_on_rounded,
-                size: 30,
-              ),
-              onPressed: () {
-                if (flash == true) {
-                  _controller!.setFlashMode(FlashMode.off);
-                  flash = false;
-                } else {
-                  flash = true;
-                  _controller!.setFlashMode(FlashMode.torch);
-                }
-              },
-            ),
+        FloatingActionButton(
+          backgroundColor: Colors.deepOrange,
+          heroTag: 'flash',
+          child: Icon(
+            Platform.isIOS
+                ? Icons.flip_camera_ios_outlined
+                : Icons.flash_on_rounded,
           ),
+          onPressed: () {
+            if (flash == true) {
+              _controller!.setFlashMode(FlashMode.off);
+              flash = false;
+            } else {
+              flash = true;
+              _controller!.setFlashMode(FlashMode.torch);
+            }
+          },
         ),
         // Padding(
         //   padding: const EdgeInsets.only(left: 16, right: 16),

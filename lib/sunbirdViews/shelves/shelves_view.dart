@@ -42,7 +42,7 @@ class _ShelvesViewState extends State<ShelvesView> {
               onPressed: () {
                 showInfoDialog(context);
               },
-              icon: const Icon(Icons.info))
+              icon: const Icon(Icons.info_outline_rounded))
         ],
         centerTitle: true,
         elevation: 0,
@@ -55,15 +55,7 @@ class _ShelvesViewState extends State<ShelvesView> {
             FloatingActionButton(
               heroTag: null,
               onPressed: () async {
-                await Navigator.push(
-                  context,
-                  (MaterialPageRoute(
-                    builder: (context) => const NewShelfView(),
-                  )),
-                );
-                setState(() {
-                  runFilter('');
-                });
+                await navigateToNewShelf(context);
               },
               child: const Icon(Icons.add),
             ),
@@ -76,12 +68,15 @@ class _ShelvesViewState extends State<ShelvesView> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 10),
-            const Text('Hold for more options'),
-            const SizedBox(height: 10),
             SearchBarWidget(onChanged: (value) {
               runFilter(value);
             }),
             const SizedBox(height: 10),
+            const Text(
+              'Hold for more options',
+              style: TextStyle(fontSize: 12),
+            ),
+            const SizedBox(height: 5),
             Expanded(
               child: searchResults.isNotEmpty
                   ? ListView.builder(
@@ -122,6 +117,18 @@ class _ShelvesViewState extends State<ShelvesView> {
     );
   }
 
+  Future<void> navigateToNewShelf(BuildContext context) async {
+    await Navigator.push(
+      context,
+      (MaterialPageRoute(
+        builder: (context) => const NewShelfView(),
+      )),
+    );
+    setState(() {
+      runFilter('');
+    });
+  }
+
   void showInfoDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -131,8 +138,9 @@ class _ShelvesViewState extends State<ShelvesView> {
           mainAxisSize: MainAxisSize.min,
           children: const [
             Text(
-                'What is a shelf ? those are the real questions. All I know is that it contains boxes and markers.\n '),
-            Text('What is a marker ? it is a qrcode that never moves.\n'),
+                'What is a shelf ? All I know is that it contains boxes and markers that are rougly on the same plane.\n '),
+            Text(
+                'What is a marker ? it is a qrcode that is not allowed to move.\n'),
             Text(
                 'What is a box ? it is a box with a qrcode stuck to it that can move.\n'),
           ],

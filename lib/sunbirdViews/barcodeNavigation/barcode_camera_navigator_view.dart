@@ -94,44 +94,37 @@ class _BarcodeCameraNavigatorViewState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            FloatingActionButton(
-              backgroundColor: Colors.deepOrange,
-              heroTag: null,
-              onPressed: () async {
-                //Update the positions in the realBarcodePositionDataBox.
-                Box<RealBarcodePostionEntry> realBarcodePositionDataBox =
-                    await Hive.openBox(realPositionsBoxName);
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.deepOrange,
+        heroTag: null,
+        onPressed: () async {
+          //Update the positions in the realBarcodePositionDataBox.
+          Box<RealBarcodePostionEntry> realBarcodePositionDataBox =
+              await Hive.openBox(realPositionsBoxName);
 
-                for (RealBarcodePostionEntry realBarcodePostionEntry
-                    in positionsThatChanged) {
-                  realBarcodePositionDataBox.put(
-                      realBarcodePostionEntry.uid, realBarcodePostionEntry);
-                  log('updated Positions.');
-                }
+          for (RealBarcodePostionEntry realBarcodePostionEntry
+              in positionsThatChanged) {
+            realBarcodePositionDataBox.put(
+                realBarcodePostionEntry.uid, realBarcodePostionEntry);
+            log('updated Positions.');
+          }
 
-                if (widget.pop != null) {
-                  Navigator.pop(context);
-                } else {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => BarcodeControlPanelView(
-                        barcodeID: int.parse(widget.barcodeID),
-                      ),
-                    ),
-                  );
-                }
-              },
-              child: const Icon(Icons.check_circle_outline_rounded),
-            ),
-          ],
-        ),
+          if (widget.pop != null) {
+            Navigator.pop(context);
+          } else {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BarcodeControlPanelView(
+                  barcodeID: int.parse(widget.barcodeID),
+                ),
+              ),
+            );
+          }
+        },
+        child: const Icon(Icons.check_circle_outline_rounded),
       ),
       body: CameraBarcodeNavigationView(
         title: 'Barcode Finder',
@@ -143,6 +136,7 @@ class _BarcodeCameraNavigatorViewState
     );
   }
 
+  List<Barcode>? lastBarcodesDetected;
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;
     isBusy = true;
@@ -158,13 +152,24 @@ class _BarcodeCameraNavigatorViewState
       focalLength = prefs.getDouble(focalLengthPreference) ?? 0;
     }
 
-    final barcodes = await barcodeScanner.processImage(inputImage);
+    List<Barcode> barcodes = await barcodeScanner.processImage(inputImage);
 
     vm.Vector3 gravityDirection3D = accelerometerEvent - userAccelerometerEvent;
     double angleRadians = calculatePhoneAngle(gravityDirection3D);
 
+    if (barcodes.isNotEmpty) {
+      //Stores the latest barcodes to be used if no barcodes are detected.
+      lastBarcodesDetected = barcodes;
+    }
+
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
+      //Check if barcodes are empty.
+      if (barcodes.isEmpty && lastBarcodesDetected != null) {
+        log(lastBarcodesDetected.toString());
+        barcodes = lastBarcodesDetected!;
+      }
+
       final painter = BarcodeDetectorPainterNavigation(
         barcodes: barcodes,
         absoluteImageSize: inputImage.inputImageData!.size,

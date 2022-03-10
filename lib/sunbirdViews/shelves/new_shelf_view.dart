@@ -9,7 +9,7 @@ import '../../globalValues/global_colours.dart';
 import '../../globalValues/global_hive_databases.dart';
 import '../barcodeControlPanel/barcode_list_view.dart';
 import '../barcodeGeneration/barcode_generation_range_selector_view.dart';
-import '../barcodeScanning/barcode_scanner_fixed_view .dart';
+import '../barcodeScanning/barcode_marker_scanner_view.dart';
 import '../barcodeScanning/barcode_scanner_view.dart';
 import '../tutorial/tutorial_view.dart';
 import 'shelf_name_and_description_view.dart';
@@ -169,7 +169,7 @@ class _NewShelfViewState extends State<NewShelfView> {
           ),
         );
         setState(() {
-          //TODO: implement futureBuilder to check if camera has been calibrated.
+          //TODO: check if camera has been calibrated.
           //TODO: Implement Check.
           hasCalibratedCamera = true;
         });
@@ -192,7 +192,7 @@ class _NewShelfViewState extends State<NewShelfView> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const BarcodeScannerFixedBarcodesView(),
+            builder: (context) => const BarcodeMarkerScannerView(),
           ),
         );
         setState(() {

@@ -13,48 +13,38 @@ class BarcodeDisplayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () async {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => BarcodeControlPanelView(
-                  barcodeID: barcodeAndTagData.barcodeID)),
-        );
-      },
-      child: BasicLightContainer(
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            IDdisplayWidget(
-              id: barcodeAndTagData.barcodeID.toString(),
-              size: 40,
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: BasicDarkContainer(
-                child: Row(
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Tags: ' + checkIfEmpty(barcodeAndTagData.tags!),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+    return BasicLightContainer(
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          IDdisplayWidget(
+            id: barcodeAndTagData.barcodeID.toString(),
+            size: 40,
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: BasicDarkContainer(
+              child: Row(
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Tags: ' + checkIfEmpty(barcodeAndTagData.tags!),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

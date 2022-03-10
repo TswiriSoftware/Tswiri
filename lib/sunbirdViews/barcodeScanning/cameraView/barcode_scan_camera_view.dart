@@ -13,8 +13,8 @@ import '../../appSettings/app_settings.dart';
 
 enum ScreenMode { liveFeed, gallery }
 
-class CameraBarcodeScanningView extends StatefulWidget {
-  const CameraBarcodeScanningView(
+class BarcodeScanCameraView extends StatefulWidget {
+  const BarcodeScanCameraView(
       {Key? key,
       required this.title,
       required this.customPaint,
@@ -30,11 +30,10 @@ class CameraBarcodeScanningView extends StatefulWidget {
   final Color color;
 
   @override
-  _CameraBarcodeScanningViewState createState() =>
-      _CameraBarcodeScanningViewState();
+  _BarcodeScanCameraViewState createState() => _BarcodeScanCameraViewState();
 }
 
-class _CameraBarcodeScanningViewState extends State<CameraBarcodeScanningView> {
+class _BarcodeScanCameraViewState extends State<BarcodeScanCameraView> {
   CameraController? _controller;
   int _cameraIndex = 0;
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
@@ -63,64 +62,39 @@ class _CameraBarcodeScanningViewState extends State<CameraBarcodeScanningView> {
       appBar: AppBar(
         title: Text(widget.title),
         backgroundColor: widget.color,
+        actions: [
+          IconButton(
+            onPressed: () {
+              //TODO: Implement info screen. for box scanning
+            },
+            icon: const Icon(Icons.info_outline_rounded),
+          ),
+        ],
       ),
       body: _body(),
       floatingActionButton: _floatingActionButton(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 
   Widget? _floatingActionButton() {
     if (cameras.length == 1) return null;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16),
-          child: SizedBox(
-            height: 50.0,
-            width: 50.0,
-            child: FloatingActionButton(
-              heroTag: 'flash',
-              child: Icon(
-                Platform.isIOS
-                    ? Icons.flip_camera_ios_outlined
-                    : Icons.flash_on_rounded,
-                size: 30,
-              ),
-              onPressed: () {
-                if (flash == true) {
-                  _controller!.setFlashMode(FlashMode.off);
-                  flash = false;
-                } else {
-                  flash = true;
-                  _controller!.setFlashMode(FlashMode.torch);
-                }
-              },
-            ),
-          ),
-        ),
-        // Padding(
-        //   padding: const EdgeInsets.only(left: 16, right: 16),
-        //   child: SizedBox(
-        //     height: 70.0,
-        //     width: 70.0,
-        //     child: FloatingActionButton(
-        //       heroTag: 'camera selection',
-        //       child: Icon(
-        //         Platform.isIOS
-        //             ? Icons.flip_camera_ios_outlined
-        //             : Icons.flip_camera_android_outlined,
-        //         size: 30,
-        //       ),
-        //       onPressed: _switchLiveCamera,
-        //     ),
-        //   ),
-        // ),
-        // const SizedBox(
-        //   width: 86,
-        // ),
-      ],
+    return FloatingActionButton(
+      heroTag: 'flash',
+      child: Icon(
+        Platform.isIOS
+            ? Icons.flip_camera_ios_outlined
+            : Icons.flash_on_rounded,
+      ),
+      onPressed: () {
+        if (flash == true) {
+          _controller!.setFlashMode(FlashMode.off);
+          flash = false;
+        } else {
+          flash = true;
+          _controller!.setFlashMode(FlashMode.torch);
+        }
+      },
     );
   }
 

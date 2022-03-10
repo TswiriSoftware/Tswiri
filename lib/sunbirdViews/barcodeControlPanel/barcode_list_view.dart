@@ -10,6 +10,7 @@ import '../../databaseAdapters/tagAdapters/barcode_tag_entry.dart';
 import '../../functions/barcodeTools/hide_keyboard.dart';
 import '../../globalValues/global_hive_databases.dart';
 import '../../objects/all_barcode_data.dart';
+import 'barcode_control_panel.dart';
 import 'widgets/barcode_display_widget.dart';
 
 class BarcodeListView extends StatefulWidget {
@@ -22,14 +23,10 @@ class BarcodeListView extends StatefulWidget {
 
 class _BarcodeListViewState extends State<BarcodeListView> {
   List<AllBarcodeData> _foundBarcodes = [];
-  String name = '';
 
   @override
   void initState() {
     runFilter('');
-    if (widget.shelfEntry!.name != null) {
-      String name = widget.shelfEntry!.name;
-    }
     super.initState();
   }
 
@@ -79,8 +76,16 @@ class _BarcodeListViewState extends State<BarcodeListView> {
                     child: ListView.builder(
                         itemCount: _foundBarcodes.length,
                         itemBuilder: (context, index) {
-                          return BarcodeDisplayWidget(
-                            barcodeAndTagData: _foundBarcodes[index],
+                          return InkWell(
+                            onTap: () async {
+                              await navigateToControlPanel(context, index);
+                            },
+                            onLongPress: () {
+                              //TODO: Implement delete functionality
+                            },
+                            child: BarcodeDisplayWidget(
+                              barcodeAndTagData: _foundBarcodes[index],
+                            ),
                           );
                         }),
                   )
@@ -92,6 +97,16 @@ class _BarcodeListViewState extends State<BarcodeListView> {
         ],
       ),
     );
+  }
+
+  Future<void> navigateToControlPanel(BuildContext context, int index) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => BarcodeControlPanelView(
+              barcodeID: _foundBarcodes[index].barcodeID)),
+    );
+    runFilter('');
   }
 
   Future<void> runFilter(String enteredKeyword) async {

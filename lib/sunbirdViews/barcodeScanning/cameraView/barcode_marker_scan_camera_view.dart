@@ -13,8 +13,8 @@ import '../../appSettings/app_settings.dart';
 
 enum ScreenMode { liveFeed, gallery }
 
-class CameraFixedBarcodeScanningView extends StatefulWidget {
-  const CameraFixedBarcodeScanningView(
+class BarcodeMarkerScanCameraView extends StatefulWidget {
+  const BarcodeMarkerScanCameraView(
       {Key? key,
       required this.title,
       required this.customPaint,
@@ -30,12 +30,12 @@ class CameraFixedBarcodeScanningView extends StatefulWidget {
   final Color color;
 
   @override
-  _CameraFixedBarcodeScanningViewState createState() =>
-      _CameraFixedBarcodeScanningViewState();
+  _BarcodeMarkerScanCameraViewState createState() =>
+      _BarcodeMarkerScanCameraViewState();
 }
 
-class _CameraFixedBarcodeScanningViewState
-    extends State<CameraFixedBarcodeScanningView> {
+class _BarcodeMarkerScanCameraViewState
+    extends State<BarcodeMarkerScanCameraView> {
   CameraController? _controller;
   int _cameraIndex = 0;
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
@@ -64,10 +64,18 @@ class _CameraFixedBarcodeScanningViewState
       appBar: AppBar(
         title: Text(widget.title),
         backgroundColor: widget.color,
+        actions: [
+          IconButton(
+            onPressed: () {
+              //TODO: Implement info screen. For Markers.
+            },
+            icon: const Icon(Icons.info_outline_rounded),
+          ),
+        ],
       ),
       body: _body(),
       floatingActionButton: _floatingActionButton(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 
@@ -76,30 +84,22 @@ class _CameraFixedBarcodeScanningViewState
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16),
-          child: SizedBox(
-            height: 50.0,
-            width: 50.0,
-            child: FloatingActionButton(
-              heroTag: 'flash',
-              child: Icon(
-                Platform.isIOS
-                    ? Icons.flip_camera_ios_outlined
-                    : Icons.flash_on_rounded,
-                size: 30,
-              ),
-              onPressed: () {
-                if (flash == true) {
-                  _controller!.setFlashMode(FlashMode.off);
-                  flash = false;
-                } else {
-                  flash = true;
-                  _controller!.setFlashMode(FlashMode.torch);
-                }
-              },
-            ),
+        FloatingActionButton(
+          heroTag: 'flash',
+          child: Icon(
+            Platform.isIOS
+                ? Icons.flip_camera_ios_outlined
+                : Icons.flash_on_rounded,
           ),
+          onPressed: () {
+            if (flash == true) {
+              _controller!.setFlashMode(FlashMode.off);
+              flash = false;
+            } else {
+              flash = true;
+              _controller!.setFlashMode(FlashMode.torch);
+            }
+          },
         ),
         // Padding(
         //   padding: const EdgeInsets.only(left: 16, right: 16),

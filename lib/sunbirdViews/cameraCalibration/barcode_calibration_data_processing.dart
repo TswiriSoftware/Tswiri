@@ -108,8 +108,6 @@ class _BarcodeCalibrationDataProcessingViewState
     );
   }
 
-  //TODO: Problem with distance.
-
   // Data that we are working with:
 
   //    i. rawBarcodeData  (This is all the collected barcode data so we can determine the barcodes diagonal length at a given point in time.)

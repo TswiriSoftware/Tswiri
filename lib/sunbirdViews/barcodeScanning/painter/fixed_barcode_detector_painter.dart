@@ -10,11 +10,16 @@ import '../../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
 
 class FixedBarcodeDetectorPainter extends CustomPainter {
   FixedBarcodeDetectorPainter(
-      this.barcodes, this.absoluteImageSize, this.rotation, this.allBarcodes);
+      {required this.barcodes,
+      required this.absoluteImageSize,
+      required this.rotation,
+      required this.allBarcodes,
+      this.barcodeID});
   final List<Barcode> barcodes;
   final Size absoluteImageSize;
   final InputImageRotation rotation;
   List<BarcodeDataEntry> allBarcodes;
+  final int? barcodeID;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -62,6 +67,10 @@ class FixedBarcodeDetectorPainter extends CustomPainter {
             canvas.drawPoints(PointMode.polygon, offsetPoints,
                 paintSimple(Colors.blueAccent, 3));
           }
+        }
+        if (barcodeID.toString() == barcode.value.displayValue) {
+          canvas.drawPoints(PointMode.polygon, offsetPoints,
+              paintSimple(Colors.deepOrange, 3));
         }
       }
     }

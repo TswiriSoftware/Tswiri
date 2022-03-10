@@ -1,11 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 import 'package:flutter_google_ml_kit/objects/all_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/change_notifiers.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/widgets/tags_widget.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/scan_barcode_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/barcode_camera_navigator_view.dart';
 
 import 'package:hive/hive.dart';
@@ -73,36 +70,31 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
         future: getCurrentBarcodeData(widget.barcodeID),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            int barcodeID = snapshot.data!.barcodeID;
-            bool isFixed = snapshot.data!.isFixed;
-            double barcodeSize = snapshot.data!.barcodeSize;
-            List<String> tags = snapshot.data!.tags ?? [];
-            List<String> unassignedTags = snapshot.data!.unassignedTags ?? [];
-            Map<String, List<String>> barcodePhotoData =
-                snapshot.data?.barcodePhotoData ?? {};
-            String description =
-                snapshot.data?.description ?? 'Add a description';
-            log(snapshot.data.toString());
+            AllBarcodeData barcodeAndTagData = snapshot.data!;
+
             return SingleChildScrollView(
               child: Column(
                 children: [
                   ChangeNotifierProvider<BarcodeDataChangeNotifier>(
                       create: (_) => BarcodeDataChangeNotifier(
-                          barcodeSize: barcodeSize,
-                          isFixed: isFixed,
-                          description: description),
+                          barcodeSize: barcodeAndTagData.barcodeSize,
+                          isFixed: barcodeAndTagData.isFixed,
+                          description: barcodeAndTagData.description ??
+                              'Add a description'),
                       child: BarcodeDataContainer(
-                        barcodeID: barcodeID,
+                        barcodeAndTagData: barcodeAndTagData,
                       )),
                   ChangeNotifierProvider<PhotosAndTags>(
                     create: (_) => PhotosAndTags(
-                        assignedTags: tags,
-                        unassignedTags: unassignedTags,
-                        barcodePhotoData: barcodePhotoData),
+                        assignedTags: barcodeAndTagData.tags ?? [],
+                        unassignedTags: barcodeAndTagData.unassignedTags ?? [],
+                        barcodePhotoData:
+                            barcodeAndTagData.barcodePhotoData ?? {}),
                     child: Column(
                       children: [
-                        TagsContainerWidget(barcodeID: barcodeID),
-                        BarcodePhotoView(barcodeID: barcodeID)
+                        TagsContainerWidget(
+                            barcodeID: barcodeAndTagData.barcodeID),
+                        BarcodePhotoView(barcodeID: barcodeAndTagData.barcodeID)
                       ],
                     ),
                   ),

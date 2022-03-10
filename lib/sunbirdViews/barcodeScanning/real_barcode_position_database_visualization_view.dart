@@ -48,19 +48,6 @@ class _RealBarcodePositionDatabaseVisualizationViewState
             children: [
               FloatingActionButton(
                 heroTag: null,
-                onPressed: () async {
-                  //TODO: implemt stuff
-
-                  // pointNames.clear();
-                  // Box<RealBarcodePostionEntry> consolidatedDataBox =
-                  //     await Hive.openBox(realPositionsBoxName);
-                  // consolidatedDataBox.clear();
-                  // setState(() {});
-                },
-                child: const Icon(Icons.refresh),
-              ),
-              FloatingActionButton(
-                heroTag: null,
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -110,7 +97,9 @@ class OpenPainter extends CustomPainter {
     required this.pointNames,
     required this.pointRelativePositions,
   });
+  // ignore: prefer_typing_uninitialized_variables
   var dataPoints;
+  // ignore: prefer_typing_uninitialized_variables
   var pointRelativePositions;
   var pointNames = [];
 

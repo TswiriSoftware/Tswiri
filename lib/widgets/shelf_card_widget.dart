@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/shelves/shelf_view.dart';
 
 import '../databaseAdapters/shelfAdapter/shelf_entry.dart';
 

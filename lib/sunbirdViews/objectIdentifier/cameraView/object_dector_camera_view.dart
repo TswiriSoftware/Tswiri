@@ -93,7 +93,7 @@ class _ObjectDetectorCameraViewState extends State<ObjectDetectorCameraView> {
 
               //Pass the image to the processing screen :D
               Navigator.pop(context);
-              await Navigator.of(context).push(
+              Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => ObjectDetectorProcessingView(
                     imagePath: image.path,

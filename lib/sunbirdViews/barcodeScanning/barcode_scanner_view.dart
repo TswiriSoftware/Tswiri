@@ -1,7 +1,7 @@
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/objects/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/cameraView/camera_view_barcode_scanning.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/cameraView/barcode_scan_camera_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/painter/barcode_detector_painter.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:flutter/material.dart';
@@ -61,37 +61,23 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              FloatingActionButton(
-                heroTag: null,
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              BarcodeScannerDataProcessingView(
-                                allRawOnImageBarcodeData:
-                                    allRawOnImageBarcodeData,
-                                shelfUID: widget.shelfUID,
-                              )));
-
-                  // Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  //     builder: (context) => BarcodeScannerDataProcessingView(
-                  //         allRawOnImageBarcodeData: allRawOnImageBarcodeData)));
-                },
-                child: const Icon(Icons.check_circle_outline_rounded),
-              ),
-            ],
-          ),
+        floatingActionButton: FloatingActionButton(
+          heroTag: null,
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => BarcodeScannerDataProcessingView(
+                          allRawOnImageBarcodeData: allRawOnImageBarcodeData,
+                          shelfUID: widget.shelfUID,
+                        )));
+          },
+          child: const Icon(Icons.check_circle_outline_rounded),
         ),
-        body: CameraBarcodeScanningView(
+        body: BarcodeScanCameraView(
           color: brightOrange,
-          title: 'Barcode Scanner',
+          title: 'Box Scanner',
           customPaint: customPaint,
           onImage: (inputImage) {
             processImage(inputImage);
