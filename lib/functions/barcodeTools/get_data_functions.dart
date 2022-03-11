@@ -39,7 +39,8 @@ List<String> findRelevantBarcodeTags(
 ) {
   //List containing all relevant TagEntries to current barcode.
   List<BarcodeTagEntry> relevantBarcodeTagEntries = barcodeTagEntries
-      .where((barcodeTagEntry) => barcodeTagEntry.id == barcodeData.uid)
+      .where(
+          (barcodeTagEntry) => barcodeTagEntry.id.toString() == barcodeData.uid)
       .toList();
 
   //List of all relevant Tags.

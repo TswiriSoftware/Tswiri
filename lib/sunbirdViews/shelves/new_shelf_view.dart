@@ -140,7 +140,7 @@ class _NewShelfViewState extends State<NewShelfView> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TutorialView(),
+            builder: (context) => const TutorialView(),
           ),
         );
         setState(() {

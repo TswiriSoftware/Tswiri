@@ -293,8 +293,8 @@ double calculateBacodeMMperOIU({
   required String barcodeID,
 }) {
   //If the barcode has not been generated. use default barcode size.
-  int index = barcodeDataEntries
-      .indexWhere((element) => element.uid == int.parse(barcodeID));
+  int index =
+      barcodeDataEntries.indexWhere((element) => element.uid == barcodeID);
 
   if (index != -1) {
     return diagonalLength / barcodeDataEntries[index].barcodeSize;
@@ -311,8 +311,8 @@ double findDistanceFromCamera({
   required List<BarcodeDataEntry> allBarcodes,
   required double focalLength,
 }) {
-  int index = allBarcodes.indexWhere(
-      (element) => element.uid == int.parse(barcodeValue.displayValue!));
+  int index = allBarcodes
+      .indexWhere((element) => element.uid == barcodeValue.displayValue!);
 
   if (index != -1) {
     double barcodeRealDiagonalLength = allBarcodes[index].barcodeSize;
