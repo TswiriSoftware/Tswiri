@@ -15,8 +15,10 @@ import 'widgets/barcode_display_widget.dart';
 
 class BarcodeListView extends StatefulWidget {
   const BarcodeListView({Key? key, this.shelfEntry}) : super(key: key);
-  //Add this if you are looking for a specific shelf's barcodes.
+
+  ///Add this if you are looking for a specific shelf's barcodes.
   final ShelfEntry? shelfEntry;
+
   @override
   State<BarcodeListView> createState() => _BarcodeListViewState();
 }
