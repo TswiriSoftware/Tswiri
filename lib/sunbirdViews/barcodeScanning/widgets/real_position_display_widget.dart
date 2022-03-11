@@ -92,7 +92,7 @@ class RealPositionDisplayWidget extends StatelessWidget {
                 margin: const EdgeInsets.all(5),
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'fixed: ${realBarcodePosition.isFixed}',
+                  'fixed: ${realBarcodePosition.isMarker}',
                 ),
               ),
             ),

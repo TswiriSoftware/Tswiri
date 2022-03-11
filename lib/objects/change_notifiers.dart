@@ -48,7 +48,7 @@ class BarcodeDataChangeNotifier extends ChangeNotifier {
     Box<BarcodeDataEntry> generatedBarcodesBox =
         await Hive.openBox(allBarcodesBoxName);
     BarcodeDataEntry barcodeDataEntry = generatedBarcodesBox.get(barcodeID)!;
-    barcodeDataEntry.isFixed = isFixed;
+    barcodeDataEntry.isMarker = isFixed;
 
     generatedBarcodesBox.put(barcodeID, barcodeDataEntry);
     notifyListeners();

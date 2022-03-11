@@ -125,7 +125,7 @@ Future<List<List<Offset>>> _getPoints(BuildContext context) async {
 
   //Plot equation using focal length
   List<BarcodeDataEntry> allBarcodes = await getAllExistingBarcodes();
-  int index = allBarcodes.indexWhere((element) => element.uid == 1);
+  int index = allBarcodes.indexWhere((element) => element.uid == '1');
   final prefs = await SharedPreferences.getInstance();
   double focalLength = prefs.getDouble(focalLengthPreference) ?? 0;
   List<Offset> equationPoints = [];

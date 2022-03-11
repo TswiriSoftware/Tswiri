@@ -4,6 +4,7 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
 
 import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
+import '../../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
 import '../../functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
 import '../../globalValues/global_hive_databases.dart';
 import 'cameraView/barcode_marker_scan_camera_view.dart';
@@ -54,26 +55,25 @@ class _BarcodeMarkerScannerViewState extends State<BarcodeMarkerScannerView> {
                     //Ensure list has been fetched.
                     if (allBarcodes != null) {
                       //Get the index of the current barcode.
-                      int index = allBarcodes!
-                          .indexWhere((element) => element.uid == barcodeID);
+                      int index = allBarcodes!.indexWhere(
+                          (element) => element.uid == barcodeID.toString());
+
                       if (index != -1) {
                         //Get the genrated barcodeData.
                         Box<BarcodeDataEntry> generatedBarcodeData =
                             await Hive.openBox(allBarcodesBoxName);
 
-                        if (allBarcodes![index].isFixed == false) {
-                          //Change the isFixed bool to true.
-                          allBarcodes![index].isFixed = true;
+                        if (allBarcodes![index].isMarker == false) {
+                          //Change the isMarker bool to true.
+                          allBarcodes![index].isMarker = true;
                           BarcodeDataEntry currentBarcode =
                               generatedBarcodeData.get(barcodeID)!;
-                          currentBarcode.isFixed = true;
                           generatedBarcodeData.put(barcodeID, currentBarcode);
                         } else {
-                          //Change the isFixed bool to false.
-                          allBarcodes![index].isFixed = false;
+                          allBarcodes![index].isMarker = false;
                           BarcodeDataEntry currentBarcode =
                               generatedBarcodeData.get(barcodeID)!;
-                          currentBarcode.isFixed = false;
+                          currentBarcode.isMarker = false;
                           generatedBarcodeData.put(barcodeID, currentBarcode);
                         }
                       }
@@ -106,13 +106,17 @@ class _BarcodeMarkerScannerViewState extends State<BarcodeMarkerScannerView> {
   }
 
   List<BarcodeDataEntry>? allBarcodes;
+
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;
     isBusy = true;
 
     //Get the list of generated barcodes.
     allBarcodes ??= await getAllExistingBarcodes();
+
+    //Closest barcode to center distance.
     double? clostesBarcodeDistance;
+
     final List<Barcode> barcodes =
         await barcodeScanner.processImage(inputImage);
 
@@ -173,4 +177,10 @@ Offset calculateBarcodeCenterOffset(Barcode barcode) {
 
   Rect boundingBox = Rect.fromLTRB(left, top, right, bottom);
   return boundingBox.center;
+}
+
+Future<List<RealBarcodePostionEntry>> getRealBarcodePositions() async {
+  Box<RealBarcodePostionEntry> realPositionsBox =
+      await Hive.openBox(realPositionsBoxName);
+  return realPositionsBox.values.toList();
 }

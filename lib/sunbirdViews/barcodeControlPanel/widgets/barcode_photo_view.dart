@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_dark_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_light_container.dart';
 import 'package:provider/provider.dart';

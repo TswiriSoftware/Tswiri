@@ -8,12 +8,12 @@ class BarcodeDataEntry extends HiveObject {
   BarcodeDataEntry(
       {required this.uid,
       required this.barcodeSize,
-      required this.isFixed,
+      required this.isMarker,
       required this.description});
 
   ///Barcode's ID
   @HiveField(0)
-  late int uid;
+  late String uid;
 
   ///Barcode Diagonal side length in mm.
   @HiveField(1)
@@ -21,7 +21,7 @@ class BarcodeDataEntry extends HiveObject {
 
   ///Barcode Diagonal side length in mm.
   @HiveField(2)
-  late bool isFixed;
+  late bool isMarker;
 
   ///Barcode Diagonal side length in mm.
   @HiveField(3)

@@ -107,7 +107,8 @@ class _RealBarcodePositionDatabaseViewState
           uid: realBarcodePostionEntry.uid,
           offset: typeOffsetToOffset(realBarcodePostionEntry.offset),
           zOffset: realBarcodePostionEntry.zOffset,
-          isFixed: realBarcodePostionEntry.isFixed));
+          shelfUID: realBarcodePostionEntry.shelfUID,
+          isMarker: realBarcodePostionEntry.isMarker));
     }
 
     realBarcodePositions

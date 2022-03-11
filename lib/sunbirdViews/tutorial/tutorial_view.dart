@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../globalValues/global_colours.dart';
 
+//TODO: Implement app tutorial.
 class TutorialView extends StatefulWidget {
-  TutorialView({Key? key}) : super(key: key);
+  const TutorialView({Key? key}) : super(key: key);
 
   @override
   State<TutorialView> createState() => _TutorialViewState();

@@ -1,7 +1,4 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/objects/all_barcode_data.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_dark_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_light_container.dart';
@@ -196,7 +193,9 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
         return AlertDialog(
           title: const Text('Barcode Diagonal Length'),
           content: const Text(
-              "Image here\nThe length in mm from the barcode's top left corner to the bottom right corner."), //TODO: Get Image.
+              "Image here\nThe length in mm from the barcode's top left corner to the bottom right corner."),
+          //TODO: Implement auto calculator for barcode diagonal length.
+          //TODO: Request Image to show Barcode Sides with arrow.
           actions: [
             ElevatedButton(
               child: const Text('Ok'),

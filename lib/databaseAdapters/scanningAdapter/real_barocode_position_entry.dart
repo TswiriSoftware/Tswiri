@@ -10,7 +10,7 @@ class RealBarcodePostionEntry extends HiveObject {
       {required this.uid,
       required this.offset,
       required this.zOffset,
-      required this.isFixed,
+      required this.isMarker,
       required this.shelfUID,
       required this.timestamp});
 
@@ -28,7 +28,7 @@ class RealBarcodePostionEntry extends HiveObject {
 
   //Is the barcode a fixed barcode ?
   @HiveField(3)
-  late bool isFixed;
+  late bool isMarker;
 
   //The timestamp
   @HiveField(4)

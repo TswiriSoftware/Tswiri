@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
@@ -5,7 +6,9 @@ import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import '../../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
+import '../../objects/display_point.dart';
 
 // ignore: todo
 //TODO: Refactor this @049er
@@ -15,7 +18,7 @@ class RealBarcodePositionDatabaseVisualizationView extends StatefulWidget {
       {Key? key, required this.shelfUID})
       : super(key: key);
 
-  final int shelfUID;
+  final int? shelfUID;
 
   @override
   _RealBarcodePositionDatabaseVisualizationViewState createState() =>
@@ -24,9 +27,6 @@ class RealBarcodePositionDatabaseVisualizationView extends StatefulWidget {
 
 class _RealBarcodePositionDatabaseVisualizationViewState
     extends State<RealBarcodePositionDatabaseVisualizationView> {
-  List pointNames = [];
-  List pointRelativePositions = [];
-
   @override
   void initState() {
     super.initState();
@@ -64,25 +64,21 @@ class _RealBarcodePositionDatabaseVisualizationViewState
           centerTitle: true,
           elevation: 0,
         ),
-        body: FutureBuilder(
-            future: _getPoints(
-                context, pointNames, pointRelativePositions, widget.shelfUID),
+        body: FutureBuilder<List<DisplayPoint>>(
+            future: _getPoints(context, widget.shelfUID ?? 0),
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
                 return const Center(child: CircularProgressIndicator());
               } else {
-                var dataPoints = snapshot.data;
+                List<DisplayPoint> myPoints = snapshot.data!;
+
                 return Center(
                   child: InteractiveViewer(
                     maxScale: 10,
                     minScale: 0.1,
                     child: CustomPaint(
                       size: Size.infinite,
-                      painter: OpenPainter(
-                        dataPoints: dataPoints,
-                        pointNames: pointNames,
-                        pointRelativePositions: pointRelativePositions,
-                      ),
+                      painter: OpenPainter(myPoints: myPoints),
                     ),
                   ),
                 );
@@ -93,35 +89,39 @@ class _RealBarcodePositionDatabaseVisualizationViewState
 
 class OpenPainter extends CustomPainter {
   OpenPainter({
-    required this.dataPoints,
-    required this.pointNames,
-    required this.pointRelativePositions,
+    required this.myPoints,
   });
-  // ignore: prefer_typing_uninitialized_variables
-  var dataPoints;
-  // ignore: prefer_typing_uninitialized_variables
-  var pointRelativePositions;
-  var pointNames = [];
+
+  List<DisplayPoint> myPoints;
 
   @override
   paint(Canvas canvas, Size size) {
-    canvas.drawPoints(
-        PointMode.points, dataPoints, paintSimple(Colors.blueAccent, 3));
+    List<Offset> markers = [];
+    List<Offset> boxes = [];
 
-    for (var i = 0; i < dataPoints.length; i++) {
-      List pointData = pointRelativePositions[i]
-          .toString()
-          .replaceAll(RegExp(r'\[|\]'), '')
-          .split(',')
-          .toList();
+    for (DisplayPoint point in myPoints) {
+      log(point.isMarker.toString());
+      if (point.isMarker) {
+        markers.add(point.barcodePosition);
+      } else {
+        boxes.add(point.barcodePosition);
+      }
+    }
+
+    canvas.drawPoints(
+        PointMode.points, boxes, paintSimple(Colors.greenAccent, 4));
+    canvas.drawPoints(
+        PointMode.points, markers, paintSimple(Colors.blueAccent, 4));
+
+    for (DisplayPoint point in myPoints) {
       final textSpan = TextSpan(
-          text: pointNames[i] +
+          text: point.barcodeID +
               '\n x: ' +
-              pointData[0] +
+              point.realBarcodePosition[0].toString() +
               '\n y: ' +
-              pointData[1] +
+              point.realBarcodePosition[1].toString() +
               '\n z: ' +
-              pointData[2],
+              point.realBarcodePosition[2].toString(),
           style: TextStyle(
               color: Colors.red[500],
               fontSize: 1.5,
@@ -135,8 +135,8 @@ class OpenPainter extends CustomPainter {
         minWidth: 0,
         maxWidth: size.width,
       );
-      Offset offset = dataPoints[i];
-      textPainter.paint(canvas, (offset));
+
+      textPainter.paint(canvas, (point.barcodePosition));
     }
   }
 
@@ -145,42 +145,72 @@ class OpenPainter extends CustomPainter {
 }
 
 //Get all points that should be plotted.
-_getPoints(
-    BuildContext context, List pointNames, List pointData, int shelfUID) async {
-  List<Offset> points = [];
+Future<List<DisplayPoint>> _getPoints(
+    BuildContext context, int shelfUID) async {
+  List<DisplayPoint> myPoints = [];
 
   //Open realPositionBox.
   Box<RealBarcodePostionEntry> realPositionsBox =
       await Hive.openBox(realPositionsBoxName);
 
-  List<RealBarcodePostionEntry> realPositionsShelf = realPositionsBox.values
-      .toList()
-      .where((element) => element.shelfUID == shelfUID)
-      .toList();
+  //Open generatedBarcodeData.
+  Box<BarcodeDataEntry> generatedBarcodeData =
+      await Hive.openBox(allBarcodesBoxName);
+
+  List<BarcodeDataEntry> generatedBarcodeDataList =
+      generatedBarcodeData.values.toList();
+
+  //Set isMarker in position data.
+  for (BarcodeDataEntry barcodeDataEntry in generatedBarcodeDataList) {
+    if (barcodeDataEntry.isMarker) {
+      realPositionsBox.get(barcodeDataEntry.uid)!.isMarker = true;
+    }
+  }
+
+  List<RealBarcodePostionEntry> realPositionsShelf = [];
+
+  if (shelfUID != 0) {
+    realPositionsShelf = realPositionsBox.values
+        .toList()
+        .where((element) => element.shelfUID == shelfUID)
+        .toList();
+  } else {
+    realPositionsShelf = realPositionsBox.values.toList();
+  }
 
   //Get Screen width and height.
   double width = MediaQuery.of(context).size.width;
   double height = MediaQuery.of(context).size.height;
 
-  //Calculate the unit vectors for the screen.
+  //Calculate the unit vectors for the screen so that everything fits on it.
   List<double> unitVector = unitVectors(
       realPositionsBox: realPositionsBox, width: width, height: height);
 
   for (var i = 0; i < realPositionsShelf.length; i++) {
-    RealBarcodePostionEntry data = realPositionsBox.getAt(i)!;
+    RealBarcodePostionEntry realBarcodePosition = realPositionsBox.getAt(i)!;
 
-    //Scale points so they fit on screen.
-    points.add(Offset((data.offset.x / unitVector[0]) + (width / 2),
-        (data.offset.y / unitVector[1]) + (height / 2)));
-    pointData.add([
-      roundDouble(data.offset.x, 5),
-      roundDouble(data.offset.y, 5),
-      roundDouble(data.zOffset, 5),
-    ]);
-    pointNames.add(data.uid);
+    Offset barcodePosition = Offset(
+        (realBarcodePosition.offset.x * unitVector[0]) +
+            (width / 2) -
+            (width / 8),
+        (realBarcodePosition.offset.y * unitVector[1]) +
+            (height / 2) -
+            (height / 8));
+
+    List<double> barcodeRealPosition = [
+      roundDouble(realBarcodePosition.offset.x, 5),
+      roundDouble(realBarcodePosition.offset.y, 5),
+      roundDouble(realBarcodePosition.zOffset, 5),
+    ];
+
+    myPoints.add(DisplayPoint(
+        isMarker: realBarcodePosition.isMarker,
+        barcodeID: realBarcodePosition.uid,
+        barcodePosition: barcodePosition,
+        realBarcodePosition: barcodeRealPosition));
   }
 
-  return points;
+  return myPoints;
 }
 
 List<double> unitVectors(
@@ -210,11 +240,11 @@ List<double> unitVectors(
     }
   }
 
-  double totalXdistance = (sX - bX).abs();
-  double totalYdistance = (sY - bY).abs();
+  double totalXdistance = (sX - bX).abs() + 500;
+  double totalYdistance = (sY - bY).abs() + 500;
 
-  double unitX = width / totalXdistance;
-  double unitY = width / totalYdistance;
+  double unitX = width / 2 / totalXdistance;
+  double unitY = height / 2 / totalYdistance;
 
   return [unitX, unitY];
 }

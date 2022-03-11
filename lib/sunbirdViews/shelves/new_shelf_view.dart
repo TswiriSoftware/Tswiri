@@ -169,8 +169,7 @@ class _NewShelfViewState extends State<NewShelfView> {
           ),
         );
         setState(() {
-          //TODO: check if camera has been calibrated.
-          //TODO: Implement Check.
+          //TODO: Implement check if camera has been calibrated.
           hasCalibratedCamera = true;
         });
       },

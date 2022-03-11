@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../databaseAdapters/barcodePhotoAdapter/barcode_photo_entry.dart';
 import '../../globalValues/global_hive_databases.dart';
-import '../../objects/image_object_data.dart';
+import '../../objects/image_data.dart';
 import '../barcodeControlPanel/barcode_control_panel.dart';
 import 'painter/object_detector_painter.dart';
 
@@ -101,7 +101,7 @@ class _ObjectDetectorProcessingView
               File(imagePath),
               alignment: Alignment.topCenter,
             ),
-            FutureBuilder<ImageObjectData>(
+            FutureBuilder<ImageData>(
                 future: processImage(imagePath),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState != ConnectionState.done) {
@@ -118,7 +118,7 @@ class _ObjectDetectorProcessingView
         ));
   }
 
-  Future<ImageObjectData> processImage(String imagePath) async {
+  Future<ImageData> processImage(String imagePath) async {
     //Get Image File.
     File imageFile = File(imagePath);
     String fileExtention = imageFile.path.split('.').last;
@@ -184,7 +184,7 @@ class _ObjectDetectorProcessingView
         Size(decodedImage.height.toDouble(), decodedImage.width.toDouble());
 
     //Create the object that contains all data from the object Detector and Image Labeler.
-    ImageObjectData processedResult = ImageObjectData(
+    ImageData processedResult = ImageData(
         detectedObjects: objects,
         detectedLabels: labels,
         detectedText: recognisedText,

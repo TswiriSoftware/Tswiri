@@ -21,7 +21,7 @@ class RealBarcodePostionEntryAdapter
       uid: fields[0] as String,
       offset: fields[1] as TypeOffset,
       zOffset: fields[2] as double,
-      isFixed: fields[3] as bool,
+      isMarker: fields[3] as bool,
       shelfUID: fields[4] as int,
       timestamp: fields[5] as int,
     );
@@ -38,7 +38,7 @@ class RealBarcodePostionEntryAdapter
       ..writeByte(2)
       ..write(obj.zOffset)
       ..writeByte(3)
-      ..write(obj.isFixed)
+      ..write(obj.isMarker)
       ..writeByte(4)
       ..write(obj.shelfUID)
       ..writeByte(5)

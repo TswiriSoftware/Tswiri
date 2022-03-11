@@ -17,6 +17,13 @@ final Paint paintRed3 = Paint()
   ..color = Colors.red;
 
 ///Color:       red
+///StrokeWidth: 4.0
+final Paint paintRed4 = Paint()
+  ..style = PaintingStyle.stroke
+  ..strokeWidth = 4.0
+  ..color = Colors.red;
+
+///Color:       red
 ///StrokeWidth: 20.0
 final Paint paintRed20 = Paint()
   ..style = PaintingStyle.stroke

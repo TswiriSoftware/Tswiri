@@ -10,8 +10,8 @@ import 'package:flutter/cupertino.dart';
 ///
 ///4. double        : barcodeOnScreenUnits
 ///
-class BarcodeOnScreenData {
-  BarcodeOnScreenData(
+class OnScreenBarcodeData {
+  OnScreenBarcodeData(
       {required final this.displayValue,
       required final this.cornerPoints,
       required final this.center,

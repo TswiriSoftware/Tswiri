@@ -7,8 +7,8 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 ///3.
 ///It contains Lists of objects detected etc...
 ///It also contains the Image configuration.
-class ImageObjectData {
-  ImageObjectData({
+class ImageData {
+  ImageData({
     required this.detectedObjects,
     required this.detectedLabels,
     required this.detectedText,

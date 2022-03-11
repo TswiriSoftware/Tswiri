@@ -17,9 +17,9 @@ class BarcodeDataEntryAdapter extends TypeAdapter<BarcodeDataEntry> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return BarcodeDataEntry(
-      uid: fields[0] as int,
+      uid: fields[0] as String,
       barcodeSize: fields[1] as double,
-      isFixed: fields[2] as bool,
+      isMarker: fields[2] as bool,
       description: fields[3] as String,
     );
   }
@@ -33,7 +33,7 @@ class BarcodeDataEntryAdapter extends TypeAdapter<BarcodeDataEntry> {
       ..writeByte(1)
       ..write(obj.barcodeSize)
       ..writeByte(2)
-      ..write(obj.isFixed)
+      ..write(obj.isMarker)
       ..writeByte(3)
       ..write(obj.description);
   }

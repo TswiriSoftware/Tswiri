@@ -63,7 +63,7 @@ class FixedBarcodeDetectorPainter extends CustomPainter {
         canvas.drawPoints(PointMode.polygon, offsetPoints, paint);
         if (index != -1) {
           BarcodeDataEntry currentBarcode = allBarcodes[index];
-          if (currentBarcode.isFixed) {
+          if (currentBarcode.isMarker) {
             canvas.drawPoints(PointMode.polygon, offsetPoints,
                 paintSimple(Colors.blueAccent, 3));
           }

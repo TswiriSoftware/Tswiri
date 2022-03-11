@@ -7,6 +7,7 @@ import 'dart:ui';
 ///Offset : interBarcodeOffset
 ///
 ///double : distance form camera
+///
 class RealBarcodePosition {
   ///This is the uid of the barcode ex. '1' or '2'.
   String uid;
@@ -20,14 +21,18 @@ class RealBarcodePosition {
   ///This is the timestamp of when the barcode was scanned
   int? timestamp;
 
-  bool isFixed;
+  int shelfUID;
+
+  //Is this barcode a Marker.
+  bool isMarker;
 
   RealBarcodePosition(
       {required this.uid,
       this.offset,
       required this.zOffset,
+      required this.shelfUID,
       this.timestamp,
-      required this.isFixed});
+      required this.isMarker});
 
   @override
   bool operator ==(Object other) {

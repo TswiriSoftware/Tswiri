@@ -120,7 +120,10 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
     BarcodeDataEntry? barcodeData = allBarcodes.get(barcodeID);
     if (allBarcodes.get(barcodeID) == null) {
       barcodeData = BarcodeDataEntry(
-          uid: barcodeID, barcodeSize: 100, isFixed: false, description: '');
+          uid: barcodeID.toString(),
+          barcodeSize: 100,
+          isMarker: false,
+          description: '');
 
       allBarcodes.put(barcodeID, barcodeData);
     } else {
@@ -146,7 +149,7 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
     AllBarcodeData barcodeAndTagData = AllBarcodeData(
         barcodeID: barcodeID,
         barcodeSize: barcodeData.barcodeSize,
-        isFixed: barcodeData.isFixed,
+        isFixed: barcodeData.isMarker,
         tags: barcodeTags,
         unassignedTags: barcodeUnassignedTags,
         barcodePhotoData: barcodePhotos,

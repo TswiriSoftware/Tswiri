@@ -168,20 +168,21 @@ Future<List<RealBarcodePosition>> processData(
           listOfRealInterBarcodeOffsets: allRealInterBarcodeOffsets);
 
   //List of unique barcodes that we want to write the positions of.
-  List<RealBarcodePosition> realBarcodePositions =
-      extractListOfScannedBarcodes(finalRealInterBarcodeOffsets, allBarcodes);
+  List<RealBarcodePosition> realBarcodePositions = extractListOfScannedBarcodes(
+      finalRealInterBarcodeOffsets, allBarcodes, shelfUID);
 
   //Populate origin
-  if (realBarcodePositions.any((element) => element.isFixed == true)) {
+  if (realBarcodePositions.any((element) => element.isMarker == true)) {
     int index =
-        realBarcodePositions.indexWhere((element) => element.isFixed == true);
+        realBarcodePositions.indexWhere((element) => element.isMarker == true);
     RealBarcodePosition origin = realBarcodePositions[index];
 
     realBarcodePositions[index] = RealBarcodePosition(
         uid: origin.uid,
         zOffset: 0,
         offset: const Offset(0, 0),
-        isFixed: true,
+        isMarker: true,
+        shelfUID: shelfUID,
         timestamp: 0);
   } else {
     //If the origin was not scanned then the app will throw an error

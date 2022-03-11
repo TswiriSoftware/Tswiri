@@ -3,7 +3,6 @@ import 'package:flutter_google_ml_kit/widgets/basic_dark_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_light_container.dart';
 
 import '../../../objects/all_barcode_data.dart';
-import '../barcode_control_panel.dart';
 
 class BarcodeDisplayWidget extends StatelessWidget {
   const BarcodeDisplayWidget({Key? key, required this.barcodeAndTagData})

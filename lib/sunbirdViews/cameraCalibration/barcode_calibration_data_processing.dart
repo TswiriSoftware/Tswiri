@@ -148,8 +148,8 @@ class _BarcodeCalibrationDataProcessingViewState
             int.parse(rawBarcodesData[index].barcode.value.displayValue!);
 
         //Get the index of currentBarcodeID
-        int indexOfcurrentBarcode = allBarcodes
-            .indexWhere((element) => element.uid == currentBarcodeID);
+        int indexOfcurrentBarcode = allBarcodes.indexWhere(
+            (element) => element.uid == currentBarcodeID.toString());
 
         //If it exists get it's size.
         if (indexOfcurrentBarcode != -1) {

@@ -8,7 +8,7 @@ import 'package:flutter_google_ml_kit/functions/dataProccessing/barcode_scanner_
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
 
 import 'package:flutter_google_ml_kit/globalValues/global_paints.dart';
-import 'package:flutter_google_ml_kit/objects/barcode_positional_data.dart';
+import 'package:flutter_google_ml_kit/objects/on_screen_barcode_data.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/appSettings/app_settings.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:flutter/services.dart';
@@ -87,7 +87,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
     //Checks if selectedBarcode is on screen.
     if (indexOfSelectedBarcode != -1) {
       //Calculates the on screen data of the selected barcode.
-      BarcodeOnScreenData barcodeOnScreenData = calculateScreenBarcodeData(
+      OnScreenBarcodeData barcodeOnScreenData = calculateScreenBarcodeData(
           barcode: barcodes[indexOfSelectedBarcode],
           rotation: rotation,
           size: size,
@@ -153,7 +153,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
         BarcodeValue referenceBarcode = barcodes.first.value;
 
         //Calculate referenceBarcode on screen data.
-        BarcodeOnScreenData referenceBarcodeScreenData =
+        OnScreenBarcodeData referenceBarcodeScreenData =
             calculateScreenBarcodeData(
                 barcode: barcodes.first,
                 rotation: rotation,
@@ -269,7 +269,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
 
           //Applying contraints.
           if (distanceToSelectedBarcode > screenWidth) {
-            if (distanceToSelectedBarcode / 2 < 150) {
+            if (distanceToSelectedBarcode > 150) {
               distanceToSelectedBarcode = 150;
             } else {
               distanceToSelectedBarcode = distanceToSelectedBarcode / 2;
@@ -306,16 +306,6 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
           canvas.drawLine(arrowLineStart, arrowLineHead, paintBlue4);
           canvas.drawLine(arrowLineHead, arrowHeadtop, paintBlue3);
           canvas.drawLine(arrowLineHead, arrowHeadbottom, paintBlue3);
-
-          //d.log(distanceToSelectedBarcode.toString());
-
-          //Contstuct the rectangle for the arc.
-          // Rect rect = Rect.fromCenter(
-          //     center: screenCenterPoint, width: rectSize, height: rectSize);
-
-          // //Draw the direction indicator.
-          // canvas.drawArc(rect, angleToSelectedBarcode - pi / 10, pi / 5, false,
-          //     paintSimple(Colors.greenAccent, 30));
         }
       }
     }
@@ -334,7 +324,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
 ///Draws the barcode display values in the center of the barcode given the canvas and barcodeData
 void drawBarcodeDisplayValues(
   Canvas canvas,
-  BarcodeOnScreenData barcodeScreenData,
+  OnScreenBarcodeData barcodeScreenData,
 ) {
   final Paint background = Paint()..color = const Color(0x99000000);
   final ParagraphBuilder builder = ParagraphBuilder(

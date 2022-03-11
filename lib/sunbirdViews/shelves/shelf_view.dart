@@ -287,7 +287,7 @@ class _ShelfViewState extends State<ShelfView> {
         .where((element) => element.shelfUID == widget.shelfEntry.uid)
         .length;
     int numberOfMarkers = realBarcodePositions.values
-        .where((element) => element.isFixed == true)
+        .where((element) => element.isMarker == true)
         .length;
     return [numberOfBoxes, numberOfMarkers];
   }

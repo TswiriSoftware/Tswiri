@@ -81,7 +81,7 @@ class _BarcodeListViewState extends State<BarcodeListView> {
                               await navigateToControlPanel(context, index);
                             },
                             onLongPress: () {
-                              //TODO: Implement delete functionality
+                              //TODO: Implement delete functionality for boxes.
                             },
                             child: BarcodeDisplayWidget(
                               barcodeAndTagData: _foundBarcodes[index],

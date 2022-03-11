@@ -194,17 +194,17 @@ class _SelectRangeWidgetState extends State<SelectRangeWidget> {
           await barcodeData.put(
               i,
               BarcodeDataEntry(
-                  uid: i,
+                  uid: i.toString(),
                   barcodeSize: 100,
-                  isFixed: true,
+                  isMarker: true,
                   description: 'Add a description'));
         } else {
           await barcodeData.put(
               i,
               BarcodeDataEntry(
-                  uid: i,
+                  uid: i.toString(),
                   barcodeSize: 100,
-                  isFixed: false,
+                  isMarker: false,
                   description: 'Add a description'));
         }
       }
