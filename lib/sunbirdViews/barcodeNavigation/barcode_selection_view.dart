@@ -4,7 +4,7 @@ import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/objects/all_barcode_data.dart';
 import 'package:hive/hive.dart';
-import '../../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
+import '../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 import 'barcode_camera_navigator_view.dart';
 
 class BarcodeSelectionView extends StatefulWidget {
@@ -86,13 +86,13 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
   }
 
   Future<void> runFilter(String enteredKeyword) async {
-    Box<RealBarcodePostionEntry> realPositionDataBox =
+    Box<RealBarcodePositionEntry> realPositionDataBox =
         await Hive.openBox(realPositionsBoxName);
     //Box that contains all barcodes and Tags assigned to them.
     Box<BarcodeTagEntry> barcodeTagsBox =
         await Hive.openBox(barcodeTagsBoxName);
     //List of all scanned barcodes.
-    List<RealBarcodePostionEntry> realBarcodesPositions =
+    List<RealBarcodePositionEntry> realBarcodesPositions =
         realPositionDataBox.values.toList();
 
     //List of all barcodes and assigned Tags.
@@ -101,7 +101,8 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
     //The DisplayList.
     List<AllBarcodeData> results = [];
 
-    for (RealBarcodePostionEntry realBarcodePosition in realBarcodesPositions) {
+    for (RealBarcodePositionEntry realBarcodePosition
+        in realBarcodesPositions) {
       //To set to remove any duplicates if there are any.
       Set<BarcodeTagEntry> relevantBarcodeTagEntries = barcodesAssignedTags
           .where((element) => element.id == realBarcodePosition.uid)

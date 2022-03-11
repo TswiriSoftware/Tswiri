@@ -15,7 +15,7 @@ import 'package:flutter/services.dart';
 
 import '../../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import '../../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
-import '../../../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
+import '../../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 import '../../../functions/barcodeCalculations/data_capturing_functions.dart';
 
 ///This Painter is used to gudide the user to the barcode they have
@@ -33,7 +33,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
   final List<Barcode> barcodes;
   final Size absoluteImageSize;
   final InputImageRotation rotation;
-  final List<RealBarcodePostionEntry> realBarcodePositions;
+  final List<RealBarcodePositionEntry> realBarcodePositions;
   final String selectedBarcodeID;
   final List<DistanceFromCameraLookupEntry> distanceFromCameraLookup;
   final List<BarcodeDataEntry> allBarcodes;
@@ -211,7 +211,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
         //ii. If it exists proceed.
         if (indexOfReferenceBarcode != -1) {
           //iii. Get the barcodeEntry
-          RealBarcodePostionEntry referenceBarcodeRealPositionEntry =
+          RealBarcodePositionEntry referenceBarcodeRealPositionEntry =
               realBarcodePositions[indexOfReferenceBarcode];
 
           //iv. Get the referenceBarcodeRealPosition Offset.
@@ -225,7 +225,7 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
           //6. get the selected barcode real position.
 
           //i. Get the selectedBarcodeRealPosition Offset.
-          RealBarcodePostionEntry selectedarcodeRealPositionEntry =
+          RealBarcodePositionEntry selectedarcodeRealPositionEntry =
               realBarcodePositions
                   .firstWhere((element) => element.uid == selectedBarcodeID);
 

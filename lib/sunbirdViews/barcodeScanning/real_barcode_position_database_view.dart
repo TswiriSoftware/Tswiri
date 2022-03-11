@@ -5,7 +5,7 @@ import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:hive/hive.dart';
 
-import '../../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
+import '../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 import '../../objects/real_barcode_position.dart';
 import 'widgets/real_position_display_widget.dart';
 
@@ -47,7 +47,7 @@ class _RealBarcodePositionDatabaseViewState
               heroTag: null,
               onPressed: () async {
                 displayList.clear();
-                Box<RealBarcodePostionEntry> consolidatedDataBox =
+                Box<RealBarcodePositionEntry> consolidatedDataBox =
                     await Hive.openBox(realPositionsBoxName);
                 await consolidatedDataBox.clear();
 
@@ -94,14 +94,14 @@ class _RealBarcodePositionDatabaseViewState
 
   Future<List<RealBarcodePosition>> getRealPositions() async {
     //Open realPositionalData box.
-    Box<RealBarcodePostionEntry> realPositionalData =
+    Box<RealBarcodePositionEntry> realPositionalData =
         await Hive.openBox(realPositionsBoxName);
 
-    List<RealBarcodePostionEntry> realBarcodePostionEntries =
+    List<RealBarcodePositionEntry> realBarcodePostionEntries =
         realPositionalData.values.toList();
 
     List<RealBarcodePosition> realBarcodePositions = [];
-    for (RealBarcodePostionEntry realBarcodePostionEntry
+    for (RealBarcodePositionEntry realBarcodePostionEntry
         in realBarcodePostionEntries) {
       realBarcodePositions.add(RealBarcodePosition(
           uid: realBarcodePostionEntry.uid,

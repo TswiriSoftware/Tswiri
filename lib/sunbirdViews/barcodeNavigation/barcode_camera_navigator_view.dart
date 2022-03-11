@@ -13,7 +13,7 @@ import 'package:vector_math/vector_math.dart' as vm;
 import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
 
 import '../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
-import '../../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
+import '../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 
 import '../../functions/barcodeCalculations/type_offset_converters.dart';
 import '../../functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
@@ -45,7 +45,7 @@ class _BarcodeCameraNavigatorViewState
   CustomPaint? customPaint;
 
   //List of offsets that are not within error aka. barcode have changed location.
-  List<RealBarcodePostionEntry> positionsThatChanged = [];
+  List<RealBarcodePositionEntry> positionsThatChanged = [];
 
   // //List of Barcodes that have not moved.
   // Set<RealBarcodePosition> realBarcodePositions = {};
@@ -59,10 +59,10 @@ class _BarcodeCameraNavigatorViewState
   vm.Vector3 userAccelerometerEvent = vm.Vector3(0, 0, 0);
 
   //This is the original list of barcode positions.
-  List<RealBarcodePostionEntry> realBarcodePositionsOriginal = [];
+  List<RealBarcodePositionEntry> realBarcodePositionsOriginal = [];
 
   //This is the list of updated barcode positions.
-  List<RealBarcodePostionEntry> realBarcodePositionsUpdated = [];
+  List<RealBarcodePositionEntry> realBarcodePositionsUpdated = [];
 
   //This is the calibration lookup table.
   List<DistanceFromCameraLookupEntry> calibrationLookupTable = [];
@@ -100,10 +100,10 @@ class _BarcodeCameraNavigatorViewState
         heroTag: null,
         onPressed: () async {
           //Update the positions in the realBarcodePositionDataBox.
-          Box<RealBarcodePostionEntry> realBarcodePositionDataBox =
+          Box<RealBarcodePositionEntry> realBarcodePositionDataBox =
               await Hive.openBox(realPositionsBoxName);
 
-          for (RealBarcodePostionEntry realBarcodePostionEntry
+          for (RealBarcodePositionEntry realBarcodePostionEntry
               in positionsThatChanged) {
             realBarcodePositionDataBox.put(
                 realBarcodePostionEntry.uid, realBarcodePostionEntry);
@@ -201,7 +201,7 @@ class _BarcodeCameraNavigatorViewState
   ///Checks if any barcodes have moved.
   void checkBarcodePositions({
     required List<Barcode> barcodes,
-    required List<RealBarcodePostionEntry> realBarcodePositions,
+    required List<RealBarcodePositionEntry> realBarcodePositions,
     required List<BarcodeDataEntry> allBarcodes,
     required double focalLength,
   }) {
@@ -267,12 +267,12 @@ class _BarcodeCameraNavigatorViewState
                   listOfRealInterBarcodeOffsets: realInterBarcodeOffsets);
 
           //Retrive stored StartBarcodePosition.
-          RealBarcodePostionEntry startBarcodePosition =
+          RealBarcodePositionEntry startBarcodePosition =
               realBarcodePositions.firstWhere(
                   (element) => element.uid == realInterBarcodeOffset.uidStart);
 
           //Retrive stored EndBarcodePosition.
-          RealBarcodePostionEntry endBarcodePosition =
+          RealBarcodePositionEntry endBarcodePosition =
               realBarcodePositions.firstWhere(
                   (element) => element.uid == realInterBarcodeOffset.uidEnd);
 
@@ -292,8 +292,8 @@ class _BarcodeCameraNavigatorViewState
             //If the barcodes are not where they should be
             if (checkIfChecksOutContains(
                 checksOut, averagedRealInterBarcodeOffset[0].uidStart)) {
-              RealBarcodePostionEntry updatedBarcodePosition =
-                  RealBarcodePostionEntry(
+              RealBarcodePositionEntry updatedBarcodePosition =
+                  RealBarcodePositionEntry(
                       uid: averagedRealInterBarcodeOffset[0].uidEnd,
                       offset: offsetToTypeOffset(
                           typeOffsetToOffset(startBarcodePosition.offset) +
@@ -325,8 +325,8 @@ class _BarcodeCameraNavigatorViewState
                 //     updatedBarcodePosition.toString());
               }
             } else {
-              RealBarcodePostionEntry updatedBarcodePosition =
-                  RealBarcodePostionEntry(
+              RealBarcodePositionEntry updatedBarcodePosition =
+                  RealBarcodePositionEntry(
                       uid: averagedRealInterBarcodeOffset[0].uidStart,
                       offset: offsetToTypeOffset(
                           typeOffsetToOffset(endBarcodePosition.offset) -
@@ -378,11 +378,11 @@ double calculatePhoneAngle(vm.Vector3 gravityDirection3D) {
   return angleRadians;
 }
 
-Future<List<RealBarcodePostionEntry>> getRealBarcodePositions() async {
+Future<List<RealBarcodePositionEntry>> getRealBarcodePositions() async {
 //Open realBarcodePositionBox
-  Box<RealBarcodePostionEntry> realBarcodePositionDataBox =
+  Box<RealBarcodePositionEntry> realBarcodePositionDataBox =
       await Hive.openBox(realPositionsBoxName);
-  List<RealBarcodePostionEntry> realBarcodePositions =
+  List<RealBarcodePositionEntry> realBarcodePositions =
       realBarcodePositionDataBox.values.toList();
   return realBarcodePositions;
 }

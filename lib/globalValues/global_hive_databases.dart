@@ -1,12 +1,12 @@
 import '../databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import '../databaseAdapters/barcodePhotoAdapter/barcode_photo_entry.dart';
 import '../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
-import '../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
+import '../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 import '../databaseAdapters/shelfAdapter/shelf_entry.dart';
 import '../databaseAdapters/tagAdapters/barcode_tag_entry.dart';
 import '../databaseAdapters/tagAdapters/tag_entry.dart';
 
-///Contains all real positional data as [RealBarcodePostionEntry]
+///Contains all real positional data as [RealBarcodePositionEntry]
 const String realPositionsBoxName = 'realPositionsBox';
 
 ///Contains camera calibration data as [DistanceFromCameraLookupEntry].

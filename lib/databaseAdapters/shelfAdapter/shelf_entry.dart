@@ -12,9 +12,11 @@ class ShelfEntry extends HiveObject {
   @HiveField(0)
   late int uid;
 
+  ///User defined name.
   @HiveField(1)
   late String name;
 
+  //User defined description.
   @HiveField(2)
   late String description;
 

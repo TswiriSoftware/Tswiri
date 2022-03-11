@@ -4,7 +4,7 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
 
 import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
-import '../../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
+import '../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 import '../../functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
 import '../../globalValues/global_hive_databases.dart';
 import 'cameraView/barcode_marker_scan_camera_view.dart';
@@ -179,8 +179,8 @@ Offset calculateBarcodeCenterOffset(Barcode barcode) {
   return boundingBox.center;
 }
 
-Future<List<RealBarcodePostionEntry>> getRealBarcodePositions() async {
-  Box<RealBarcodePostionEntry> realPositionsBox =
+Future<List<RealBarcodePositionEntry>> getRealBarcodePositions() async {
+  Box<RealBarcodePositionEntry> realPositionsBox =
       await Hive.openBox(realPositionsBoxName);
   return realPositionsBox.values.toList();
 }

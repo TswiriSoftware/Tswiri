@@ -4,9 +4,9 @@ import 'package:hive/hive.dart';
 part 'real_barocode_position_entry.g.dart';
 
 @HiveType(typeId: 0)
-class RealBarcodePostionEntry extends HiveObject {
+class RealBarcodePositionEntry extends HiveObject {
   ///This objects stores the real offset between barcodes aswell as the Z offset relative to a fixed bacodes.
-  RealBarcodePostionEntry(
+  RealBarcodePositionEntry(
       {required this.uid,
       required this.offset,
       required this.zOffset,

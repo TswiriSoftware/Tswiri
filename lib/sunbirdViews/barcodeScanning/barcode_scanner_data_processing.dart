@@ -12,7 +12,7 @@ import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
-import '../../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
+import '../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 import 'real_barcode_position_database_visualization_view.dart';
 import 'widgets/real_position_display_widget.dart';
 
@@ -261,7 +261,7 @@ Future<List<RealBarcodePosition>> processData(
   }
 
   //Open realPositionalData box.
-  Box<RealBarcodePostionEntry> realPositionalData =
+  Box<RealBarcodePositionEntry> realPositionalData =
       await Hive.openBox(realPositionsBoxName);
 
   await realPositionalData.clear();

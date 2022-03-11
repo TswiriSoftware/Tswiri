@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
+import 'package:flutter_google_ml_kit/databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/shelfAdapter/shelf_entry.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/real_barcode_position_database_visualization_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/shelves/shelf_name_and_description_view.dart';
@@ -281,7 +281,7 @@ class _ShelfViewState extends State<ShelfView> {
   }
 
   Future<List<int>> getShelfStats() async {
-    Box<RealBarcodePostionEntry> realBarcodePositions =
+    Box<RealBarcodePositionEntry> realBarcodePositions =
         await Hive.openBox(realPositionsBoxName);
     int numberOfBoxes = realBarcodePositions.values
         .where((element) => element.shelfUID == widget.shelfEntry.uid)

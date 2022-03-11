@@ -7,7 +7,7 @@ import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
-import '../../databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
+import '../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 import '../../objects/display_point.dart';
 
 // ignore: todo
@@ -150,7 +150,7 @@ Future<List<DisplayPoint>> _getPoints(
   List<DisplayPoint> myPoints = [];
 
   //Open realPositionBox.
-  Box<RealBarcodePostionEntry> realPositionsBox =
+  Box<RealBarcodePositionEntry> realPositionsBox =
       await Hive.openBox(realPositionsBoxName);
 
   //Open generatedBarcodeData.
@@ -167,7 +167,7 @@ Future<List<DisplayPoint>> _getPoints(
     }
   }
 
-  List<RealBarcodePostionEntry> realPositionsShelf = [];
+  List<RealBarcodePositionEntry> realPositionsShelf = [];
 
   if (shelfUID != 0) {
     realPositionsShelf = realPositionsBox.values
@@ -187,7 +187,7 @@ Future<List<DisplayPoint>> _getPoints(
       realPositionsBox: realPositionsBox, width: width, height: height);
 
   for (var i = 0; i < realPositionsShelf.length; i++) {
-    RealBarcodePostionEntry realBarcodePosition = realPositionsBox.getAt(i)!;
+    RealBarcodePositionEntry realBarcodePosition = realPositionsBox.getAt(i)!;
 
     Offset barcodePosition = Offset(
         (realBarcodePosition.offset.x * unitVector[0]) +
@@ -214,7 +214,7 @@ Future<List<DisplayPoint>> _getPoints(
 }
 
 List<double> unitVectors(
-    {required Box<RealBarcodePostionEntry> realPositionsBox,
+    {required Box<RealBarcodePositionEntry> realPositionsBox,
     required double width,
     required double height}) {
   double sX = 0;
@@ -223,7 +223,7 @@ List<double> unitVectors(
   double bY = 0;
 
   for (var i = 0; i < realPositionsBox.length; i++) {
-    RealBarcodePostionEntry data = realPositionsBox.getAt(i)!;
+    RealBarcodePositionEntry data = realPositionsBox.getAt(i)!;
     double xDistance = data.offset.x;
     double yDistance = data.offset.y;
     if (xDistance < sX) {

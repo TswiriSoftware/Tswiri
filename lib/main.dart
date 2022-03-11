@@ -12,7 +12,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'databaseAdapters/barcodePhotoAdapter/barcode_photo_entry.dart';
 import 'databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
-import 'databaseAdapters/scanningAdapter/real_barocode_position_entry.dart';
+import 'databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 import 'databaseAdapters/shelfAdapter/shelf_entry.dart';
 import 'sunbirdViews/appSettings/app_settings_functions.dart';
 import 'sunbirdViews/appSettings/app_settings_view.dart';

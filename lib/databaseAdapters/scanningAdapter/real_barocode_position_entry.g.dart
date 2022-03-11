@@ -1,23 +1,23 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'real_barocode_position_entry.dart';
+part of 'real_barcode_position_entry.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
 class RealBarcodePostionEntryAdapter
-    extends TypeAdapter<RealBarcodePostionEntry> {
+    extends TypeAdapter<RealBarcodePositionEntry> {
   @override
   final int typeId = 0;
 
   @override
-  RealBarcodePostionEntry read(BinaryReader reader) {
+  RealBarcodePositionEntry read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return RealBarcodePostionEntry(
+    return RealBarcodePositionEntry(
       uid: fields[0] as String,
       offset: fields[1] as TypeOffset,
       zOffset: fields[2] as double,
@@ -28,7 +28,7 @@ class RealBarcodePostionEntryAdapter
   }
 
   @override
-  void write(BinaryWriter writer, RealBarcodePostionEntry obj) {
+  void write(BinaryWriter writer, RealBarcodePositionEntry obj) {
     writer
       ..writeByte(6)
       ..writeByte(0)
