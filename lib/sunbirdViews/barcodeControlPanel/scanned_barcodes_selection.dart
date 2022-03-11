@@ -4,13 +4,13 @@ import 'barcode_control_panel.dart';
 class ScannedBarcodesView extends StatefulWidget {
   const ScannedBarcodesView({Key? key, required this.scannedBarcodes})
       : super(key: key);
-  final Set<int> scannedBarcodes;
+  final Set<String> scannedBarcodes;
   @override
   _ScannedBarcodesViewState createState() => _ScannedBarcodesViewState();
 }
 
 class _ScannedBarcodesViewState extends State<ScannedBarcodesView> {
-  List<int> scannedBarcodes = [];
+  List<String> scannedBarcodes = [];
 
   @override
   void initState() {
@@ -47,7 +47,7 @@ class _ScannedBarcodesViewState extends State<ScannedBarcodesView> {
 class BarcodeDisplayWidget extends StatelessWidget {
   const BarcodeDisplayWidget({Key? key, required this.barcodeID})
       : super(key: key);
-  final int barcodeID;
+  final String barcodeID;
   @override
   Widget build(BuildContext context) {
     return InkWell(

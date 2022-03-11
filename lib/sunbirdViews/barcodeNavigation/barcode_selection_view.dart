@@ -104,7 +104,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
     for (RealBarcodePostionEntry realBarcodePosition in realBarcodesPositions) {
       //To set to remove any duplicates if there are any.
       Set<BarcodeTagEntry> relevantBarcodeTagEntries = barcodesAssignedTags
-          .where((element) => element.id == int.parse(realBarcodePosition.uid))
+          .where((element) => element.id == realBarcodePosition.uid)
           .toSet();
 
       //List containing all tags relevant to current barcode.
@@ -112,7 +112,7 @@ class _BarcodeSelectionViewState extends State<BarcodeSelectionView> {
           getRelevantBarcodes(relevantBarcodeTagEntries);
 
       results.add(AllBarcodeData(
-          barcodeID: int.parse(realBarcodePosition.uid),
+          barcodeID: realBarcodePosition.uid,
           barcodeSize: 70.0,
           isFixed: false,
           tags: relevantTags));

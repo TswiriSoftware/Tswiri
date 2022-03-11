@@ -51,7 +51,7 @@ List<String> findRelevantBarcodeTags(
   return relevantTags;
 }
 
-Future<List<String>> getCurrentBarcodeTags(int currentBarcode) async {
+Future<List<String>> getCurrentBarcodeTags(String currentBarcode) async {
   List<String> currentBarcodeTags = [];
   Box<BarcodeTagEntry> barcodeTagsBox = await Hive.openBox(barcodeTagsBoxName);
   Set<BarcodeTagEntry> barcodeTags = barcodeTagsBox.values
@@ -68,7 +68,7 @@ Future<List<String>> getCurrentBarcodeTags(int currentBarcode) async {
 }
 
 //Get tags assignedTags
-Future<List<String>> getAssignedTags(int barcodeID) async {
+Future<List<String>> getAssignedTags(String barcodeID) async {
   Box<BarcodeTagEntry> barcodeTagsBox = await Hive.openBox(barcodeTagsBoxName);
 
   List<BarcodeTagEntry> barcodesAssignedTags = barcodeTagsBox.values

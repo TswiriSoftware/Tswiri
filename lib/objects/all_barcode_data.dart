@@ -10,7 +10,7 @@ class AllBarcodeData {
       final this.description});
 
   ///BarcodeID
-  final int barcodeID;
+  final String barcodeID;
 
   ///Size of the Barcode.
   final double barcodeSize;

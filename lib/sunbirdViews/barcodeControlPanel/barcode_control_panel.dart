@@ -19,7 +19,7 @@ class BarcodeControlPanelView extends StatefulWidget {
   const BarcodeControlPanelView({Key? key, required this.barcodeID})
       : super(key: key);
 
-  final int barcodeID;
+  final String barcodeID;
   @override
   State<BarcodeControlPanelView> createState() =>
       _BarcodeControlPanelViewState();
@@ -109,7 +109,7 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
     );
   }
 
-  Future<AllBarcodeData> getCurrentBarcodeData(int barcodeID) async {
+  Future<AllBarcodeData> getCurrentBarcodeData(String barcodeID) async {
     //Gets a list of all barcodeTagEntries
     List<String> barcodeTags = await getCurrentBarcodeTags(barcodeID);
     List<String> barcodeUnassignedTags = await getUnassignedTags();

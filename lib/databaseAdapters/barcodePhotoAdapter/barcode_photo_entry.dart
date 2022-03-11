@@ -9,7 +9,7 @@ class BarcodePhotosEntry extends HiveObject {
 
   ///Barcode's ID
   @HiveField(0)
-  late int uid;
+  late String uid;
 
   ///Barcode Diagonal side length in mm.
   @HiveField(1)

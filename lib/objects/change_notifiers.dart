@@ -18,7 +18,7 @@ class BarcodeDataChangeNotifier extends ChangeNotifier {
   String description;
 
   Future<void> changeBarcodeDescription(
-      int barcodeID, String newDescription) async {
+      String barcodeID, String newDescription) async {
     description = newDescription;
 
     Box<BarcodeDataEntry> generatedBarcodesBox =
@@ -30,7 +30,8 @@ class BarcodeDataChangeNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> changeBarcodeSize(int barcodeID, double newBarcodeSize) async {
+  Future<void> changeBarcodeSize(
+      String barcodeID, double newBarcodeSize) async {
     barcodeSize = newBarcodeSize;
 
     Box<BarcodeDataEntry> generatedBarcodesBox =
@@ -42,7 +43,7 @@ class BarcodeDataChangeNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> changeFixed(int barcodeID) async {
+  Future<void> changeFixed(String barcodeID) async {
     isFixed = !isFixed;
 
     Box<BarcodeDataEntry> generatedBarcodesBox =
@@ -64,7 +65,7 @@ class PhotosAndTags extends ChangeNotifier {
   List<String> assignedTags;
   List<String> unassignedTags;
 
-  Future<void> deleteTag(String tag, int barcodeID) async {
+  Future<void> deleteTag(String tag, String barcodeID) async {
     Box<BarcodeTagEntry> currentTagsBox =
         await Hive.openBox(barcodeTagsBoxName);
 
@@ -76,7 +77,7 @@ class PhotosAndTags extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addTag(String tag, int barcodeID) async {
+  Future<void> addTag(String tag, String barcodeID) async {
     Box<BarcodeTagEntry> currentTagsBox =
         await Hive.openBox(barcodeTagsBoxName);
 
@@ -143,7 +144,7 @@ class PhotosAndTags extends ChangeNotifier {
     }
   }
 
-  Future<void> deletePhoto(int barcodeID, String photoPath) async {
+  Future<void> deletePhoto(String barcodeID, String photoPath) async {
     Box<BarcodePhotosEntry> barcodePhotoEntries =
         await Hive.openBox(barcodePhotosBoxName);
 

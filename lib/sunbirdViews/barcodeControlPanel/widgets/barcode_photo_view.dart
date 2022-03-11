@@ -10,7 +10,7 @@ import '../../objectIdentifier/object_detector_view.dart';
 
 class BarcodePhotoView extends StatefulWidget {
   const BarcodePhotoView({Key? key, required this.barcodeID}) : super(key: key);
-  final int barcodeID;
+  final String barcodeID;
   @override
   State<BarcodePhotoView> createState() => _BarcodePhotoViewState();
 }
@@ -86,7 +86,7 @@ class PhotoItem extends StatelessWidget {
       required this.barcodeID})
       : super(key: key);
 
-  final int barcodeID;
+  final String barcodeID;
   final String photoPath;
   final List<String> photoTags;
 
@@ -207,7 +207,7 @@ class PhotoFullScreen extends StatelessWidget {
 
 class UnassignedPhotoTagButton extends StatelessWidget {
   final String tag;
-  final int barcodeID;
+  final String barcodeID;
   const UnassignedPhotoTagButton({
     required this.tag,
     required this.barcodeID,

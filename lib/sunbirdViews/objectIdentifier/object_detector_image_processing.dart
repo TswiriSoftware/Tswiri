@@ -16,7 +16,7 @@ class ObjectDetectorProcessingView extends StatefulWidget {
       {Key? key, required this.imagePath, required this.barcodeID})
       : super(key: key);
   final String imagePath;
-  final int barcodeID;
+  final String barcodeID;
   @override
   _ObjectDetectorProcessingView createState() =>
       _ObjectDetectorProcessingView();

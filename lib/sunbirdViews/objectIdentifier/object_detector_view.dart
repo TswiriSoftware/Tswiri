@@ -6,7 +6,7 @@ import 'cameraView/object_dector_camera_view.dart';
 class ObjectDetectorView extends StatefulWidget {
   const ObjectDetectorView({Key? key, required this.barcodeID})
       : super(key: key);
-  final int barcodeID;
+  final String barcodeID;
   @override
   _ObjectDetectorView createState() => _ObjectDetectorView();
 }

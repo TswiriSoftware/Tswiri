@@ -118,7 +118,7 @@ class _BarcodeCameraNavigatorViewState
               context,
               MaterialPageRoute(
                 builder: (context) => BarcodeControlPanelView(
-                  barcodeID: int.parse(widget.barcodeID),
+                  barcodeID: widget.barcodeID,
                 ),
               ),
             );

@@ -137,7 +137,7 @@ class _BarcodeListViewState extends State<BarcodeListView> {
     for (RealBarcodePostionEntry realBarcodePosition in realBarcodesPositions) {
       //To set to remove any duplicates if there are any.
       Set<BarcodeTagEntry> relevantBarcodeTagEntries = barcodesAssignedTags
-          .where((element) => element.id == int.parse(realBarcodePosition.uid))
+          .where((element) => element.id == realBarcodePosition.uid)
           .toSet();
 
       //List containing all tags relevant to current barcode.
@@ -145,11 +145,22 @@ class _BarcodeListViewState extends State<BarcodeListView> {
           getRelevantBarcodes(relevantBarcodeTagEntries);
 
       results.add(AllBarcodeData(
-          barcodeID: int.parse(realBarcodePosition.uid),
+          barcodeID: realBarcodePosition.uid,
           barcodeSize: 70.0,
           isFixed: false,
           tags: relevantTags));
+
       results.sort((a, b) => a.barcodeID.compareTo(b.barcodeID));
+
+      results.sort((a, b) => a.barcodeID.compareTo(b.barcodeID));
+      results.sort((a, b) {
+        if (int.tryParse(a.barcodeID) != null &&
+            int.tryParse(b.barcodeID) != null) {
+          return int.parse(a.barcodeID).compareTo(int.parse(b.barcodeID));
+        } else {
+          return a.barcodeID.compareTo(b.barcodeID);
+        }
+      });
     }
 
     if (enteredKeyword.isNotEmpty) {

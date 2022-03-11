@@ -9,7 +9,7 @@ class TagsContainerWidget extends StatefulWidget {
   const TagsContainerWidget({Key? key, required this.barcodeID})
       : super(key: key);
 
-  final int barcodeID;
+  final String barcodeID;
 
   @override
   State<TagsContainerWidget> createState() => _TagsContainerWidgetState();
@@ -102,7 +102,7 @@ class _TagsContainerWidgetState extends State<TagsContainerWidget> {
 
 class AssignedTagButton extends StatelessWidget {
   final String tag;
-  final int barcodeID;
+  final String barcodeID;
   const AssignedTagButton({
     Key? key,
     required this.barcodeID,
@@ -136,7 +136,7 @@ class AssignedTagButton extends StatelessWidget {
 class UnassignedTagButton extends StatelessWidget {
   final String tag;
   final String searchValue;
-  final int barcodeID;
+  final String barcodeID;
   const UnassignedTagButton({
     required this.tag,
     required this.barcodeID,
@@ -149,7 +149,7 @@ class UnassignedTagButton extends StatelessWidget {
       return ElevatedButton(
         onPressed: () {
           Provider.of<PhotosAndTags>(context, listen: false)
-              .addTag(tag, barcodeID);
+              .addTag(tag, barcodeID.toString());
         },
         child: Text(
           tag,

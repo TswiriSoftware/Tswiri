@@ -20,7 +20,7 @@ class _ScanBarcodeViewState extends State<ScanBarcodeView> {
   bool isBusy = false;
   CustomPaint? customPaint;
 
-  Set<int> scannedBarcodes = {};
+  Set<String> scannedBarcodes = {};
 
   @override
   void dispose() {
@@ -50,7 +50,7 @@ class _ScanBarcodeViewState extends State<ScanBarcodeView> {
                     Navigator.pop(context);
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
                         builder: (context) => BarcodeControlPanelView(
-                            barcodeID: scannedBarcodes.first)));
+                            barcodeID: scannedBarcodes.first.toString())));
                   }
                 },
                 child: const Icon(Icons.check_circle_outline_rounded),
@@ -78,7 +78,7 @@ class _ScanBarcodeViewState extends State<ScanBarcodeView> {
         inputImage.inputImageData?.imageRotation != null) {
       //Dont bother if we haven't detected more than one barcode on a image.
       for (Barcode barcode in barcodes) {
-        scannedBarcodes.add(int.parse(barcode.value.displayValue!));
+        scannedBarcodes.add(barcode.value.displayValue!);
       }
       //Paint square on screen around barcode.
       final painter = BarcodeDetectorPainter(

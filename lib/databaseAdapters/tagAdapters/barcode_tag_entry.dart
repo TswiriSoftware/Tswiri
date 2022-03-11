@@ -11,10 +11,9 @@ class BarcodeTagEntry extends HiveObject {
     required this.tag,
   });
 
-  //TODO: Convert to String.
   //Barcode's ID or Displayvalue
   @HiveField(0)
-  late int id;
+  late String id;
 
   //tag
   @HiveField(1)

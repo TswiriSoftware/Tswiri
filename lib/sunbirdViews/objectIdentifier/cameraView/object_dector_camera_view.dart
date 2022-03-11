@@ -24,7 +24,7 @@ class ObjectDetectorCameraView extends StatefulWidget {
   final Function(InputImage inputImage) onImage;
   final CameraLensDirection initialDirection;
   final Color color;
-  final int barcodeID;
+  final String barcodeID;
   @override
   _ObjectDetectorCameraViewState createState() =>
       _ObjectDetectorCameraViewState();

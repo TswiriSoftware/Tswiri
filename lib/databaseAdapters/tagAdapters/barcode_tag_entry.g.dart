@@ -17,7 +17,7 @@ class BarcodeTagEntryAdapter extends TypeAdapter<BarcodeTagEntry> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return BarcodeTagEntry(
-      id: fields[0] as int,
+      id: fields[0] as String,
       tag: fields[1] as String,
     );
   }
