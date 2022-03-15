@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 ///Container with a dark background and
-class BasicDarkContainer extends StatelessWidget {
-  const BasicDarkContainer({Key? key, required this.child}) : super(key: key);
+class PaddedDarkContainer extends StatelessWidget {
+  const PaddedDarkContainer({Key? key, required this.child}) : super(key: key);
   final Widget child;
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/objects/all_barcode_data.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_dark_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_light_container.dart';
+import 'package:flutter_google_ml_kit/widgets/padded_dark_container.dart';
+import 'package:flutter_google_ml_kit/widgets/padded_margin_light_container.dart';
 import 'package:provider/provider.dart';
 
 import '../../../objects/change_notifiers.dart';
@@ -58,7 +58,7 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
           const Divider(
             color: Colors.white,
           ),
-          BasicDarkContainer(
+          PaddedDarkContainer(
             child: Row(
               children: [
                 const Text(
@@ -109,7 +109,7 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
             ),
           ),
           const SizedBox(height: 5),
-          BasicDarkContainer(
+          PaddedDarkContainer(
             child: InkWell(
                 onTap: () {
                   Provider.of<BarcodeDataChangeNotifier>(context, listen: false)
@@ -150,7 +150,7 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
                 )),
           ),
           const SizedBox(height: 5),
-          BasicDarkContainer(
+          PaddedDarkContainer(
             child: InkWell(
               onTap: () {
                 editBarcodeDescription(context);

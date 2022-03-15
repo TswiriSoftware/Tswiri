@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_light_container.dart';
+import 'package:flutter_google_ml_kit/widgets/padded_margin_light_container.dart';
 
 class ShelfNameAndDescriptionView extends StatefulWidget {
   const ShelfNameAndDescriptionView(

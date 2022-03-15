@@ -1,6 +1,7 @@
 import '../databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import '../databaseAdapters/barcodePhotoAdapter/barcode_photo_entry.dart';
 import '../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
+import '../databaseAdapters/containerAdapter/container_entry_adapter.dart';
 import '../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 import '../databaseAdapters/shelfAdapter/shelf_entry.dart';
 import '../databaseAdapters/tagAdapters/barcode_tag_entry.dart';
@@ -26,3 +27,6 @@ const String barcodePhotosBoxName = 'barcodePhotosBox';
 
 ///Contains all barcodes Photos as [ShelfEntry].
 const String shelvesBoxName = 'shelvesBox';
+
+///Contains all containers [ContainerEntry].
+const String containersBoxName = 'containersBox';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_dark_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_light_container.dart';
+import 'package:flutter_google_ml_kit/widgets/padded_dark_container.dart';
+import 'package:flutter_google_ml_kit/widgets/padded_margin_light_container.dart';
 
 import '../../../objects/all_barcode_data.dart';
 
@@ -25,7 +25,7 @@ class BarcodeDisplayWidget extends StatelessWidget {
             width: 10,
           ),
           Expanded(
-            child: BasicDarkContainer(
+            child: PaddedDarkContainer(
               child: Row(
                 children: [
                   Column(

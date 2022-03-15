@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_dark_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_light_container.dart';
+import 'package:flutter_google_ml_kit/widgets/padded_dark_container.dart';
+import 'package:flutter_google_ml_kit/widgets/padded_margin_light_container.dart';
 import 'package:provider/provider.dart';
 
 import '../../../objects/change_notifiers.dart';
@@ -94,7 +94,7 @@ class PhotoItem extends StatelessWidget {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.height;
 
-    return BasicDarkContainer(
+    return PaddedDarkContainer(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [

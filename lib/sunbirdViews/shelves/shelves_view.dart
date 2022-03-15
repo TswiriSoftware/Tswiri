@@ -99,7 +99,11 @@ class _ShelvesViewState extends State<ShelvesView> {
                             runFilter('');
                           },
                           onLongPress: () {
-                            showDeleteDialog(context, searchResult);
+                            showDeleteDialog(
+                              context,
+                              searchResult,
+                              () {},
+                            );
                           },
                           child: ShelfCard(
                             shelfEntry: searchResult,
@@ -156,8 +160,8 @@ class _ShelvesViewState extends State<ShelvesView> {
     );
   }
 
-  Future<void> showDeleteDialog(
-      BuildContext context, ShelfEntry searchResult) async {
+  Future<void> showDeleteDialog(BuildContext context, ShelfEntry searchResult,
+      Function onComplete) async {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(

@@ -24,7 +24,6 @@ class _ImageLabelViewState extends State<ImageLabelView> {
   @override
   Widget build(BuildContext context) {
     return CameraView(
-      color: Colors.orange,
       title: 'Image Labeler',
       customPaint: customPaint,
       onImage: (inputImage) {

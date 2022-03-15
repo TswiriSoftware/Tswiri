@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/scanned_barcodes_selection.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/scanned_barcodes_selection_view.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import '../../VisionDetectorViews/camera_view.dart';
-import '../barcodeScanning/painter/barcode_detector_painter.dart';
-import 'barcode_control_panel.dart';
+import 'painter/barcode_detector_painter.dart';
+import '../barcodeControlPanel/barcode_control_panel.dart';
 
 class ScanBarcodeView extends StatefulWidget {
-  const ScanBarcodeView({Key? key, required this.color}) : super(key: key);
-  final Color color;
+  const ScanBarcodeView({Key? key}) : super(key: key);
+
   @override
   _ScanBarcodeViewState createState() => _ScanBarcodeViewState();
 }
@@ -32,7 +32,6 @@ class _ScanBarcodeViewState extends State<ScanBarcodeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: widget.color,
         floatingActionButton: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Row(
@@ -40,17 +39,22 @@ class _ScanBarcodeViewState extends State<ScanBarcodeView> {
             children: [
               FloatingActionButton(
                 heroTag: null,
-                onPressed: () {
+                onPressed: () async {
                   if (scannedBarcodes.length >= 2) {
-                    Navigator.pop(context);
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => ScannedBarcodesView(
-                            scannedBarcodes: scannedBarcodes)));
+                    ///Await selected barcodeUID.
+                    String selectedBarcodeUID = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ScannedBarcodesSelectionView(
+                            scannedBarcodes: scannedBarcodes),
+                      ),
+                    );
+
+                    ///Pop and return selectedBarcodeUID.
+                    Navigator.pop(context, selectedBarcodeUID);
                   } else if (scannedBarcodes.length == 1) {
-                    Navigator.pop(context);
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => BarcodeControlPanelView(
-                            barcodeID: scannedBarcodes.first.toString())));
+                    ///Pop and return selectedBarcodeUID.
+                    Navigator.pop(context, scannedBarcodes.first);
                   }
                 },
                 child: const Icon(Icons.check_circle_outline_rounded),
@@ -59,7 +63,6 @@ class _ScanBarcodeViewState extends State<ScanBarcodeView> {
           ),
         ),
         body: CameraView(
-          color: widget.color,
           title: 'Barcode Scanner',
           customPaint: customPaint,
           onImage: (inputImage) {

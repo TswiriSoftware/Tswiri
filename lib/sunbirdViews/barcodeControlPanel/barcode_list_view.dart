@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeControlPanel/scan_barcode_view.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/scan_barcode_view.dart';
 import 'package:hive/hive.dart';
 
 import '../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
@@ -56,9 +56,7 @@ class _BarcodeListViewState extends State<BarcodeListView> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const ScanBarcodeView(
-                            color: Colors.deepOrange,
-                          )));
+                      builder: (context) => const ScanBarcodeView()));
             },
           )
         ],

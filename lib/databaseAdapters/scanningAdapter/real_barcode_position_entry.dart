@@ -1,7 +1,7 @@
 import 'package:flutter_google_ml_kit/databaseAdapters/typeAdapters/type_offset_adapter.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
 import 'package:hive/hive.dart';
-part 'real_barocode_position_entry.g.dart';
+part 'real_barcode_position_entry.g.dart';
 
 @HiveType(typeId: 0)
 class RealBarcodePositionEntry extends HiveObject {

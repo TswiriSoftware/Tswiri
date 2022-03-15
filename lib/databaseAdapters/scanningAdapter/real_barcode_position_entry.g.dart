@@ -6,7 +6,7 @@ part of 'real_barcode_position_entry.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class RealBarcodePostionEntryAdapter
+class RealBarcodePositionEntryAdapter
     extends TypeAdapter<RealBarcodePositionEntry> {
   @override
   final int typeId = 0;
@@ -51,7 +51,7 @@ class RealBarcodePostionEntryAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is RealBarcodePostionEntryAdapter &&
+      other is RealBarcodePositionEntryAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

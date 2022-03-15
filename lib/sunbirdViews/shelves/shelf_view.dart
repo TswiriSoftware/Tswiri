@@ -6,8 +6,8 @@ import 'package:flutter_google_ml_kit/sunbirdViews/shelves/shelf_name_and_descri
 import 'package:hive/hive.dart';
 
 import '../../globalValues/global_hive_databases.dart';
-import '../../widgets/basic_dark_container.dart';
-import '../../widgets/basic_light_container.dart';
+import '../../widgets/padded_dark_container.dart';
+import '../../widgets/padded_margin_light_container.dart';
 import '../barcodeScanning/barcode_marker_scanner_view.dart';
 import '../barcodeScanning/barcode_scanner_view.dart';
 import '../barcodeControlPanel/barcode_list_view.dart';
@@ -58,7 +58,7 @@ class _ShelfViewState extends State<ShelfView> {
                   onTap: () async {
                     await modifyNameAndDescription(context);
                   },
-                  child: BasicDarkContainer(
+                  child: PaddedDarkContainer(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -106,7 +106,7 @@ class _ShelfViewState extends State<ShelfView> {
                 onTap: () async {
                   await navigateToBarcodeListView(context);
                 },
-                child: BasicDarkContainer(
+                child: PaddedDarkContainer(
                   child: Row(
                     children: [
                       Column(
@@ -163,7 +163,7 @@ class _ShelfViewState extends State<ShelfView> {
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              BasicDarkContainer(
+              PaddedDarkContainer(
                   child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

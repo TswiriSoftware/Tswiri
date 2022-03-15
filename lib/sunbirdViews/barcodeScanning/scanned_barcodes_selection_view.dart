@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'barcode_control_panel.dart';
+import '../barcodeControlPanel/barcode_control_panel.dart';
 
-class ScannedBarcodesView extends StatefulWidget {
-  const ScannedBarcodesView({Key? key, required this.scannedBarcodes})
+class ScannedBarcodesSelectionView extends StatefulWidget {
+  const ScannedBarcodesSelectionView({Key? key, required this.scannedBarcodes})
       : super(key: key);
   final Set<String> scannedBarcodes;
   @override
-  _ScannedBarcodesViewState createState() => _ScannedBarcodesViewState();
+  _ScannedBarcodesSelectionViewState createState() =>
+      _ScannedBarcodesSelectionViewState();
 }
 
-class _ScannedBarcodesViewState extends State<ScannedBarcodesView> {
+class _ScannedBarcodesSelectionViewState
+    extends State<ScannedBarcodesSelectionView> {
   List<String> scannedBarcodes = [];
 
   @override
@@ -52,11 +54,8 @@ class BarcodeDisplayWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
         onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      BarcodeControlPanelView(barcodeID: barcodeID)));
+          ///Pop screen and return selected barcode ID.
+          Navigator.pop(context, barcodeID);
         },
         child: Container(
           margin: const EdgeInsets.only(bottom: 5),
