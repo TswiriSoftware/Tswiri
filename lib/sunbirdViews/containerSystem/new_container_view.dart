@@ -2,20 +2,19 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/containerAdapter/conatiner_type_adapter.dart';
+import 'package:flutter_google_ml_kit/isar/container_isar.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/scan_barcode_view.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/all_containers_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/container_children_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/container_selector_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/container_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_description_widget.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_name_widget.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_parent_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/custom_container.dart';
-import 'package:flutter_google_ml_kit/widgets/dark_container.dart';
-import 'package:hive/hive.dart';
-
-import '../../databaseAdapters/containerAdapter/container_entry_adapter.dart';
-import '../../globalValues/global_hive_databases.dart';
+import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../widgets/light_container.dart';
+import 'functions/isar_functions.dart';
 
 class NewContainerView extends StatefulWidget {
   const NewContainerView({
@@ -40,6 +39,7 @@ class _NewContainerViewState extends State<NewContainerView> {
   List<String>? children;
   ContainerType? containerType;
   String? barcodeUID;
+  Isar? database;
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
@@ -53,6 +53,17 @@ class _NewContainerViewState extends State<NewContainerView> {
     }
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    if (database != null) {
+      if (database!.isOpen) {
+        database!.close();
+        database = null;
+      }
+    }
+    super.dispose();
   }
 
   @override
@@ -114,7 +125,9 @@ class _NewContainerViewState extends State<NewContainerView> {
                     parentUID = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ContainerSelectorView(),
+                        builder: (context) => const ContainerSelectorView(
+                          multipleSelect: false,
+                        ),
                       ),
                     );
                     setState(() {});
@@ -152,10 +165,16 @@ class _NewContainerViewState extends State<NewContainerView> {
               ),
               ElevatedButton(
                 onPressed: () async {
+                  if (database != null) {
+                    if (database!.isOpen) {
+                      await database!.close();
+                      database = null;
+                    }
+                  }
                   parentUID = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ContainerChildrenView(),
+                      builder: (context) => const ContainerChildrenView(),
                     ),
                   );
                 },
@@ -184,8 +203,6 @@ class _NewContainerViewState extends State<NewContainerView> {
                 outlineColor: Colors.blue,
               ),
               onTap: () async {
-                Box<ContainerEntry> containersBox =
-                    await Hive.openBox(containersBoxName);
                 String containerUID =
                     '${title}_${DateTime.now().millisecondsSinceEpoch}';
 
@@ -196,29 +213,48 @@ class _NewContainerViewState extends State<NewContainerView> {
                   name = containerUID;
                 }
 
-                ContainerEntry containerEntry = ContainerEntry(
-                  containerUID: containerUID,
-                  parentUID: parentUID,
-                  name: name,
-                  description: descriptionController.text,
-                  barcodeUID: null,
-                  containerType: containerType,
-                );
+                final newContainer = ContainerEntry()
+                  ..containerUID = containerUID
+                  ..containerType = containerType!
+                  ..name = name
+                  ..description = descriptionController.text
+                  ..barcodeUID = null;
 
-                containersBox.put(containerEntry.containerUID, containerEntry);
+                database ??= await openIsar();
 
-                if (parentUID != null && parentUID!.isNotEmpty) {
-                  ContainerEntry? parentContainer =
-                      containersBox.get(parentUID);
+                database!.writeTxnSync((isar) {
+                  isar.containerIsars.putSync(newContainer);
+                });
 
-                  if (parentContainer != null) {
-                    List<String> children = parentContainer.children ?? [];
-                    children.add(containerEntry.containerUID);
-                    parentContainer.children = children;
+                log(newContainer.toString());
 
-                    containersBox.put(parentUID, parentContainer);
-                  }
-                }
+                database = closeIsar(database);
+
+                //await database.close();
+
+                // ContainerEntry containerEntry = ContainerEntry(
+                //   containerUID: containerUID,
+                //   parentUID: parentUID,
+                //   name: name,
+                //   description: descriptionController.text,
+                //   barcodeUID: null,
+                //   containerType: containerType,
+                // );
+
+                // containersBox.put(containerEntry.containerUID, containerEntry);
+
+                // if (parentUID != null && parentUID!.isNotEmpty) {
+                //   ContainerEntry? parentContainer =
+                //       containersBox.get(parentUID);
+
+                //   if (parentContainer != null) {
+                //     List<String> children = parentContainer.children ?? [];
+                //     children.add(containerEntry.containerUID);
+                //     parentContainer.children = children;
+
+                //     containersBox.put(parentUID, parentContainer);
+                //   }
+                // }
 
                 Navigator.pop(context);
               },

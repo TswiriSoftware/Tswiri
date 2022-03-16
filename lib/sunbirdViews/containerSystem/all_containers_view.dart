@@ -2,13 +2,14 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/containerAdapter/conatiner_type_adapter.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/containerAdapter/container_entry_adapter.dart';
+import 'package:flutter_google_ml_kit/isar/container_isar.dart';
+
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/new_container_view.dart';
-import 'package:flutter_google_ml_kit/widgets/light_container.dart';
-import 'package:hive/hive.dart';
-import '../../globalValues/global_hive_databases.dart';
-import '../../widgets/container_card.dart';
+import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
+import 'functions/isar_functions.dart';
+import 'widgets/container_card_widget.dart';
 import '../../widgets/search_bar_widget.dart';
-import 'container_view.dart';
 
 class ContainersView extends StatefulWidget {
   const ContainersView({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class ContainersView extends StatefulWidget {
 
 class _ContainersViewState extends State<ContainersView> {
   List<ContainerEntry> searchResults = [];
+  Isar? database;
 
   @override
   void initState() {
@@ -28,6 +30,7 @@ class _ContainersViewState extends State<ContainersView> {
 
   @override
   void dispose() {
+    database = closeIsar(database);
     super.dispose();
   }
 
@@ -61,6 +64,7 @@ class _ContainersViewState extends State<ContainersView> {
               heroTag: null,
               onPressed: () async {
                 await createNewContainer(context);
+                runFilter();
               },
               child: const Icon(Icons.add),
             ),
@@ -101,23 +105,12 @@ class _ContainersViewState extends State<ContainersView> {
                           final searchResult = searchResults[index];
                           return InkWell(
                             onTap: () async {
-                              //Navigate to Container view.
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ContainerView(
-                                    containerUID: searchResult.containerUID,
-                                  ),
-                                ),
-                              );
-                              // On return refresh filter.
+                              //Navigate to shelfView.
+                              //On return refresh filter.
                               runFilter();
                             },
                             onLongPress: () {
-                              showDeleteDialog(
-                                context,
-                                searchResult,
-                              );
+                              showDeleteDialog(context, searchResult);
                             },
                             child: ContainerCard(
                               containerEntry: searchResult,
@@ -138,6 +131,7 @@ class _ContainersViewState extends State<ContainersView> {
 
   ///Navigate to NewContainerView on return update filter
   Future<void> createNewContainer(BuildContext context) async {
+    database = closeIsar(database);
     await Navigator.push(
       context,
       (MaterialPageRoute(
@@ -172,58 +166,6 @@ class _ContainersViewState extends State<ContainersView> {
     );
   }
 
-  ///Show the info Dialog.
-  void showFilterDialog() {
-    List<String> containerTypes = [];
-    for (ContainerType containerType in ContainerType.values) {
-      containerTypes.add(containerType.toString().split('.').last);
-    }
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Filter'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: ContainerType.values.length,
-            itemBuilder: (context, index) {
-              List<String> userChecked = [];
-              return LightContainer(
-                margin: 2,
-                padding: 2,
-                child: ListTile(
-                    title: Text(containerTypes[index]),
-                    trailing: Checkbox(
-                      value: userChecked.contains(containerTypes[index]),
-                      onChanged: (val) {
-                        if (val == true) {
-                          setState(() {
-                            userChecked.add(containerTypes[index]);
-                          });
-                        } else {
-                          setState(() {
-                            userChecked.remove(containerTypes[index]);
-                          });
-                        }
-                      },
-                    )),
-              );
-            },
-          ),
-        ),
-        actions: [
-          ElevatedButton(
-              onPressed: () {
-                Navigator.pop(_);
-              },
-              child: const Text('ok'))
-        ],
-      ),
-    );
-  }
-
   ///Confirm Delete.
   Future<void> showDeleteDialog(
       BuildContext context, ContainerEntry containerEntry) async {
@@ -241,10 +183,12 @@ class _ContainersViewState extends State<ContainersView> {
         actions: [
           ElevatedButton(
               onPressed: () async {
-                Box<ContainerEntry> containersBox =
-                    await Hive.openBox(containersBoxName);
-                containersBox.delete(containerEntry.containerUID);
-                runFilter(enteredKeyword: '');
+                if (database != null) {
+                  database!.writeTxnSync((isar) {
+                    database!.containerIsars.deleteSync(containerEntry.id);
+                  });
+                }
+                runFilter();
                 Navigator.pop(_);
               },
               child: const Text('delete'))
@@ -254,30 +198,14 @@ class _ContainersViewState extends State<ContainersView> {
   }
 
   ///This is the filter that runs on the list of containers.
-  Future<void> runFilter(
-      {String? enteredKeyword, ContainerType? containerType}) async {
-    //Open hive box.
-    Box<ContainerEntry> containersBox = await Hive.openBox(containersBoxName);
-    List<ContainerEntry> results = [];
+  Future<void> runFilter({String? enteredKeyword}) async {
+    database ??= await openIsar();
 
-    //Apply filter / enteredKeyword
-    if (containerType != null) {
-      results = containersBox.values
-          .toList()
-          .where((element) =>
-              element.containerType == containerType ||
-              element.name!.toLowerCase().contains(enteredKeyword ?? ''))
-          .toList();
-    } else {
-      results = containersBox.values
-          .toList()
-          .where((element) =>
-              element.name!.toLowerCase().contains(enteredKeyword ?? '') ||
-              element.description!.toLowerCase().contains(enteredKeyword ?? ''))
-          .toList();
-    }
+    List<ContainerEntry> results = database!.containerIsars
+        .filter()
+        .nameContains(enteredKeyword ?? '', caseSensitive: false)
+        .findAllSync();
 
-    //log(results.toString());
     setState(() {
       searchResults = results;
     });

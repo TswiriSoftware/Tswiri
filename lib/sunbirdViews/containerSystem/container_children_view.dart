@@ -12,6 +12,7 @@ class ContainerChildrenView extends StatefulWidget {
   const ContainerChildrenView({Key? key, this.currentContainerUID})
       : super(key: key);
   final String? currentContainerUID;
+
   @override
   State<ContainerChildrenView> createState() => _ContainerChildrenViewState();
 }
@@ -92,7 +93,9 @@ class _ContainerChildrenViewState extends State<ContainerChildrenView> {
                           children = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ContainerSelectorView(),
+                              builder: (context) => const ContainerSelectorView(
+                                multipleSelect: true,
+                              ),
                             ),
                           );
                           if (widget.currentContainerUID != null &&
@@ -137,7 +140,7 @@ class _ContainerChildrenViewState extends State<ContainerChildrenView> {
                       LightContainer(
                         child: SizedBox(
                           height: 500,
-                          child: FutureBuilder<List<ContainerEntry>>(
+                          child: FutureBuilder<List<ContainerEntryOLD>>(
                             future: getChildren(),
                             builder: ((context, snapshot) {
                               if (snapshot.hasData) {
@@ -172,7 +175,7 @@ class _ContainerChildrenViewState extends State<ContainerChildrenView> {
     );
   }
 
-  Future<List<ContainerEntry>> getChildren() async {
+  Future<List<ContainerEntryOLD>> getChildren() async {
     return [];
   }
 }

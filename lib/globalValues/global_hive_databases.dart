@@ -28,5 +28,5 @@ const String barcodePhotosBoxName = 'barcodePhotosBox';
 ///Contains all barcodes Photos as [ShelfEntry].
 const String shelvesBoxName = 'shelvesBox';
 
-///Contains all containers [ContainerEntry].
+///Contains all containers [ContainerEntryOLD].
 const String containersBoxName = 'containersBox';

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../databaseAdapters/containerAdapter/container_entry_adapter.dart';
-import 'dark_container.dart';
-import 'light_container.dart';
+import '../../../databaseAdapters/containerAdapter/container_entry_adapter.dart';
+import '../../../isar/container_isar.dart';
+import '../../../widgets/dark_container.dart';
+import '../../../widgets/light_container.dart';
 
 class ContainerCard extends StatelessWidget {
   const ContainerCard({Key? key, required this.containerEntry})
@@ -46,18 +47,18 @@ class ContainerCard extends StatelessWidget {
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  Text(
-                    'Children: ',
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                  Text(
-                    containerEntry.children?.length.toString() ?? '0',
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                ],
-              ),
+              // Row(
+              //   children: [
+              //     Text(
+              //       'Children: ',
+              //       style: Theme.of(context).textTheme.labelMedium,
+              //     ),
+              //     Text(
+              //       containerEntry.children?.length.toString() ?? '0',
+              //       style: Theme.of(context).textTheme.labelMedium,
+              //     ),
+              //   ],
+              // ),
               Text(
                 'UID: ${containerEntry.containerUID}',
                 style: const TextStyle(

@@ -61,6 +61,9 @@ dependencies:
   arrow_path: ^2.0.0
   touchable: ^1.0.0
   timelines: ^0.1.0
+  isar: ^2.2.1
+  isar_flutter_libs: ^2.2.1
+  
 
 
 
@@ -87,6 +90,7 @@ dev_dependencies:
   flutter_lints: ^1.0.0
   build_runner: ^2.1.4
   hive_generator: ^1.0.1
+  isar_generator: ^2.2.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

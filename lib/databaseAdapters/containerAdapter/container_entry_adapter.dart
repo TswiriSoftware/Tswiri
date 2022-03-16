@@ -6,8 +6,8 @@ import 'conatiner_type_adapter.dart';
 part 'container_entry_adapter.g.dart';
 
 @HiveType(typeId: 2)
-class ContainerEntry extends HiveObject {
-  ContainerEntry(
+class ContainerEntryOLD extends HiveObject {
+  ContainerEntryOLD(
       {required this.containerUID,
       this.containerType,
       this.parentUID,

@@ -1,21 +1,15 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/containerAdapter/container_entry_adapter.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/container_children_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/new_container_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_children_widget.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_description_widget.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_name_widget.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_parent_widget.dart';
-import 'package:flutter_google_ml_kit/widgets/dark_container.dart';
 import 'package:flutter_google_ml_kit/widgets/orange_container.dart';
 import 'package:hive/hive.dart';
-
 import '../../databaseAdapters/containerAdapter/conatiner_type_adapter.dart';
 import '../../globalValues/global_hive_databases.dart';
-import '../../widgets/custom_container.dart';
-import '../../widgets/light_container.dart';
 import 'container_selector_view.dart';
 import 'functions/database_functions.dart';
 
@@ -61,7 +55,7 @@ class _ContainerViewState extends State<ContainerView> {
           centerTitle: true,
           elevation: 0,
         ),
-        body: FutureBuilder<ContainerEntry>(
+        body: FutureBuilder<ContainerEntryOLD>(
           future: getContainerEntry(),
           builder: ((context, snapshot) {
             if (nameController.text.isEmpty) {
@@ -124,6 +118,7 @@ class _ContainerViewState extends State<ContainerView> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => ContainerSelectorView(
+                                multipleSelect: false,
                                 currentContainerUID: widget.containerUID,
                               ),
                             ),
@@ -158,8 +153,9 @@ class _ContainerViewState extends State<ContainerView> {
     );
   }
 
-  Future<ContainerEntry> getContainerEntry() async {
-    Box<ContainerEntry> containersBox = await Hive.openBox(containersBoxName);
+  Future<ContainerEntryOLD> getContainerEntry() async {
+    Box<ContainerEntryOLD> containersBox =
+        await Hive.openBox(containersBoxName);
     return containersBox.get(widget.containerUID)!;
   }
 }

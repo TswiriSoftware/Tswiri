@@ -1,8 +1,5 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_data_entry.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/barcode_tag_entry.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/tagAdapters/tag_entry.dart';
 import 'package:flutter_google_ml_kit/globalValues/routes.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/barcode_selection_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/all_containers_view.dart';
@@ -11,18 +8,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
-import 'databaseAdapters/barcodePhotoAdapter/barcode_photo_entry.dart';
-import 'databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
-import 'databaseAdapters/containerAdapter/barcode_entry_adapter.dart';
-import 'databaseAdapters/containerAdapter/conatiner_type_adapter.dart';
-import 'databaseAdapters/containerAdapter/container_entry_adapter.dart';
-import 'databaseAdapters/containerAdapter/photo_adapter.dart';
-import 'databaseAdapters/containerAdapter/vector_3_entry_adapter.dart';
-import 'databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
-import 'databaseAdapters/shelfAdapter/shelf_entry.dart';
 import 'sunbirdViews/appSettings/app_settings_functions.dart';
 import 'sunbirdViews/appSettings/app_settings_view.dart';
-import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
 import 'sunbirdViews/shelves/shelves_view.dart';
 
 List<CameraDescription> cameras = [];
@@ -55,19 +42,19 @@ Future<void> main() async {
   final directory = await getApplicationDocumentsDirectory();
   await Hive.initFlutter(directory.path);
 
-  Hive.registerAdapter(RealBarcodePositionEntryAdapter()); //0
-  Hive.registerAdapter(DistanceFromCameraLookupEntryAdapter()); //1
-  Hive.registerAdapter(BarcodeTagEntryAdapter()); //3
-  Hive.registerAdapter(TagEntryAdapter()); //4
-  Hive.registerAdapter(TypeOffsetAdapter()); //5
-  Hive.registerAdapter(BarcodeDataEntryAdapter()); //6
-  Hive.registerAdapter(BarcodePhotosEntryAdapter()); //7
-  Hive.registerAdapter(ShelfEntryAdapter()); //8
-  Hive.registerAdapter(ContainerTypeAdapter()); //9
-  Hive.registerAdapter(ContainerEntryAdapter()); //2
-  Hive.registerAdapter(Vector3EntryAdapter()); //11
-  Hive.registerAdapter(PhotoEntryAdapter()); //12
-  Hive.registerAdapter(BarcodeEntryAdapter()); //13
+  // Hive.registerAdapter(RealBarcodePositionEntryAdapter()); //0
+  // Hive.registerAdapter(DistanceFromCameraLookupEntryAdapter()); //1
+  // Hive.registerAdapter(BarcodeTagEntryAdapter()); //3
+  // Hive.registerAdapter(TagEntryAdapter()); //4
+  // Hive.registerAdapter(TypeOffsetAdapter()); //5
+  // Hive.registerAdapter(BarcodeDataEntryAdapter()); //6
+  // Hive.registerAdapter(BarcodePhotosEntryAdapter()); //7
+  // Hive.registerAdapter(ShelfEntryAdapter()); //8
+  // Hive.registerAdapter(ContainerTypeAdapter()); //9
+  // Hive.registerAdapter(ContainerEntryAdapterOLD()); //2
+  // Hive.registerAdapter(Vector3EntryAdapter()); //11
+  // Hive.registerAdapter(PhotoEntryAdapter()); //12
+  // Hive.registerAdapter(BarcodeEntryAdapter()); //13
 }
 
 class MyApp extends StatelessWidget {

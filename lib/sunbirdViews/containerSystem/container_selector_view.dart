@@ -1,26 +1,26 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/containerAdapter/conatiner_type_adapter.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/containerAdapter/container_entry_adapter.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/new_container_view.dart';
-import 'package:flutter_google_ml_kit/widgets/dark_container.dart';
-import 'package:flutter_google_ml_kit/widgets/light_container.dart';
-import 'package:hive/hive.dart';
-import '../../databaseAdapters/shelfAdapter/shelf_entry.dart';
-import '../../globalValues/global_hive_databases.dart';
+import 'package:isar/isar.dart';
+import '../../isar/container_isar.dart';
+import 'functions/isar_functions.dart';
+import 'widgets/container_card_widget.dart';
 import '../../widgets/search_bar_widget.dart';
 
 class ContainerSelectorView extends StatefulWidget {
-  const ContainerSelectorView({Key? key, this.currentContainerUID})
+  const ContainerSelectorView(
+      {Key? key, required this.multipleSelect, this.currentContainerUID})
       : super(key: key);
 
   final String? currentContainerUID;
+  final bool multipleSelect;
   @override
   _ContainerSelectorViewState createState() => _ContainerSelectorViewState();
 }
 
 class _ContainerSelectorViewState extends State<ContainerSelectorView> {
   List<ContainerEntry> searchResults = [];
+  Isar? database;
 
   @override
   void initState() {
@@ -30,6 +30,7 @@ class _ContainerSelectorViewState extends State<ContainerSelectorView> {
 
   @override
   void dispose() {
+    database = closeIsar(database);
     super.dispose();
   }
 
@@ -84,14 +85,18 @@ class _ContainerSelectorViewState extends State<ContainerSelectorView> {
                         final searchResult = searchResults[index];
                         return InkWell(
                           onTap: () async {
-                            Navigator.pop(context, {searchResult.containerUID});
+                            if (widget.multipleSelect) {
+                              //Returns a set of containerUID's
+                              Navigator.pop(
+                                  context, {searchResult.containerUID});
+                            } else {
+                              //Returns a single containerUID
+                              Navigator.pop(context, searchResult.containerUID);
+                            }
+                            //Close the database.
+                            database = closeIsar(database);
                           },
-                          onLongPress: () {
-                            showDeleteDialog(
-                              context,
-                              searchResult,
-                            );
-                          },
+                          //Container Card.
                           child: ContainerCard(
                             containerEntry: searchResult,
                           ),
@@ -106,20 +111,6 @@ class _ContainerSelectorViewState extends State<ContainerSelectorView> {
         ),
       ),
     );
-  }
-
-  Future<void> createNewContainer(BuildContext context) async {
-    await Navigator.push(
-      context,
-      (MaterialPageRoute(
-        builder: (context) => const NewContainerView(
-          containerType: ContainerType.area,
-        ),
-      )),
-    );
-    setState(() {
-      runFilter();
-    });
   }
 
   void showInfoDialog(BuildContext context) {
@@ -150,119 +141,18 @@ class _ContainerSelectorViewState extends State<ContainerSelectorView> {
     );
   }
 
-  Future<void> showDeleteDialog(
-      BuildContext context, ContainerEntry containerEntry) async {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(containerEntry.containerUID),
-            Text(containerEntry.name ?? ''),
-          ],
-        ),
-        content: const Text('Do you want to delete this container ?'),
-        actions: [
-          ElevatedButton(
-              onPressed: () async {
-                Box<ContainerEntry> containersBox =
-                    await Hive.openBox(containersBoxName);
-                containersBox.delete(containerEntry.containerUID);
-                runFilter();
-                Navigator.pop(_);
-              },
-              child: const Text('delete'))
-        ],
-      ),
-    );
-  }
-
+  ///Filter for database.
   Future<void> runFilter(
       {String? enteredKeyword, ContainerType? containerType}) async {
-    Box<ContainerEntry> containersBox = await Hive.openBox(containersBoxName);
-    List<ContainerEntry> results = [];
+    database ??= await openIsar();
 
-    if (containerType != null) {
-      results = containersBox.values
-          .toList()
-          .where((element) =>
-              element.containerType == containerType ||
-              element.name!.toLowerCase().contains(enteredKeyword ?? ''))
-          .toList();
-    } else {
-      results = containersBox.values
-          .toList()
-          .where((element) =>
-              element.name!.toLowerCase().contains(enteredKeyword ?? '') ||
-              element.description!.toLowerCase().contains(enteredKeyword ?? ''))
-          .toList();
-    }
-
-    if (results
-        .any((element) => element.containerUID == widget.currentContainerUID)) {
-      results.removeWhere(
-          (element) => element.containerUID == widget.currentContainerUID);
-    }
+    List<ContainerEntry> results = database!.containerIsars
+        .filter()
+        .nameContains(enteredKeyword ?? '', caseSensitive: false)
+        .findAllSync();
 
     setState(() {
       searchResults = results;
     });
-  }
-}
-
-class ContainerCard extends StatelessWidget {
-  const ContainerCard({Key? key, required this.containerEntry})
-      : super(key: key);
-
-  final ContainerEntry containerEntry;
-  @override
-  Widget build(BuildContext context) {
-    return LightContainer(
-        margin: 2.5,
-        padding: 2.5,
-        child: DarkContainer(
-          padding: 8,
-          margin: 2.5,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Text(
-                    'Name: ',
-                    style: TextStyle(
-                      fontSize: 18,
-                    ),
-                  ),
-                  Text(
-                    containerEntry.name ?? '',
-                    style:
-                        TextStyle(fontSize: 18, color: Colors.deepOrange[800]),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  const Text(
-                    'Description: ',
-                    style: TextStyle(fontSize: 15),
-                  ),
-                  Text(
-                    containerEntry.description ?? '',
-                    style: const TextStyle(fontSize: 15),
-                  ),
-                ],
-              ),
-              Text(
-                'UID: ${containerEntry.containerUID}',
-                style: const TextStyle(
-                  fontSize: 8,
-                ),
-              )
-            ],
-          ),
-        ));
   }
 }
