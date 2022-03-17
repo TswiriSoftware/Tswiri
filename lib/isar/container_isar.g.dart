@@ -8,18 +8,18 @@ part of 'container_isar.dart';
 
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
 
-extension GetContainerIsarCollection on Isar {
-  IsarCollection<ContainerEntry> get containerIsars {
-    return getCollection('ContainerIsar');
+extension GetContainerEntryCollection on Isar {
+  IsarCollection<ContainerEntry> get containerEntrys {
+    return getCollection('ContainerEntry');
   }
 }
 
-final ContainerIsarSchema = CollectionSchema(
-  name: 'ContainerIsar',
+final ContainerEntrySchema = CollectionSchema(
+  name: 'ContainerEntry',
   schema:
-      '{"name":"ContainerIsar","idName":"id","properties":[{"name":"barcodeUID","type":"String"},{"name":"containerType","type":"Long"},{"name":"containerUID","type":"String"},{"name":"description","type":"String"},{"name":"name","type":"String"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _ContainerIsarNativeAdapter(),
-  webAdapter: const _ContainerIsarWebAdapter(),
+      '{"name":"ContainerEntry","idName":"id","properties":[{"name":"barcodeUID","type":"String"},{"name":"containerType","type":"String"},{"name":"containerUID","type":"String"},{"name":"description","type":"String"},{"name":"name","type":"String"}],"indexes":[],"links":[]}',
+  nativeAdapter: const _ContainerEntryNativeAdapter(),
+  webAdapter: const _ContainerEntryWebAdapter(),
   idName: 'id',
   propertyIds: {
     'barcodeUID': 0,
@@ -46,18 +46,15 @@ final ContainerIsarSchema = CollectionSchema(
   version: 2,
 );
 
-const _containerIsarContainerTypeConverter = ContainerTypeConverter();
-
-class _ContainerIsarWebAdapter extends IsarWebTypeAdapter<ContainerEntry> {
-  const _ContainerIsarWebAdapter();
+class _ContainerEntryWebAdapter extends IsarWebTypeAdapter<ContainerEntry> {
+  const _ContainerEntryWebAdapter();
 
   @override
   Object serialize(
       IsarCollection<ContainerEntry> collection, ContainerEntry object) {
     final jsObj = IsarNative.newJsObject();
     IsarNative.jsObjectSet(jsObj, 'barcodeUID', object.barcodeUID);
-    IsarNative.jsObjectSet(jsObj, 'containerType',
-        _containerIsarContainerTypeConverter.toIsar(object.containerType));
+    IsarNative.jsObjectSet(jsObj, 'containerType', object.containerType);
     IsarNative.jsObjectSet(jsObj, 'containerUID', object.containerUID);
     IsarNative.jsObjectSet(jsObj, 'description', object.description);
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
@@ -70,9 +67,7 @@ class _ContainerIsarWebAdapter extends IsarWebTypeAdapter<ContainerEntry> {
       IsarCollection<ContainerEntry> collection, dynamic jsObj) {
     final object = ContainerEntry();
     object.barcodeUID = IsarNative.jsObjectGet(jsObj, 'barcodeUID');
-    object.containerType = _containerIsarContainerTypeConverter.fromIsar(
-        IsarNative.jsObjectGet(jsObj, 'containerType') ??
-            double.negativeInfinity);
+    object.containerType = IsarNative.jsObjectGet(jsObj, 'containerType') ?? '';
     object.containerUID = IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '';
     object.description = IsarNative.jsObjectGet(jsObj, 'description');
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
@@ -86,9 +81,7 @@ class _ContainerIsarWebAdapter extends IsarWebTypeAdapter<ContainerEntry> {
       case 'barcodeUID':
         return (IsarNative.jsObjectGet(jsObj, 'barcodeUID')) as P;
       case 'containerType':
-        return (_containerIsarContainerTypeConverter.fromIsar(
-            IsarNative.jsObjectGet(jsObj, 'containerType') ??
-                double.negativeInfinity)) as P;
+        return (IsarNative.jsObjectGet(jsObj, 'containerType') ?? '') as P;
       case 'containerUID':
         return (IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '') as P;
       case 'description':
@@ -107,9 +100,9 @@ class _ContainerIsarWebAdapter extends IsarWebTypeAdapter<ContainerEntry> {
   void attachLinks(Isar isar, int id, ContainerEntry object) {}
 }
 
-class _ContainerIsarNativeAdapter
+class _ContainerEntryNativeAdapter
     extends IsarNativeTypeAdapter<ContainerEntry> {
-  const _ContainerIsarNativeAdapter();
+  const _ContainerEntryNativeAdapter();
 
   @override
   void serialize(
@@ -126,9 +119,9 @@ class _ContainerIsarNativeAdapter
       _barcodeUID = IsarBinaryWriter.utf8Encoder.convert(value0);
     }
     dynamicSize += (_barcodeUID?.length ?? 0) as int;
-    final value1 =
-        _containerIsarContainerTypeConverter.toIsar(object.containerType);
-    final _containerType = value1;
+    final value1 = object.containerType;
+    final _containerType = IsarBinaryWriter.utf8Encoder.convert(value1);
+    dynamicSize += (_containerType.length) as int;
     final value2 = object.containerUID;
     final _containerUID = IsarBinaryWriter.utf8Encoder.convert(value2);
     dynamicSize += (_containerUID.length) as int;
@@ -151,7 +144,7 @@ class _ContainerIsarNativeAdapter
     final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
     final writer = IsarBinaryWriter(buffer, staticSize);
     writer.writeBytes(offsets[0], _barcodeUID);
-    writer.writeLong(offsets[1], _containerType);
+    writer.writeBytes(offsets[1], _containerType);
     writer.writeBytes(offsets[2], _containerUID);
     writer.writeBytes(offsets[3], _description);
     writer.writeBytes(offsets[4], _name);
@@ -162,8 +155,7 @@ class _ContainerIsarNativeAdapter
       IsarBinaryReader reader, List<int> offsets) {
     final object = ContainerEntry();
     object.barcodeUID = reader.readStringOrNull(offsets[0]);
-    object.containerType = _containerIsarContainerTypeConverter
-        .fromIsar(reader.readLong(offsets[1]));
+    object.containerType = reader.readString(offsets[1]);
     object.containerUID = reader.readString(offsets[2]);
     object.description = reader.readStringOrNull(offsets[3]);
     object.id = id;
@@ -180,8 +172,7 @@ class _ContainerIsarNativeAdapter
       case 0:
         return (reader.readStringOrNull(offset)) as P;
       case 1:
-        return (_containerIsarContainerTypeConverter
-            .fromIsar(reader.readLong(offset))) as P;
+        return (reader.readString(offset)) as P;
       case 2:
         return (reader.readString(offset)) as P;
       case 3:
@@ -197,14 +188,14 @@ class _ContainerIsarNativeAdapter
   void attachLinks(Isar isar, int id, ContainerEntry object) {}
 }
 
-extension ContainerIsarQueryWhereSort
+extension ContainerEntryQueryWhereSort
     on QueryBuilder<ContainerEntry, ContainerEntry, QWhere> {
   QueryBuilder<ContainerEntry, ContainerEntry, QAfterWhere> anyId() {
     return addWhereClauseInternal(const WhereClause(indexName: null));
   }
 }
 
-extension ContainerIsarQueryWhere
+extension ContainerEntryQueryWhere
     on QueryBuilder<ContainerEntry, ContainerEntry, QWhereClause> {
   QueryBuilder<ContainerEntry, ContainerEntry, QAfterWhereClause> idEqualTo(
       int id) {
@@ -280,7 +271,7 @@ extension ContainerIsarQueryWhere
   }
 }
 
-extension ContainerIsarQueryFilter
+extension ContainerEntryQueryFilter
     on QueryBuilder<ContainerEntry, ContainerEntry, QFilterCondition> {
   QueryBuilder<ContainerEntry, ContainerEntry, QAfterFilterCondition>
       barcodeUIDIsNull() {
@@ -399,53 +390,109 @@ extension ContainerIsarQueryFilter
   }
 
   QueryBuilder<ContainerEntry, ContainerEntry, QAfterFilterCondition>
-      containerTypeEqualTo(ContainerType value) {
+      containerTypeEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
       property: 'containerType',
-      value: _containerIsarContainerTypeConverter.toIsar(value),
+      value: value,
+      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<ContainerEntry, ContainerEntry, QAfterFilterCondition>
       containerTypeGreaterThan(
-    ContainerType value, {
+    String value, {
+    bool caseSensitive = true,
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
       include: include,
       property: 'containerType',
-      value: _containerIsarContainerTypeConverter.toIsar(value),
+      value: value,
+      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<ContainerEntry, ContainerEntry, QAfterFilterCondition>
       containerTypeLessThan(
-    ContainerType value, {
+    String value, {
+    bool caseSensitive = true,
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
       include: include,
       property: 'containerType',
-      value: _containerIsarContainerTypeConverter.toIsar(value),
+      value: value,
+      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<ContainerEntry, ContainerEntry, QAfterFilterCondition>
       containerTypeBetween(
-    ContainerType lower,
-    ContainerType upper, {
+    String lower,
+    String upper, {
+    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return addFilterConditionInternal(FilterCondition.between(
       property: 'containerType',
-      lower: _containerIsarContainerTypeConverter.toIsar(lower),
+      lower: lower,
       includeLower: includeLower,
-      upper: _containerIsarContainerTypeConverter.toIsar(upper),
+      upper: upper,
       includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ContainerEntry, ContainerEntry, QAfterFilterCondition>
+      containerTypeStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'containerType',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ContainerEntry, ContainerEntry, QAfterFilterCondition>
+      containerTypeEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'containerType',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ContainerEntry, ContainerEntry, QAfterFilterCondition>
+      containerTypeContains(String value, {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'containerType',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ContainerEntry, ContainerEntry, QAfterFilterCondition>
+      containerTypeMatches(String pattern, {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'containerType',
+      value: pattern,
+      caseSensitive: caseSensitive,
     ));
   }
 
@@ -839,10 +886,10 @@ extension ContainerIsarQueryFilter
   }
 }
 
-extension ContainerIsarQueryLinks
+extension ContainerEntryQueryLinks
     on QueryBuilder<ContainerEntry, ContainerEntry, QFilterCondition> {}
 
-extension ContainerIsarQueryWhereSortBy
+extension ContainerEntryQueryWhereSortBy
     on QueryBuilder<ContainerEntry, ContainerEntry, QSortBy> {
   QueryBuilder<ContainerEntry, ContainerEntry, QAfterSortBy>
       sortByBarcodeUID() {
@@ -901,7 +948,7 @@ extension ContainerIsarQueryWhereSortBy
   }
 }
 
-extension ContainerIsarQueryWhereSortThenBy
+extension ContainerEntryQueryWhereSortThenBy
     on QueryBuilder<ContainerEntry, ContainerEntry, QSortThenBy> {
   QueryBuilder<ContainerEntry, ContainerEntry, QAfterSortBy>
       thenByBarcodeUID() {
@@ -960,7 +1007,7 @@ extension ContainerIsarQueryWhereSortThenBy
   }
 }
 
-extension ContainerIsarQueryWhereDistinct
+extension ContainerEntryQueryWhereDistinct
     on QueryBuilder<ContainerEntry, ContainerEntry, QDistinct> {
   QueryBuilder<ContainerEntry, ContainerEntry, QDistinct> distinctByBarcodeUID(
       {bool caseSensitive = true}) {
@@ -968,8 +1015,8 @@ extension ContainerIsarQueryWhereDistinct
   }
 
   QueryBuilder<ContainerEntry, ContainerEntry, QDistinct>
-      distinctByContainerType() {
-    return addDistinctByInternal('containerType');
+      distinctByContainerType({bool caseSensitive = true}) {
+    return addDistinctByInternal('containerType', caseSensitive: caseSensitive);
   }
 
   QueryBuilder<ContainerEntry, ContainerEntry, QDistinct>
@@ -992,13 +1039,13 @@ extension ContainerIsarQueryWhereDistinct
   }
 }
 
-extension ContainerIsarQueryProperty
+extension ContainerEntryQueryProperty
     on QueryBuilder<ContainerEntry, ContainerEntry, QQueryProperty> {
   QueryBuilder<ContainerEntry, String?, QQueryOperations> barcodeUIDProperty() {
     return addPropertyNameInternal('barcodeUID');
   }
 
-  QueryBuilder<ContainerEntry, ContainerType, QQueryOperations>
+  QueryBuilder<ContainerEntry, String, QQueryOperations>
       containerTypeProperty() {
     return addPropertyNameInternal('containerType');
   }

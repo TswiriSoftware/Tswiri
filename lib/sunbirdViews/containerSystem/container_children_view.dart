@@ -1,17 +1,20 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/containerAdapter/container_entry_adapter.dart';
+
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/container_selector_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/functions/database_functions.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_children_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/custom_container.dart';
 import 'package:flutter_google_ml_kit/widgets/light_container.dart';
 import 'package:flutter_google_ml_kit/widgets/orange_container.dart';
+import 'package:isar/isar.dart';
 
 class ContainerChildrenView extends StatefulWidget {
-  const ContainerChildrenView({Key? key, this.currentContainerUID})
+  const ContainerChildrenView(
+      {Key? key, this.currentContainerUID, required this.database})
       : super(key: key);
   final String? currentContainerUID;
+  final Isar? database;
 
   @override
   State<ContainerChildrenView> createState() => _ContainerChildrenViewState();
@@ -41,6 +44,11 @@ class _ContainerChildrenViewState extends State<ContainerChildrenView> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            ContainerChildrenWidget(
+                height: 500,
+                currentContainerUID: widget.currentContainerUID!,
+                database: widget.database!),
+
             ///Scan Children.
             LightContainer(
               child: CustomOutlineContainer(
@@ -93,15 +101,19 @@ class _ContainerChildrenViewState extends State<ContainerChildrenView> {
                           children = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const ContainerSelectorView(
+                              builder: (context) => ContainerSelectorView(
+                                currentContainerUID: widget.currentContainerUID,
+                                database: widget.database,
                                 multipleSelect: true,
                               ),
                             ),
                           );
                           if (widget.currentContainerUID != null &&
                               children != null) {
-                            updateContainerChildren(
-                                widget.currentContainerUID!, children!);
+                            //TODO: Implent children
+
+                            // updateContainerChildren(
+                            //     widget.currentContainerUID!, children!);
                           }
                         },
                         child: const OrangeOutlineContainer(
@@ -120,62 +132,9 @@ class _ContainerChildrenViewState extends State<ContainerChildrenView> {
                 ),
               ),
             ),
-
-            //Children view
-            LightContainer(
-              child: CustomOutlineContainer(
-                outlineColor: Colors.deepOrange,
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10),
-                        child: Text(
-                          'Children',
-                          style: Theme.of(context).textTheme.labelMedium,
-                        ),
-                      ),
-                      LightContainer(
-                        child: SizedBox(
-                          height: 500,
-                          child: FutureBuilder<List<ContainerEntryOLD>>(
-                            future: getChildren(),
-                            builder: ((context, snapshot) {
-                              if (snapshot.hasData) {
-                                return ListView.builder(
-                                  itemCount: snapshot.data?.length ?? 0,
-                                  itemBuilder: (context, index) {
-                                    return InkWell(
-                                      onTap: () {
-                                        log('message');
-                                      },
-                                      child: Text('data'),
-                                    );
-                                  },
-                                );
-                              } else {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                            }),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            )
           ],
         ),
       ),
     );
-  }
-
-  Future<List<ContainerEntryOLD>> getChildren() async {
-    return [];
   }
 }

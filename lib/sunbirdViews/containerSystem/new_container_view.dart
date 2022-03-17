@@ -1,30 +1,35 @@
 import 'dart:developer';
-
+import 'package:flutter_google_ml_kit/isar/container_relationship.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/containerAdapter/conatiner_type_adapter.dart';
 import 'package:flutter_google_ml_kit/isar/container_isar.dart';
+import 'package:flutter_google_ml_kit/isar/container_type.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/scan_barcode_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/all_containers_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/container_children_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/container_selector_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_description_widget.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_name_widget.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_parent_widget.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_scan_barcode_widget.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_type_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/custom_container.dart';
+import 'package:flutter_google_ml_kit/widgets/orange_container.dart';
 import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
 import '../../widgets/light_container.dart';
 import 'functions/isar_functions.dart';
 
 class NewContainerView extends StatefulWidget {
   const NewContainerView({
     Key? key,
+    this.database,
     this.containerType,
     this.parentUID,
   }) : super(key: key);
 
+  ///Isar
+  final Isar? database;
+
   ///Pass a containerType if you can.
-  final ContainerType? containerType;
+  final String? containerType;
 
   ///Pass a parentUID if you can.
   final String? parentUID;
@@ -37,7 +42,7 @@ class _NewContainerViewState extends State<NewContainerView> {
   String? title;
   String? parentUID;
   List<String>? children;
-  ContainerType? containerType;
+  String? containerType;
   String? barcodeUID;
   Isar? database;
 
@@ -46,22 +51,21 @@ class _NewContainerViewState extends State<NewContainerView> {
 
   @override
   void initState() {
-    containerType = widget.containerType;
+    //Open Isar
+    database = widget.database;
+    database ??= openIsar();
+
+    containerType = widget.containerType ?? 'area';
+    log(containerType.toString());
     parentUID = widget.parentUID;
-    if (containerType != null) {
-      title = containerType.toString().split('.').last;
-    }
 
     super.initState();
   }
 
   @override
   void dispose() {
-    if (database != null) {
-      if (database!.isOpen) {
-        database!.close();
-        database = null;
-      }
+    if (widget.database == null) {
+      database!.close();
     }
     super.dispose();
   }
@@ -92,6 +96,7 @@ class _NewContainerViewState extends State<NewContainerView> {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              //Name
               ContainerNameWidget(
                 nameController: nameController,
                 onChanged: (value) {
@@ -103,6 +108,7 @@ class _NewContainerViewState extends State<NewContainerView> {
                   });
                 },
               ),
+              //Description
               ContainerDescriptionWidget(
                 descriptionController: descriptionController,
                 onChanged: (value) {
@@ -114,73 +120,82 @@ class _NewContainerViewState extends State<NewContainerView> {
                   });
                 },
               ),
+              //Type
+              ContainerTypeWidget(
+                containerType: containerType,
+                builder: Builder(builder: (context) {
+                  List<ContainerType> containerTypes =
+                      database!.containerTypes.where().findAllSync();
 
-              selectContainerType(),
-              linkBarcode(),
-              //addChildren(), //TODO: Implement adding children.
-              ContainerParentWidget(
-                parentContainerUID: parentUID,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    parentUID = await Navigator.push(
+                  return DropdownButton<String>(
+                    value: containerType,
+                    items: containerTypes
+                        .map((containerType) => DropdownMenuItem<String>(
+                            value: containerType.containerType,
+                            child: Text(containerType.containerType)))
+                        .toList(),
+                    onChanged: (newValue) {
+                      setState(() {
+                        containerType = newValue!;
+                        title = newValue;
+                      });
+                    },
+                  );
+                }),
+              ),
+              //BarcodeUID
+              ScanBarcodeWidget(
+                barcodeUID: barcodeUID,
+                button: InkWell(
+                  onTap: () async {
+                    String? scannedBarcodeUID = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ContainerSelectorView(
-                          multipleSelect: false,
-                        ),
+                        builder: (context) => const ScanBarcodeView(),
                       ),
                     );
-                    setState(() {});
+                    setState(() {
+                      if (scannedBarcodeUID != null) {
+                        barcodeUID = scannedBarcodeUID;
+                      }
+                    });
                   },
-                  child: const Text('select'),
+                  child: const OrangeOutlineContainer(
+                    padding: 8,
+                    child: Text('scan'),
+                  ),
                 ),
               ),
+              //ParentUID
+              Builder(builder: (context) {
+                //Hide parent container if creating an area.
+                if (containerType == 'area') {
+                  return Container();
+                }
+                return ContainerParentWidget(
+                  parentContainerUID: parentUID,
+                  button: InkWell(
+                    onTap: () async {
+                      parentUID = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ContainerSelectorView(
+                            database: database,
+                            multipleSelect: false,
+                          ),
+                        ),
+                      );
+                      setState(() {});
+                    },
+                    child: const OrangeOutlineContainer(
+                      padding: 8,
+                      child: Text('select'),
+                    ),
+                  ),
+                );
+              }),
 
               createContainer()
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  ///Add children.
-  LightContainer addChildren() {
-    return LightContainer(
-      child: CustomOutlineContainer(
-        outlineColor: Colors.deepOrange,
-        padding: 0,
-        margin: 0,
-        child: Padding(
-          padding:
-              const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Add children: ',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium, //TextStyle(fontSize: 18),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  if (database != null) {
-                    if (database!.isOpen) {
-                      await database!.close();
-                      database = null;
-                    }
-                  }
-                  parentUID = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ContainerChildrenView(),
-                    ),
-                  );
-                },
-                child:
-                    Text('add', style: Theme.of(context).textTheme.bodyMedium),
-              ),
             ],
           ),
         ),
@@ -204,7 +219,7 @@ class _NewContainerViewState extends State<NewContainerView> {
               ),
               onTap: () async {
                 String containerUID =
-                    '${title}_${DateTime.now().millisecondsSinceEpoch}';
+                    '${containerType!}_${DateTime.now().millisecondsSinceEpoch}';
 
                 String name;
                 if (nameController.text.isNotEmpty) {
@@ -213,6 +228,7 @@ class _NewContainerViewState extends State<NewContainerView> {
                   name = containerUID;
                 }
 
+                //Write to ContainerEntrys.
                 final newContainer = ContainerEntry()
                   ..containerUID = containerUID
                   ..containerType = containerType!
@@ -220,41 +236,20 @@ class _NewContainerViewState extends State<NewContainerView> {
                   ..description = descriptionController.text
                   ..barcodeUID = null;
 
-                database ??= await openIsar();
-
                 database!.writeTxnSync((isar) {
-                  isar.containerIsars.putSync(newContainer);
+                  isar.containerEntrys.putSync(newContainer);
                 });
 
-                log(newContainer.toString());
+                //Write to ContainerRelationships;
+                if (parentUID != null && parentUID!.isNotEmpty) {
+                  final newRelationship = ContainerRelationship()
+                    ..containerUID = containerUID
+                    ..parentUID = parentUID!;
 
-                database = closeIsar(database);
-
-                //await database.close();
-
-                // ContainerEntry containerEntry = ContainerEntry(
-                //   containerUID: containerUID,
-                //   parentUID: parentUID,
-                //   name: name,
-                //   description: descriptionController.text,
-                //   barcodeUID: null,
-                //   containerType: containerType,
-                // );
-
-                // containersBox.put(containerEntry.containerUID, containerEntry);
-
-                // if (parentUID != null && parentUID!.isNotEmpty) {
-                //   ContainerEntry? parentContainer =
-                //       containersBox.get(parentUID);
-
-                //   if (parentContainer != null) {
-                //     List<String> children = parentContainer.children ?? [];
-                //     children.add(containerEntry.containerUID);
-                //     parentContainer.children = children;
-
-                //     containersBox.put(parentUID, parentContainer);
-                //   }
-                // }
+                  database!.writeTxnSync((isar) {
+                    isar.containerRelationships.putSync(newRelationship);
+                  });
+                }
 
                 Navigator.pop(context);
               },
@@ -268,132 +263,6 @@ class _NewContainerViewState extends State<NewContainerView> {
           );
         }),
       ],
-    );
-  }
-
-  ///Link a barcode to current container.
-  LightContainer linkBarcode() {
-    return LightContainer(
-      child: Builder(builder: (context) {
-        Color outlineColor = Colors.grey;
-        if (barcodeUID != null) {
-          outlineColor = Colors.blue;
-        }
-
-        return CustomOutlineContainer(
-          child: Padding(
-            padding:
-                const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Builder(builder: (context) {
-                  if (barcodeUID == null) {
-                    return Text('barcodeUID', style: TextStyle(fontSize: 18));
-                  } else {
-                    return Text(barcodeUID!, style: TextStyle(fontSize: 18));
-                  }
-                }),
-                ElevatedButton(
-                  onPressed: () async {
-                    String? scannedBarcodeUID = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ScanBarcodeView(),
-                      ),
-                    );
-                    setState(() {
-                      if (scannedBarcodeUID != null) {
-                        barcodeUID = scannedBarcodeUID;
-                      }
-                    });
-                  },
-                  child: const Text('scan'),
-                ),
-              ],
-            ),
-          ),
-          outlineColor: outlineColor,
-          margin: 0,
-          padding: 0,
-        );
-      }),
-    );
-  }
-
-  ///Select container type.
-  LightContainer selectContainerType() {
-    return LightContainer(
-      margin: 5,
-      padding: 5,
-      child: Builder(builder: (context) {
-        Color outlineColor = Colors.grey;
-        if (containerType != null) {
-          outlineColor = Colors.blue;
-        }
-        return CustomOutlineContainer(
-          outlineColor: outlineColor,
-          margin: 0,
-          padding: 0,
-          child: Padding(
-            padding:
-                const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Container type:',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    DropdownButton<ContainerType>(
-                      value: containerType,
-                      items: ContainerType.values
-                          .map((ContainerType containerType) =>
-                              DropdownMenuItem<ContainerType>(
-                                  value: containerType,
-                                  child: Text(containerType
-                                      .toString()
-                                      .split('.')
-                                      .last)))
-                          .toList(),
-                      onChanged: (newValue) {
-                        setState(() {
-                          containerType = newValue;
-                          title = containerType.toString().split('.').last;
-                        });
-                      },
-                    )
-                  ],
-                ),
-                Builder(
-                  builder: (context) {
-                    if (containerType == ContainerType.custom) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Custom Setup',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          Text(
-                            'Whatever is needed ?',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ],
-                      );
-                    }
-                    return Container();
-                  },
-                )
-              ],
-            ),
-          ),
-        );
-      }),
     );
   }
 }

@@ -1,17 +1,21 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/containerAdapter/conatiner_type_adapter.dart';
+import 'package:flutter_google_ml_kit/isar/container_type.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_card_widget%20.dart';
 import 'package:isar/isar.dart';
 import '../../isar/container_isar.dart';
 import 'functions/isar_functions.dart';
-import 'widgets/container_card_widget.dart';
 import '../../widgets/search_bar_widget.dart';
 
 class ContainerSelectorView extends StatefulWidget {
   const ContainerSelectorView(
-      {Key? key, required this.multipleSelect, this.currentContainerUID})
+      {Key? key,
+      required this.multipleSelect,
+      this.currentContainerUID,
+      this.database})
       : super(key: key);
 
+  final Isar? database;
   final String? currentContainerUID;
   final bool multipleSelect;
   @override
@@ -24,13 +28,18 @@ class _ContainerSelectorViewState extends State<ContainerSelectorView> {
 
   @override
   void initState() {
+    //Open Isar
+    database = widget.database;
+    database ??= openIsar();
     runFilter();
     super.initState();
   }
 
   @override
   void dispose() {
-    database = closeIsar(database);
+    if (widget.database == null) {
+      database!.close();
+    }
     super.dispose();
   }
 
@@ -83,6 +92,16 @@ class _ContainerSelectorViewState extends State<ContainerSelectorView> {
                       itemCount: searchResults.length,
                       itemBuilder: (context, index) {
                         final searchResult = searchResults[index];
+
+                        //Get container color.
+                        Color color = Color(int.parse(database!.containerTypes
+                                .filter()
+                                .containerTypeMatches(
+                                    searchResult.containerType)
+                                .findFirstSync()!
+                                .containerColor))
+                            .withOpacity(1);
+
                         return InkWell(
                           onTap: () async {
                             if (widget.multipleSelect) {
@@ -94,10 +113,10 @@ class _ContainerSelectorViewState extends State<ContainerSelectorView> {
                               Navigator.pop(context, searchResult.containerUID);
                             }
                             //Close the database.
-                            database = closeIsar(database);
                           },
                           //Container Card.
-                          child: ContainerCard(
+                          child: ContainerCardWidget(
+                            database: database!,
                             containerEntry: searchResult,
                           ),
                         );
@@ -142,14 +161,16 @@ class _ContainerSelectorViewState extends State<ContainerSelectorView> {
   }
 
   ///Filter for database.
-  Future<void> runFilter(
-      {String? enteredKeyword, ContainerType? containerType}) async {
-    database ??= await openIsar();
+  Future<void> runFilter({String? enteredKeyword}) async {
+    //database ??= await openIsar(database);
 
-    List<ContainerEntry> results = database!.containerIsars
+    List<ContainerEntry> results = database!.containerEntrys
         .filter()
         .nameContains(enteredKeyword ?? '', caseSensitive: false)
         .findAllSync();
+
+    results.removeWhere(
+        (element) => element.containerUID == widget.currentContainerUID);
 
     setState(() {
       searchResults = results;

@@ -7,7 +7,8 @@ class OrangeOutlineContainer extends StatelessWidget {
       this.margin,
       this.padding,
       this.height,
-      this.width})
+      this.width,
+      this.borderWidth})
       : super(key: key);
 
   final Widget child;
@@ -15,6 +16,7 @@ class OrangeOutlineContainer extends StatelessWidget {
   final double? margin;
   final double? width;
   final double? height;
+  final double? borderWidth;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -23,7 +25,8 @@ class OrangeOutlineContainer extends StatelessWidget {
         padding: EdgeInsets.all(padding ?? 5),
         margin: EdgeInsets.all(margin ?? 5),
         decoration: BoxDecoration(
-            border: Border.all(color: Colors.deepOrange, width: 1),
+            border:
+                Border.all(color: Colors.deepOrange, width: borderWidth ?? 1),
             borderRadius: const BorderRadius.all(
               Radius.circular(5),
             ),

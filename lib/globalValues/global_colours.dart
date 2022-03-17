@@ -5,6 +5,11 @@ const Color olive = Color(0xFFb7ac44);
 const Color bone = Color(0xFFD1C6AD);
 const Color lightCyan = Color(0xFFD6FFF6);
 
+const Color petalOrange = Color(0xFFF98866);
+const Color poppyOrange = Color(0xFFff420e);
+const Color stemGreen = Color(0xFF80bd9e);
+const Color springGreen = Color(0xFF89da59);
+
 //Goes well together
 //deepSpaceSparkle
 //darkPinksih

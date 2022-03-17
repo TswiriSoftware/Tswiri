@@ -60,7 +60,7 @@ class _ContainerRelationshipWebAdapter
     final object = ContainerRelationship();
     object.containerUID = IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '';
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.parentUID = IsarNative.jsObjectGet(jsObj, 'parentUID') ?? '';
+    object.parentUID = IsarNative.jsObjectGet(jsObj, 'parentUID');
     return object;
   }
 
@@ -73,7 +73,7 @@ class _ContainerRelationshipWebAdapter
         return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
             as P;
       case 'parentUID':
-        return (IsarNative.jsObjectGet(jsObj, 'parentUID') ?? '') as P;
+        return (IsarNative.jsObjectGet(jsObj, 'parentUID')) as P;
       default:
         throw 'Illegal propertyName';
     }
@@ -100,8 +100,11 @@ class _ContainerRelationshipNativeAdapter
     final _containerUID = IsarBinaryWriter.utf8Encoder.convert(value0);
     dynamicSize += (_containerUID.length) as int;
     final value1 = object.parentUID;
-    final _parentUID = IsarBinaryWriter.utf8Encoder.convert(value1);
-    dynamicSize += (_parentUID.length) as int;
+    IsarUint8List? _parentUID;
+    if (value1 != null) {
+      _parentUID = IsarBinaryWriter.utf8Encoder.convert(value1);
+    }
+    dynamicSize += (_parentUID?.length ?? 0) as int;
     final size = staticSize + dynamicSize;
 
     rawObj.buffer = alloc(size);
@@ -121,7 +124,7 @@ class _ContainerRelationshipNativeAdapter
     final object = ContainerRelationship();
     object.containerUID = reader.readString(offsets[0]);
     object.id = id;
-    object.parentUID = reader.readString(offsets[1]);
+    object.parentUID = reader.readStringOrNull(offsets[1]);
     return object;
   }
 
@@ -134,7 +137,7 @@ class _ContainerRelationshipNativeAdapter
       case 0:
         return (reader.readString(offset)) as P;
       case 1:
-        return (reader.readString(offset)) as P;
+        return (reader.readStringOrNull(offset)) as P;
       default:
         throw 'Illegal propertyIndex';
     }
@@ -394,8 +397,17 @@ extension ContainerRelationshipQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<ContainerRelationship, ContainerRelationship,
+      QAfterFilterCondition> parentUIDIsNull() {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.isNull,
+      property: 'parentUID',
+      value: null,
+    ));
+  }
+
+  QueryBuilder<ContainerRelationship, ContainerRelationship,
       QAfterFilterCondition> parentUIDEqualTo(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
   }) {
     return addFilterConditionInternal(FilterCondition(
@@ -408,7 +420,7 @@ extension ContainerRelationshipQueryFilter on QueryBuilder<
 
   QueryBuilder<ContainerRelationship, ContainerRelationship,
       QAfterFilterCondition> parentUIDGreaterThan(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
     bool include = false,
   }) {
@@ -423,7 +435,7 @@ extension ContainerRelationshipQueryFilter on QueryBuilder<
 
   QueryBuilder<ContainerRelationship, ContainerRelationship,
       QAfterFilterCondition> parentUIDLessThan(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
     bool include = false,
   }) {
@@ -438,8 +450,8 @@ extension ContainerRelationshipQueryFilter on QueryBuilder<
 
   QueryBuilder<ContainerRelationship, ContainerRelationship,
       QAfterFilterCondition> parentUIDBetween(
-    String lower,
-    String upper, {
+    String? lower,
+    String? upper, {
     bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
@@ -601,7 +613,7 @@ extension ContainerRelationshipQueryProperty on QueryBuilder<
     return addPropertyNameInternal('id');
   }
 
-  QueryBuilder<ContainerRelationship, String, QQueryOperations>
+  QueryBuilder<ContainerRelationship, String?, QQueryOperations>
       parentUIDProperty() {
     return addPropertyNameInternal('parentUID');
   }

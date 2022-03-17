@@ -1,14 +1,16 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/containerAdapter/conatiner_type_adapter.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/containerAdapter/container_entry_adapter.dart';
 import 'package:flutter_google_ml_kit/isar/container_isar.dart';
+import 'package:flutter_google_ml_kit/isar/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar/container_type.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/container_view.dart';
 
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/new_container_view.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_card_widget%20.dart';
 import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
+
 import 'functions/isar_functions.dart';
-import 'widgets/container_card_widget.dart';
+
 import '../../widgets/search_bar_widget.dart';
 
 class ContainersView extends StatefulWidget {
@@ -24,6 +26,7 @@ class _ContainersViewState extends State<ContainersView> {
 
   @override
   void initState() {
+    database = openIsar();
     runFilter();
     super.initState();
   }
@@ -103,16 +106,25 @@ class _ContainersViewState extends State<ContainersView> {
                         itemCount: searchResults.length,
                         itemBuilder: (context, index) {
                           final searchResult = searchResults[index];
+
                           return InkWell(
                             onTap: () async {
-                              //Navigate to shelfView.
-                              //On return refresh filter.
+                              await Navigator.push(
+                                context,
+                                (MaterialPageRoute(
+                                  builder: (context) => ContainerView(
+                                    database: database,
+                                    containerUID: searchResult.containerUID,
+                                  ),
+                                )),
+                              );
                               runFilter();
                             },
                             onLongPress: () {
                               showDeleteDialog(context, searchResult);
                             },
-                            child: ContainerCard(
+                            child: ContainerCardWidget(
+                              database: database!,
                               containerEntry: searchResult,
                             ),
                           );
@@ -131,12 +143,12 @@ class _ContainersViewState extends State<ContainersView> {
 
   ///Navigate to NewContainerView on return update filter
   Future<void> createNewContainer(BuildContext context) async {
-    database = closeIsar(database);
+    //database = closeIsar(database);
     await Navigator.push(
       context,
       (MaterialPageRoute(
-        builder: (context) => const NewContainerView(
-          containerType: ContainerType.area,
+        builder: (context) => NewContainerView(
+          database: database,
         ),
       )),
     );
@@ -185,7 +197,12 @@ class _ContainersViewState extends State<ContainersView> {
               onPressed: () async {
                 if (database != null) {
                   database!.writeTxnSync((isar) {
-                    database!.containerIsars.deleteSync(containerEntry.id);
+                    isar.containerEntrys.deleteSync(containerEntry.id);
+
+                    isar.containerRelationships
+                        .filter()
+                        .containerUIDMatches(containerEntry.containerUID)
+                        .deleteAllSync();
                   });
                 }
                 runFilter();
@@ -199,11 +216,13 @@ class _ContainersViewState extends State<ContainersView> {
 
   ///This is the filter that runs on the list of containers.
   Future<void> runFilter({String? enteredKeyword}) async {
-    database ??= await openIsar();
+    database ??= openIsar();
 
-    List<ContainerEntry> results = database!.containerIsars
+    List<ContainerEntry> results = database!.containerEntrys
         .filter()
         .nameContains(enteredKeyword ?? '', caseSensitive: false)
+        .or()
+        .containerTypeContains(enteredKeyword ?? '')
         .findAllSync();
 
     setState(() {

@@ -55,6 +55,8 @@ class _ScanBarcodeViewState extends State<ScanBarcodeView> {
                   } else if (scannedBarcodes.length == 1) {
                     ///Pop and return selectedBarcodeUID.
                     Navigator.pop(context, scannedBarcodes.first);
+                  } else if (scannedBarcodes.isEmpty) {
+                    Navigator.pop(context);
                   }
                 },
                 child: const Icon(Icons.check_circle_outline_rounded),

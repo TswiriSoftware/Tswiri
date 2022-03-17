@@ -1,23 +1,29 @@
+import 'package:flutter_google_ml_kit/globalValues/isar_dir.dart';
+import 'package:flutter_google_ml_kit/isar/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar/container_type.dart';
 import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../../../isar/container_isar.dart';
 
-Future<Isar> openIsar() async {
-  final dir = await getApplicationSupportDirectory(); // path_provider package
-  Isar isar = await Isar.open(
-    schemas: [ContainerIsarSchema],
-    directory: dir.path,
+Isar openIsar() {
+  Isar isar = Isar.openSync(
+    schemas: [
+      ContainerEntrySchema,
+      ContainerRelationshipSchema,
+      ContainerTypeSchema
+    ],
+    directory: isarDirectory!.path,
     inspector: true,
   );
   return isar;
 }
 
-Isar? closeIsar(Isar? isar) {
-  if (isar != null) {
-    if (isar.isOpen) {
-      isar.close();
+Isar? closeIsar(Isar? database) {
+  if (database != null) {
+    if (database.isOpen) {
+      database.close();
       return null;
     }
   }
+  return null;
 }

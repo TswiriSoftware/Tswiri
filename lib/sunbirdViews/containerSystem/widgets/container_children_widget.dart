@@ -1,18 +1,32 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/isar/container_isar.dart';
+import 'package:flutter_google_ml_kit/isar/container_relationship.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_card_widget%20.dart';
+
+import 'package:isar/isar.dart';
 
 import '../../../widgets/custom_container.dart';
 import '../../../widgets/light_container.dart';
 import '../../../widgets/orange_container.dart';
 import '../container_children_view.dart';
+import '../container_view.dart';
 
-class ContainerChildren extends StatelessWidget {
-  const ContainerChildren(
-      {Key? key, required this.currentContainerUID, this.children})
+class ContainerChildrenWidget extends StatelessWidget {
+  const ContainerChildrenWidget(
+      {Key? key,
+      required this.currentContainerUID,
+      this.children,
+      this.height,
+      required this.database,
+      this.showButton})
       : super(key: key);
   final String currentContainerUID;
   final List<String>? children;
+  final Isar database;
+  final double? height;
+  final bool? showButton;
 
   @override
   Widget build(BuildContext context) {
@@ -33,42 +47,93 @@ class ContainerChildren extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Children',
-                        style: Theme.of(context).textTheme.bodyMedium),
-                    InkWell(
-                      onTap: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ContainerChildrenView(
-                              currentContainerUID: currentContainerUID,
-                            ),
-                          ),
-                        );
-                      },
-                      child: OrangeOutlineContainer(
-                        child: Text('Edit Children',
+                Builder(
+                  builder: (context) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Children',
                             style: Theme.of(context).textTheme.bodyMedium),
-                      ),
-                    )
-                  ],
+                        Builder(
+                          builder: (context) {
+                            if (showButton != null && showButton == true) {
+                              return InkWell(
+                                onTap: () async {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ContainerChildrenView(
+                                        database: database,
+                                        currentContainerUID:
+                                            currentContainerUID,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: OrangeOutlineContainer(
+                                  child: Text('Edit Children',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium),
+                                ),
+                              );
+                            } else {
+                              return Container();
+                            }
+                          },
+                        )
+                      ],
+                    );
+                  },
                 ),
                 SizedBox(
-                  height: 200,
-                  child: ListView.builder(
-                    itemCount: children?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        onTap: () {
-                          log('message');
-                        },
-                        child: Text('data'),
-                      );
-                    },
-                  ),
+                  height: height ?? 100,
+                  child: Builder(builder: (context) {
+                    //Find currentContainers children.
+                    //TODO: Shorten this code XD
+
+                    Set<String> children = database.containerRelationships
+                        .filter()
+                        .parentUIDMatches(currentContainerUID)
+                        .containerUIDProperty()
+                        .findAllSync()
+                        .toSet();
+
+                    List<ContainerEntry> x = [];
+
+                    for (String child in children) {
+                      x.add(database.containerEntrys
+                          .filter()
+                          .containerUIDMatches(child)
+                          .findFirstSync()!);
+                    }
+
+                    List<Widget> containerChildren = x
+                        .map(
+                          (e) => InkWell(
+                            onTap: () async {
+                              await Navigator.push(
+                                context,
+                                (MaterialPageRoute(
+                                  builder: (context) => ContainerView(
+                                    database: database,
+                                    containerUID: e.containerUID,
+                                  ),
+                                )),
+                              );
+                            },
+                            child: ContainerCardWidget(
+                                containerEntry: e, database: database),
+                          ),
+                        )
+                        .toList();
+
+                    //Return the widgets.
+                    return ListView(
+                      children: containerChildren,
+                    );
+                  }),
                 ),
               ],
             ),

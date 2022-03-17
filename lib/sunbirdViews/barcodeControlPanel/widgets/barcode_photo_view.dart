@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/widgets/padded_dark_container.dart';
-import 'package:flutter_google_ml_kit/widgets/padded_margin_light_container.dart';
+import 'package:flutter_google_ml_kit/widgets/padded_dark_container_depricated.dart';
+import 'package:flutter_google_ml_kit/widgets/padded_margin_light_container_depricated.dart';
 import 'package:provider/provider.dart';
 
 import '../../../objects/change_notifiers.dart';

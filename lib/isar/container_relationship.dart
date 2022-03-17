@@ -10,7 +10,8 @@ class ContainerRelationship {
   late String containerUID;
 
   ///ParentUID
-  late String parentUID;
+  late String? parentUID;
+
   @override
   String toString() {
     return 'containerUID: $containerUID,\nparentUID: $parentUID';
