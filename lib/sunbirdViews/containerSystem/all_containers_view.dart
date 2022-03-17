@@ -2,11 +2,11 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar/container_isar.dart';
 import 'package:flutter_google_ml_kit/isar/container_relationship.dart';
-import 'package:flutter_google_ml_kit/isar/container_type.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/container_view.dart';
+import 'package:flutter_google_ml_kit/widgets/container_widgets/container_card_widget%20.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/new_container_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_card_widget%20.dart';
 import 'package:isar/isar.dart';
 
 import 'functions/isar_functions.dart';
@@ -23,11 +23,12 @@ class ContainersView extends StatefulWidget {
 class _ContainersViewState extends State<ContainersView> {
   List<ContainerEntry> searchResults = [];
   Isar? database;
+  String enteredKeyword = '';
 
   @override
   void initState() {
     database = openIsar();
-    runFilter();
+
     super.initState();
   }
 
@@ -35,6 +36,10 @@ class _ContainersViewState extends State<ContainersView> {
   void dispose() {
     database = closeIsar(database);
     super.dispose();
+  }
+
+  void refresh() {
+    setState(() {});
   }
 
   @override
@@ -67,7 +72,7 @@ class _ContainersViewState extends State<ContainersView> {
               heroTag: null,
               onPressed: () async {
                 await createNewContainer(context);
-                runFilter();
+                setState(() {});
               },
               child: const Icon(Icons.add),
             ),
@@ -83,56 +88,88 @@ class _ContainersViewState extends State<ContainersView> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 10),
-
               ///Search Bar.
               SearchBarWidget(
                 onChanged: (value) {
-                  runFilter(enteredKeyword: value);
+                  setState(() {
+                    enteredKeyword = value;
+                  });
                 },
               ),
               const SizedBox(height: 10),
               const Text(
-                'Hold for more options',
+                'Swipe for more options',
                 style: TextStyle(fontSize: 12),
               ),
               const SizedBox(height: 5),
 
-              ///ListView of containers.
-              Expanded(
-                child: searchResults.isNotEmpty
-                    ? ListView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: searchResults.length,
-                        itemBuilder: (context, index) {
-                          final searchResult = searchResults[index];
+              Builder(
+                builder: (context) {
+                  List<ContainerEntry> results = database!.containerEntrys
+                      .filter()
+                      .nameContains(enteredKeyword, caseSensitive: false)
+                      .or()
+                      .containerTypeContains(enteredKeyword)
+                      .sortByBarcodeUID()
+                      .findAllSync();
 
+                  return Expanded(
+                    child: ListView.builder(
+                        itemCount: results.length,
+                        itemBuilder: ((context, index) {
+                          ContainerEntry containerEntry = results[index];
                           return InkWell(
-                            onTap: () async {
-                              await Navigator.push(
-                                context,
-                                (MaterialPageRoute(
-                                  builder: (context) => ContainerView(
-                                    database: database,
-                                    containerUID: searchResult.containerUID,
-                                  ),
-                                )),
-                              );
-                              runFilter();
-                            },
-                            onLongPress: () {
-                              showDeleteDialog(context, searchResult);
-                            },
-                            child: ContainerCardWidget(
-                              database: database!,
-                              containerEntry: searchResult,
-                            ),
-                          );
-                        })
-                    : const Text(
-                        'No results found',
-                        style: TextStyle(fontSize: 24),
-                      ),
+                              onTap: () async {
+                                //Push ContainerView
+                                await Navigator.push(
+                                  context,
+                                  (MaterialPageRoute(
+                                    builder: (context) => ContainerView(
+                                      database: database,
+                                      containerUID: containerEntry.containerUID,
+                                    ),
+                                  )),
+                                );
+                                //Update all entires
+                                setState(() {});
+                              },
+                              //Allows for slide action/options.
+                              child: Slidable(
+                                endActionPane: ActionPane(
+                                    motion: const ScrollMotion(),
+                                    children: [
+                                      SlidableAction(
+                                        // An action can be bigger than the others.
+                                        flex: 1,
+                                        onPressed: (context) {
+                                          database!.writeTxnSync(
+                                            (isar) {
+                                              isar.containerEntrys.deleteSync(
+                                                  containerEntry.id);
+
+                                              isar.containerRelationships
+                                                  .filter()
+                                                  .containerUIDMatches(
+                                                      containerEntry
+                                                          .containerUID)
+                                                  .deleteAllSync();
+                                            },
+                                          );
+                                          refresh();
+                                        },
+                                        backgroundColor: Colors.deepOrange,
+                                        foregroundColor: Colors.white,
+                                        icon: Icons.archive,
+                                        label: 'Delete',
+                                      ),
+                                    ]),
+                                child: ContainerCardWidget(
+                                    containerEntry: containerEntry,
+                                    database: database!),
+                              ));
+                        })),
+                  );
+                },
               ),
             ],
           ),
@@ -143,7 +180,6 @@ class _ContainersViewState extends State<ContainersView> {
 
   ///Navigate to NewContainerView on return update filter
   Future<void> createNewContainer(BuildContext context) async {
-    //database = closeIsar(database);
     await Navigator.push(
       context,
       (MaterialPageRoute(
@@ -152,9 +188,7 @@ class _ContainersViewState extends State<ContainersView> {
         ),
       )),
     );
-    setState(() {
-      runFilter();
-    });
+    setState(() {});
   }
 
   ///Show the info Dialog.
@@ -176,57 +210,5 @@ class _ContainersViewState extends State<ContainersView> {
         ],
       ),
     );
-  }
-
-  ///Confirm Delete.
-  Future<void> showDeleteDialog(
-      BuildContext context, ContainerEntry containerEntry) async {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(containerEntry.containerUID),
-            Text(containerEntry.name ?? ''),
-          ],
-        ),
-        content: const Text('Do you want to delete this container ?'),
-        actions: [
-          ElevatedButton(
-              onPressed: () async {
-                if (database != null) {
-                  database!.writeTxnSync((isar) {
-                    isar.containerEntrys.deleteSync(containerEntry.id);
-
-                    isar.containerRelationships
-                        .filter()
-                        .containerUIDMatches(containerEntry.containerUID)
-                        .deleteAllSync();
-                  });
-                }
-                runFilter();
-                Navigator.pop(_);
-              },
-              child: const Text('delete'))
-        ],
-      ),
-    );
-  }
-
-  ///This is the filter that runs on the list of containers.
-  Future<void> runFilter({String? enteredKeyword}) async {
-    database ??= openIsar();
-
-    List<ContainerEntry> results = database!.containerEntrys
-        .filter()
-        .nameContains(enteredKeyword ?? '', caseSensitive: false)
-        .or()
-        .containerTypeContains(enteredKeyword ?? '')
-        .findAllSync();
-
-    setState(() {
-      searchResults = results;
-    });
   }
 }

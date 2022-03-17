@@ -17,6 +17,6 @@ class ContainerEntry {
 
   @override
   String toString() {
-    return 'UID: $containerUID,\nType: $containerType,\nName: $name,\nDescription: $description,\nBarcodeUID $barcodeUID';
+    return 'UID: $containerUID,\nType: $containerType,\nName: $name,\nDescription: $description,\nBarcodeUID $barcodeUID\n';
   }
 }

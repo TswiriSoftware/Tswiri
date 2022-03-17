@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/barcode_marker_scanner_view.dart';
 import 'package:hive/hive.dart';
-import '../../../widgets/custom_card_widget.dart';
+import '../../../widgets/card_widgets/custom_card_widget.dart';
 import '../real_barcode_position_database_view.dart';
 
 ///Displays all barcode scanning tools.

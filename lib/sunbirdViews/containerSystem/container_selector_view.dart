@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar/container_type.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_card_widget%20.dart';
+import 'package:flutter_google_ml_kit/widgets/container_widgets/container_card_widget%20.dart';
 import 'package:isar/isar.dart';
 import '../../isar/container_isar.dart';
 import 'functions/isar_functions.dart';
@@ -104,13 +104,16 @@ class _ContainerSelectorViewState extends State<ContainerSelectorView> {
 
                         return InkWell(
                           onTap: () async {
-                            if (widget.multipleSelect) {
+                            if (widget.multipleSelect == true) {
                               //Returns a set of containerUID's
                               Navigator.pop(
                                   context, {searchResult.containerUID});
                             } else {
                               //Returns a single containerUID
-                              Navigator.pop(context, searchResult.containerUID);
+                              Navigator.pop(context, [
+                                searchResult.containerUID,
+                                searchResult.name
+                              ]);
                             }
                             //Close the database.
                           },

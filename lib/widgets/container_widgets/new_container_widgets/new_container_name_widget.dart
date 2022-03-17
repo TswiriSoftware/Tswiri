@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:isar/isar.dart';
 
-import '../../../widgets/custom_container.dart';
-import '../../../widgets/light_container.dart';
+import '../../basic_outline_containers/custom_outline_container.dart';
+import '../../basic_outline_containers/light_container.dart';
 
-class ContainerNameWidget extends StatelessWidget {
-  const ContainerNameWidget(
-      {Key? key,
-      required this.nameController,
-      this.onChanged,
-      this.onFieldSubmitted,
-      this.name})
-      : super(key: key);
+class NewContainerNameWidget extends StatelessWidget {
+  const NewContainerNameWidget({
+    Key? key,
+    required this.nameController,
+    this.onChanged,
+    this.onFieldSubmitted,
+    this.name,
+  }) : super(key: key);
 
   final TextEditingController nameController;
   final void Function(String?)? onFieldSubmitted;
@@ -29,6 +30,7 @@ class ContainerNameWidget extends StatelessWidget {
               if (nameController.text.isNotEmpty) {
                 outlineColor = Colors.blue;
               }
+
               return CustomOutlineContainer(
                 outlineColor: outlineColor,
                 padding: 0,

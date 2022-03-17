@@ -3,15 +3,15 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar/container_isar.dart';
 import 'package:flutter_google_ml_kit/isar/container_relationship.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_card_widget%20.dart';
+import 'package:flutter_google_ml_kit/widgets/container_widgets/container_card_widget%20.dart';
 
 import 'package:isar/isar.dart';
 
-import '../../../widgets/custom_container.dart';
-import '../../../widgets/light_container.dart';
-import '../../../widgets/orange_container.dart';
-import '../container_children_view.dart';
-import '../container_view.dart';
+import '../basic_outline_containers/custom_outline_container.dart';
+import '../basic_outline_containers/light_container.dart';
+import '../basic_outline_containers/orange_outline_container.dart';
+import '../../sunbirdViews/containerSystem/container_children_view.dart';
+import '../../sunbirdViews/containerSystem/container_view.dart';
 
 class ContainerChildrenWidget extends StatelessWidget {
   const ContainerChildrenWidget(

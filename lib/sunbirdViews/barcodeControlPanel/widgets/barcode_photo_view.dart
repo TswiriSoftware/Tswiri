@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/widgets/padded_dark_container_depricated.dart';
-import 'package:flutter_google_ml_kit/widgets/padded_margin_light_container_depricated.dart';
+
 import 'package:provider/provider.dart';
 
 import '../../../objects/change_notifiers.dart';
+import '../../../widgets/basic_outline_containers/dark_container.dart';
+import '../../../widgets/basic_outline_containers/light_container.dart';
+import '../../../widgets/basic_outline_containers/orange_outline_container.dart';
 import '../../objectIdentifier/object_detector_view.dart';
 
 class BarcodePhotoView extends StatefulWidget {
@@ -44,7 +46,8 @@ class _BarcodePhotoViewState extends State<BarcodePhotoView> {
       ));
     });
 
-    return BasicLightContainer(
+    return LightContainer(
+      padding: 5,
       child: Column(
         children: [
           Row(
@@ -94,7 +97,8 @@ class PhotoItem extends StatelessWidget {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.height;
 
-    return PaddedDarkContainer(
+    return DarkContainer(
+      padding: 10,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -140,7 +144,8 @@ class PhotoItem extends StatelessWidget {
                     ),
                   );
                 },
-                child: BasicOrangeOutlineContainer(
+                child: OrangeOutlineContainer(
+                  padding: 5,
                   child: Image.file(
                     File(photoPath),
                     width: width * 0.1,

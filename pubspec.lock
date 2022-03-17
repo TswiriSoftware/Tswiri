@@ -29,13 +29,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.3.0"
-  arrow_path:
-    dependency: "direct main"
-    description:
-      name: arrow_path
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.0"
   async:
     dependency: transitive
     description:
@@ -314,6 +307,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.5"
+  flutter_slidable:
+    dependency: "direct main"
+    description:
+      name: flutter_slidable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -543,13 +543,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.2"
-  palette_generator:
-    dependency: "direct main"
-    description:
-      name: palette_generator
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.3"
   path:
     dependency: transitive
     description:
@@ -809,13 +802,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
-  simple_tags:
-    dependency: "direct main"
-    description:
-      name: simple_tags
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.4"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -891,24 +877,10 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
-  timelines:
-    dependency: "direct main"
-    description:
-      name: timelines
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.0"
   timing:
     dependency: transitive
     description:
       name: timing
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0"
-  touchable:
-    dependency: "direct main"
-    description:
-      name: touchable
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter_google_ml_kit/globalValues/isar_dir.dart';
 import 'package:flutter_google_ml_kit/isar/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar/container_type.dart';
@@ -26,4 +28,52 @@ Isar? closeIsar(Isar? database) {
     }
   }
   return null;
+}
+
+//Get containerTypeColor from containerID
+Color getContainerTypeColor({required Isar database, required int id}) {
+  String contaienrType = database.containerEntrys.getSync(id)!.containerType;
+
+  return Color(int.parse(database.containerTypes
+          .filter()
+          .containerTypeMatches(contaienrType)
+          .findFirstSync()!
+          .containerColor))
+      .withOpacity(1);
+}
+
+//Get containerID from containerUID if it exists.
+int? getContainerID(
+    {required IsarCollection<ContainerEntry> containerEntrys,
+    required String containerUID}) {
+  return containerEntrys
+      .filter()
+      .containerUIDMatches(containerUID)
+      .findFirstSync()
+      ?.id;
+}
+
+ContainerEntry? getParentContainerEntry(
+    {required Isar database, required String currentContainerUID}) {
+  String? parentContainerUID = database.containerRelationships
+      .filter()
+      .containerUIDMatches(currentContainerUID)
+      .findFirstSync()
+      ?.parentUID;
+  if (parentContainerUID != null) {
+    ContainerEntry? parentContainerEntry = database.containerEntrys
+        .filter()
+        .containerUIDMatches(parentContainerUID)
+        .findFirstSync();
+    return parentContainerEntry;
+  }
+  return null;
+}
+
+ContainerRelationship? getContainerRelationship(
+    {required Isar database, required String currentContainerUID}) {
+  return database.containerRelationships
+      .filter()
+      .containerUIDMatches(currentContainerUID)
+      .findFirstSync();
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../widgets/custom_container.dart';
-import '../../../widgets/light_container.dart';
+import '../basic_outline_containers/custom_outline_container.dart';
+import '../basic_outline_containers/light_container.dart';
 
 class ScanBarcodeWidget extends StatelessWidget {
   const ScanBarcodeWidget({Key? key, this.barcodeUID, required this.button})

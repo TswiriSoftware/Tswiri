@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
@@ -8,7 +6,7 @@ import 'package:flutter_google_ml_kit/globalValues/routes.dart';
 import 'package:flutter_google_ml_kit/isar/container_type.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/barcode_selection_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/all_containers_view.dart';
-import 'package:flutter_google_ml_kit/widgets/custom_card_widget.dart';
+import 'package:flutter_google_ml_kit/widgets/card_widgets/custom_card_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';

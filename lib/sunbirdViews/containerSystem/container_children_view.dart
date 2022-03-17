@@ -3,10 +3,10 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/container_selector_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_children_widget.dart';
-import 'package:flutter_google_ml_kit/widgets/custom_container.dart';
-import 'package:flutter_google_ml_kit/widgets/light_container.dart';
-import 'package:flutter_google_ml_kit/widgets/orange_container.dart';
+import 'package:flutter_google_ml_kit/widgets/container_widgets/container_children_widget.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:isar/isar.dart';
 
 class ContainerChildrenView extends StatefulWidget {
@@ -108,13 +108,6 @@ class _ContainerChildrenViewState extends State<ContainerChildrenView> {
                               ),
                             ),
                           );
-                          if (widget.currentContainerUID != null &&
-                              children != null) {
-                            //TODO: Implent children
-
-                            // updateContainerChildren(
-                            //     widget.currentContainerUID!, children!);
-                          }
                         },
                         child: const OrangeOutlineContainer(
                           width: 40,

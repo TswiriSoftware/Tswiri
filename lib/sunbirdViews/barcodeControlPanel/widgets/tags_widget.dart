@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-import 'package:flutter_google_ml_kit/widgets/padded_margin_light_container_depricated.dart';
+
 import 'package:provider/provider.dart';
 
 import '../../../objects/change_notifiers.dart';
+import '../../../widgets/basic_outline_containers/light_container.dart';
 
 class TagsContainerWidget extends StatefulWidget {
   const TagsContainerWidget({Key? key, required this.barcodeID})
@@ -21,7 +22,8 @@ class _TagsContainerWidgetState extends State<TagsContainerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return BasicLightContainer(
+    return LightContainer(
+      padding: 5,
       child: Wrap(
         children: [
           Padding(

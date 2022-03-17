@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../widgets/custom_container.dart';
-import '../../../widgets/light_container.dart';
+import '../../basic_outline_containers/custom_outline_container.dart';
+import '../../basic_outline_containers/light_container.dart';
 
-class ContainerParentWidget extends StatelessWidget {
-  const ContainerParentWidget({
+class NewContainerParentWidget extends StatelessWidget {
+  const NewContainerParentWidget({
     Key? key,
     required this.button,
     this.parentContainerUID,
@@ -37,7 +37,7 @@ class ContainerParentWidget extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodySmall),
                 Padding(
                   padding: const EdgeInsets.only(top: 5, bottom: 5),
-                  child: Text(parentContainerName ?? parentContainerUID!),
+                  child: Text(parentContainerName ?? parentContainerUID ?? ''),
                 ),
                 Text('parentUID', style: Theme.of(context).textTheme.bodySmall),
                 Row(

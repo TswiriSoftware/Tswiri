@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/objects/all_barcode_data.dart';
-import 'package:flutter_google_ml_kit/widgets/padded_dark_container_depricated.dart';
-import 'package:flutter_google_ml_kit/widgets/padded_margin_light_container_depricated.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/dark_container.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
+
 import 'package:provider/provider.dart';
 
 import '../../../objects/change_notifiers.dart';
+import '../../../widgets/basic_outline_containers/light_container.dart';
 
 class BarcodeDataContainer extends StatefulWidget {
   const BarcodeDataContainer({Key? key, required this.barcodeAndTagData})
@@ -36,7 +38,9 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return BasicLightContainer(
+    return LightContainer(
+      margin: 6,
+      padding: 5,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,7 +62,8 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
           const Divider(
             color: Colors.white,
           ),
-          PaddedDarkContainer(
+          DarkContainer(
+            padding: 10,
             child: Row(
               children: [
                 const Text(
@@ -66,7 +71,8 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
                   style: TextStyle(fontSize: 18),
                 ),
                 Expanded(
-                  child: BasicOrangeOutlineContainer(
+                  child: OrangeOutlineContainer(
+                    padding: 5,
                     child: SizedBox(
                       height: 25,
                       child: TextField(
@@ -109,7 +115,8 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
             ),
           ),
           const SizedBox(height: 5),
-          PaddedDarkContainer(
+          DarkContainer(
+            padding: 10,
             child: InkWell(
                 onTap: () {
                   Provider.of<BarcodeDataChangeNotifier>(context, listen: false)
@@ -122,7 +129,8 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
                       'Is this barcode a marker: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    BasicOrangeOutlineContainer(
+                    OrangeOutlineContainer(
+                      padding: 5,
                       child: Padding(
                         padding: const EdgeInsets.only(
                             left: 5, right: 5, top: 1, bottom: 1),
@@ -150,7 +158,8 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
                 )),
           ),
           const SizedBox(height: 5),
-          PaddedDarkContainer(
+          DarkContainer(
+            padding: 10,
             child: InkWell(
               onTap: () {
                 editBarcodeDescription(context);
@@ -169,7 +178,8 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: const [
-                      BasicOrangeOutlineContainer(
+                      OrangeOutlineContainer(
+                        padding: 5,
                         child: Text(
                           'Tap to edit',
                           style: TextStyle(fontSize: 12),

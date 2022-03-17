@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/widgets/padded_dark_container_depricated.dart';
-import 'package:flutter_google_ml_kit/widgets/padded_margin_light_container_depricated.dart';
 
 import '../../../objects/all_barcode_data.dart';
+import '../../../widgets/basic_outline_containers/dark_container.dart';
+import '../../../widgets/basic_outline_containers/light_container.dart';
 
 class BarcodeDisplayWidget extends StatelessWidget {
   const BarcodeDisplayWidget({Key? key, required this.barcodeAndTagData})
@@ -12,7 +12,8 @@ class BarcodeDisplayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BasicLightContainer(
+    return LightContainer(
+      padding: 5,
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -25,7 +26,8 @@ class BarcodeDisplayWidget extends StatelessWidget {
             width: 10,
           ),
           Expanded(
-            child: PaddedDarkContainer(
+            child: DarkContainer(
+              padding: 10,
               child: Row(
                 children: [
                   Column(

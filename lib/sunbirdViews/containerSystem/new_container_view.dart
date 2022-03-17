@@ -4,17 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar/container_isar.dart';
 import 'package:flutter_google_ml_kit/isar/container_type.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/scan_barcode_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/container_children_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/container_selector_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_description_widget.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_name_widget.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_parent_widget.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_scan_barcode_widget.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/widgets/container_type_widget.dart';
-import 'package:flutter_google_ml_kit/widgets/custom_container.dart';
-import 'package:flutter_google_ml_kit/widgets/orange_container.dart';
+import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_description_widget.dart';
+import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_name_widget.dart';
+import 'package:flutter_google_ml_kit/widgets/container_widgets/container_parent_widget.dart';
+import 'package:flutter_google_ml_kit/widgets/container_widgets/container_scan_barcode_widget.dart';
+import 'package:flutter_google_ml_kit/widgets/container_widgets/container_type_widget.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:isar/isar.dart';
-import '../../widgets/light_container.dart';
+import '../../widgets/container_widgets/new_container_widgets/new_container_parent_widget.dart';
 import 'functions/isar_functions.dart';
 
 class NewContainerView extends StatefulWidget {
@@ -40,7 +39,7 @@ class NewContainerView extends StatefulWidget {
 
 class _NewContainerViewState extends State<NewContainerView> {
   String? title;
-  String? parentUID;
+  List<String?>? parentUID;
   List<String>? children;
   String? containerType;
   String? barcodeUID;
@@ -57,7 +56,7 @@ class _NewContainerViewState extends State<NewContainerView> {
 
     containerType = widget.containerType ?? 'area';
     log(containerType.toString());
-    parentUID = widget.parentUID;
+    parentUID = [widget.parentUID, null];
 
     super.initState();
   }
@@ -97,7 +96,7 @@ class _NewContainerViewState extends State<NewContainerView> {
           child: Column(
             children: [
               //Name
-              ContainerNameWidget(
+              NewContainerNameWidget(
                 nameController: nameController,
                 onChanged: (value) {
                   setState(() {});
@@ -109,7 +108,7 @@ class _NewContainerViewState extends State<NewContainerView> {
                 },
               ),
               //Description
-              ContainerDescriptionWidget(
+              NewContainerDescriptionWidget(
                 descriptionController: descriptionController,
                 onChanged: (value) {
                   setState(() {});
@@ -172,8 +171,9 @@ class _NewContainerViewState extends State<NewContainerView> {
                 if (containerType == 'area') {
                   return Container();
                 }
-                return ContainerParentWidget(
-                  parentContainerUID: parentUID,
+                return NewContainerParentWidget(
+                  parentContainerUID: parentUID![0],
+                  parentContainerName: parentUID![1],
                   button: InkWell(
                     onTap: () async {
                       parentUID = await Navigator.push(
@@ -244,7 +244,7 @@ class _NewContainerViewState extends State<NewContainerView> {
                 if (parentUID != null && parentUID!.isNotEmpty) {
                   final newRelationship = ContainerRelationship()
                     ..containerUID = containerUID
-                    ..parentUID = parentUID!;
+                    ..parentUID = parentUID![1];
 
                   database!.writeTxnSync((isar) {
                     isar.containerRelationships.putSync(newRelationship);
