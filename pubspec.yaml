@@ -33,7 +33,6 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  #google_ml_kit: ^0.7.2
   google_ml_kit:
     git:
       url: https://github.com/WoLpH/Google-Ml-Kit-plugin
@@ -68,12 +67,6 @@ flutter_icons:
   android: true
   ios: true
   image_path: "assets/icon/ic_launcher.png"
-
-
-
-    
-
-
 
 dev_dependencies:
   flutter_test:
