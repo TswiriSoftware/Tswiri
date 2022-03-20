@@ -1,16 +1,12 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/isar_dir.dart';
 import 'package:flutter_google_ml_kit/globalValues/routes.dart';
-import 'package:flutter_google_ml_kit/isar/container_type/container_type.dart';
-
 import 'package:flutter_google_ml_kit/sunbirdViews/barcode_generator/barcode_generator_new_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/barcode_selection_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/container_system/container_view/all_containers_view.dart';
 import 'package:flutter_google_ml_kit/widgets/card_widgets/custom_card_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +14,6 @@ import 'databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import 'databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 import 'databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
-import 'isar/container_type/container_type.dart';
 import 'sunbirdViews/app_settings/app_settings_functions.dart';
 import 'sunbirdViews/app_settings/app_settings_view.dart';
 import 'isar/functions/isar_functions.dart';
@@ -177,49 +172,4 @@ class HomeView extends StatelessWidget {
       ),
     );
   }
-}
-
-///Temporary.
-void createBoxTypes() {
-  Isar database = openIsar();
-
-  database.writeTxnSync((database) {
-    database.containerTypes.putSync(
-        ContainerType()
-          ..id = 1
-          ..containerType = 'area'
-          ..canContain = ['shelf', 'box', 'drawer']
-          ..structured = true
-          ..containerColor = poppyOrange.value.toString(),
-        replaceOnConflict: true);
-
-    database.containerTypes.putSync(
-        ContainerType()
-          ..id = 2
-          ..containerType = 'shelf'
-          ..canContain = ['box', 'drawer']
-          ..structured = true
-          ..containerColor = Colors.blue.value.toString(),
-        replaceOnConflict: true);
-
-    database.containerTypes.putSync(
-        ContainerType()
-          ..id = 3
-          ..containerType = 'drawer'
-          ..canContain = ['box', 'shelf']
-          ..structured = true
-          ..containerColor = springGreen.value.toString(),
-        replaceOnConflict: true);
-
-    database.containerTypes.putSync(
-        ContainerType()
-          ..id = 4
-          ..containerType = 'box'
-          ..canContain = ['box', 'shelf']
-          ..structured = true
-          ..containerColor = petalOrange.value.toString(),
-        replaceOnConflict: true);
-  });
-
-  database.close();
 }

@@ -38,6 +38,8 @@ class ContainerChildrenWidget extends StatefulWidget {
 
 class _ContainerChildrenWidgetState extends State<ContainerChildrenWidget> {
   List<String>? children;
+  List<int> deSelectedChildren = [];
+  List<int> selectedChildren = [];
   String? currentContainerName;
 
   double? height;
@@ -136,25 +138,44 @@ class _ContainerChildrenWidgetState extends State<ContainerChildrenWidget> {
                     }
 
                     List<Widget> containerChildren = containerEntries
-                        .map(
-                          (e) => InkWell(
-                            onTap: () async {
-                              await Navigator.push(
-                                context,
-                                (MaterialPageRoute(
-                                  builder: (context) => ContainerView(
-                                    database: widget.database,
-                                    containerUID: e.containerUID,
+                        .map((e) => ListTile(
+                              title: Column(
+                                children: [
+                                  Text(
+                                    e.name ?? e.containerUID,
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
                                   ),
-                                )),
-                              );
-                              setState(() {});
-                            },
-                            child: ContainerCardWidget(
-                                containerEntry: e, database: widget.database),
-                          ),
-                        )
+                                ],
+                              ),
+                              trailing: Checkbox(
+                                  value: selectedChildren.contains(e.id),
+                                  onChanged: (value) {
+                                    _onSelected(value!, e.id);
+                                  }),
+                            ))
                         .toList();
+
+                    // List<Widget> containerChildren = containerEntries
+                    //     .map(
+                    //       (e) => InkWell(
+                    //         onTap: () async {
+                    //           await Navigator.push(
+                    //             context,
+                    //             (MaterialPageRoute(
+                    //               builder: (context) => ContainerView(
+                    //                 database: widget.database,
+                    //                 containerUID: e.containerUID,
+                    //               ),
+                    //             )),
+                    //           );
+                    //           setState(() {});
+                    //         },
+                    //         child: ContainerCardWidget(
+                    //             containerEntry: e, database: widget.database),
+                    //       ),
+                    //     )
+                    //     .toList();
 
                     //Return the widgets.
                     return ListView(
@@ -168,5 +189,17 @@ class _ContainerChildrenWidgetState extends State<ContainerChildrenWidget> {
         );
       }),
     );
+  }
+
+  void _onSelected(bool selected, int containerID) {
+    if (selected == true) {
+      setState(() {
+        selectedChildren.add(containerID);
+      });
+    } else {
+      setState(() {
+        selectedChildren.remove(containerID);
+      });
+    }
   }
 }

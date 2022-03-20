@@ -246,7 +246,9 @@ class _ContainerBatchCreateState extends State<ContainerBatchCreate> {
                         return InkWell(
                           onTap: () {
                             //Create without barcodes.
+                            log('createContainersWithoutBarcodes');
                             createContainersWithoutBarcodes();
+
                             Navigator.pop(context);
                           },
                           child: OrangeOutlineContainer(
@@ -261,6 +263,7 @@ class _ContainerBatchCreateState extends State<ContainerBatchCreate> {
                         return InkWell(
                           onTap: () {
                             //Create with barcodes.
+                            log('createContainersWithBarcodes');
                             createContainersWithBarcodes();
                             Navigator.pop(context);
                           },
@@ -324,6 +327,7 @@ class _ContainerBatchCreateState extends State<ContainerBatchCreate> {
 
   void createContainersWithoutBarcodes() {
     int timestamp = DateTime.now().millisecondsSinceEpoch;
+    log('aa');
 
     for (var i = 0; i < numberOfBarcodes; i++) {
       String _containerUID = '${containerType!}_${timestamp + i}';

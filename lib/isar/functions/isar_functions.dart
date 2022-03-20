@@ -1,10 +1,10 @@
-import 'dart:ui';
-
+import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/isar_dir.dart';
 import 'package:flutter_google_ml_kit/isar/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar/container_type/container_type.dart';
 import 'package:isar/isar.dart';
 
+import '../../globalValues/global_colours.dart';
 import '../container_isar/container_isar.dart';
 
 Isar openIsar() {
@@ -110,4 +110,49 @@ String? getContainerDescription(
         ?.description;
   }
   return null;
+}
+
+///Temporary.
+void createBoxTypes() {
+  Isar database = openIsar();
+
+  database.writeTxnSync((database) {
+    database.containerTypes.putSync(
+        ContainerType()
+          ..id = 1
+          ..containerType = 'area'
+          ..canContain = ['shelf', 'box', 'drawer']
+          ..structured = true
+          ..containerColor = poppyOrange.value.toString(),
+        replaceOnConflict: true);
+
+    database.containerTypes.putSync(
+        ContainerType()
+          ..id = 2
+          ..containerType = 'shelf'
+          ..canContain = ['box', 'drawer']
+          ..structured = true
+          ..containerColor = Colors.blue.value.toString(),
+        replaceOnConflict: true);
+
+    database.containerTypes.putSync(
+        ContainerType()
+          ..id = 3
+          ..containerType = 'drawer'
+          ..canContain = ['box', 'shelf']
+          ..structured = true
+          ..containerColor = springGreen.value.toString(),
+        replaceOnConflict: true);
+
+    database.containerTypes.putSync(
+        ContainerType()
+          ..id = 4
+          ..containerType = 'box'
+          ..canContain = ['box', 'shelf']
+          ..structured = true
+          ..containerColor = petalOrange.value.toString(),
+        replaceOnConflict: true);
+  });
+
+  database.close();
 }
