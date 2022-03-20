@@ -52,7 +52,6 @@ class _ContainerViewState extends State<ContainerView> {
     return GestureDetector(
       onTap: (() => hideKeyboard(context)),
       child: Scaffold(
-        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: Builder(builder: (context) {
             return Text(title ?? widget.containerUID);
@@ -60,74 +59,111 @@ class _ContainerViewState extends State<ContainerView> {
           actions: [
             IconButton(
                 onPressed: () {
-                  //showInfoDialog(context);
+                  //TODO: @049er Show container info.
                 },
                 icon: const Icon(Icons.info_outline_rounded))
           ],
           centerTitle: true,
           elevation: 0,
         ),
-        body: FutureBuilder<ContainerEntry?>(
-          future: getContainerEntry(),
-          builder: ((context, snapshot) {
-            if (snapshot.hasData) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    //Container Name.
-                    ContainerNameWidget(
-                      containerUID: widget.containerUID,
-                      database: database!,
-                    ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              //Name
 
-                    //Container Description.
-                    ContainerDescriptionWidget(
-                      containerUID: widget.containerUID,
-                      database: database!,
-                    ),
+              //Description
 
-                    //Container Parent.
-                    Builder(builder: (context) {
-                      //TODO: implent check database instead of hardcoded.
+              //Parent
 
-                      //If it is an area.
-                      if (snapshot.data!.containerType == 'area') {
-                        return Container();
-                      }
-                      return ContainerParentWidget(
-                        database: database!,
-                        isNewContainer: false,
-                        currentBarcodeUID: widget.containerUID,
-                      );
-                    }),
+              //BarcodeUID
 
-                    //BarcodeUID
-                    BarcodeUIDwidget(
-                      database: database!,
-                      containerUID: widget.containerUID,
-                    ),
-
-                    ///Container Children
-                    ContainerChildrenWidget(
-                      showButton: true,
-                      currentContainerName: snapshot.data!.name,
-                      height: 200,
-                      currentContainerUID: widget.containerUID,
-                      database: database!,
-                    )
-                  ],
-                ),
-              );
-            } else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-          }),
+              //Container Children
+            ],
+          ),
         ),
       ),
     );
   }
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return GestureDetector(
+  //     onTap: (() => hideKeyboard(context)),
+  //     child: Scaffold(
+  //       resizeToAvoidBottomInset: true,
+  // appBar: AppBar(
+  //   title: Builder(builder: (context) {
+  //     return Text(title ?? widget.containerUID);
+  //   }),
+  //   actions: [
+  //     IconButton(
+  //         onPressed: () {
+  //           //showInfoDialog(context);
+  //         },
+  //         icon: const Icon(Icons.info_outline_rounded))
+  //   ],
+  //   centerTitle: true,
+  //   elevation: 0,
+  // ),
+  //       body: FutureBuilder<ContainerEntry?>(
+  //         future: getContainerEntry(),
+  //         builder: ((context, snapshot) {
+  //           if (snapshot.hasData) {
+  //             return SingleChildScrollView(
+  //               child: Column(
+  //                 children: [
+  //                   //Container Name.
+  //                   ContainerNameWidget(
+  //                     containerUID: widget.containerUID,
+  //                     database: database!,
+  //                   ),
+
+  //                   //Container Description.
+  //                   ContainerDescriptionWidget(
+  //                     containerUID: widget.containerUID,
+  //                     database: database!,
+  //                   ),
+
+  //                   //Container Parent.
+  //                   Builder(builder: (context) {
+  //                     //If it is an area.
+  //                     if (snapshot.data!.containerType == 'area') {
+  //                       return Container();
+  //                     }
+  //                     return ContainerParentWidget(
+  //                       database: database!,
+  //                       isNewContainer: false,
+  //                       currentBarcodeUID: widget.containerUID,
+  //                     );
+  //                   }),
+
+  //                   //BarcodeUID
+  //                   BarcodeUIDwidget(
+  //                     database: database!,
+  //                     containerUID: widget.containerUID,
+  //                   ),
+
+  //                   ///Container Children
+  //                   ContainerChildrenWidget(
+  //                     showButton: true,
+  //                     currentContainerName: snapshot.data!.name,
+  //                     height: 200,
+  //                     currentContainerUID: widget.containerUID,
+  //                     database: database!,
+  //                   )
+  //                 ],
+  //               ),
+  //             );
+  //           } else {
+  //             return const Center(
+  //               child: CircularProgressIndicator(),
+  //             );
+  //           }
+  //         }),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Future<ContainerEntry?> getContainerEntry() async {
     ContainerEntry? containerEntry = database!.containerEntrys

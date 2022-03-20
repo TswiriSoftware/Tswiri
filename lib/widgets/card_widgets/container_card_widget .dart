@@ -8,9 +8,6 @@ import '../../isar/container_isar/container_isar.dart';
 import '../basic_outline_containers/light_container.dart';
 
 ///This card is for displaying containers
-/////TODO: implement number of children.
-///
-
 class ContainerCardWidget extends StatelessWidget {
   const ContainerCardWidget({
     Key? key,

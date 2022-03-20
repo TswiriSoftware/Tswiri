@@ -44,6 +44,7 @@ class _ObjectDetectorProcessingView
     imagePath = widget.imagePath;
 
     //TODO: figure out custom .tflite
+
     //Object Detector Config.
     // objectDetector = GoogleMlKit.vision.objectDetector(
     //     CustomObjectDetectorOptions(model,

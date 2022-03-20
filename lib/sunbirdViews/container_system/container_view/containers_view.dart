@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar/container_isar/container_isar.dart';
 import 'package:flutter_google_ml_kit/isar/container_relationship/container_relationship.dart';

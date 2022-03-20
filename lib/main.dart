@@ -4,7 +4,7 @@ import 'package:flutter_google_ml_kit/globalValues/isar_dir.dart';
 import 'package:flutter_google_ml_kit/globalValues/routes.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcode_generator/barcode_generator_new_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/barcode_selection_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/container_system/container_view/all_containers_view.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/container_system/container_view/containers_view.dart';
 import 'package:flutter_google_ml_kit/widgets/card_widgets/custom_card_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -107,6 +107,10 @@ class MyApp extends StatelessWidget {
             labelSmall: TextStyle(fontSize: 12),
             titleMedium: TextStyle(fontSize: 18),
             titleSmall: TextStyle(fontSize: 16)),
+        inputDecorationTheme: const InputDecorationTheme(
+          focusedBorder:
+              UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+        ),
       ),
       debugShowCheckedModeBanner: false,
       home: const HomeView(),

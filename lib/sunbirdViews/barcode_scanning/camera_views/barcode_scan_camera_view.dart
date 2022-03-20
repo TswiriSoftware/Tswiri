@@ -65,9 +65,7 @@ class _BarcodeScannerCameraViewState extends State<BarcodeScannerCameraView> {
         backgroundColor: widget.color,
         actions: [
           IconButton(
-            onPressed: () {
-              //TODO: Implement info screen. for box scanning
-            },
+            onPressed: () {},
             icon: const Icon(Icons.info_outline_rounded),
           ),
         ],

@@ -66,9 +66,7 @@ class _BarcodeMarkerScanCameraViewState
         backgroundColor: widget.color,
         actions: [
           IconButton(
-            onPressed: () {
-              //TODO: Implement info screen. For Markers.
-            },
+            onPressed: () {},
             icon: const Icon(Icons.info_outline_rounded),
           ),
         ],

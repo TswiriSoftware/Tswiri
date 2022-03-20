@@ -61,10 +61,7 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
         ),
         actions: [
           IconButton(
-              onPressed: () {
-                //TODO: Batch create info.
-              },
-              icon: const Icon(Icons.info_outline_rounded))
+              onPressed: () {}, icon: const Icon(Icons.info_outline_rounded))
         ],
         centerTitle: true,
         elevation: 0,

@@ -59,10 +59,7 @@ class _ContainerBatchCreateState extends State<ContainerBatchCreate> {
         ),
         actions: [
           IconButton(
-              onPressed: () {
-                //TODO: Batch create info.
-              },
-              icon: const Icon(Icons.info_outline_rounded))
+              onPressed: () {}, icon: const Icon(Icons.info_outline_rounded))
         ],
         centerTitle: true,
         elevation: 0,
