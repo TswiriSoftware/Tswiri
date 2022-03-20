@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/isar/container_type.dart';
+import 'package:flutter_google_ml_kit/isar/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:isar/isar.dart';
 
-import '../../isar/container_isar.dart';
+import '../../isar/container_isar/container_isar.dart';
 import '../basic_outline_containers/light_container.dart';
 
 ///This card is for displaying containers
@@ -31,6 +32,13 @@ class ContainerCardWidget extends StatelessWidget {
                 .findFirstSync()!
                 .containerColor))
             .withOpacity(1);
+
+        String numberOfChildren = database.containerRelationships
+            .filter()
+            .parentUIDMatches(containerEntry.containerUID)
+            .findAllSync()
+            .length
+            .toString();
 
         return LightContainer(
             margin: 2.5,
@@ -64,6 +72,18 @@ class ContainerCardWidget extends StatelessWidget {
                       ),
                       Text(
                         containerEntry.description ?? '',
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        'Children: ',
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
+                      Text(
+                        numberOfChildren,
                         style: Theme.of(context).textTheme.labelMedium,
                       ),
                     ],

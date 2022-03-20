@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/isar/container_relationship.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/new_container_view.dart';
+
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_dark_container.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/container_children_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/container_description_widget.dart';
-import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_description_widget.dart';
+
 import 'package:flutter_google_ml_kit/widgets/container_widgets/container_name_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/container_parent_widget.dart';
 import 'package:isar/isar.dart';
-import '../../isar/container_isar.dart';
-import '../../widgets/basic_outline_containers/orange_outline_container.dart';
-import '../../widgets/container_widgets/new_container_widgets/new_container_parent_widget.dart';
-import 'container_selector_view.dart';
+import '../../functions/barcodeTools/hide_keyboard.dart';
+import '../../isar/container_isar/container_isar.dart';
+
+import '../barcodeScanning/scan_barcode_view.dart';
 import 'functions/isar_functions.dart';
 
 class ContainerView extends StatefulWidget {
@@ -85,85 +86,31 @@ class _ContainerViewState extends State<ContainerView> {
                       database: database!,
                     ),
 
-                    ContainerParentWidget(
-                        currentContainerUID: widget.containerUID,
-                        database: database!),
+                    //Container Parent.
+                    Builder(builder: (context) {
+                      //TODO: implent check database instead of hardcoded.
 
-                    // ///Container Parent.
-                    // Builder(builder: (context) {
-                    //   //Hide parent container if creating an area.
-                    //   if (snapshot.data!.containerType == 'area') {
-                    //     return Container();
-                    //   }
+                      //If it is an area.
+                      if (snapshot.data!.containerType == 'area') {
+                        return Container();
+                      }
+                      return ContainerParentWidget(
+                        database: database!,
+                        isNewContainer: false,
+                        currentBarcodeUID: widget.containerUID,
+                      );
+                    }),
 
-                    //   String? parentContainerUID = database!
-                    //       .containerRelationships
-                    //       .filter()
-                    //       .containerUIDMatches(snapshot.data!.containerUID)
-                    //       .findFirstSync()
-                    //       ?.parentUID;
-
-                    //   if (parentContainerUID != null) {
-                    //     parentContainerName = database!.containerEntrys
-                    //         .filter()
-                    //         .containerUIDMatches(parentContainerUID)
-                    //         .findFirstSync()
-                    //         ?.name;
-                    //   }
-
-                    //   return NewContainerParentWidget(
-                    //     parentContainerUID: parentContainerUID,
-                    //     parentContainerName: parentContainerName,
-                    // button: InkWell(
-                    //   onTap: () async {
-                    // List<String?>? parentContainerData =
-                    //     await Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => ContainerSelectorView(
-                    //       currentContainerUID: widget.containerUID,
-                    //       database: database,
-                    //       multipleSelect: false,
-                    //     ),
-                    //   ),
-                    // );
-                    // setState(() {
-                    //   parentContainerUID = parentContainerData![0];
-                    //   parentContainerName = parentContainerData[1];
-                    // });
-
-                    //         ContainerRelationship? containerRelationship =
-                    //             database!
-                    //                 .containerRelationships
-                    //                 .filter()
-                    //                 .containerUIDMatches(
-                    //                     snapshot.data!.containerUID)
-                    //                 .findFirstSync();
-
-                    //         containerRelationship ??= ContainerRelationship()
-                    //           ..containerUID = widget.containerUID
-                    //           ..parentUID = parentContainerUID;
-
-                    //         if (parentContainerUID != null) {
-                    //           containerRelationship.parentUID =
-                    //               parentContainerUID;
-                    //           database!.writeTxnSync((isar) => isar
-                    //               .containerRelationships
-                    //               .putSync(containerRelationship!,
-                    //                   replaceOnConflict: true));
-                    //         }
-                    //       },
-                    // child: const OrangeOutlineContainer(
-                    //   padding: 8,
-                    //   child: Text('select'),
-                    // ),
-                    //     ),
-                    //   );
-                    // }),
+                    //BarcodeUID
+                    BarcodeUIDwidget(
+                      database: database!,
+                      containerUID: widget.containerUID,
+                    ),
 
                     ///Container Children
                     ContainerChildrenWidget(
                       showButton: true,
+                      currentContainerName: snapshot.data!.name,
                       height: 200,
                       currentContainerUID: widget.containerUID,
                       database: database!,
@@ -191,5 +138,78 @@ class _ContainerViewState extends State<ContainerView> {
       title = containerEntry!.name ?? containerEntry.containerType;
     });
     return containerEntry;
+  }
+}
+
+class BarcodeUIDwidget extends StatefulWidget {
+  const BarcodeUIDwidget({
+    Key? key,
+    required this.database,
+    required this.containerUID,
+  }) : super(key: key);
+  final Isar database;
+  final String containerUID;
+
+  @override
+  State<BarcodeUIDwidget> createState() => _BarcodeUIDwidgetState();
+}
+
+class _BarcodeUIDwidgetState extends State<BarcodeUIDwidget> {
+  String? barcodeUID;
+  ContainerEntry? containerEntry;
+
+  @override
+  void initState() {
+    containerEntry = widget.database.containerEntrys
+        .filter()
+        .containerUIDMatches(widget.containerUID)
+        .findFirstSync();
+
+    barcodeUID = containerEntry?.barcodeUID;
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LightDarkContainer(
+        child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('barcodeUID', style: Theme.of(context).textTheme.bodySmall),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(barcodeUID ?? 'Scan Barcode',
+                style: Theme.of(context).textTheme.bodyLarge),
+            InkWell(
+              onTap: () async {
+                String? scannedBarcodeUID = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ScanBarcodeView(),
+                  ),
+                );
+                setState(() {
+                  if (scannedBarcodeUID != null) {
+                    barcodeUID = scannedBarcodeUID;
+                    containerEntry?.barcodeUID = barcodeUID;
+                    widget.database.writeTxnSync((isar) {
+                      isar.containerEntrys.putSync(containerEntry!);
+                    });
+                  }
+                });
+              },
+              child: OrangeOutlineContainer(
+                child: Text(
+                  'Scan',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ));
   }
 }

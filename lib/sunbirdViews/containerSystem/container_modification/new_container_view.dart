@@ -1,10 +1,8 @@
-import 'dart:developer';
-import 'package:flutter_google_ml_kit/isar/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar/container_relationship/container_relationship.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/isar/container_isar.dart';
-import 'package:flutter_google_ml_kit/isar/container_type.dart';
+import 'package:flutter_google_ml_kit/isar/container_isar/container_isar.dart';
+import 'package:flutter_google_ml_kit/isar/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeScanning/scan_barcode_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/container_selector_view.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_description_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_name_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/container_parent_widget.dart';
@@ -13,16 +11,16 @@ import 'package:flutter_google_ml_kit/widgets/container_widgets/container_type_w
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:isar/isar.dart';
-import '../../widgets/container_widgets/new_container_widgets/new_container_parent_widget.dart';
-import 'functions/isar_functions.dart';
+import '../functions/isar_functions.dart';
 
 class NewContainerView extends StatefulWidget {
-  const NewContainerView({
-    Key? key,
-    this.database,
-    this.containerType,
-    this.parentUID,
-  }) : super(key: key);
+  const NewContainerView(
+      {Key? key,
+      this.database,
+      this.containerType,
+      this.parentUID,
+      this.parentName})
+      : super(key: key);
 
   ///Isar
   final Isar? database;
@@ -32,6 +30,7 @@ class NewContainerView extends StatefulWidget {
 
   ///Pass a parentUID if you can.
   final String? parentUID;
+  final String? parentName;
 
   @override
   State<NewContainerView> createState() => _NewContainerViewState();
@@ -39,7 +38,7 @@ class NewContainerView extends StatefulWidget {
 
 class _NewContainerViewState extends State<NewContainerView> {
   String? title;
-  List<String?>? parentUID;
+  String? parentUID;
   List<String>? children;
   String? containerType;
   String? barcodeUID;
@@ -55,8 +54,7 @@ class _NewContainerViewState extends State<NewContainerView> {
     database ??= openIsar();
 
     containerType = widget.containerType ?? 'area';
-    log(containerType.toString());
-    parentUID = [widget.parentUID, null];
+    parentUID = widget.parentUID;
 
     super.initState();
   }
@@ -107,6 +105,7 @@ class _NewContainerViewState extends State<NewContainerView> {
                   });
                 },
               ),
+
               //Description
               NewContainerDescriptionWidget(
                 descriptionController: descriptionController,
@@ -165,35 +164,15 @@ class _NewContainerViewState extends State<NewContainerView> {
                   ),
                 ),
               ),
-              //ParentUID
-              Builder(builder: (context) {
-                //Hide parent container if creating an area.
-                if (containerType == 'area') {
-                  return Container();
-                }
-                return NewContainerParentWidget(
-                  parentContainerUID: parentUID![0],
-                  parentContainerName: parentUID![1],
-                  button: InkWell(
-                    onTap: () async {
-                      parentUID = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ContainerSelectorView(
-                            database: database,
-                            multipleSelect: false,
-                          ),
-                        ),
-                      );
-                      setState(() {});
-                    },
-                    child: const OrangeOutlineContainer(
-                      padding: 8,
-                      child: Text('select'),
-                    ),
-                  ),
-                );
-              }),
+              //ContainerParentUID
+              ContainerParentWidget(
+                database: database!,
+                isNewContainer: true,
+                updateParent: (value) {
+                  //log(value.toString());
+                  parentUID = value;
+                },
+              ),
 
               createContainer()
             ],
@@ -236,20 +215,14 @@ class _NewContainerViewState extends State<NewContainerView> {
                   ..description = descriptionController.text
                   ..barcodeUID = null;
 
+                final newContainerRelationship = ContainerRelationship()
+                  ..containerUID = containerUID
+                  ..parentUID = parentUID;
+
                 database!.writeTxnSync((isar) {
                   isar.containerEntrys.putSync(newContainer);
+                  isar.containerRelationships.putSync(newContainerRelationship);
                 });
-
-                //Write to ContainerRelationships;
-                if (parentUID != null && parentUID!.isNotEmpty) {
-                  final newRelationship = ContainerRelationship()
-                    ..containerUID = containerUID
-                    ..parentUID = parentUID![1];
-
-                  database!.writeTxnSync((isar) {
-                    isar.containerRelationships.putSync(newRelationship);
-                  });
-                }
 
                 Navigator.pop(context);
               },

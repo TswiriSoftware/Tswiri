@@ -1,11 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/globalValues/isar_dir.dart';
-import 'package:flutter_google_ml_kit/isar/container_relationship.dart';
-import 'package:flutter_google_ml_kit/isar/container_type.dart';
+import 'package:flutter_google_ml_kit/isar/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar/container_type/container_type.dart';
 import 'package:isar/isar.dart';
 
-import '../../../isar/container_isar.dart';
+import '../../../isar/container_isar/container_isar.dart';
 
 Isar openIsar() {
   Isar isar = Isar.openSync(
@@ -71,9 +71,43 @@ ContainerEntry? getParentContainerEntry(
 }
 
 ContainerRelationship? getContainerRelationship(
+    {required Isar database, String? currentContainerUID}) {
+  if (currentContainerUID != null) {
+    return database.containerRelationships
+        .filter()
+        .containerUIDMatches(currentContainerUID)
+        .findFirstSync();
+  }
+  return null;
+}
+
+List<String>? getContainerChildren(
     {required Isar database, required String currentContainerUID}) {
   return database.containerRelationships
       .filter()
-      .containerUIDMatches(currentContainerUID)
-      .findFirstSync();
+      .parentUIDMatches(currentContainerUID)
+      .containerUIDProperty()
+      .findAllSync();
+}
+
+////////////////////////////////////////////
+String? getContainerName(
+    {required Isar database, required String containerUID}) {
+  return database.containerEntrys
+      .filter()
+      .containerUIDMatches(containerUID)
+      .findFirstSync()
+      ?.name;
+}
+
+String? getContainerDescription(
+    {required Isar database, required String? containerUID}) {
+  if (containerUID != null) {
+    return database.containerEntrys
+        .filter()
+        .containerUIDMatches(containerUID)
+        .findFirstSync()
+        ?.description;
+  }
+  return null;
 }

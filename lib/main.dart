@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/isar_dir.dart';
 import 'package:flutter_google_ml_kit/globalValues/routes.dart';
-import 'package:flutter_google_ml_kit/isar/container_type.dart';
+import 'package:flutter_google_ml_kit/isar/container_type/container_type.dart';
+
+import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generator_new_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/barcode_selection_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/all_containers_view.dart';
 import 'package:flutter_google_ml_kit/widgets/card_widgets/custom_card_widget.dart';
@@ -16,7 +18,7 @@ import 'databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import 'databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 import 'databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
-import 'isar/container_type.dart';
+import 'isar/container_type/container_type.dart';
 import 'sunbirdViews/appSettings/app_settings_functions.dart';
 import 'sunbirdViews/appSettings/app_settings_view.dart';
 import 'sunbirdViews/containerSystem/functions/isar_functions.dart';
@@ -96,6 +98,10 @@ class MyApp extends StatelessWidget {
             backgroundColor: Colors.deepOrange[500],
           ),
         ),
+        checkboxTheme: CheckboxThemeData(
+          checkColor: MaterialStateProperty.all(Colors.white),
+          fillColor: MaterialStateProperty.all(Colors.deepOrange),
+        ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
             foregroundColor: Colors.black, backgroundColor: Colors.deepOrange),
         textSelectionTheme:
@@ -107,10 +113,7 @@ class MyApp extends StatelessWidget {
             titleMedium: TextStyle(fontSize: 18),
             titleSmall: TextStyle(fontSize: 16)),
       ),
-
       debugShowCheckedModeBanner: false,
-
-      //home: const Home(), //OLD HOME VIEW
       home: const HomeView(),
     );
   }
@@ -159,6 +162,13 @@ class HomeView extends StatelessWidget {
               'Find a box',
               BarcodeSelectionView(),
               Icons.navigation,
+              featureCompleted: true,
+              tileColor: Colors.deepOrange,
+            ),
+            CustomCard(
+              'Generate Barcodes',
+              BarcodeGeneratorView(),
+              Icons.qr_code_2_rounded,
               featureCompleted: true,
               tileColor: Colors.deepOrange,
             ),

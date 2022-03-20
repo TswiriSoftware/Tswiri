@@ -59,6 +59,7 @@ dependencies:
   isar: ^2.2.1
   isar_flutter_libs: ^2.2.1
   flutter_slidable: ^1.2.0
+  numberpicker: ^2.1.1
   
 
 

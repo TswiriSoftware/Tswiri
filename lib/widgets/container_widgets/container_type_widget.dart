@@ -24,25 +24,21 @@ class ContainerTypeWidget extends StatelessWidget {
         return CustomOutlineContainer(
           outlineColor: outlineColor,
           margin: 0,
-          padding: 0,
-          child: Padding(
-            padding:
-                const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Container type:',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    builder,
-                  ],
-                ),
-              ],
-            ),
+          padding: 5,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Container type:',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  builder,
+                ],
+              ),
+            ],
           ),
         );
       }),

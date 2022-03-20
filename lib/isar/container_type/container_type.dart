@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:isar/isar.dart';
 part 'container_type.g.dart';
 

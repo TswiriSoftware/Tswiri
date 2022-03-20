@@ -1,11 +1,12 @@
+// ignore: unused_import
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/isar/container_type.dart';
+import 'package:flutter_google_ml_kit/isar/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/container_card_widget%20.dart';
 import 'package:isar/isar.dart';
-import '../../isar/container_isar.dart';
-import 'functions/isar_functions.dart';
-import '../../widgets/search_bar_widget.dart';
+import '../../../isar/container_isar/container_isar.dart';
+import '../functions/isar_functions.dart';
+import '../../../widgets/search_bar_widget.dart';
 
 class ContainerSelectorView extends StatefulWidget {
   const ContainerSelectorView(
@@ -25,6 +26,8 @@ class ContainerSelectorView extends StatefulWidget {
 class _ContainerSelectorViewState extends State<ContainerSelectorView> {
   List<ContainerEntry> searchResults = [];
   Isar? database;
+
+  ///TODO: implement type filtering.
 
   @override
   void initState() {

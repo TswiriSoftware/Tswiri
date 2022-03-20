@@ -1,14 +1,15 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/isar/container_isar.dart';
-import 'package:flutter_google_ml_kit/isar/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar/container_isar/container_isar.dart';
+import 'package:flutter_google_ml_kit/isar/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/container_view.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/container_card_widget%20.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/new_container_view.dart';
 import 'package:isar/isar.dart';
 
+import '../../functions/barcodeTools/hide_keyboard.dart';
+import 'container_modification/new_container_setup.dart';
 import 'functions/isar_functions.dart';
 
 import '../../widgets/search_bar_widget.dart';
@@ -183,8 +184,8 @@ class _ContainersViewState extends State<ContainersView> {
     await Navigator.push(
       context,
       (MaterialPageRoute(
-        builder: (context) => NewContainerView(
-          database: database,
+        builder: (context) => NewContainerCreateView(
+          database: database!,
         ),
       )),
     );
