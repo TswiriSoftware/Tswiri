@@ -14,7 +14,7 @@ import 'package:hive/hive.dart';
 
 import '../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 import '../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
-import '../../sunbirdViews/appSettings/app_settings.dart';
+import '../../sunbirdViews/app_settings/app_settings.dart';
 
 ///Calculates the average interBarcodeOffset.
 /// i. Takes into account for offset direction.

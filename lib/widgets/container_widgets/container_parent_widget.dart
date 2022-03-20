@@ -5,8 +5,8 @@ import 'package:isar/isar.dart';
 
 import '../../isar/container_isar/container_isar.dart';
 import '../../isar/container_relationship/container_relationship.dart';
-import '../../sunbirdViews/containerSystem/container_modification/container_selector_view.dart';
-import '../../sunbirdViews/containerSystem/functions/isar_functions.dart';
+import '../../sunbirdViews/container_system/container_modification/container_selector_view.dart';
+import '../../isar/functions/isar_functions.dart';
 import '../basic_outline_containers/custom_outline_container.dart';
 import '../basic_outline_containers/light_container.dart';
 import '../basic_outline_containers/orange_outline_container.dart';

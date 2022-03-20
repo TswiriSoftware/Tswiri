@@ -9,7 +9,7 @@ import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.da
 
 import 'package:flutter_google_ml_kit/globalValues/global_paints.dart';
 import 'package:flutter_google_ml_kit/objects/on_screen_barcode_data.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/appSettings/app_settings.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/app_settings/app_settings.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:flutter/services.dart';
 

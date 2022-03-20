@@ -5,9 +5,9 @@ import 'package:flutter_google_ml_kit/globalValues/isar_dir.dart';
 import 'package:flutter_google_ml_kit/globalValues/routes.dart';
 import 'package:flutter_google_ml_kit/isar/container_type/container_type.dart';
 
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeGeneration/barcode_generator_new_view.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcode_generator/barcode_generator_new_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/barcode_selection_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/containerSystem/all_containers_view.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/container_system/container_view/all_containers_view.dart';
 import 'package:flutter_google_ml_kit/widgets/card_widgets/custom_card_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:isar/isar.dart';
@@ -19,9 +19,9 @@ import 'databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.da
 import 'databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
 import 'isar/container_type/container_type.dart';
-import 'sunbirdViews/appSettings/app_settings_functions.dart';
-import 'sunbirdViews/appSettings/app_settings_view.dart';
-import 'sunbirdViews/containerSystem/functions/isar_functions.dart';
+import 'sunbirdViews/app_settings/app_settings_functions.dart';
+import 'sunbirdViews/app_settings/app_settings_view.dart';
+import 'isar/functions/isar_functions.dart';
 
 List<CameraDescription> cameras = [];
 

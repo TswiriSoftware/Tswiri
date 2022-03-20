@@ -22,7 +22,7 @@ import '../../objects/accelerometer_data.dart';
 import '../../objects/raw_on_image_barcode_data.dart';
 import '../../objects/raw_on_image_inter_barcode_data.dart';
 import '../../objects/real_inter_barcode_offset.dart';
-import '../barcodeControlPanel/barcode_control_panel.dart';
+import '../barcode_control_panel/barcode_control_panel_view.dart';
 
 class BarcodeCameraNavigatorView extends StatefulWidget {
   final String barcodeID;
@@ -301,7 +301,7 @@ class _BarcodeCameraNavigatorViewState
                       zOffset: startBarcodePosition.zOffset +
                           averagedRealInterBarcodeOffset[0].zOffset,
                       isMarker: false,
-                      shelfUID: 1, //TODO: Implement ShelfUID
+                      shelfUID: 1,
                       timestamp: averagedRealInterBarcodeOffset[0].timestamp);
 
               //Remove all incorrect interBarcodeOffsets.
@@ -334,7 +334,7 @@ class _BarcodeCameraNavigatorViewState
                       zOffset: endBarcodePosition.zOffset +
                           averagedRealInterBarcodeOffset[0].zOffset,
                       isMarker: false,
-                      shelfUID: 1, //TODO: Implement shelfUID
+                      shelfUID: 1,
                       timestamp: averagedRealInterBarcodeOffset[0].timestamp);
 
               //Remove all incorrect interBarcodeOffsets.

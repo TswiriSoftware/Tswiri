@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../databaseAdapters/barcodePhotoAdapter/barcode_photo_entry.dart';
 import '../../globalValues/global_hive_databases.dart';
 import '../../objects/image_data.dart';
-import '../barcodeControlPanel/barcode_control_panel.dart';
+import '../barcode_control_panel/barcode_control_panel_view.dart';
 import 'painter/object_detector_painter.dart';
 
 ///Displays the Photo and objects detected
