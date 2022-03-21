@@ -204,7 +204,7 @@ class _BarcodeDataContainerState extends State<BarcodeDataContainer> {
           title: const Text('Barcode Diagonal Length'),
           content: const Text(
               "Image here\nThe length in mm from the barcode's top left corner to the bottom right corner."),
-          //TODO: Implement auto calculator for barcode diagonal length.
+          //TODO: Implement auto calculator for barcode diagonal lengt
           //TODO: Request Image to show Barcode Sides with arrow.
           actions: [
             ElevatedButton(

@@ -15,7 +15,6 @@ import '../../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup
 import '../../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 import '../../../widgets/barcode_scanning_widgets/real_position_display_widget_old.dart';
 import 'real_barcode_position_database_visualization_view.dart';
-import '../../../widgets/barcode_scanning_widgets/real_position_display_widget_old.dart';
 
 class BarcodeScannerDataProcessingView extends StatefulWidget {
   const BarcodeScannerDataProcessingView(
