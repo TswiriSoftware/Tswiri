@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/statefull_container_edit_widgets/container_barcode_edit_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/statefull_container_edit_widgets/container_description_edit_widget.dart';
+import 'package:flutter_google_ml_kit/widgets/container_widgets/statefull_container_edit_widgets/container_marker_edit_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/statefull_container_edit_widgets/container_name_edit_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/statefull_container_edit_widgets/container_parent_edit_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/stateless_container_display_widgets/container_barcode_display_widget.dart';
@@ -123,8 +124,17 @@ class _ContainerViewState extends State<ContainerView> {
 
                       //Barcode edit.
                       ContainerBarcodeEiditWidget(
-                          database: database!,
-                          containerUID: containerEntry!.containerUID),
+                        database: database!,
+                        containerUID: containerEntry!.containerUID,
+                      ),
+
+                      //Marker edit.
+                      ContainerMarkerEditWidget(
+                        database: database!,
+                        currentContainerUID: containerEntry!.containerUID,
+                      ),
+
+                      //Children Position Scan.
                     ],
                   );
                 } else {

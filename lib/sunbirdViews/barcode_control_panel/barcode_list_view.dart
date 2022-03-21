@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcode_scanning/barcode_value_scanning/single_barcode_scan_view.dart';
 import 'package:hive/hive.dart';
 
 import '../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
@@ -10,6 +9,7 @@ import '../../databaseAdapters/tagAdapters/barcode_tag_entry.dart';
 import '../../functions/barcodeTools/hide_keyboard.dart';
 import '../../globalValues/global_hive_databases.dart';
 import '../../objects/all_barcode_data.dart';
+import '../../sunbird_views/barcode_scanning/single_barcode_scanner/single_barcode_scanner_view.dart';
 import 'barcode_control_panel_view.dart';
 import '../../widgets/barcode_control_panel_widgets/barcode_display_widget.dart';
 
@@ -56,7 +56,7 @@ class _BarcodeListViewState extends State<BarcodeListView> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const SingleBarcodeScanView()));
+                      builder: (context) => const SingleBarcodeScannerView()));
             },
           )
         ],

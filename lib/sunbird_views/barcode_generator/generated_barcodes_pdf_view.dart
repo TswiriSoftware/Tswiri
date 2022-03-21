@@ -5,11 +5,10 @@ import 'package:printing/printing.dart';
 class BarcodeGenerationView extends StatefulWidget {
   const BarcodeGenerationView({
     Key? key,
-    required this.rangeStart,
-    required this.rangeEnd,
+    required this.barcodeUIDs,
   }) : super(key: key);
-  final int rangeStart;
-  final int rangeEnd;
+
+  final List<String> barcodeUIDs;
 
   @override
   _BarcodeGenerationViewState createState() => _BarcodeGenerationViewState();
@@ -27,22 +26,22 @@ class _BarcodeGenerationViewState extends State<BarcodeGenerationView> {
         centerTitle: true,
         elevation: 0,
       ),
-      body: CustomCardQrCode(widget.rangeStart, widget.rangeEnd),
+      body: CustomCardQrCode(
+        barcodeUIDs: widget.barcodeUIDs,
+      ),
     );
   }
 }
 
 class CustomCardQrCode extends StatelessWidget {
-  final int rangeStart;
-  final int rangeEnd;
-
-  // ignore: use_key_in_widget_constructors
-  const CustomCardQrCode(this.rangeStart, this.rangeEnd);
+  const CustomCardQrCode({Key? key, required this.barcodeUIDs})
+      : super(key: key);
+  final List<String> barcodeUIDs;
 
   @override
   Widget build(BuildContext context) {
     return PdfPreview(
         maxPageWidth: MediaQuery.of(context).size.width,
-        build: (format) => barcodePdfGenerator(rangeStart, rangeEnd));
+        build: (format) => barcodePdfGenerator(barcodeUIDs: barcodeUIDs));
   }
 }

@@ -5,14 +5,14 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import '../../../VisionDetectorViews/camera_view.dart';
 import '../painters/barcode_painter.dart';
 
-class SingleBarcodeScanView extends StatefulWidget {
-  const SingleBarcodeScanView({Key? key}) : super(key: key);
+class SingleBarcodeScanViewOLD extends StatefulWidget {
+  const SingleBarcodeScanViewOLD({Key? key}) : super(key: key);
 
   @override
   _SingleBarcodeScanViewState createState() => _SingleBarcodeScanViewState();
 }
 
-class _SingleBarcodeScanViewState extends State<SingleBarcodeScanView> {
+class _SingleBarcodeScanViewState extends State<SingleBarcodeScanViewOLD> {
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
 

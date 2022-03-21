@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/isar_dir.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcode_generation_entry/barcode_generation_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_photo/container_photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
+import 'package:flutter_google_ml_kit/isar_database/coordinate/coordinate.dart';
+import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
+import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
 import 'package:isar/isar.dart';
 import '../container/container_isar.dart';
 
@@ -10,7 +17,14 @@ Isar openIsar() {
     schemas: [
       ContainerEntrySchema,
       ContainerRelationshipSchema,
-      ContainerTypeSchema
+      ContainerTypeSchema,
+      MarkerSchema,
+      TagSchema,
+      CoordinateSchema,
+      ContainerTagSchema,
+      ContainerPhotoSchema,
+      BarcodePropertySchema,
+      BarcodeGenerationEntrySchema
     ],
     directory: isarDirectory!.path,
     inspector: true,
