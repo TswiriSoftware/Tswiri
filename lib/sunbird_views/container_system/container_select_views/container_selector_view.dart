@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/widgets/card_widgets/container_card_widget%20.dart';
+import 'package:flutter_google_ml_kit/widgets/card_widgets/container_card_widget.dart';
 import 'package:isar/isar.dart';
 import '../../../isar_database/container/container_isar.dart';
 import '../../../isar_database/functions/isar_functions.dart';

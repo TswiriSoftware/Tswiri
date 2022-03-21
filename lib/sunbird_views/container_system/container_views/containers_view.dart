@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container/container_isar.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
-import 'package:flutter_google_ml_kit/widgets/card_widgets/container_card_widget%20.dart';
+import 'package:flutter_google_ml_kit/widgets/card_widgets/container_card_widget.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 import 'package:isar/isar.dart';
