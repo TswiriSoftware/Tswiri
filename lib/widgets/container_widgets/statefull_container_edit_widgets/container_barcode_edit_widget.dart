@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/isar/container_isar/container_isar.dart';
+import 'package:flutter_google_ml_kit/isar_database/container/container_isar.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcode_scanning/barcode_value_scanning/single_barcode_scan_view.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';

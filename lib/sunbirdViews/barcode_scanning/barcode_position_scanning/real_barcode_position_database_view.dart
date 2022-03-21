@@ -7,7 +7,7 @@ import 'package:hive/hive.dart';
 
 import '../../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 import '../../../objects/real_barcode_position.dart';
-import '../../../widgets/barcode_scanning_widgets/real_position_display_widget.dart';
+import '../../../widgets/barcode_scanning_widgets/real_position_display_widget_old.dart';
 
 class RealBarcodePositionDatabaseView extends StatefulWidget {
   const RealBarcodePositionDatabaseView({Key? key}) : super(key: key);

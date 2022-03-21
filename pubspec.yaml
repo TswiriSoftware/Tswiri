@@ -54,10 +54,10 @@ dependencies:
   open_file: ^3.2.1
   provider: ^6.0.2
   flutter_isolate: ^2.0.0
-  isar: ^2.2.1
-  isar_flutter_libs: ^2.2.1
   flutter_slidable: ^1.2.0
   numberpicker: ^2.1.1
+  isar: ^2.2.1
+  isar_flutter_libs: ^2.2.1
   
 
 

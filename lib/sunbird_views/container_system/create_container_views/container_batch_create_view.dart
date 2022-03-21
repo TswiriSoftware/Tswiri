@@ -1,20 +1,22 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcode_scanning/barcode_value_scanning/multiple_barcode_scan_view.dart';
 
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_dark_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_type_widget.dart';
 import 'package:isar/isar.dart';
-import '../../../isar/container_isar/container_isar.dart';
-import '../../../isar/container_relationship/container_relationship.dart';
-import '../../../isar/container_type/container_type.dart';
+import '../../../isar_database/container/container_isar.dart';
+
+import '../../../isar_database/container_relationship/container_relationship.dart';
+import '../../../isar_database/container_type/container_type.dart';
+
 import 'package:numberpicker/numberpicker.dart';
 
 import '../../../widgets/container_widgets/new_container_widgets/new_container_name_widget.dart';
+import '../../../sunbirdViews/barcode_scanning/barcode_value_scanning/multiple_barcode_scan_view.dart';
 
-class ContainerBatchCreate extends StatefulWidget {
-  const ContainerBatchCreate({
+class BatchContainerCreateView extends StatefulWidget {
+  const BatchContainerCreateView({
     Key? key,
     required this.database,
     this.parentContainerUID,
@@ -26,16 +28,17 @@ class ContainerBatchCreate extends StatefulWidget {
   final String? parentContainerUID;
 
   @override
-  State<ContainerBatchCreate> createState() => _ContainerBatchCreateState();
+  State<BatchContainerCreateView> createState() =>
+      _BatchContainerCreateViewState();
 }
 
-class _ContainerBatchCreateState extends State<ContainerBatchCreate> {
+class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
   String? containerType;
   String? parentContainerUID;
   int numberOfNewContainers = 5;
   final TextEditingController nameController = TextEditingController();
   String? containerName;
-  int numberOfBarcodes = 0;
+  int numberOfBarcodes = 5;
   Set<String?>? scannedBarcodeUIDs = {};
   bool includeScan = false;
 
@@ -80,7 +83,7 @@ class _ContainerBatchCreateState extends State<ContainerBatchCreate> {
             // ),
 
             ///ContainerType Select.
-            ContainerTypeWidget(
+            NewContainerTypeWidget(
               builder: Builder(builder: (context) {
                 List<ContainerType> containerTypes =
                     widget.database.containerTypes.where().findAllSync();
@@ -242,10 +245,8 @@ class _ContainerBatchCreateState extends State<ContainerBatchCreate> {
                         return InkWell(
                           onTap: () {
                             //Create without barcodes.
-                            log('createContainersWithoutBarcodes');
                             createContainersWithoutBarcodes();
-
-                            Navigator.pop(context);
+                            //Navigator.pop(context);
                           },
                           child: OrangeOutlineContainer(
                             child: Text(
@@ -259,9 +260,8 @@ class _ContainerBatchCreateState extends State<ContainerBatchCreate> {
                         return InkWell(
                           onTap: () {
                             //Create with barcodes.
-                            log('createContainersWithBarcodes');
                             createContainersWithBarcodes();
-                            Navigator.pop(context);
+                            //Navigator.pop(context);
                           },
                           child: OrangeOutlineContainer(
                             child: Text(
@@ -323,8 +323,8 @@ class _ContainerBatchCreateState extends State<ContainerBatchCreate> {
 
   void createContainersWithoutBarcodes() {
     int timestamp = DateTime.now().millisecondsSinceEpoch;
-    log('aa');
-
+    log(timestamp.toString());
+    log(numberOfBarcodes.toString());
     for (var i = 0; i < numberOfBarcodes; i++) {
       String _containerUID = '${containerType!}_${timestamp + i}';
       String? _containerName;

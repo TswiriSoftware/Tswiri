@@ -1,16 +1,20 @@
-import 'package:flutter_google_ml_kit/isar/container_relationship/container_relationship.dart';
+import 'dart:developer';
+
+import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/isar/container_isar/container_isar.dart';
-import 'package:flutter_google_ml_kit/isar/container_type/container_type.dart';
+import 'package:flutter_google_ml_kit/isar_database/container/container_isar.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcode_scanning/barcode_value_scanning/single_barcode_scan_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_system/container_select_views/container_selector_view.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_description_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_name_widget.dart';
+import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_parent_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_scan_barcode.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_type_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:isar/isar.dart';
-import '../../../isar/functions/isar_functions.dart';
+import '../../../isar_database/functions/isar_functions.dart';
 
 class SingleContainerCreateView extends StatefulWidget {
   const SingleContainerCreateView(
@@ -37,12 +41,12 @@ class SingleContainerCreateView extends StatefulWidget {
 }
 
 class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
+  Isar? database;
   String? title;
   String? parentUID;
-  List<String>? children;
+  String? parentName;
   String? containerType;
   String? barcodeUID;
-  Isar? database;
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
@@ -120,7 +124,7 @@ class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
               ),
 
               //Type
-              ContainerTypeWidget(
+              NewContainerTypeWidget(
                 containerType: containerType,
                 builder: Builder(builder: (context) {
                   List<ContainerType> containerTypes =
@@ -144,7 +148,7 @@ class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
               ),
 
               //BarcodeUID
-              ScanBarcodeWidget(
+              NewContainerScanBarcodeWidget(
                 barcodeUID: barcodeUID,
                 button: InkWell(
                   onTap: () async {
@@ -167,15 +171,32 @@ class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
                 ),
               ),
 
-              // //ContainerParentUID
-              // ContainerParentWidget(
-              //   database: database!,
-              //   isNewContainer: true,
-              //   updateParent: (value) {
-              //     //log(value.toString());
-              //     parentUID = value;
-              //   },
-              // ),
+              //ParentUID
+              NewContainerParentWidget(
+                parentUID: parentUID,
+                parentName: parentName,
+                onTap: (() async {
+                  ContainerEntry? selectedParentContainer =
+                      await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ContainerSelectorView(
+                        database: widget.database,
+                        multipleSelect: false,
+                      ),
+                    ),
+                  );
+                  if (selectedParentContainer != null) {
+                    parentUID = selectedParentContainer.containerUID;
+                    parentName = selectedParentContainer.name;
+                    setState(() {});
+                  } else {
+                    parentUID = "'";
+                    parentName = "'";
+                    setState(() {});
+                  }
+                }),
+              ),
 
               createContainer()
             ],

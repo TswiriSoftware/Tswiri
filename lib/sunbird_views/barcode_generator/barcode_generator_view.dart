@@ -134,35 +134,35 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
   }
 
   Future<void> addBarcodeData() async {
-    //Open Barcode DataBox
-    Box<BarcodeDataEntry> barcodeData = await Hive.openBox(allBarcodesBoxName);
+    // //Open Barcode DataBox
+    // Box<BarcodeDataEntry> barcodeData = await Hive.openBox(allBarcodesBoxName);
 
     //Put barcode data
-    int timestamp = DateTime.now().millisecondsSinceEpoch;
+    // int timestamp = DateTime.now().millisecondsSinceEpoch;
 
-    for (int i = rangeStart; i <= rangeEnd; i++) {
-      String barcodeUID = '${i}_' + timestamp.toString();
-      if (!barcodeData.containsKey(i)) {
-        if (i == 1) {
-          await barcodeData.put(
-              i,
-              BarcodeDataEntry(
-                  uid: barcodeUID,
-                  barcodeSize: 100,
-                  isMarker: true,
-                  description: 'Add a description'));
-        } else {
-          await barcodeData.put(
-              i,
-              BarcodeDataEntry(
-                  uid: barcodeUID,
-                  barcodeSize: 100,
-                  isMarker: false,
-                  description: 'Add a description'));
-        }
-      }
-    }
+    // for (int i = rangeStart; i <= rangeEnd; i++) {
+    //   String barcodeUID = '${i}_' + timestamp.toString();
+    //   if (!barcodeData.containsKey(i)) {
+    //     if (i == 1) {
+    //       await barcodeData.put(
+    //           i,
+    //           BarcodeDataEntry(
+    //               uid: barcodeUID,
+    //               barcodeSize: 100,
+    //               isMarker: true,
+    //               description: 'Add a description'));
+    //     } else {
+    //       await barcodeData.put(
+    //           i,
+    //           BarcodeDataEntry(
+    //               uid: barcodeUID,
+    //               barcodeSize: 100,
+    //               isMarker: false,
+    //               description: 'Add a description'));
+    //     }
+    //   }
+    // }
     //close Box
-    barcodeData.close();
+    //barcodeData.close();
   }
 }

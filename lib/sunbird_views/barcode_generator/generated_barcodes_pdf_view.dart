@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcode_generator/barcode_generator.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcode_generator/barcode_generator.dart';
 import 'package:printing/printing.dart';
 
 class BarcodeGenerationView extends StatefulWidget {

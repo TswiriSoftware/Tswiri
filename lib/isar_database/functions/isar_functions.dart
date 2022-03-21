@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/isar_dir.dart';
-import 'package:flutter_google_ml_kit/isar/container_relationship/container_relationship.dart';
-import 'package:flutter_google_ml_kit/isar/container_type/container_type.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
 import 'package:isar/isar.dart';
-import '../container_isar/container_isar.dart';
+import '../container/container_isar.dart';
 
 Isar openIsar() {
   Isar isar = Isar.openSync(

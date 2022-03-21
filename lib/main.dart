@@ -2,24 +2,24 @@ import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/globalValues/isar_dir.dart';
 import 'package:flutter_google_ml_kit/globalValues/routes.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcode_generator/barcode_generator_new_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcode_generator/barcode_generator_view.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/barcode_selection_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/container_system/container_view/containers_view.dart';
 import 'package:flutter_google_ml_kit/widgets/card_widgets/custom_card_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'databaseAdapters/allBarcodes/barcode_data_entry.dart';
+import 'databaseAdapters/barcodePhotoAdapter/barcode_photo_entry.dart';
 import 'databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 import 'databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
+import 'databaseAdapters/shelfAdapter/shelf_entry.dart';
+import 'databaseAdapters/tagAdapters/barcode_tag_entry.dart';
+import 'databaseAdapters/tagAdapters/tag_entry.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
-import 'globalValues/global_colours.dart';
-import 'isar/container_type/container_type.dart';
 import 'sunbirdViews/app_settings/app_settings_functions.dart';
 import 'sunbirdViews/app_settings/app_settings_view.dart';
-import 'isar/functions/isar_functions.dart';
+import 'sunbird_views/container_system/container_views/containers_view.dart';
 
 List<CameraDescription> cameras = [];
 
@@ -56,12 +56,12 @@ Future<void> main() async {
 
   Hive.registerAdapter(RealBarcodePositionEntryAdapter()); //0
   Hive.registerAdapter(DistanceFromCameraLookupEntryAdapter()); //1
-  //Hive.registerAdapter(BarcodeTagEntryAdapter()); //3
-  //Hive.registerAdapter(TagEntryAdapter()); //4
+  Hive.registerAdapter(BarcodeTagEntryAdapter()); //3
+  Hive.registerAdapter(TagEntryAdapter()); //4
   Hive.registerAdapter(TypeOffsetAdapter()); //5
   Hive.registerAdapter(BarcodeDataEntryAdapter()); //6
-  //Hive.registerAdapter(BarcodePhotosEntryAdapter()); //7
-  //Hive.registerAdapter(ShelfEntryAdapter()); //8
+  Hive.registerAdapter(BarcodePhotosEntryAdapter()); //7
+  Hive.registerAdapter(ShelfEntryAdapter()); //8
   //Hive.registerAdapter(ContainerTypeAdapter()); //9
   //Hive.registerAdapter(ContainerEntryAdapterOLD()); //2
   //Hive.registerAdapter(Vector3EntryAdapter()); //11

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/isar/container_isar/container_isar.dart';
-import 'package:flutter_google_ml_kit/isar/container_relationship/container_relationship.dart';
-import 'package:flutter_google_ml_kit/isar/container_type/container_type.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/container_system/container_view/container_view.dart';
+import 'package:flutter_google_ml_kit/isar_database/container/container_isar.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/widgets/card_widgets/container_card_widget%20.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 import 'package:isar/isar.dart';
 
 import '../../../functions/barcodeTools/hide_keyboard.dart';
-import '../create_containers/new_container_setup.dart';
-import '../../../isar/functions/isar_functions.dart';
+import '../create_container_views/create_new_container.dart';
+import '../../../isar_database/functions/isar_functions.dart';
 
 import '../../../widgets/search_bar_widget.dart';
+import 'container_view.dart';
 
 class ContainersView extends StatefulWidget {
   const ContainersView({Key? key}) : super(key: key);
@@ -29,6 +29,10 @@ class _ContainersViewState extends State<ContainersView> {
   @override
   void initState() {
     database = openIsar();
+
+    if (database!.containerTypes.where().findAllSync().isEmpty) {
+      createBasicContainerTypes();
+    }
 
     super.initState();
   }
@@ -184,7 +188,7 @@ class _ContainersViewState extends State<ContainersView> {
     await Navigator.push(
       context,
       (MaterialPageRoute(
-        builder: (context) => NewContainerCreateView(
+        builder: (context) => CreateNewContainerView(
           database: database!,
         ),
       )),
@@ -213,43 +217,43 @@ class _ContainersViewState extends State<ContainersView> {
     );
   }
 
-  // void createBasic() {
-  //   database!.writeTxnSync((database) {
-  //     database.containerTypes.putSync(
-  //         ContainerType()
-  //           ..id = 1
-  //           ..containerType = 'area'
-  //           ..canContain = ['shelf', 'box', 'drawer']
-  //           ..structured = true
-  //           ..containerColor = const Color(0xFFff420e).value.toString(),
-  //         replaceOnConflict: true);
+  void createBasicContainerTypes() {
+    database!.writeTxnSync((database) {
+      database.containerTypes.putSync(
+          ContainerType()
+            ..id = 1
+            ..containerType = 'area'
+            ..canContain = ['shelf', 'box', 'drawer']
+            ..structured = true
+            ..containerColor = const Color(0xFFff420e).value.toString(),
+          replaceOnConflict: true);
 
-  //     database.containerTypes.putSync(
-  //         ContainerType()
-  //           ..id = 2
-  //           ..containerType = 'shelf'
-  //           ..canContain = ['box', 'drawer']
-  //           ..structured = true
-  //           ..containerColor = const Color(0xFF89da59).value.toString(),
-  //         replaceOnConflict: true);
+      database.containerTypes.putSync(
+          ContainerType()
+            ..id = 2
+            ..containerType = 'shelf'
+            ..canContain = ['box', 'drawer']
+            ..structured = true
+            ..containerColor = const Color(0xFF89da59).value.toString(),
+          replaceOnConflict: true);
 
-  //     database.containerTypes.putSync(
-  //         ContainerType()
-  //           ..id = 3
-  //           ..containerType = 'drawer'
-  //           ..canContain = ['box', 'shelf']
-  //           ..structured = true
-  //           ..containerColor = Colors.blue.value.toString(),
-  //         replaceOnConflict: true);
+      database.containerTypes.putSync(
+          ContainerType()
+            ..id = 3
+            ..containerType = 'drawer'
+            ..canContain = ['box', 'shelf']
+            ..structured = true
+            ..containerColor = Colors.blue.value.toString(),
+          replaceOnConflict: true);
 
-  //     database.containerTypes.putSync(
-  //         ContainerType()
-  //           ..id = 4
-  //           ..containerType = 'box'
-  //           ..canContain = ['box', 'shelf']
-  //           ..structured = true
-  //           ..containerColor = Color(0xFFF98866).value.toString(),
-  //         replaceOnConflict: true);
-  //   });
-  // }
+      database.containerTypes.putSync(
+          ContainerType()
+            ..id = 4
+            ..containerType = 'box'
+            ..canContain = ['box', 'shelf']
+            ..structured = true
+            ..containerColor = const Color(0xFFF98866).value.toString(),
+          replaceOnConflict: true);
+    });
+  }
 }
