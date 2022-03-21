@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar/container_isar/container_isar.dart';
 import 'package:flutter_google_ml_kit/isar/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/container_system/container_view/container_view.dart';
 import 'package:flutter_google_ml_kit/widgets/card_widgets/container_card_widget%20.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -211,4 +212,44 @@ class _ContainersViewState extends State<ContainersView> {
       ),
     );
   }
+
+  // void createBasic() {
+  //   database!.writeTxnSync((database) {
+  //     database.containerTypes.putSync(
+  //         ContainerType()
+  //           ..id = 1
+  //           ..containerType = 'area'
+  //           ..canContain = ['shelf', 'box', 'drawer']
+  //           ..structured = true
+  //           ..containerColor = const Color(0xFFff420e).value.toString(),
+  //         replaceOnConflict: true);
+
+  //     database.containerTypes.putSync(
+  //         ContainerType()
+  //           ..id = 2
+  //           ..containerType = 'shelf'
+  //           ..canContain = ['box', 'drawer']
+  //           ..structured = true
+  //           ..containerColor = const Color(0xFF89da59).value.toString(),
+  //         replaceOnConflict: true);
+
+  //     database.containerTypes.putSync(
+  //         ContainerType()
+  //           ..id = 3
+  //           ..containerType = 'drawer'
+  //           ..canContain = ['box', 'shelf']
+  //           ..structured = true
+  //           ..containerColor = Colors.blue.value.toString(),
+  //         replaceOnConflict: true);
+
+  //     database.containerTypes.putSync(
+  //         ContainerType()
+  //           ..id = 4
+  //           ..containerType = 'box'
+  //           ..canContain = ['box', 'shelf']
+  //           ..structured = true
+  //           ..containerColor = Color(0xFFF98866).value.toString(),
+  //         replaceOnConflict: true);
+  //   });
+  // }
 }

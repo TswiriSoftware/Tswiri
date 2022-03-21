@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/sunbirdViews/container_system/create_containers/container_batch_create_view.dart';
-import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/create_new_container_description_widget.dart';
+import 'package:flutter_google_ml_kit/widgets/container_widgets/create_new_container_description_widget.dart';
 import 'package:isar/isar.dart';
 
 import 'container_single_create_view.dart';

@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcode_scanning/barcode_value_scanning/single_barcode_scan_view_old.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcode_scanning/barcode_value_scanning/single_barcode_scan_view.dart';
 import 'package:hive/hive.dart';
 
 import '../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';

@@ -2,10 +2,9 @@ import 'package:flutter_google_ml_kit/isar/container_relationship/container_rela
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar/container_isar/container_isar.dart';
 import 'package:flutter_google_ml_kit/isar/container_type/container_type.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcode_scanning/barcode_value_scanning/single_barcode_scan_view_old.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/barcode_scanning/barcode_value_scanning/single_barcode_scan_view.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_description_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_name_widget.dart';
-import 'package:flutter_google_ml_kit/widgets/container_widgets/container_parent_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_scan_barcode.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_type_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
@@ -168,15 +167,15 @@ class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
                 ),
               ),
 
-              //ContainerParentUID
-              ContainerParentWidget(
-                database: database!,
-                isNewContainer: true,
-                updateParent: (value) {
-                  //log(value.toString());
-                  parentUID = value;
-                },
-              ),
+              // //ContainerParentUID
+              // ContainerParentWidget(
+              //   database: database!,
+              //   isNewContainer: true,
+              //   updateParent: (value) {
+              //     //log(value.toString());
+              //     parentUID = value;
+              //   },
+              // ),
 
               createContainer()
             ],
@@ -210,13 +209,19 @@ class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
                 } else {
                   name = containerUID;
                 }
+                String? description;
+                if (descriptionController.text.isNotEmpty) {
+                  description = descriptionController.text;
+                } else {
+                  description = null;
+                }
 
                 //Write to ContainerEntrys.
                 final newContainer = ContainerEntry()
                   ..containerUID = containerUID
                   ..containerType = containerType!
                   ..name = name
-                  ..description = descriptionController.text
+                  ..description = description
                   ..barcodeUID = null;
 
                 final newContainerRelationship = ContainerRelationship()

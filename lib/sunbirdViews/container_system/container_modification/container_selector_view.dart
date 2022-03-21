@@ -90,15 +90,6 @@ class _ContainerSelectorViewState extends State<ContainerSelectorView> {
                       itemBuilder: (context, index) {
                         final searchResult = searchResults[index];
 
-                        // //Get container color.
-                        // Color color = Color(int.parse(database!.containerTypes
-                        //         .filter()
-                        //         .containerTypeMatches(
-                        //             searchResult.containerType)
-                        //         .findFirstSync()!
-                        //         .containerColor))
-                        //     .withOpacity(1);
-
                         return InkWell(
                           onTap: () async {
                             if (widget.multipleSelect == true) {
@@ -107,10 +98,7 @@ class _ContainerSelectorViewState extends State<ContainerSelectorView> {
                                   context, {searchResult.containerUID});
                             } else {
                               //Returns a single containerUID
-                              Navigator.pop(context, [
-                                searchResult.containerUID,
-                                searchResult.name
-                              ]);
+                              Navigator.pop(context, searchResult);
                             }
                             //Close the database.
                           },

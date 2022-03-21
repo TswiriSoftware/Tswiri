@@ -18,7 +18,6 @@ class _SingleBarcodeScanViewState extends State<SingleBarcodeScanView> {
 
   bool isBusy = false;
   CustomPaint? customPaint;
-
   Set<String> scannedBarcodes = {};
 
   @override
@@ -55,7 +54,7 @@ class _SingleBarcodeScanViewState extends State<SingleBarcodeScanView> {
                     ///Pop and return selectedBarcodeUID.
                     Navigator.pop(context, scannedBarcodes.first);
                   } else if (scannedBarcodes.isEmpty) {
-                    Navigator.pop(context);
+                    Navigator.pop(context, 'clear');
                   }
                 },
                 child: const Icon(Icons.check_circle_outline_rounded),

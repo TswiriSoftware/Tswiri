@@ -7,6 +7,7 @@ import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/barcode_sel
 import 'package:flutter_google_ml_kit/sunbirdViews/container_system/container_view/containers_view.dart';
 import 'package:flutter_google_ml_kit/widgets/card_widgets/custom_card_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,8 @@ import 'databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import 'databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 import 'databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
+import 'globalValues/global_colours.dart';
+import 'isar/container_type/container_type.dart';
 import 'sunbirdViews/app_settings/app_settings_functions.dart';
 import 'sunbirdViews/app_settings/app_settings_view.dart';
 import 'isar/functions/isar_functions.dart';
@@ -50,9 +53,6 @@ Future<void> main() async {
 
   isarDirectory =
       await getApplicationSupportDirectory(); // path_provider package
-
-  ///Temporary solution.
-  createBoxTypes();
 
   Hive.registerAdapter(RealBarcodePositionEntryAdapter()); //0
   Hive.registerAdapter(DistanceFromCameraLookupEntryAdapter()); //1
@@ -102,9 +102,9 @@ class MyApp extends StatelessWidget {
         textSelectionTheme:
             const TextSelectionThemeData(cursorColor: Colors.deepOrange),
         textTheme: const TextTheme(
-            labelLarge: TextStyle(fontSize: 18),
-            labelMedium: TextStyle(fontSize: 15),
-            labelSmall: TextStyle(fontSize: 12),
+            labelLarge: TextStyle(fontSize: 20),
+            labelMedium: TextStyle(fontSize: 18),
+            labelSmall: TextStyle(fontSize: 15),
             titleMedium: TextStyle(fontSize: 18),
             titleSmall: TextStyle(fontSize: 16)),
         inputDecorationTheme: const InputDecorationTheme(

@@ -9,7 +9,6 @@ import 'package:isar/isar.dart';
 import '../../../isar/container_isar/container_isar.dart';
 import '../../../isar/container_relationship/container_relationship.dart';
 import '../../../isar/container_type/container_type.dart';
-import '../../../widgets/container_widgets/container_parent_widget.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 import '../../../widgets/container_widgets/new_container_widgets/new_container_name_widget.dart';
@@ -68,17 +67,17 @@ class _ContainerBatchCreateState extends State<ContainerBatchCreate> {
         child: Column(
           children: [
             ///ContainerParentWidget Select.
-            ContainerParentWidget(
-              isNewContainer: true,
-              parentContainerUID: parentContainerUID,
-              database: widget.database,
-              updateParent: (value) {
-                setState(() {
-                  parentContainerUID = value;
-                  log(parentContainerUID.toString());
-                });
-              },
-            ),
+            // ContainerParentWidget(
+            //   isNewContainer: true,
+            //   parentContainerUID: parentContainerUID,
+            //   database: widget.database,
+            //   updateParent: (value) {
+            //     setState(() {
+            //       parentContainerUID = value;
+            //       log(parentContainerUID.toString());
+            //     });
+            //   },
+            // ),
 
             ///ContainerType Select.
             ContainerTypeWidget(

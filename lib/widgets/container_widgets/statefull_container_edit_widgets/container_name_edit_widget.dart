@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/isar/container_isar/container_isar.dart';
 import 'package:isar/isar.dart';
 
-import '../../../isar/container_isar/container_isar.dart';
 import '../../../isar/functions/isar_functions.dart';
 import '../../basic_outline_containers/custom_outline_container.dart';
 import '../../basic_outline_containers/light_container.dart';
 
-class ContainerDescriptionWidget extends StatefulWidget {
-  const ContainerDescriptionWidget({
+///Used once the container exists.
+class ContainerNameEditWidget extends StatefulWidget {
+  const ContainerNameEditWidget({
     Key? key,
     required this.containerUID,
     required this.database,
   }) : super(key: key);
+
   final String containerUID;
   final Isar database;
 
   @override
-  State<ContainerDescriptionWidget> createState() =>
-      _ContainerDescriptionWidgetState();
+  State<ContainerNameEditWidget> createState() =>
+      _ContainerNameEditWidgetState();
 }
 
-class _ContainerDescriptionWidgetState
-    extends State<ContainerDescriptionWidget> {
-  final TextEditingController descriptionController = TextEditingController();
+class _ContainerNameEditWidgetState extends State<ContainerNameEditWidget> {
+  final TextEditingController nameController = TextEditingController();
   int? id;
-  String? description;
+  String? name;
   Color? containerTypeColor;
   Color? displayColor;
   ContainerEntry? containerEntry;
@@ -41,8 +42,8 @@ class _ContainerDescriptionWidgetState
         containerUID: widget.containerUID);
 
     //Container Name.
-    description = database!.containerEntrys.getSync(id!)?.description;
-    descriptionController.text = description ?? '';
+    name = database!.containerEntrys.getSync(id!)?.name ?? widget.containerUID;
+    nameController.text = name!;
 
     //Container Outline Color.
     containerTypeColor = getContainerTypeColor(database: database!, id: id!);
@@ -53,13 +54,12 @@ class _ContainerDescriptionWidgetState
   @override
   Widget build(BuildContext context) {
     return LightContainer(
-      margin: 5,
-      padding: 5,
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Expanded(
             child: Builder(builder: (context) {
-              if (descriptionController.text.isEmpty) {
+              if (nameController.text.isEmpty) {
                 displayColor = Colors.white60;
               } else {
                 displayColor = containerTypeColor!;
@@ -67,38 +67,49 @@ class _ContainerDescriptionWidgetState
 
               return CustomOutlineContainer(
                 outlineColor: displayColor!,
+                padding: 0,
+                margin: 0,
                 child: Padding(
                   padding: const EdgeInsets.only(
                       left: 10, right: 10, bottom: 5, top: 0),
                   child: TextFormField(
-                    controller: descriptionController,
+                    controller: nameController,
+                    autovalidateMode: AutovalidateMode.always,
                     style: Theme.of(context).textTheme.titleSmall,
-                    textCapitalization: TextCapitalization.sentences,
+                    textCapitalization: TextCapitalization.words,
                     decoration: InputDecoration(
-                      icon: Builder(builder: (context) {
-                        if (descriptionController.text.isNotEmpty) {
-                          return Icon(
-                            Icons.hexagon_rounded,
-                            color: displayColor,
-                          );
-                        }
-                        return const Icon(Icons.hexagon_rounded);
-                      }),
-                      hintText: 'Description',
-                      labelText: 'Container description',
+                      icon: Builder(
+                        builder: (context) {
+                          if (nameController.text.isNotEmpty) {
+                            return Icon(
+                              Icons.hexagon_rounded,
+                              color: displayColor!,
+                            );
+                          }
+                          return const Icon(Icons.hexagon_rounded);
+                        },
+                      ),
+                      hintText: 'Name',
+                      labelText: 'Container Name',
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a name';
+                      }
+                      return null;
+                    },
                     onChanged: (value) {
+                      setState(() {});
+                      //Update name.
                       database!.writeTxnSync((isar) {
-                        ContainerEntry containerEntry =
-                            isar.containerEntrys.getSync(id!)!;
-                        containerEntry.description = descriptionController.text;
+                        ContainerEntry? containerEntry =
+                            isar.containerEntrys.getSync(id!);
+                        containerEntry!.name = nameController.text;
                         isar.containerEntrys.putSync(containerEntry);
                       });
                     },
                   ),
                 ),
-                margin: 0,
-                padding: 0,
               );
             }),
           ),
