@@ -1,9 +1,12 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_system/container_select_views/container_selector_view.dart';
 
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_dark_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
+import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_parent_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_type_widget.dart';
+import 'package:flutter_google_ml_kit/widgets/container_widgets/statefull_container_edit_widgets/container_parent_edit_widget.dart';
 import 'package:isar/isar.dart';
 import '../../../isar_database/container/container_isar.dart';
 
@@ -35,10 +38,11 @@ class BatchContainerCreateView extends StatefulWidget {
 class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
   String? containerType;
   String? parentContainerUID;
+  String? parentContainerName;
   int numberOfNewContainers = 5;
   final TextEditingController nameController = TextEditingController();
   String? containerName;
-  int numberOfBarcodes = 5;
+  int numberOfBarcodes = 0;
   Set<String?>? scannedBarcodeUIDs = {};
   bool includeScan = false;
 
@@ -69,18 +73,30 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            ///ContainerParentWidget Select.
-            // ContainerParentWidget(
-            //   isNewContainer: true,
-            //   parentContainerUID: parentContainerUID,
-            //   database: widget.database,
-            //   updateParent: (value) {
-            //     setState(() {
-            //       parentContainerUID = value;
-            //       log(parentContainerUID.toString());
-            //     });
-            //   },
-            // ),
+            NewContainerParentWidget(
+              parentUID: parentContainerUID,
+              parentName: parentContainerName,
+              onTap: () async {
+                ContainerEntry? parentContainerEntry = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ContainerSelectorView(
+                      multipleSelect: false,
+                      database: widget.database,
+                    ),
+                  ),
+                );
+
+                if (parentContainerEntry == null) {
+                  parentContainerUID = null;
+                  parentContainerName = null;
+                } else {
+                  parentContainerUID = parentContainerEntry.containerUID;
+                  parentContainerName = parentContainerEntry.name;
+                }
+                setState(() {});
+              },
+            ),
 
             ///ContainerType Select.
             NewContainerTypeWidget(
@@ -148,60 +164,59 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
                     ),
                   ],
                 ));
-              }
-
-              return LightDarkContainer(
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Include Barcodes: '),
-                        Checkbox(
-                          value: includeScan,
-                          onChanged: (value) {
-                            setState(
-                              () {
-                                includeScan = value!;
-                              },
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Number: $numberOfBarcodes',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        InkWell(
-                          onTap: (() async {
-                            scannedBarcodeUIDs = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const MultipleBarcodeScanView(),
-                              ),
-                            );
-                            setState(() {
+              } else {
+                return LightDarkContainer(
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Include Barcodes: '),
+                          Checkbox(
+                            value: includeScan,
+                            onChanged: (value) {
+                              setState(
+                                () {
+                                  includeScan = value!;
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Number: $numberOfBarcodes',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          InkWell(
+                            onTap: (() async {
+                              scannedBarcodeUIDs = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const MultipleBarcodeScanView(),
+                                ),
+                              );
                               numberOfBarcodes =
                                   scannedBarcodeUIDs?.length ?? 0;
-                            });
-                            log(scannedBarcodeUIDs.toString());
-                          }),
-                          child: OrangeOutlineContainer(
-                              child: Text(
-                            'Scan',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          )),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              );
+                              setState(() {});
+                              log(scannedBarcodeUIDs.toString());
+                            }),
+                            child: OrangeOutlineContainer(
+                                child: Text(
+                              'Scan',
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            )),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              }
             }),
 
             //Number of new containers select.
@@ -223,10 +238,9 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
                       maxValue: 100,
                       value: numberOfNewContainers,
                       onChanged: (value) {
-                        setState(() {
-                          numberOfNewContainers = value;
-                          log(numberOfNewContainers.toString());
-                        });
+                        numberOfNewContainers = value;
+                        log(numberOfNewContainers.toString());
+                        setState(() {});
                       },
                     ),
                   )
@@ -287,7 +301,7 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
   void createContainersWithBarcodes() {
     int timestamp = DateTime.now().millisecondsSinceEpoch;
 
-    for (var i = 0; i < numberOfBarcodes; i++) {
+    for (var i = 0; i < numberOfNewContainers; i++) {
       String _containerUID = '${containerType!}_${timestamp + i}';
       String? _containerName;
 
@@ -324,8 +338,9 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
   void createContainersWithoutBarcodes() {
     int timestamp = DateTime.now().millisecondsSinceEpoch;
     log(timestamp.toString());
-    log(numberOfBarcodes.toString());
-    for (var i = 0; i < numberOfBarcodes; i++) {
+    log(numberOfNewContainers.toString());
+
+    for (var i = 0; i < numberOfNewContainers; i++) {
       String _containerUID = '${containerType!}_${timestamp + i}';
       String? _containerName;
 

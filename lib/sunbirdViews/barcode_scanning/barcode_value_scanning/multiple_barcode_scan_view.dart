@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import '../../../VisionDetectorViews/camera_view.dart';
 
@@ -34,9 +35,18 @@ class _MultipleBarcodeScanViewState extends State<MultipleBarcodeScanView> {
     return Scaffold(
         floatingActionButton: Padding(
           padding: const EdgeInsets.all(10.0),
-          child: Row(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
+              OrangeOutlineContainer(
+                child: Text(
+                  scannedBarcodes.length.toString(),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
               FloatingActionButton(
                 heroTag: null,
                 onPressed: () async {
