@@ -73,249 +73,264 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            //Containers parent select.
-            NewContainerParentWidget(
-              parentUID: parentContainerUID,
-              parentName: parentContainerName,
-              onTap: () async {
-                ContainerEntry? parentContainerEntry = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ContainerSelectorView(
-                      multipleSelect: false,
-                      database: widget.database,
-                    ),
-                  ),
-                );
+            _newContainerParentWidget(),
+            _newContainerTypeWidget(),
+            _newContainerNameWidget(),
+            _newContainersBarcodeScanWidget(),
+            _numberPicker(),
+            _createButton(),
+          ],
+        ),
+      ),
+    );
+  }
 
-                if (parentContainerEntry == null) {
-                  parentContainerUID = null;
-                  parentContainerName = null;
-                } else {
-                  parentContainerUID = parentContainerEntry.containerUID;
-                  parentContainerName = parentContainerEntry.name;
-                }
-                setState(() {});
-              },
+  ///Containers parent select.
+  Widget _newContainerParentWidget() {
+    return NewContainerParentWidget(
+      parentUID: parentContainerUID,
+      parentName: parentContainerName,
+      onTap: () async {
+        ContainerEntry? parentContainerEntry = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ContainerSelectorView(
+              multipleSelect: false,
+              database: widget.database,
             ),
+          ),
+        );
 
-            ///ContainerType Select.
-            NewContainerTypeWidget(
-              builder: Builder(builder: (context) {
-                List<ContainerType> containerTypes =
-                    widget.database.containerTypes.where().findAllSync();
+        if (parentContainerEntry == null) {
+          parentContainerUID = null;
+          parentContainerName = null;
+        } else {
+          parentContainerUID = parentContainerEntry.containerUID;
+          parentContainerName = parentContainerEntry.name;
+        }
+        setState(() {});
+      },
+    );
+  }
 
-                return DropdownButton<String>(
-                  value: containerType,
-                  items: containerTypes
-                      .map((containerType) => DropdownMenuItem<String>(
-                          value: containerType.containerType,
-                          child: Text(
-                            containerType.containerType,
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          )))
-                      .toList(),
-                  onChanged: (newValue) {
-                    setState(() {
-                      containerType = newValue!;
-                    });
+  ///ContainerType Select.
+  Widget _newContainerTypeWidget() {
+    return NewContainerTypeWidget(
+      builder: Builder(builder: (context) {
+        List<ContainerType> containerTypes =
+            widget.database.containerTypes.where().findAllSync();
+
+        return DropdownButton<String>(
+          value: containerType,
+          items: containerTypes
+              .map((containerType) => DropdownMenuItem<String>(
+                  value: containerType.containerType,
+                  child: Text(
+                    containerType.containerType,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  )))
+              .toList(),
+          onChanged: (newValue) {
+            setState(() {
+              containerType = newValue!;
+            });
+          },
+        );
+      }),
+    );
+  }
+
+  ///Containers name_increment
+  Widget _newContainerNameWidget() {
+    return NewContainerNameWidget(
+      nameController: nameController,
+      onChanged: (value) {
+        setState(() {});
+      },
+      onFieldSubmitted: (value) {
+        setState(() {
+          nameController.text = value.toString();
+          containerName = value;
+        });
+      },
+      description: Text(
+        "Container names will be assiged Name_number",
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+    );
+  }
+
+  ///Scan Barcodes.
+  Widget _newContainersBarcodeScanWidget() {
+    return Builder(builder: (context) {
+      if (includeScan == false) {
+        return LightDarkContainer(
+            child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Link Barcodes: ',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            Checkbox(
+              value: includeScan,
+              onChanged: (value) {
+                setState(
+                  () {
+                    includeScan = value!;
                   },
                 );
-              }),
-            ),
-
-            //Containers name_increment
-            NewContainerNameWidget(
-              nameController: nameController,
-              onChanged: (value) {
-                setState(() {});
               },
-              onFieldSubmitted: (value) {
-                setState(() {
-                  nameController.text = value.toString();
-                  containerName = value;
-                });
-              },
-              description: Text(
-                "Container names will be assiged Name_number",
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
             ),
-
-            //Scan Barcodes.
-            Builder(builder: (context) {
-              if (includeScan == false) {
-                return LightDarkContainer(
-                    child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Link Barcodes: ',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    Checkbox(
-                      value: includeScan,
-                      onChanged: (value) {
-                        setState(
-                          () {
-                            includeScan = value!;
-                          },
-                        );
-                      },
-                    ),
-                  ],
-                ));
-              } else {
-                return LightDarkContainer(
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Include Barcodes: '),
-                          Checkbox(
-                            value: includeScan,
-                            onChanged: (value) {
-                              setState(
-                                () {
-                                  includeScan = value!;
-                                },
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Number: $numberOfBarcodes',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                          InkWell(
-                            onTap: (() async {
-                              scannedBarcodeUIDs = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const MultipleBarcodeScannerView(),
-                                ),
-                              );
-                              numberOfBarcodes =
-                                  scannedBarcodeUIDs?.length ?? 0;
-                              setState(() {});
-                              log(scannedBarcodeUIDs.toString());
-                            }),
-                            child: OrangeOutlineContainer(
-                                child: Text(
-                              'Scan',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            )),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              }
-            }),
-
-            //Number of new containers select.
-            LightDarkContainer(
-              child: Row(
+          ],
+        ));
+      } else {
+        return LightDarkContainer(
+          child: Column(
+            children: [
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Number of containers',
-                      style: Theme.of(context).textTheme.bodyLarge),
-                  OrangeOutlineContainer(
-                    margin: 5,
-                    child: NumberPicker(
-                      haptics: true,
-                      selectedTextStyle: TextStyle(
-                          color: Colors.deepOrange[300], fontSize: 22),
-                      itemHeight: 30,
-                      itemWidth: 60,
-                      minValue: 1,
-                      maxValue: 100,
-                      value: numberOfNewContainers,
-                      onChanged: (value) {
-                        numberOfNewContainers = value;
-                        log(numberOfNewContainers.toString());
-                        setState(() {});
-                      },
-                    ),
-                  )
-                ],
-              ),
-            ),
-
-            //Create Containers.
-            LightDarkContainer(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Builder(
-                    builder: (context) {
-                      final snackBar = SnackBar(
-                        duration: const Duration(milliseconds: 500),
-                        content:
-                            Text('$numberOfNewContainers Containers Created'),
+                  const Text('Include Barcodes: '),
+                  Checkbox(
+                    value: includeScan,
+                    onChanged: (value) {
+                      setState(
+                        () {
+                          includeScan = value!;
+                        },
                       );
-                      if (includeScan == false) {
-                        return InkWell(
-                          onTap: () async {
-                            //Create without barcodes.
-
-                            await _showMyDialog(
-                              () {
-                                createContainersWithoutBarcodes();
-                              },
-                              numberOfNewContainers,
-                            );
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackBar);
-                            //Navigator.pop(context);
-                          },
-                          child: OrangeOutlineContainer(
-                            child: Text(
-                              'Create',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                          ),
-                        );
-                      } else if (includeScan == true &&
-                          numberOfNewContainers == numberOfBarcodes) {
-                        return InkWell(
-                          onTap: () async {
-                            //Create with barcodes.
-
-                            await _showMyDialog(
-                              () {
-                                createContainersWithBarcodes();
-                              },
-                              numberOfNewContainers,
-                            );
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackBar);
-                            //Navigator.pop(context);
-                          },
-                          child: OrangeOutlineContainer(
-                            child: Text(
-                              'Create',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                          ),
-                        );
-                      }
-                      return Text('number of containers != number of barcodes',
-                          style: Theme.of(context).textTheme.bodyLarge);
                     },
                   ),
                 ],
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Number: $numberOfBarcodes',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  InkWell(
+                    onTap: (() async {
+                      scannedBarcodeUIDs = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const MultipleBarcodeScannerView(),
+                        ),
+                      );
+                      numberOfBarcodes = scannedBarcodeUIDs?.length ?? 0;
+                      setState(() {});
+                      log(scannedBarcodeUIDs.toString());
+                    }),
+                    child: OrangeOutlineContainer(
+                        child: Text(
+                      'Scan',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    )),
+                  )
+                ],
+              ),
+            ],
+          ),
+        );
+      }
+    });
+  }
+
+  ///Number of new containers select.
+  Widget _numberPicker() {
+    return LightDarkContainer(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('Number of containers',
+              style: Theme.of(context).textTheme.bodyLarge),
+          OrangeOutlineContainer(
+            margin: 5,
+            child: NumberPicker(
+              haptics: true,
+              selectedTextStyle:
+                  TextStyle(color: Colors.deepOrange[300], fontSize: 22),
+              itemHeight: 30,
+              itemWidth: 60,
+              minValue: 1,
+              maxValue: 100,
+              value: numberOfNewContainers,
+              onChanged: (value) {
+                numberOfNewContainers = value;
+                log(numberOfNewContainers.toString());
+                setState(() {});
+              },
             ),
-          ],
-        ),
+          )
+        ],
+      ),
+    );
+  }
+
+  ///Create Containers.
+  Widget _createButton() {
+    return LightDarkContainer(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Builder(
+            builder: (context) {
+              final snackBar = SnackBar(
+                duration: const Duration(milliseconds: 500),
+                content: Text('$numberOfNewContainers Containers Created'),
+              );
+              if (includeScan == false) {
+                return InkWell(
+                  onTap: () async {
+                    //Create without barcodes.
+
+                    await _showMyDialog(
+                      () {
+                        createContainersWithoutBarcodes();
+                      },
+                      numberOfNewContainers,
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    //Navigator.pop(context);
+                  },
+                  child: OrangeOutlineContainer(
+                    child: Text(
+                      'Create',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ),
+                );
+              } else if (includeScan == true &&
+                  numberOfNewContainers == numberOfBarcodes) {
+                return InkWell(
+                  onTap: () async {
+                    //Create with barcodes.
+
+                    await _showMyDialog(
+                      () {
+                        createContainersWithBarcodes();
+                      },
+                      numberOfNewContainers,
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    //Navigator.pop(context);
+                  },
+                  child: OrangeOutlineContainer(
+                    child: Text(
+                      'Create',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ),
+                );
+              }
+              return Text('number of containers != number of barcodes',
+                  style: Theme.of(context).textTheme.bodyLarge);
+            },
+          ),
+        ],
       ),
     );
   }
