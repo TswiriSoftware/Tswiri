@@ -8,7 +8,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:isar/isar.dart';
 
 import '../../../functions/barcodeTools/hide_keyboard.dart';
-import '../create_container_views/create_new_container.dart';
+import '../create_container_views/create_new_container_view.dart';
 import '../../../isar_database/functions/isar_functions.dart';
 
 import '../../../widgets/search_bar_widget.dart';
@@ -52,38 +52,17 @@ class _ContainersViewState extends State<ContainersView> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           "Containers",
-          style: TextStyle(fontSize: 25),
+          style: Theme.of(context).textTheme.titleLarge,
         ),
-        actions: [
-          ///InfoButton.
-          IconButton(
-              onPressed: () {
-                showInfoDialog();
-              },
-              icon: const Icon(Icons.info_outline_rounded))
-        ],
+        actions: [_infoButton()],
         centerTitle: true,
         elevation: 0,
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            ///Create new Container.
-            FloatingActionButton(
-              heroTag: null,
-              onPressed: () async {
-                await createNewContainer(context);
-                setState(() {});
-              },
-              child: const Icon(Icons.add),
-            ),
-          ],
-        ),
-      ),
+          padding: const EdgeInsets.all(10.0), child: _newContainerButton()),
       body: GestureDetector(
         onTap: () {
           hideKeyboard(context);
@@ -94,92 +73,121 @@ class _ContainersViewState extends State<ContainersView> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ///Search Bar.
-              SearchBarWidget(
-                onChanged: (value) {
-                  setState(() {
-                    enteredKeyword = value;
-                  });
-                },
-              ),
+              _searchBar(),
               const SizedBox(height: 10),
-              const Text(
-                'Swipe for more options',
-                style: TextStyle(fontSize: 12),
-              ),
+              _optionsText(),
               const SizedBox(height: 5),
-
-              Builder(
-                builder: (context) {
-                  List<ContainerEntry> results = database!.containerEntrys
-                      .filter()
-                      .nameContains(enteredKeyword, caseSensitive: false)
-                      .or()
-                      .containerTypeContains(enteredKeyword)
-                      .sortByBarcodeUID()
-                      .findAllSync();
-
-                  return Expanded(
-                    child: ListView.builder(
-                        itemCount: results.length,
-                        itemBuilder: ((context, index) {
-                          ContainerEntry containerEntry = results[index];
-                          return InkWell(
-                              onTap: () async {
-                                //Push ContainerView
-                                await Navigator.push(
-                                  context,
-                                  (MaterialPageRoute(
-                                    builder: (context) => ContainerView(
-                                      database: database,
-                                      containerUID: containerEntry.containerUID,
-                                    ),
-                                  )),
-                                );
-                                //Update all entires
-                                setState(() {});
-                              },
-                              //Allows for slide action/options.
-                              child: Slidable(
-                                endActionPane: ActionPane(
-                                    motion: const ScrollMotion(),
-                                    children: [
-                                      SlidableAction(
-                                        // An action can be bigger than the others.
-                                        flex: 1,
-                                        onPressed: (context) {
-                                          database!.writeTxnSync(
-                                            (isar) {
-                                              isar.containerEntrys.deleteSync(
-                                                  containerEntry.id);
-
-                                              isar.containerRelationships
-                                                  .filter()
-                                                  .containerUIDMatches(
-                                                      containerEntry
-                                                          .containerUID)
-                                                  .deleteAllSync();
-                                            },
-                                          );
-                                          refresh();
-                                        },
-                                        backgroundColor: Colors.deepOrange,
-                                        foregroundColor: Colors.white,
-                                        icon: Icons.archive,
-                                        label: 'Delete',
-                                      ),
-                                    ]),
-                                child: ContainerCardWidget(
-                                    containerEntry: containerEntry,
-                                    database: database!),
-                              ));
-                        })),
-                  );
-                },
-              ),
+              _buildListView()
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _newContainerButton() {
+    return FloatingActionButton(
+      heroTag: null,
+      onPressed: () async {
+        await createNewContainer(context);
+        setState(() {});
+      },
+      child: const Icon(Icons.add),
+    );
+  }
+
+  Widget _searchBar() {
+    return SearchBarWidget(
+      onChanged: (value) {
+        setState(() {
+          enteredKeyword = value;
+        });
+      },
+    );
+  }
+
+  Widget _optionsText() {
+    return const Text(
+      'Swipe for more options',
+      style: TextStyle(fontSize: 12),
+    );
+  }
+
+  Widget _infoButton() {
+    return IconButton(
+      onPressed: () {
+        showInfoDialog();
+      },
+      icon: const Icon(Icons.info_outline_rounded),
+    );
+  }
+
+  Widget _buildListView() {
+    return Builder(
+      builder: (context) {
+        List<ContainerEntry> results = database!.containerEntrys
+            .filter()
+            .nameContains(enteredKeyword, caseSensitive: false)
+            .or()
+            .containerTypeContains(enteredKeyword)
+            .sortByBarcodeUID()
+            .findAllSync();
+
+        return Expanded(
+          child: ListView.builder(
+            itemCount: results.length,
+            itemBuilder: ((context, index) {
+              ContainerEntry containerEntry = results[index];
+              return InkWell(
+                onTap: () async {
+                  //Push ContainerView
+                  await Navigator.push(
+                    context,
+                    (MaterialPageRoute(
+                      builder: (context) => ContainerView(
+                        database: database,
+                        containerUID: containerEntry.containerUID,
+                      ),
+                    )),
+                  );
+                  //Update all entires
+                  setState(() {});
+                },
+                //Allows for slide action/options.
+                child: Slidable(
+                  endActionPane:
+                      ActionPane(motion: const ScrollMotion(), children: [
+                    SlidableAction(
+                      // An action can be bigger than the others.
+                      flex: 1,
+                      onPressed: (context) {
+                        database!.writeTxnSync(
+                          (isar) {
+                            isar.containerEntrys.deleteSync(containerEntry.id);
+
+                            isar.containerRelationships
+                                .filter()
+                                .containerUIDMatches(
+                                    containerEntry.containerUID)
+                                .deleteAllSync();
+                          },
+                        );
+                        refresh();
+                      },
+                      backgroundColor: Colors.deepOrange,
+                      foregroundColor: Colors.white,
+                      icon: Icons.archive,
+                      label: 'Delete',
+                    ),
+                  ]),
+                  child: ContainerCardWidget(
+                      containerEntry: containerEntry, database: database!),
+                ),
+              );
+            }),
+          ),
+        );
+      },
     );
   }
 

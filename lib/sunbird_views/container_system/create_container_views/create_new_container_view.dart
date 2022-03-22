@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/widgets/container_widgets/create_new_container_description_widget.dart';
+import 'package:flutter_google_ml_kit/widgets/container_widgets/stateless_container_display_widgets/create_new_container_description_widget.dart';
 import 'package:isar/isar.dart';
 
 import 'container_batch_create_view.dart';

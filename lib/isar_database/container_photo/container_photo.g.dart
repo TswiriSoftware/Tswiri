@@ -49,7 +49,7 @@ class _ContainerPhotoWebAdapter extends IsarWebTypeAdapter<ContainerPhoto> {
     final jsObj = IsarNative.newJsObject();
     IsarNative.jsObjectSet(jsObj, 'containerUID', object.containerUID);
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'photoUID', object.photoUID);
+    IsarNative.jsObjectSet(jsObj, 'photoUID', object.photoPath);
     return jsObj;
   }
 
@@ -59,7 +59,7 @@ class _ContainerPhotoWebAdapter extends IsarWebTypeAdapter<ContainerPhoto> {
     final object = ContainerPhoto();
     object.containerUID = IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '';
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.photoUID = IsarNative.jsObjectGet(jsObj, 'photoUID') ?? '';
+    object.photoPath = IsarNative.jsObjectGet(jsObj, 'photoUID') ?? '';
     return object;
   }
 
@@ -98,7 +98,7 @@ class _ContainerPhotoNativeAdapter
     final value0 = object.containerUID;
     final _containerUID = IsarBinaryWriter.utf8Encoder.convert(value0);
     dynamicSize += (_containerUID.length) as int;
-    final value1 = object.photoUID;
+    final value1 = object.photoPath;
     final _photoUID = IsarBinaryWriter.utf8Encoder.convert(value1);
     dynamicSize += (_photoUID.length) as int;
     final size = staticSize + dynamicSize;
@@ -117,7 +117,7 @@ class _ContainerPhotoNativeAdapter
     final object = ContainerPhoto();
     object.containerUID = reader.readString(offsets[0]);
     object.id = id;
-    object.photoUID = reader.readString(offsets[1]);
+    object.photoPath = reader.readString(offsets[1]);
     return object;
   }
 

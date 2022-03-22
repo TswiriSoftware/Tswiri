@@ -1,0 +1,154 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/multiple_barcode_scanner/multiple_barcode_scanner_camera_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/multiple_barcode_scanner/multiple_barcode_scanner_detector_painter.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/dark_container.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
+
+class MultipleBarcodeScannerView extends StatefulWidget {
+  const MultipleBarcodeScannerView({Key? key}) : super(key: key);
+
+  @override
+  _MultipleBarcodeScannerViewState createState() =>
+      _MultipleBarcodeScannerViewState();
+}
+
+class _MultipleBarcodeScannerViewState
+    extends State<MultipleBarcodeScannerView> {
+  BarcodeScanner barcodeScanner =
+      GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
+
+  bool isBusy = false;
+  CustomPaint? customPaint;
+
+  Set<String> scannedBarcodes = {};
+  bool showList = false;
+
+  @override
+  void dispose() {
+    barcodeScanner.close();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Builder(
+                builder: (context) {
+                  if (showList) {
+                    return LightContainer(
+                      margin: 50,
+                      padding: 0,
+                      child: DarkContainer(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'hold to delete',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            const Divider(
+                              color: Colors.white54,
+                            ),
+                            Wrap(
+                                children: scannedBarcodes
+                                    .map(
+                                      (e) => InkWell(
+                                        onLongPress: () {
+                                          scannedBarcodes.remove(e);
+                                        },
+                                        child: OrangeOutlineContainer(
+                                            child: Text(e)),
+                                      ),
+                                    )
+                                    .toList()),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    showList = !showList;
+                                  },
+                                  icon: const Icon(Icons.close),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  } else {
+                    return FloatingActionButton(
+                      heroTag: null,
+                      onPressed: () {
+                        showList = !showList;
+                      },
+                      child: const Icon(Icons.list),
+                    );
+                  }
+                },
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              FloatingActionButton(
+                heroTag: null,
+                onPressed: () async {
+                  if (scannedBarcodes.length >= 2) {
+                    ///Pop and return selectedBarcodeUID.
+                    Navigator.pop(context, scannedBarcodes);
+                  } else if (scannedBarcodes.isEmpty) {
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Icon(Icons.check_circle_outline_rounded),
+              ),
+            ],
+          ),
+        ),
+        body: MultipleBarcodeScannerCameraView(
+          title: 'Barcode Scanner',
+          customPaint: customPaint,
+          onImage: (inputImage) {
+            processImage(inputImage);
+          },
+        ));
+  }
+
+  Future<void> processImage(InputImage inputImage) async {
+    if (isBusy) return;
+    isBusy = true;
+    final List<Barcode> barcodes =
+        await barcodeScanner.processImage(inputImage);
+
+    if (inputImage.inputImageData?.size != null &&
+        inputImage.inputImageData?.imageRotation != null) {
+      //Dont bother if we haven't detected more than one barcode on a image.
+      for (Barcode barcode in barcodes) {
+        scannedBarcodes.add(barcode.value.displayValue!);
+      }
+      //Paint square on screen around barcode.
+      final painter = MultipleBarcodeScannerDetectorPainter(
+          barcodes,
+          inputImage.inputImageData!.size,
+          inputImage.inputImageData!.imageRotation);
+
+      customPaint = CustomPaint(painter: painter);
+    } else {
+      customPaint = null;
+    }
+    isBusy = false;
+    if (mounted) {
+      setState(() {});
+    }
+  }
+}

@@ -1,16 +1,16 @@
 import 'package:isar/isar.dart';
-part 'container_photo.g.dart';
+part 'photo_tag.g.dart';
 
 @Collection()
-class ContainerPhoto {
+class PhotoTag {
   int id = Isar.autoIncrement;
-
-  late String containerUID;
 
   late String photoPath;
 
+  late int tagUID;
+
   @override
   String toString() {
-    return 'UID: $containerUID: Tag: $photoPath';
+    return 'photoPath: $photoPath, tagUID: $tagUID';
   }
 }

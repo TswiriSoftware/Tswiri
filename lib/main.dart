@@ -105,6 +105,7 @@ class MyApp extends StatelessWidget {
             labelLarge: TextStyle(fontSize: 20),
             labelMedium: TextStyle(fontSize: 18),
             labelSmall: TextStyle(fontSize: 15),
+            titleLarge: TextStyle(fontSize: 25),
             titleMedium: TextStyle(fontSize: 18),
             titleSmall: TextStyle(fontSize: 16)),
         inputDecorationTheme: const InputDecorationTheme(

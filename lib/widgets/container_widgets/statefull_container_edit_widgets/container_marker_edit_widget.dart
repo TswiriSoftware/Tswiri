@@ -126,7 +126,7 @@ class _ContainerMarkerEditWidgetState extends State<ContainerMarkerEditWidget> {
                           ),
                         ),
                         Text(
-                          'starting a scan will wipe existing markers',
+                          'starting a scan will wipe existing markers and all positions',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],

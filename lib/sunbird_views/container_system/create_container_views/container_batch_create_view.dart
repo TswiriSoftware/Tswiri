@@ -16,7 +16,7 @@ import '../../../isar_database/container_type/container_type.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 import '../../../widgets/container_widgets/new_container_widgets/new_container_name_widget.dart';
-import '../../../sunbirdViews/barcode_scanning/barcode_value_scanning/multiple_barcode_scan_view.dart';
+import '../../barcode_scanning/multiple_barcode_scanner/multiple_barcode_scanner_view.dart';
 
 class BatchContainerCreateView extends StatefulWidget {
   const BatchContainerCreateView({
@@ -73,6 +73,7 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            //Containers parent select.
             NewContainerParentWidget(
               parentUID: parentContainerUID,
               parentName: parentContainerName,
@@ -197,7 +198,7 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      const MultipleBarcodeScanView(),
+                                      const MultipleBarcodeScannerView(),
                                 ),
                               );
                               numberOfBarcodes =
@@ -255,11 +256,24 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
                 children: [
                   Builder(
                     builder: (context) {
+                      final snackBar = SnackBar(
+                        duration: const Duration(milliseconds: 500),
+                        content:
+                            Text('$numberOfNewContainers Containers Created'),
+                      );
                       if (includeScan == false) {
                         return InkWell(
-                          onTap: () {
+                          onTap: () async {
                             //Create without barcodes.
-                            createContainersWithoutBarcodes();
+
+                            await _showMyDialog(
+                              () {
+                                createContainersWithoutBarcodes();
+                              },
+                              numberOfNewContainers,
+                            );
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
                             //Navigator.pop(context);
                           },
                           child: OrangeOutlineContainer(
@@ -272,9 +286,17 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
                       } else if (includeScan == true &&
                           numberOfNewContainers == numberOfBarcodes) {
                         return InkWell(
-                          onTap: () {
+                          onTap: () async {
                             //Create with barcodes.
-                            createContainersWithBarcodes();
+
+                            await _showMyDialog(
+                              () {
+                                createContainersWithBarcodes();
+                              },
+                              numberOfNewContainers,
+                            );
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
                             //Navigator.pop(context);
                           },
                           child: OrangeOutlineContainer(
@@ -295,6 +317,43 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
           ],
         ),
       ),
+    );
+  }
+
+  //Alert Dialog to confrim create
+  Future<void> _showMyDialog(
+      void Function() createFunction, int numberOfNewContainers) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('AlertDialog Title'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                const Text('Confirm'),
+                Text('Create $numberOfNewContainers new containers ?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('create'),
+              onPressed: () {
+                createFunction;
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
