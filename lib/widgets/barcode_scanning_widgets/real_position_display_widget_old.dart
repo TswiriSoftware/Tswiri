@@ -76,7 +76,7 @@ class RealPositionDisplayWidget extends StatelessWidget {
                 margin: const EdgeInsets.all(5),
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Z: ${roundDouble(realBarcodePosition.zOffset, 2)}',
+                  'Z: ${roundDouble(realBarcodePosition.zOffset ?? 0, 2)}',
                 ),
               ),
             ),
@@ -91,9 +91,9 @@ class RealPositionDisplayWidget extends StatelessWidget {
               child: Container(
                 margin: const EdgeInsets.all(5),
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  'fixed: ${realBarcodePosition.isMarker}',
-                ),
+                // child: Text(
+                //   'fixed: ${realBarcodePosition.isMarker}',
+                // ),
               ),
             ),
           ],

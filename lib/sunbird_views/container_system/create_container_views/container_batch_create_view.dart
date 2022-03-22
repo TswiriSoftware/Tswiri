@@ -8,7 +8,7 @@ import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_wi
 import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_type_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/statefull_container_edit_widgets/container_parent_edit_widget.dart';
 import 'package:isar/isar.dart';
-import '../../../isar_database/container/container_isar.dart';
+import '../../../isar_database/container_entry/container_entry.dart';
 
 import '../../../isar_database/container_relationship/container_relationship.dart';
 import '../../../isar_database/container_type/container_type.dart';
@@ -287,14 +287,10 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
                   onTap: () async {
                     //Create without barcodes.
 
-                    await _showMyDialog(
-                      () {
-                        createContainersWithoutBarcodes();
-                      },
-                      numberOfNewContainers,
-                    );
+                    createContainersWithoutBarcodes();
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    //Navigator.pop(context);
+
+                    Navigator.pop(context);
                   },
                   child: OrangeOutlineContainer(
                     child: Text(
@@ -308,15 +304,10 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
                 return InkWell(
                   onTap: () async {
                     //Create with barcodes.
+                    createContainersWithBarcodes();
 
-                    await _showMyDialog(
-                      () {
-                        createContainersWithBarcodes();
-                      },
-                      numberOfNewContainers,
-                    );
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    //Navigator.pop(context);
+                    Navigator.pop(context);
                   },
                   child: OrangeOutlineContainer(
                     child: Text(
@@ -332,43 +323,6 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
           ),
         ],
       ),
-    );
-  }
-
-  //Alert Dialog to confrim create
-  Future<void> _showMyDialog(
-      void Function() createFunction, int numberOfNewContainers) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('AlertDialog Title'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                const Text('Confirm'),
-                Text('Create $numberOfNewContainers new containers ?'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('create'),
-              onPressed: () {
-                createFunction;
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 

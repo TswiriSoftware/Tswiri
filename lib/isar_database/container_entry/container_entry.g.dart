@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'container_isar.dart';
+part of 'container_entry.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator

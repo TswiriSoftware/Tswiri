@@ -15,7 +15,7 @@ import 'package:flutter_google_ml_kit/widgets/container_widgets/stateless_contai
 import 'package:flutter_google_ml_kit/widgets/container_widgets/stateless_container_display_widgets/container_parent_display_widget.dart';
 import 'package:isar/isar.dart';
 import '../../../functions/barcodeTools/hide_keyboard.dart';
-import '../../../isar_database/container/container_isar.dart';
+import '../../../isar_database/container_entry/container_entry.dart';
 
 import '../../../isar_database/functions/isar_functions.dart';
 
@@ -45,9 +45,9 @@ class _ContainerViewState extends State<ContainerView> {
 
   @override
   void dispose() {
-    if (widget.database == null) {
-      database!.close();
-    }
+    // if (widget.database != null) {
+    //   database!.close();
+    // }
     super.dispose();
   }
 
@@ -226,7 +226,10 @@ class _ContainerViewState extends State<ContainerView> {
         ),
 
         //Children Position Scan.
-        ContainerChildrenPositionEdit(),
+        ContainerChildrenPositionEdit(
+          database: database!,
+          currentContainerUID: containerEntry!.containerUID,
+        ),
       ],
     );
   }

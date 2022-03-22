@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 
-import '../../../isar_database/container/container_isar.dart';
+import '../../../isar_database/container_entry/container_entry.dart';
 import '../../../isar_database/functions/isar_functions.dart';
 import '../../basic_outline_containers/custom_outline_container.dart';
 import '../../basic_outline_containers/light_container.dart';

@@ -46,98 +46,101 @@ class _ContainerMarkerEditWidgetState extends State<ContainerMarkerEditWidget> {
                 'Marker(s)',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
-              Column(
-                children: markers
-                        ?.map(
-                          (e) => InkWell(
-                            onTap: () {
-                              //TODO: Marker Position Editor.
-                            },
-                            child: LightContainer(
-                              margin: 2.5,
-                              padding: 0,
-                              child: OrangeOutlineContainer(
-                                  padding: 5,
-                                  margin: 2.5,
-                                  child: Text(e.barcodeUID)),
-                            ),
-                          ),
-                        )
-                        .toList() ??
-                    [],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  InkWell(
-                    onTap: () async {
-                      List<String> barcodeUIDs = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const MarkerBarcodeScannerView(),
-                        ),
-                      );
-
-                      if (barcodeUIDs.isEmpty && markers != null) {
-                        //Delete all markers.
-                        //TODO: Add check that user wants to delete all markers.
-
-                        widget.database.writeTxnSync((isar) {
-                          isar.markers
-                              .filter()
-                              .parentContainerUIDMatches(
-                                  widget.currentContainerUID)
-                              .deleteAllSync();
-                        });
-                        getContainerInfo();
-                        setState(() {});
-                      } else {
-                        //Adds all scanned markers to database.
-                        List<Marker> newMarkers = [];
-                        widget.database.writeTxnSync((isar) {
-                          isar.markers
-                              .filter()
-                              .parentContainerUIDMatches(
-                                  widget.currentContainerUID)
-                              .deleteAllSync();
-                        });
-                        setState(() {});
-                        for (String barcodeUID in barcodeUIDs) {
-                          newMarkers.add(Marker()
-                            ..parentContainerUID = widget.currentContainerUID
-                            ..barcodeUID = barcodeUID);
-                        }
-                        log(newMarkers.toString());
-                        widget.database.writeTxnSync((isar) {
-                          isar.markers.putAllSync(newMarkers);
-                        });
-                      }
-                      getContainerInfo();
-                      setState(() {});
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        OrangeOutlineContainer(
-                          child: Text(
-                            'scan',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ),
-                        Text(
-                          'starting a scan will wipe existing markers and all positions',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              )
+              _listView(),
+              _actions(),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _listView() {
+    return Column(
+      children: markers
+              ?.map(
+                (e) => InkWell(
+                  onTap: () {
+                    //TODO: Marker Position Editor.
+                  },
+                  child: LightContainer(
+                    margin: 2.5,
+                    padding: 0,
+                    child: OrangeOutlineContainer(
+                        padding: 5, margin: 2.5, child: Text(e.barcodeUID)),
+                  ),
+                ),
+              )
+              .toList() ??
+          [],
+    );
+  }
+
+  Widget _actions() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        InkWell(
+          onTap: () async {
+            List<String>? barcodeUIDs = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MarkerBarcodeScannerView(),
+              ),
+            );
+
+            if (barcodeUIDs != null && barcodeUIDs.isEmpty && markers != null) {
+              //Delete all markers.
+              //TODO: Add check that user wants to delete all markers.
+
+              widget.database.writeTxnSync((isar) {
+                isar.markers
+                    .filter()
+                    .parentContainerUIDMatches(widget.currentContainerUID)
+                    .deleteAllSync();
+              });
+              getContainerInfo();
+              setState(() {});
+            } else if (barcodeUIDs != null) {
+              //Adds all scanned markers to database.
+              List<Marker> newMarkers = [];
+              widget.database.writeTxnSync((isar) {
+                isar.markers
+                    .filter()
+                    .parentContainerUIDMatches(widget.currentContainerUID)
+                    .deleteAllSync();
+              });
+              setState(() {});
+              for (String barcodeUID in barcodeUIDs) {
+                newMarkers.add(Marker()
+                  ..parentContainerUID = widget.currentContainerUID
+                  ..barcodeUID = barcodeUID);
+              }
+              log(newMarkers.toString());
+              widget.database.writeTxnSync((isar) {
+                isar.markers.putAllSync(newMarkers);
+              });
+            }
+            getContainerInfo();
+            setState(() {});
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              OrangeOutlineContainer(
+                child: Text(
+                  'scan',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+              Text(
+                'starting a scan will wipe existing markers and all positions',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

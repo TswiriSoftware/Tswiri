@@ -56,6 +56,7 @@ class RealInterBarcodeOffset {
 
   @override
   String toString() {
-    return '$uid, ${offset.dx}, ${offset.dy}, $timestamp';
+    //return '$uid, ${offset.dx}, ${offset.dy}, $timestamp';
+    return '\nstartUID: $uidStart, endUID: $uidEnd, X: ${offset.dx}, Y: ${offset.dy}, Z: $timestamp';
   }
 }

@@ -16,23 +16,17 @@ class RealBarcodePosition {
   Offset? offset;
 
   ///Distance from the camera.
-  double zOffset;
+  double? zOffset;
 
   ///This is the timestamp of when the barcode was scanned
   int? timestamp;
 
-  int shelfUID;
-
-  //Is this barcode a Marker.
-  bool isMarker;
-
-  RealBarcodePosition(
-      {required this.uid,
-      this.offset,
-      required this.zOffset,
-      required this.shelfUID,
-      this.timestamp,
-      required this.isMarker});
+  RealBarcodePosition({
+    required this.uid,
+    this.offset,
+    this.zOffset,
+    this.timestamp,
+  });
 
   @override
   bool operator ==(Object other) {
@@ -46,6 +40,6 @@ class RealBarcodePosition {
   String toString() {
     // ignore: todo
     // TODO: implement toString
-    return '$uid, $offset, $timestamp';
+    return '\n$uid, ${offset?.dx}, ${offset?.dy}, $zOffset, $timestamp';
   }
 }

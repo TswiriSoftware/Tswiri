@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/isar_database/container/container_isar.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/single_barcode_scanner/single_barcode_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_system/container_select_views/container_selector_view.dart';
@@ -98,109 +98,22 @@ class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
           child: Column(
             children: [
               //Name
-              NewContainerNameWidget(
-                nameController: nameController,
-                onChanged: (value) {
-                  setState(() {});
-                },
-                onFieldSubmitted: (value) {
-                  setState(() {
-                    nameController.text = value.toString();
-                  });
-                },
-              ),
+              _newContainerNameWidget(),
 
               //Description
-              NewContainerDescriptionWidget(
-                descriptionController: descriptionController,
-                onChanged: (value) {
-                  setState(() {});
-                },
-                onFieldSubmitted: (value) {
-                  setState(() {
-                    descriptionController.text = value.toString();
-                  });
-                },
-              ),
+              _newContainerDescriptionWidget(),
 
               //Type
-              NewContainerTypeWidget(
-                containerType: containerType,
-                builder: Builder(builder: (context) {
-                  List<ContainerType> containerTypes =
-                      database!.containerTypes.where().findAllSync();
-
-                  return DropdownButton<String>(
-                    value: containerType,
-                    items: containerTypes
-                        .map((containerType) => DropdownMenuItem<String>(
-                            value: containerType.containerType,
-                            child: Text(containerType.containerType)))
-                        .toList(),
-                    onChanged: (newValue) {
-                      setState(() {
-                        containerType = newValue!;
-                        title = newValue;
-                      });
-                    },
-                  );
-                }),
-              ),
+              _newContainerTypeWidget(),
 
               //BarcodeUID
-              NewContainerScanBarcodeWidget(
-                barcodeUID: barcodeUID,
-                button: InkWell(
-                  onTap: () async {
-                    String? scannedBarcodeUID = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SingleBarcodeScannerView(),
-                      ),
-                    );
-                    log(scannedBarcodeUID.toString());
-                    if (scannedBarcodeUID != null) {
-                      barcodeUID = scannedBarcodeUID;
-                    } else if (scannedBarcodeUID == null) {
-                      barcodeUID = null;
-                    }
-                    setState(() {});
-                  },
-                  child: const OrangeOutlineContainer(
-                    padding: 8,
-                    child: Text('scan'),
-                  ),
-                ),
-              ),
+              _newContainerBarcodeScanWidget(),
 
               //ParentUID
-              NewContainerParentWidget(
-                parentUID: parentUID,
-                parentName: parentName,
-                onTap: (() async {
-                  ContainerEntry? selectedParentContainer =
-                      await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ContainerSelectorView(
-                        database: widget.database,
-                        multipleSelect: false,
-                      ),
-                    ),
-                  );
-                  if (selectedParentContainer != null) {
-                    parentUID = selectedParentContainer.containerUID;
-                    parentName = selectedParentContainer.name;
-                    setState(() {});
-                  } else {
-                    parentUID = "'";
-                    parentName = "'";
-                    setState(() {});
-                  }
-                }),
-              ),
+              _newContainerParentWidget(),
 
-              createContainer()
+              //Create container.s
+              _createContainerButton()
             ],
           ),
         ),
@@ -208,8 +121,115 @@ class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
     );
   }
 
+  Widget _newContainerNameWidget() {
+    return NewContainerNameWidget(
+      nameController: nameController,
+      onChanged: (value) {
+        setState(() {});
+      },
+      onFieldSubmitted: (value) {
+        setState(() {
+          nameController.text = value.toString();
+        });
+      },
+    );
+  }
+
+  Widget _newContainerDescriptionWidget() {
+    return NewContainerDescriptionWidget(
+      descriptionController: descriptionController,
+      onChanged: (value) {
+        setState(() {});
+      },
+      onFieldSubmitted: (value) {
+        setState(() {
+          descriptionController.text = value.toString();
+        });
+      },
+    );
+  }
+
+  Widget _newContainerTypeWidget() {
+    return NewContainerTypeWidget(
+      containerType: containerType,
+      builder: Builder(builder: (context) {
+        List<ContainerType> containerTypes =
+            database!.containerTypes.where().findAllSync();
+
+        return DropdownButton<String>(
+          value: containerType,
+          items: containerTypes
+              .map((containerType) => DropdownMenuItem<String>(
+                  value: containerType.containerType,
+                  child: Text(containerType.containerType)))
+              .toList(),
+          onChanged: (newValue) {
+            setState(() {
+              containerType = newValue!;
+              title = newValue;
+            });
+          },
+        );
+      }),
+    );
+  }
+
+  Widget _newContainerBarcodeScanWidget() {
+    return NewContainerScanBarcodeWidget(
+      barcodeUID: barcodeUID,
+      button: InkWell(
+        onTap: () async {
+          String? scannedBarcodeUID = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const SingleBarcodeScannerView(),
+            ),
+          );
+          log(scannedBarcodeUID.toString());
+          if (scannedBarcodeUID != null) {
+            barcodeUID = scannedBarcodeUID;
+          } else if (scannedBarcodeUID == null) {
+            barcodeUID = null;
+          }
+          setState(() {});
+        },
+        child: const OrangeOutlineContainer(
+          padding: 8,
+          child: Text('scan'),
+        ),
+      ),
+    );
+  }
+
+  Widget _newContainerParentWidget() {
+    return NewContainerParentWidget(
+      parentUID: parentUID,
+      parentName: parentName,
+      onTap: (() async {
+        ContainerEntry? selectedParentContainer = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ContainerSelectorView(
+              database: widget.database,
+              multipleSelect: false,
+            ),
+          ),
+        );
+        if (selectedParentContainer != null) {
+          parentUID = selectedParentContainer.containerUID;
+          parentName = selectedParentContainer.name;
+          setState(() {});
+        } else {
+          parentUID = "'";
+          parentName = "'";
+          setState(() {});
+        }
+      }),
+    );
+  }
+
   ///Create the container.
-  Row createContainer() {
+  Widget _createContainerButton() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

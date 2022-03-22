@@ -5,16 +5,16 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/sunbirdViews/app_settings/app_settings.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 //import 'package:image_picker/image_picker.dart';
 
 import '../../../main.dart';
-import '../../app_settings/app_settings.dart';
 
 enum ScreenMode { liveFeed, gallery }
 
-class BarcodeMarkerScanCameraView extends StatefulWidget {
-  const BarcodeMarkerScanCameraView(
+class BarcodePositionScannerCameraView extends StatefulWidget {
+  const BarcodePositionScannerCameraView(
       {Key? key,
       required this.title,
       required this.customPaint,
@@ -30,12 +30,12 @@ class BarcodeMarkerScanCameraView extends StatefulWidget {
   final Color color;
 
   @override
-  _BarcodeMarkerScanCameraViewState createState() =>
-      _BarcodeMarkerScanCameraViewState();
+  _BarcodePositionScannerCameraViewState createState() =>
+      _BarcodePositionScannerCameraViewState();
 }
 
-class _BarcodeMarkerScanCameraViewState
-    extends State<BarcodeMarkerScanCameraView> {
+class _BarcodePositionScannerCameraViewState
+    extends State<BarcodePositionScannerCameraView> {
   CameraController? _controller;
   int _cameraIndex = 0;
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
@@ -62,7 +62,10 @@ class _BarcodeMarkerScanCameraViewState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(
+          widget.title,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         backgroundColor: widget.color,
         actions: [
           IconButton(
@@ -79,47 +82,22 @@ class _BarcodeMarkerScanCameraViewState
 
   Widget? _floatingActionButton() {
     if (cameras.length == 1) return null;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        FloatingActionButton(
-          heroTag: 'flash',
-          child: Icon(
-            Platform.isIOS
-                ? Icons.flip_camera_ios_outlined
-                : Icons.flash_on_rounded,
-          ),
-          onPressed: () {
-            if (flash == true) {
-              _controller!.setFlashMode(FlashMode.off);
-              flash = false;
-            } else {
-              flash = true;
-              _controller!.setFlashMode(FlashMode.torch);
-            }
-          },
-        ),
-        // Padding(
-        //   padding: const EdgeInsets.only(left: 16, right: 16),
-        //   child: SizedBox(
-        //     height: 70.0,
-        //     width: 70.0,
-        //     child: FloatingActionButton(
-        //       heroTag: 'camera selection',
-        //       child: Icon(
-        //         Platform.isIOS
-        //             ? Icons.flip_camera_ios_outlined
-        //             : Icons.flip_camera_android_outlined,
-        //         size: 30,
-        //       ),
-        //       onPressed: _switchLiveCamera,
-        //     ),
-        //   ),
-        // ),
-        // const SizedBox(
-        //   width: 86,
-        // ),
-      ],
+    return FloatingActionButton(
+      heroTag: 'flash',
+      child: Icon(
+        Platform.isIOS
+            ? Icons.flip_camera_ios_outlined
+            : Icons.flash_on_rounded,
+      ),
+      onPressed: () {
+        if (flash == true) {
+          _controller!.setFlashMode(FlashMode.off);
+          flash = false;
+        } else {
+          flash = true;
+          _controller!.setFlashMode(FlashMode.torch);
+        }
+      },
     );
   }
 

@@ -1,5 +1,5 @@
 import 'package:isar/isar.dart';
-part 'container_isar.g.dart';
+part 'container_entry.g.dart';
 
 @Collection()
 class ContainerEntry {

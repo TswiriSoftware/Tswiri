@@ -77,8 +77,8 @@ void writeValidBarcodePositionsToDatabase(
         RealBarcodePositionEntry(
             uid: realBarcodePosition.uid,
             offset: offsetToTypeOffset(realBarcodePosition.offset!),
-            zOffset: realBarcodePosition.zOffset,
-            isMarker: realBarcodePosition.isMarker,
+            zOffset: realBarcodePosition.zOffset ?? 0,
+            isMarker: false, //realBarcodePosition.isMarker,
             shelfUID: shelfUID,
             timestamp: realBarcodePosition.timestamp!));
   }
@@ -139,9 +139,9 @@ List<RealInterBarcodeOffset> getRelevantInterBarcodeOffsets(
 
 ///Creates a list of all scanned barcodes , but with null positions , they still need to be populated.
 List<RealBarcodePosition> extractListOfScannedBarcodes(
-    List<RealInterBarcodeOffset> allRealInterBarcodeData,
-    List<BarcodeDataEntry> allBarcodes,
-    int shelfUID) {
+  List<RealInterBarcodeOffset> allRealInterBarcodeData,
+  List<BarcodeDataEntry> allBarcodes,
+) {
   List<RealBarcodePosition> realPositionData = [];
   List<RealBarcodePosition> allBarcodesInScan = [];
   for (RealInterBarcodeOffset interBarcodeData in allRealInterBarcodeData) {
@@ -161,15 +161,13 @@ List<RealBarcodePosition> extractListOfScannedBarcodes(
 
     allBarcodesInScan.addAll([
       RealBarcodePosition(
-          uid: interBarcodeData.uidStart,
-          zOffset: interBarcodeData.zOffset,
-          shelfUID: shelfUID,
-          isMarker: startIsFixed),
+        uid: interBarcodeData.uidStart,
+        zOffset: interBarcodeData.zOffset,
+      ),
       RealBarcodePosition(
-          uid: interBarcodeData.uidEnd,
-          zOffset: interBarcodeData.zOffset,
-          shelfUID: shelfUID,
-          isMarker: endIsFixed)
+        uid: interBarcodeData.uidEnd,
+        zOffset: interBarcodeData.zOffset,
+      )
     ]);
   }
 

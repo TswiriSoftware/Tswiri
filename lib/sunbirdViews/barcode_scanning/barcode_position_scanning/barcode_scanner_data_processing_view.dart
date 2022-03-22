@@ -168,26 +168,25 @@ Future<List<RealBarcodePosition>> processData(
           listOfRealInterBarcodeOffsets: allRealInterBarcodeOffsets);
 
   //List of unique barcodes that we want to write the positions of.
-  List<RealBarcodePosition> realBarcodePositions = extractListOfScannedBarcodes(
-      finalRealInterBarcodeOffsets, allBarcodes, shelfUID);
+  List<RealBarcodePosition> realBarcodePositions =
+      extractListOfScannedBarcodes(finalRealInterBarcodeOffsets, allBarcodes);
 
-  //Populate origin
-  if (realBarcodePositions.any((element) => element.isMarker == true)) {
-    int index =
-        realBarcodePositions.indexWhere((element) => element.isMarker == true);
-    RealBarcodePosition origin = realBarcodePositions[index];
+  // //Populate origin
+  // if (realBarcodePositions.any((element) => element.isMarker == true)) {
+  //   int index =
+  //       realBarcodePositions.indexWhere((element) => element.isMarker == true);
+  //   RealBarcodePosition origin = realBarcodePositions[index];
 
-    realBarcodePositions[index] = RealBarcodePosition(
-        uid: origin.uid,
-        zOffset: 0,
-        offset: const Offset(0, 0),
-        isMarker: true,
-        shelfUID: shelfUID,
-        timestamp: 0);
-  } else {
-    //If the origin was not scanned then the app will throw an error
-    return Future.error('Error: No Fixed Barcodes.');
-  }
+  //   realBarcodePositions[index] = RealBarcodePosition(
+  //       uid: origin.uid,
+  //       zOffset: 0,
+  //       offset: const Offset(0, 0),
+
+  //       timestamp: 0);
+  // } else {
+  //   //If the origin was not scanned then the app will throw an error
+  //   return Future.error('Error: No Fixed Barcodes.');
+  // }
 
   int nonNullPositions = 1;
   int nonNullPositionsInPreviousIteration = realBarcodePositions.length - 1;
@@ -232,8 +231,8 @@ Future<List<RealBarcodePosition>> processData(
               endBarcodeRealPosition.offset = startBarcode.offset! +
                   relevantBarcodeOffset[interBarcodeOffsetIndex].offset;
               //Calculate the z difference from start barcode
-              endBarcodeRealPosition.zOffset = startBarcode.zOffset +
-                  relevantBarcodeOffset[interBarcodeOffsetIndex].zOffset;
+              // endBarcodeRealPosition.zOffset = startBarcode.zOffset +
+              //     relevantBarcodeOffset[interBarcodeOffsetIndex].zOffset;
             } else if (relevantBarcodeOffset[interBarcodeOffsetIndex]
                     .uidStart ==
                 endBarcodeRealPosition.uid) {
@@ -241,8 +240,8 @@ Future<List<RealBarcodePosition>> processData(
               endBarcodeRealPosition.offset = startBarcode.offset! -
                   relevantBarcodeOffset[interBarcodeOffsetIndex].offset;
               //Calculate the z difference from start barcode
-              endBarcodeRealPosition.zOffset = startBarcode.zOffset -
-                  relevantBarcodeOffset[interBarcodeOffsetIndex].zOffset;
+              // endBarcodeRealPosition.zOffset = startBarcode.zOffset -
+              //     relevantBarcodeOffset[interBarcodeOffsetIndex].zOffset;
             }
 
             //log(startBarcode.startBarcodeDistanceFromCamera.toString());

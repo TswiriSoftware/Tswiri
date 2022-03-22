@@ -9,16 +9,16 @@ import '../../../databaseAdapters/scanningAdapter/real_barcode_position_entry.da
 import '../../../objects/real_barcode_position.dart';
 import '../../../widgets/barcode_scanning_widgets/real_position_display_widget_old.dart';
 
-class RealBarcodePositionDatabaseView extends StatefulWidget {
-  const RealBarcodePositionDatabaseView({Key? key}) : super(key: key);
+class BarcodePositionScannerDataView extends StatefulWidget {
+  const BarcodePositionScannerDataView({Key? key}) : super(key: key);
 
   @override
-  _RealBarcodePositionDatabaseViewState createState() =>
-      _RealBarcodePositionDatabaseViewState();
+  _BarcodePositionScannerDataViewState createState() =>
+      _BarcodePositionScannerDataViewState();
 }
 
-class _RealBarcodePositionDatabaseViewState
-    extends State<RealBarcodePositionDatabaseView> {
+class _BarcodePositionScannerDataViewState
+    extends State<BarcodePositionScannerDataView> {
   List displayList = [];
 
   @override
@@ -107,6 +107,7 @@ class _RealBarcodePositionDatabaseViewState
         uid: realBarcodePostionEntry.uid,
         offset: typeOffsetToOffset(realBarcodePostionEntry.offset),
         zOffset: realBarcodePostionEntry.zOffset,
+        //isMarker: realBarcodePostionEntry.isMarker,
       ));
     }
 

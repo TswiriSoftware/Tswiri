@@ -36,45 +36,53 @@ class _CreateNewContainerViewState extends State<CreateNewContainerView> {
         child: Column(
           children: [
             //Single Create.
-            InkWell(
-              onTap: () async {
-                await Navigator.push(
-                  context,
-                  (MaterialPageRoute(
-                    builder: (context) => SingleContainerCreateView(
-                      database: widget.database,
-                    ),
-                  )),
-                );
-                Navigator.pop(context);
-              },
-              child: const DescriptionWidget(
-                name: 'Create Single',
-                description:
-                    '- Create a single container.\n- Select a parent.\n- Generate \n OR\n- Scan a barcode the container',
-              ),
-            ),
+            _singleCreate(),
             //Batch Create
-            InkWell(
-              onTap: () async {
-                await Navigator.push(
-                  context,
-                  (MaterialPageRoute(
-                    builder: (context) => BatchContainerCreateView(
-                      database: widget.database,
-                    ),
-                  )),
-                );
-                Navigator.pop(context);
-              },
-              child: const DescriptionWidget(
-                name: 'Batch create',
-                description:
-                    '- Create multiple containers.\n- Select a parent.\n- Generate \n OR\n- Scan barcodes for these containers',
-              ),
-            ),
+            _batchCreate(),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _singleCreate() {
+    return InkWell(
+      onTap: () async {
+        await Navigator.push(
+          context,
+          (MaterialPageRoute(
+            builder: (context) => SingleContainerCreateView(
+              database: widget.database,
+            ),
+          )),
+        );
+        Navigator.pop(context);
+      },
+      child: const DescriptionWidget(
+        name: 'Create Single',
+        description:
+            '- Create a single container.\n- Select a parent.\n- Generate \n OR\n- Scan a barcode the container',
+      ),
+    );
+  }
+
+  Widget _batchCreate() {
+    return InkWell(
+      onTap: () async {
+        await Navigator.push(
+          context,
+          (MaterialPageRoute(
+            builder: (context) => BatchContainerCreateView(
+              database: widget.database,
+            ),
+          )),
+        );
+        Navigator.pop(context);
+      },
+      child: const DescriptionWidget(
+        name: 'Batch create',
+        description:
+            '- Create multiple containers.\n- Select a parent.\n- Generate \n OR\n- Scan barcodes for these containers',
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/isar_database/container/container_isar.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
+
 import 'package:isar/isar.dart';
 
 import '../../../sunbird_views/container_system/container_views/container_view.dart';
