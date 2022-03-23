@@ -20,16 +20,14 @@ import '../../../isar_database/container_entry/container_entry.dart';
 import '../../../isar_database/functions/isar_functions.dart';
 
 class ContainerView extends StatefulWidget {
-  const ContainerView({Key? key, required this.containerUID, this.database})
-      : super(key: key);
+  const ContainerView({Key? key, required this.containerUID}) : super(key: key);
   final String containerUID;
-  final Isar? database;
+
   @override
   State<ContainerView> createState() => _ContainerViewState();
 }
 
 class _ContainerViewState extends State<ContainerView> {
-  Isar? database;
   ContainerEntry? containerEntry;
   ContainerEntry? parentContainerEntry;
   List<ContainerEntry> children = [];
@@ -37,17 +35,12 @@ class _ContainerViewState extends State<ContainerView> {
 
   @override
   void initState() {
-    database = widget.database;
-    database ??= openIsar();
     getContainerInfo();
     super.initState();
   }
 
   @override
   void dispose() {
-    // if (widget.database != null) {
-    //   database!.close();
-    // }
     super.dispose();
   }
 
@@ -187,9 +180,7 @@ class _ContainerViewState extends State<ContainerView> {
 
         //Container Children
         ContainerChildrenDisplayWidget(
-            children: children,
-            database: database!,
-            updateChildren: getContainerInfo),
+            children: children, updateChildren: getContainerInfo),
       ],
     );
   }
@@ -200,34 +191,30 @@ class _ContainerViewState extends State<ContainerView> {
         //Name edit
         ContainerNameEditWidget(
           containerUID: containerEntry!.containerUID,
-          database: database!,
         ),
 
         //Description edit.
         ContainerDescriptionEditWidget(
-            containerUID: containerEntry!.containerUID, database: database!),
+          containerUID: containerEntry!.containerUID,
+        ),
 
         //Parent edit.
         ContainerParentEditWidget(
-          database: database!,
           currentContainerUID: containerEntry!.containerUID,
         ),
 
         //Barcode edit.
         ContainerBarcodeEiditWidget(
-          database: database!,
           containerUID: containerEntry!.containerUID,
         ),
 
         //Marker edit.
         ContainerMarkerEditWidget(
-          database: database!,
           currentContainerUID: containerEntry!.containerUID,
         ),
 
         //Children Position Scan.
         ContainerChildrenPositionEdit(
-          database: database!,
           currentContainerUID: containerEntry!.containerUID,
         ),
       ],
@@ -237,13 +224,13 @@ class _ContainerViewState extends State<ContainerView> {
   void getContainerInfo() {
     String? parentContainerUID;
     //Get containerEntry.
-    containerEntry = database!.containerEntrys
+    containerEntry = isarDatabase!.containerEntrys
         .filter()
         .containerUIDMatches(widget.containerUID)
         .findFirstSync();
 
     //get parent containerUID
-    parentContainerUID = database!.containerRelationships
+    parentContainerUID = isarDatabase!.containerRelationships
         .filter()
         .containerUIDMatches(containerEntry!.containerUID)
         .findFirstSync()
@@ -251,13 +238,13 @@ class _ContainerViewState extends State<ContainerView> {
 
     //get parent containerEntry
     if (parentContainerUID != null) {
-      parentContainerEntry = database!.containerEntrys
+      parentContainerEntry = isarDatabase!.containerEntrys
           .filter()
           .containerUIDMatches(parentContainerUID)
           .findFirstSync();
     }
 
-    List<String> childrenUIDs = database!.containerRelationships
+    List<String> childrenUIDs = isarDatabase!.containerRelationships
         .filter()
         .parentUIDMatches(containerEntry!.containerUID)
         .containerUIDProperty()
@@ -266,7 +253,7 @@ class _ContainerViewState extends State<ContainerView> {
     log(childrenUIDs.length.toString());
     children = [];
     for (String child in childrenUIDs) {
-      children.add(database!.containerEntrys
+      children.add(isarDatabase!.containerEntrys
           .filter()
           .containerUIDMatches(child)
           .findFirstSync()!);

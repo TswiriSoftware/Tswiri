@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/multiple_barcode_scanner/multiple_barcode_scanner_view.dart';
 
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_dark_container.dart';
@@ -16,11 +17,8 @@ import '../../../widgets/container_widgets/new_container_widgets/new_container_n
 class ContainerBatchCreate extends StatefulWidget {
   const ContainerBatchCreate({
     Key? key,
-    required this.database,
     this.parentContainerUID,
   }) : super(key: key);
-
-  final Isar database;
 
   ///Pass this if you know what the parentContainerUID is.
   final String? parentContainerUID;
@@ -83,7 +81,7 @@ class _ContainerBatchCreateState extends State<ContainerBatchCreate> {
             NewContainerTypeWidget(
               builder: Builder(builder: (context) {
                 List<ContainerType> containerTypes =
-                    widget.database.containerTypes.where().findAllSync();
+                    isarDatabase!.containerTypes.where().findAllSync();
 
                 return DropdownButton<String>(
                   value: containerType,
@@ -302,7 +300,7 @@ class _ContainerBatchCreateState extends State<ContainerBatchCreate> {
         ..description = null
         ..barcodeUID = scannedBarcodeUIDs!.elementAt(i);
 
-      widget.database.writeTxnSync((isar) {
+      isarDatabase!.writeTxnSync((isar) {
         isar.containerEntrys.putSync(newContainer);
       });
 
@@ -311,7 +309,7 @@ class _ContainerBatchCreateState extends State<ContainerBatchCreate> {
           ..containerUID = _containerUID
           ..parentUID = parentContainerUID;
 
-        widget.database.writeTxnSync((isar) {
+        isarDatabase!.writeTxnSync((isar) {
           isar.containerRelationships.putSync(newContainerRelationship);
         });
       }
@@ -340,7 +338,7 @@ class _ContainerBatchCreateState extends State<ContainerBatchCreate> {
         ..description = null
         ..barcodeUID = null;
 
-      widget.database.writeTxnSync((isar) {
+      isarDatabase!.writeTxnSync((isar) {
         isar.containerEntrys.putSync(newContainer);
       });
 
@@ -349,7 +347,7 @@ class _ContainerBatchCreateState extends State<ContainerBatchCreate> {
           ..containerUID = _containerUID
           ..parentUID = parentContainerUID;
 
-        widget.database.writeTxnSync((isar) {
+        isarDatabase!.writeTxnSync((isar) {
           isar.containerRelationships.putSync(newContainerRelationship);
         });
       }

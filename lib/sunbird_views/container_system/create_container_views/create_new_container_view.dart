@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/stateless_container_display_widgets/create_new_container_description_widget.dart';
-import 'package:isar/isar.dart';
 
 import 'container_batch_create_view.dart';
 import 'container_single_create_view.dart';
 
 class CreateNewContainerView extends StatefulWidget {
-  const CreateNewContainerView({Key? key, required this.database})
-      : super(key: key);
-  final Isar database;
+  const CreateNewContainerView({Key? key}) : super(key: key);
   @override
   State<CreateNewContainerView> createState() => _CreateNewContainerViewState();
 }
@@ -51,9 +48,7 @@ class _CreateNewContainerViewState extends State<CreateNewContainerView> {
         await Navigator.push(
           context,
           (MaterialPageRoute(
-            builder: (context) => SingleContainerCreateView(
-              database: widget.database,
-            ),
+            builder: (context) => const SingleContainerCreateView(),
           )),
         );
         Navigator.pop(context);
@@ -72,9 +67,7 @@ class _CreateNewContainerViewState extends State<CreateNewContainerView> {
         await Navigator.push(
           context,
           (MaterialPageRoute(
-            builder: (context) => BatchContainerCreateView(
-              database: widget.database,
-            ),
+            builder: (context) => const BatchContainerCreateView(),
           )),
         );
         Navigator.pop(context);

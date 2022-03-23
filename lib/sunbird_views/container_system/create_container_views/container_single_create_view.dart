@@ -18,15 +18,8 @@ import '../../../isar_database/functions/isar_functions.dart';
 
 class SingleContainerCreateView extends StatefulWidget {
   const SingleContainerCreateView(
-      {Key? key,
-      this.database,
-      this.containerType,
-      this.parentUID,
-      this.parentName})
+      {Key? key, this.containerType, this.parentUID, this.parentName})
       : super(key: key);
-
-  ///Isar
-  final Isar? database;
 
   ///Pass a containerType if you can.
   final String? containerType;
@@ -41,7 +34,6 @@ class SingleContainerCreateView extends StatefulWidget {
 }
 
 class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
-  Isar? database;
   String? title;
   String? parentUID;
   String? parentName;
@@ -53,10 +45,6 @@ class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
 
   @override
   void initState() {
-    //Open Isar
-    database = widget.database;
-    database ??= openIsar();
-
     containerType = widget.containerType ?? 'area';
     parentUID = widget.parentUID;
 
@@ -65,9 +53,6 @@ class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
 
   @override
   void dispose() {
-    if (widget.database == null) {
-      database!.close();
-    }
     super.dispose();
   }
 
@@ -154,7 +139,7 @@ class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
       containerType: containerType,
       builder: Builder(builder: (context) {
         List<ContainerType> containerTypes =
-            database!.containerTypes.where().findAllSync();
+            isarDatabase!.containerTypes.where().findAllSync();
 
         return DropdownButton<String>(
           value: containerType,
@@ -209,8 +194,7 @@ class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
         ContainerEntry? selectedParentContainer = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ContainerSelectorView(
-              database: widget.database,
+            builder: (context) => const ContainerSelectorView(
               multipleSelect: false,
             ),
           ),
@@ -271,7 +255,7 @@ class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
                   ..containerUID = containerUID
                   ..parentUID = parentUID;
 
-                database!.writeTxnSync((isar) {
+                isarDatabase!.writeTxnSync((isar) {
                   isar.containerEntrys.putSync(newContainer);
                   isar.containerRelationships.putSync(newContainerRelationship);
                 });

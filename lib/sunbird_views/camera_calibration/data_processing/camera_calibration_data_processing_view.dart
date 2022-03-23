@@ -1,37 +1,42 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcode_size_distance_entry/barcode_size_distance_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/user_accelerometer_z_axis_data_objects.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/barcode_size_objects.dart';
-import 'package:hive/hive.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
+
+import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
-import '../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
-import '../../functions/barcodeTools/get_data_functions.dart';
-import 'calibration_display_widgets.dart';
+import '../../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 
-class BarcodeCalibrationDataProcessingView extends StatefulWidget {
-  const BarcodeCalibrationDataProcessingView(
-      {Key? key,
-      required this.rawBarcodeData,
-      required this.rawUserAccelerometerData,
-      required this.startTimeStamp,
-      required this.barcodeID})
-      : super(key: key);
+import 'camera_calibration_display_widgets.dart';
+
+class CameraCalibrationDataProcessingView extends StatefulWidget {
+  const CameraCalibrationDataProcessingView({
+    Key? key,
+    required this.rawBarcodeData,
+    required this.rawUserAccelerometerData,
+    required this.startTimeStamp,
+    required this.barcodeUID,
+  }) : super(key: key);
 
   final List<BarcodeData> rawBarcodeData;
   final List<RawUserAccelerometerZAxisData> rawUserAccelerometerData;
   final int startTimeStamp;
-  final int barcodeID;
+  final String barcodeUID;
 
   @override
-  _BarcodeCalibrationDataProcessingViewState createState() =>
-      _BarcodeCalibrationDataProcessingViewState();
+  _CameraCalibrationDataProcessingViewState createState() =>
+      _CameraCalibrationDataProcessingViewState();
 }
 
-class _BarcodeCalibrationDataProcessingViewState
-    extends State<BarcodeCalibrationDataProcessingView> {
+class _CameraCalibrationDataProcessingViewState
+    extends State<CameraCalibrationDataProcessingView> {
   List<DistanceFromCameraLookupEntry> displayList = [];
 
   @override
@@ -65,9 +70,12 @@ class _BarcodeCalibrationDataProcessingViewState
         title: const Text('Processing Calibration Data'),
       ),
       body: Center(
-        child: FutureBuilder<List>(
+        child: FutureBuilder<List<BarcodeSizeDistanceEntry>>(
           future: processData(
-              widget.rawBarcodeData, widget.rawUserAccelerometerData),
+            widget.rawBarcodeData,
+            widget.rawUserAccelerometerData,
+            widget.barcodeUID,
+          ),
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
               return const Center(child: CircularProgressIndicator());
@@ -76,7 +84,7 @@ class _BarcodeCalibrationDataProcessingViewState
               return ListView.builder(
                   itemCount: myList.length,
                   itemBuilder: (context, index) {
-                    DistanceFromCameraLookupEntry data = myList[index];
+                    BarcodeSizeDistanceEntry data = myList[index];
 
                     if (index == 0) {
                       return Column(
@@ -90,13 +98,13 @@ class _BarcodeCalibrationDataProcessingViewState
                           const SizedBox(
                             height: 5,
                           ),
-                          DisplayMatchedDataWidget(
+                          CameraCalibrationDisplayWidget(
                             dataObject: data,
                           ),
                         ],
                       );
                     } else {
-                      return DisplayMatchedDataWidget(
+                      return CameraCalibrationDisplayWidget(
                         dataObject: data,
                       );
                     }
@@ -129,40 +137,22 @@ class _BarcodeCalibrationDataProcessingViewState
   //  6. Matching the distance moved to the barcode sizes using timestamps
   //
 
-  Future<List<DistanceFromCameraLookupEntry>> processData(
-      List<BarcodeData> rawBarcodesData,
-      List<RawUserAccelerometerZAxisData> rawAccelerometData) async {
+  Future<List<BarcodeSizeDistanceEntry>> processData(
+    List<BarcodeData> rawBarcodesData,
+    List<RawUserAccelerometerZAxisData> rawAccelerometData,
+    String barcodeUID,
+  ) async {
+    List<BarcodeSizeDistanceEntry> barcodeSizeDistanceEntries = [];
     if (rawAccelerometData.isNotEmpty && rawBarcodesData.isNotEmpty) {
-      //1. Get all barcodes.
-      List<BarcodeDataEntry> allBarcodes = [];
-      allBarcodes.addAll(await getGeneratedBarcodes());
-      double currentBarcodeSize = 0;
+      //Get the barcode size if it exists else use defaultBarcodeDiagonalLength
+      double currentBarcodeSize = isarDatabase!.barcodePropertys
+              .filter()
+              .barcodeUIDMatches(barcodeUID)
+              .findFirstSync()
+              ?.size ??
+          defaultBarcodeDiagonalLength!;
+
       List<double> focalLengths = [];
-
-      int index = rawBarcodesData.indexWhere((element) =>
-          element.barcode.value.displayValue != null &&
-          element.timestamp >= widget.startTimeStamp);
-      if (index != -1) {
-        //Get scanned barcodeID.
-        int currentBarcodeID =
-            int.parse(rawBarcodesData[index].barcode.value.displayValue!);
-
-        //Get the index of currentBarcodeID
-        int indexOfcurrentBarcode = allBarcodes.indexWhere(
-            (element) => element.uid == currentBarcodeID.toString());
-
-        //If it exists get it's size.
-        if (indexOfcurrentBarcode != -1) {
-          currentBarcodeSize = allBarcodes[indexOfcurrentBarcode].barcodeSize;
-        } else {
-          //Get the default barcode Size.
-          final prefs = await SharedPreferences.getInstance();
-          currentBarcodeSize =
-              prefs.getDouble(defaultBarcodeDiagonalLengthPreference) ?? 100;
-        }
-      } else {
-        return Future.error('Error: Unkown barcode scanned.');
-      }
 
       //2. A list of all barcode diagonal side lengths at different points in time.
       List<OnImageBarcodeSize> onImageBarcodeSizes =
@@ -208,10 +198,6 @@ class _BarcodeCalibrationDataProcessingViewState
       //  Now we will match the distance moved to the barcode sizes using the timestamps.
       //  Then Write the matched data to the matchedDataHiveBox.
 
-      //Box to store valid calibration Data
-      Box<DistanceFromCameraLookupEntry> matchedDataHiveBox =
-          await Hive.openBox(distanceLookupTableBoxName);
-
       //Matches OnImageBarcodeSize and DistanceFromCamera using timestamps and writes to Hive Database
       for (OnImageBarcodeSize onImageBarcodeSize in onImageBarcodeSizes) {
         //Find the firts accelerometer data where the timestamp is >= to the OnImageBarcodeSize timestamp
@@ -219,15 +205,16 @@ class _BarcodeCalibrationDataProcessingViewState
             (element) => element.timestamp >= onImageBarcodeSize.timestamp);
         //Checks that entry exists
         if (distanceFromCameraIndex != -1) {
-          //Creates an entry in the Hive Database.
-          DistanceFromCameraLookupEntry matchedCalibrationDataHiveObject =
-              DistanceFromCameraLookupEntry(
-                  onImageBarcodeDiagonalLength:
-                      onImageBarcodeSize.averageBarcodeDiagonalLength,
-                  distanceFromCamera:
-                      processedAccelerometerData[distanceFromCameraIndex]
-                          .barcodeDistanceFromCamera,
-                  actualBarcodeDiagonalLengthKey: currentBarcodeSize);
+          //Create the entry.
+          BarcodeSizeDistanceEntry sizeDistanceEntry =
+              BarcodeSizeDistanceEntry()
+                ..diagonalSize = onImageBarcodeSize.averageBarcodeDiagonalLength
+                ..distanceFromCamera =
+                    processedAccelerometerData[distanceFromCameraIndex]
+                        .barcodeDistanceFromCamera;
+
+          //Add to entries list.
+          barcodeSizeDistanceEntries.add(sizeDistanceEntry);
 
           double focalLength = onImageBarcodeSize.averageBarcodeDiagonalLength *
               (processedAccelerometerData[distanceFromCameraIndex]
@@ -235,15 +222,9 @@ class _BarcodeCalibrationDataProcessingViewState
                   currentBarcodeSize);
 
           focalLengths.add(focalLength);
-
-          matchedDataHiveBox.put(onImageBarcodeSize.timestamp.toString(),
-              matchedCalibrationDataHiveObject);
-
-          //log(matchedCalibrationDataHiveObject.toString());
-
-          displayList.add(matchedCalibrationDataHiveObject);
         }
       }
+
       final prefs = await SharedPreferences.getInstance();
 
       //Calculate the average focal length.
@@ -255,10 +236,12 @@ class _BarcodeCalibrationDataProcessingViewState
       //Set the focal Length of the camera
 
       prefs.setDouble(focalLengthPreference, finalFocalLength);
-      //log('focal length: ' + finalFocalLength.toString());
-      //log(currentBarcodeSize.toString());
+      log('focal length: ' + finalFocalLength.toString());
+
+      isarDatabase!.writeTxnSync((isar) => isar.barcodeSizeDistanceEntrys
+          .putAllSync(barcodeSizeDistanceEntries));
     }
-    return displayList;
+    return barcodeSizeDistanceEntries;
   }
 }
 

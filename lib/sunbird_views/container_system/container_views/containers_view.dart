@@ -16,21 +16,18 @@ import 'container_view.dart';
 
 class ContainersView extends StatefulWidget {
   const ContainersView({Key? key}) : super(key: key);
-
   @override
   _ContainersViewState createState() => _ContainersViewState();
 }
 
 class _ContainersViewState extends State<ContainersView> {
   List<ContainerEntry> searchResults = [];
-  Isar? database;
+
   String enteredKeyword = '';
 
   @override
   void initState() {
-    database = openIsar();
-
-    if (database!.containerTypes.where().findAllSync().isEmpty) {
+    if (isarDatabase!.containerTypes.where().findAllSync().isEmpty) {
       createBasicContainerTypes();
     }
 
@@ -39,7 +36,6 @@ class _ContainersViewState extends State<ContainersView> {
 
   @override
   void dispose() {
-    database = closeIsar(database);
     super.dispose();
   }
 
@@ -62,7 +58,9 @@ class _ContainersViewState extends State<ContainersView> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Padding(
-          padding: const EdgeInsets.all(10.0), child: _newContainerButton()),
+        padding: const EdgeInsets.all(10.0),
+        child: _newContainerButton(),
+      ),
       body: GestureDetector(
         onTap: () {
           hideKeyboard(context);
@@ -125,7 +123,7 @@ class _ContainersViewState extends State<ContainersView> {
   Widget _buildListView() {
     return Builder(
       builder: (context) {
-        List<ContainerEntry> results = database!.containerEntrys
+        List<ContainerEntry> results = isarDatabase!.containerEntrys
             .filter()
             .nameContains(enteredKeyword, caseSensitive: false)
             .or()
@@ -145,7 +143,6 @@ class _ContainersViewState extends State<ContainersView> {
                     context,
                     (MaterialPageRoute(
                       builder: (context) => ContainerView(
-                        database: database,
                         containerUID: containerEntry.containerUID,
                       ),
                     )),
@@ -161,7 +158,7 @@ class _ContainersViewState extends State<ContainersView> {
                       // An action can be bigger than the others.
                       flex: 1,
                       onPressed: (context) {
-                        database!.writeTxnSync(
+                        isarDatabase!.writeTxnSync(
                           (isar) {
                             isar.containerEntrys.deleteSync(containerEntry.id);
 
@@ -180,8 +177,7 @@ class _ContainersViewState extends State<ContainersView> {
                       label: 'Delete',
                     ),
                   ]),
-                  child: ContainerCardWidget(
-                      containerEntry: containerEntry, database: database!),
+                  child: ContainerCardWidget(containerEntry: containerEntry),
                 ),
               );
             }),
@@ -196,9 +192,7 @@ class _ContainersViewState extends State<ContainersView> {
     await Navigator.push(
       context,
       (MaterialPageRoute(
-        builder: (context) => CreateNewContainerView(
-          database: database!,
-        ),
+        builder: (context) => const CreateNewContainerView(),
       )),
     );
     setState(() {});
@@ -226,7 +220,7 @@ class _ContainersViewState extends State<ContainersView> {
   }
 
   void createBasicContainerTypes() {
-    database!.writeTxnSync((database) {
+    isarDatabase!.writeTxnSync((database) {
       database.containerTypes.putSync(
           ContainerType()
             ..id = 1

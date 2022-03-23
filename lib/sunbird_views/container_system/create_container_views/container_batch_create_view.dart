@@ -1,12 +1,12 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_system/container_select_views/container_selector_view.dart';
 
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_dark_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_parent_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/new_container_widgets/new_container_type_widget.dart';
-import 'package:flutter_google_ml_kit/widgets/container_widgets/statefull_container_edit_widgets/container_parent_edit_widget.dart';
 import 'package:isar/isar.dart';
 import '../../../isar_database/container_entry/container_entry.dart';
 
@@ -21,11 +21,8 @@ import '../../barcode_scanning/multiple_barcode_scanner/multiple_barcode_scanner
 class BatchContainerCreateView extends StatefulWidget {
   const BatchContainerCreateView({
     Key? key,
-    required this.database,
     this.parentContainerUID,
   }) : super(key: key);
-
-  final Isar database;
 
   ///Pass this if you know what the parentContainerUID is.
   final String? parentContainerUID;
@@ -94,9 +91,8 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
         ContainerEntry? parentContainerEntry = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ContainerSelectorView(
+            builder: (context) => const ContainerSelectorView(
               multipleSelect: false,
-              database: widget.database,
             ),
           ),
         );
@@ -118,7 +114,7 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
     return NewContainerTypeWidget(
       builder: Builder(builder: (context) {
         List<ContainerType> containerTypes =
-            widget.database.containerTypes.where().findAllSync();
+            isarDatabase!.containerTypes.where().findAllSync();
 
         return DropdownButton<String>(
           value: containerType,
@@ -344,7 +340,7 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
         ..description = null
         ..barcodeUID = scannedBarcodeUIDs!.elementAt(i);
 
-      widget.database.writeTxnSync((isar) {
+      isarDatabase!.writeTxnSync((isar) {
         isar.containerEntrys.putSync(newContainer);
       });
 
@@ -353,7 +349,7 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
           ..containerUID = _containerUID
           ..parentUID = parentContainerUID;
 
-        widget.database.writeTxnSync((isar) {
+        isarDatabase!.writeTxnSync((isar) {
           isar.containerRelationships.putSync(newContainerRelationship);
         });
       }
@@ -383,7 +379,7 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
         ..description = null
         ..barcodeUID = null;
 
-      widget.database.writeTxnSync((isar) {
+      isarDatabase!.writeTxnSync((isar) {
         isar.containerEntrys.putSync(newContainer);
       });
 
@@ -392,7 +388,7 @@ class _BatchContainerCreateViewState extends State<BatchContainerCreateView> {
           ..containerUID = _containerUID
           ..parentUID = parentContainerUID;
 
-        widget.database.writeTxnSync((isar) {
+        isarDatabase!.writeTxnSync((isar) {
           isar.containerRelationships.putSync(newContainerRelationship);
         });
       }

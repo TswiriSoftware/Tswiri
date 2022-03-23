@@ -2,8 +2,9 @@ import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/globalValues/isar_dir.dart';
 import 'package:flutter_google_ml_kit/globalValues/routes.dart';
+import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_generator/barcode_generator_view.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcodeNavigation/barcode_selection_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/camera_calibration_tools_view.dart';
 import 'package:flutter_google_ml_kit/widgets/card_widgets/custom_card_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -17,8 +18,8 @@ import 'databaseAdapters/shelfAdapter/shelf_entry.dart';
 import 'databaseAdapters/tagAdapters/barcode_tag_entry.dart';
 import 'databaseAdapters/tagAdapters/tag_entry.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
-import 'sunbirdViews/app_settings/app_settings_functions.dart';
-import 'sunbirdViews/app_settings/app_settings_view.dart';
+import 'sunbird_views/app_settings/app_settings_functions.dart';
+import 'sunbird_views/app_settings/app_settings_view.dart';
 import 'sunbird_views/container_system/container_views/containers_view.dart';
 
 List<CameraDescription> cameras = [];
@@ -54,6 +55,8 @@ Future<void> main() async {
   isarDirectory =
       await getApplicationSupportDirectory(); // path_provider package
 
+  isarDatabase = openIsar();
+
   Hive.registerAdapter(RealBarcodePositionEntryAdapter()); //0
   Hive.registerAdapter(DistanceFromCameraLookupEntryAdapter()); //1
   Hive.registerAdapter(BarcodeTagEntryAdapter()); //3
@@ -62,11 +65,6 @@ Future<void> main() async {
   Hive.registerAdapter(BarcodeDataEntryAdapter()); //6
   Hive.registerAdapter(BarcodePhotosEntryAdapter()); //7
   Hive.registerAdapter(ShelfEntryAdapter()); //8
-  //Hive.registerAdapter(ContainerTypeAdapter()); //9
-  //Hive.registerAdapter(ContainerEntryAdapterOLD()); //2
-  //Hive.registerAdapter(Vector3EntryAdapter()); //11
-  //Hive.registerAdapter(PhotoEntryAdapter()); //12
-  //Hive.registerAdapter(BarcodeEntryAdapter()); //13
 }
 
 class MyApp extends StatelessWidget {
@@ -159,16 +157,16 @@ class HomeView extends StatelessWidget {
               tileColor: Colors.deepOrange,
             ),
             CustomCard(
-              'Find a box',
-              BarcodeSelectionView(),
-              Icons.navigation,
+              'Generate Barcodes',
+              BarcodeGeneratorView(),
+              Icons.qr_code_2_rounded,
               featureCompleted: true,
               tileColor: Colors.deepOrange,
             ),
             CustomCard(
-              'Generate Barcodes',
-              BarcodeGeneratorView(),
-              Icons.qr_code_2_rounded,
+              'Camera Calibraion',
+              CameraCalibrationToolsView(),
+              Icons.camera,
               featureCompleted: true,
               tileColor: Colors.deepOrange,
             ),

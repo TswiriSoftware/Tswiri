@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../sunbirdViews/app_settings/app_settings.dart';
-import '../../main.dart';
+import '../../app_settings/app_settings.dart';
+import '../../../main.dart';
 
 enum ScreenMode { liveFeed, gallery }
 
@@ -19,7 +19,6 @@ class CameraViewCameraCalibration extends StatefulWidget {
       required this.title,
       required this.customPaint,
       required this.onImage,
-      required this.color,
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
 
@@ -27,7 +26,6 @@ class CameraViewCameraCalibration extends StatefulWidget {
   final CustomPaint? customPaint;
   final Function(InputImage inputImage) onImage;
   final CameraLensDirection initialDirection;
-  final Color color;
 
   @override
   _CameraViewCameraCalibrationState createState() =>
@@ -70,8 +68,6 @@ class _CameraViewCameraCalibrationState
         title: Text(widget.title),
       ),
       body: _body(),
-      // floatingActionButton: _floatingActionButton(),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -147,17 +143,6 @@ class _CameraViewCameraCalibrationState
     }
     setState(() {});
   }
-
-  // void _switchScreenMode() async {
-  //   if (_mode == ScreenMode.liveFeed) {
-  //     _mode = ScreenMode.gallery;
-  //     await _stopLiveFeed();
-  //   } else {
-  //     _mode = ScreenMode.liveFeed;
-  //     await _startLiveFeed();
-  //   }
-  //   setState(() {});
-  // }
 
   Future _startLiveFeed() async {
     _controller = CameraController(

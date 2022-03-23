@@ -1,8 +1,7 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
+import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_inter_barcode_data.dart';
@@ -12,21 +11,18 @@ import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_pos
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/functions/functions.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/dark_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
-import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 
 class BarcodePositionScannerProcessingView extends StatefulWidget {
   const BarcodePositionScannerProcessingView({
     Key? key,
     required this.allRawOnImageBarcodeData,
-    required this.database,
     required this.parentContainerUID,
     required this.relevantBarcodes,
   }) : super(key: key);
 
   final List<RawOnImageBarcodeData> allRawOnImageBarcodeData;
-  final Isar database;
+
   final String parentContainerUID;
   final List<String> relevantBarcodes;
 
@@ -179,7 +175,6 @@ class _BarcodePositionScannerProcessingViewState
           context,
           MaterialPageRoute(
             builder: (context) => BarcodePositionScannerDataVisualizationView(
-              database: widget.database,
               parentContainerUID: widget.parentContainerUID,
             ),
           ),
@@ -236,7 +231,7 @@ class _BarcodePositionScannerProcessingViewState
     List<RealInterBarcodeOffset> allRealInterBarcodeOffsets =
         buildAllRealInterBarcodeOffsets(
       allOnImageInterBarcodeData: allRelevantOnImageInterBarcodeData,
-      database: widget.database,
+      database: isarDatabase!,
       focalLength: focalLength,
     );
 
@@ -268,7 +263,7 @@ class _BarcodePositionScannerProcessingViewState
       interbarcodeOffsetEntries.add(vectorEntry);
     }
 
-    widget.database.writeTxnSync((isar) => isar.realInterBarcodeVectorEntrys
+    isarDatabase!.writeTxnSync((isar) => isar.realInterBarcodeVectorEntrys
         .putAllSync(interbarcodeOffsetEntries));
 
     return finalRealInterBarcodeOffsets;

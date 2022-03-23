@@ -5,7 +5,7 @@ import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_pro
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/app_settings/app_settings.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
 import 'package:isar/isar.dart';
 
 Offset calculateOnImageBarcodeCenterPoint(List<Point<num>> cornerPoints) {

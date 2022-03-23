@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcode_size_distance_entry/barcode_size_distance_entry.dart';
+import '../../../globalValues/global_colours.dart';
 
-import '../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
-import '../../globalValues/global_colours.dart';
-
-class DisplayMatchedDataWidget extends StatelessWidget {
-  const DisplayMatchedDataWidget({Key? key, required this.dataObject})
+class CameraCalibrationDisplayWidget extends StatelessWidget {
+  const CameraCalibrationDisplayWidget({Key? key, required this.dataObject})
       : super(key: key);
 
-  final DistanceFromCameraLookupEntry dataObject;
+  final BarcodeSizeDistanceEntry dataObject;
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +28,7 @@ class DisplayMatchedDataWidget extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(right: 10, left: 10),
                 child: SizedBox(
-                  child: Text(
-                      dataObject.onImageBarcodeDiagonalLength.toString(),
+                  child: Text(dataObject.diagonalSize.toString(),
                       textAlign: TextAlign.start),
                   width: 150,
                 ),

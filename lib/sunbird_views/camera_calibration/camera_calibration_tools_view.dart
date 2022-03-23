@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/camera_calibration_view.dart';
 import '../../widgets/card_widgets/custom_card_widget.dart';
-import 'widgets/camera_calibration_view.dart';
+
 import 'calibration_data_visualizer_view.dart';
 
 ///Shows camera calibration tools.
@@ -29,7 +29,6 @@ class _CameraCalibrationToolsViewState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: skyBlue80,
         title: const Text(
           'Camera Calibration Tools',
           style: TextStyle(fontSize: 25),
@@ -43,14 +42,21 @@ class _CameraCalibrationToolsViewState
           mainAxisSpacing: 8,
           crossAxisSpacing: 16,
           crossAxisCount: 2,
-          // ignore: prefer_const_literals_to_create_immutables
-          children: [
-            const CustomCard(
-                'Camera Calibration', CameraCalibrationView(), Icons.camera,
-                featureCompleted: true, tileColor: skyBlue80),
-            const CustomCard('Processed Data Visualizer',
-                CalibrationDataVisualizerView(), Icons.calculate,
-                featureCompleted: true, tileColor: skyBlue80),
+          children: const [
+            CustomCard(
+              'Camera Calibration',
+              CameraCalibrationView(),
+              Icons.camera,
+              featureCompleted: true,
+              tileColor: Colors.deepOrange,
+            ),
+            CustomCard(
+              'Processed Data Visualizer',
+              CalibrationDataVisualizerView(),
+              Icons.calculate,
+              featureCompleted: true,
+              tileColor: Colors.deepOrange,
+            ),
           ],
         ),
       ),

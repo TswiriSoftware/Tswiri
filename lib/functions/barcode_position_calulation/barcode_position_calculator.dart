@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
@@ -11,15 +12,15 @@ import '../../isar_database/container_entry/container_entry.dart';
 import '../../isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 
 List<RealBarcodePosition> calculateRealBarcodePositions(
-    {required Isar database, required String parentUID}) {
+    {required String parentUID}) {
   //1. Get childrenWithBarcodes ContainerEntry(s) with barcodes using parentUID.
-  List<String> allChildrenUIDs = database.containerRelationships
+  List<String> allChildrenUIDs = isarDatabase!.containerRelationships
       .filter()
       .parentUIDMatches(parentUID)
       .containerUIDProperty()
       .findAllSync();
 
-  List<ContainerEntry> childrenWithBarcodes = database.containerEntrys
+  List<ContainerEntry> childrenWithBarcodes = isarDatabase!.containerEntrys
       .where()
       .repeat(
           allChildrenUIDs,
@@ -30,7 +31,7 @@ List<RealBarcodePosition> calculateRealBarcodePositions(
       .toList();
 
   //2. Get RealInterBarcodeVectorEntrys.
-  List<RealInterBarcodeVectorEntry> interBarcodeVectors = database
+  List<RealInterBarcodeVectorEntry> interBarcodeVectors = isarDatabase!
       .realInterBarcodeVectorEntrys
       .where()
       .repeat(
@@ -43,14 +44,14 @@ List<RealBarcodePosition> calculateRealBarcodePositions(
       .findAllSync();
 
   //3. Get Markers
-  List<Marker> markers = database.markers
+  List<Marker> markers = isarDatabase!.markers
       .filter()
       .parentContainerUIDMatches(parentUID)
       .findAllSync();
 
   //4. Pick Origin
   Marker? origin;
-  ContainerEntry parentContainer = database.containerEntrys
+  ContainerEntry parentContainer = isarDatabase!.containerEntrys
       .filter()
       .containerUIDMatches(parentUID)
       .findFirstSync()!;

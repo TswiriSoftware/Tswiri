@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_data_visualization_view.dart';
@@ -15,9 +16,9 @@ import '../../basic_outline_containers/orange_outline_container.dart';
 
 class ContainerChildrenPositionEdit extends StatefulWidget {
   const ContainerChildrenPositionEdit(
-      {Key? key, required this.database, required this.currentContainerUID})
+      {Key? key, required this.currentContainerUID})
       : super(key: key);
-  final Isar database;
+
   final String currentContainerUID;
 
   @override
@@ -139,7 +140,6 @@ class _ContainerChildrenPositionEditState
                 context,
                 MaterialPageRoute(
                   builder: (context) => BarcodePositionScannerView(
-                    database: widget.database,
                     barcodesToScan: barcodesToScan,
                     gridMarkers: gridMarkers,
                     parentContainerUID: widget.currentContainerUID,
@@ -163,7 +163,6 @@ class _ContainerChildrenPositionEditState
               MaterialPageRoute(
                 builder: (context) =>
                     BarcodePositionScannerDataVisualizationView(
-                        database: widget.database,
                         parentContainerUID: widget.currentContainerUID),
               ),
             );
@@ -185,8 +184,8 @@ class _ContainerChildrenPositionEditState
   );
 
   void getChildrenWithBarcodes() {
-    List<ContainerRelationship> allChildren = widget
-        .database.containerRelationships
+    List<ContainerRelationship> allChildren = isarDatabase!
+        .containerRelationships
         .filter()
         .parentUIDMatches(widget.currentContainerUID)
         .findAllSync();
@@ -195,7 +194,7 @@ class _ContainerChildrenPositionEditState
 
     childrenWithBarcodes = [];
     for (ContainerRelationship child in allChildren) {
-      ContainerEntry? container = widget.database.containerEntrys
+      ContainerEntry? container = isarDatabase!.containerEntrys
           .filter()
           .containerUIDMatches(child.containerUID)
           .findFirstSync();
@@ -211,7 +210,7 @@ class _ContainerChildrenPositionEditState
 
   void getMarkers() {
     gridMarkers = [];
-    gridMarkers.addAll(widget.database.markers
+    gridMarkers.addAll(isarDatabase!.markers
         .filter()
         .parentContainerUIDMatches(widget.currentContainerUID)
         .barcodeUIDProperty()
@@ -223,7 +222,7 @@ class _ContainerChildrenPositionEditState
 
   void deleteAllChildrenPositions() {
     for (String barcodeUID in barcodesToScan) {
-      widget.database.writeTxnSync((isar) => isar.realInterBarcodeVectorEntrys
+      isarDatabase!.writeTxnSync((isar) => isar.realInterBarcodeVectorEntrys
           .filter()
           .startBarcodeUIDMatches(barcodeUID)
           .or()

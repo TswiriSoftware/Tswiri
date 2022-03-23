@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:isar/isar.dart';
 
 import '../../../isar_database/container_entry/container_entry.dart';
 import '../../../isar_database/functions/isar_functions.dart';
@@ -10,10 +9,8 @@ class ContainerDescriptionEditWidget extends StatefulWidget {
   const ContainerDescriptionEditWidget({
     Key? key,
     required this.containerUID,
-    required this.database,
   }) : super(key: key);
   final String containerUID;
-  final Isar database;
 
   @override
   State<ContainerDescriptionEditWidget> createState() =>
@@ -28,24 +25,23 @@ class _ContainerDescriptionEditWidgetState
   Color? containerTypeColor;
   Color? displayColor;
   ContainerEntry? containerEntry;
-  Isar? database;
 
   @override
   void initState() {
     //database.
-    database = widget.database;
 
     //Container ID.
     id = getContainerID(
-        containerEntrys: database!.containerEntrys,
+        containerEntrys: isarDatabase!.containerEntrys,
         containerUID: widget.containerUID);
 
     //Container Name.
-    description = database!.containerEntrys.getSync(id!)?.description;
+    description = isarDatabase!.containerEntrys.getSync(id!)?.description;
     descriptionController.text = description ?? '';
 
     //Container Outline Color.
-    containerTypeColor = getContainerTypeColor(database: database!, id: id!);
+    containerTypeColor =
+        getContainerTypeColor(database: isarDatabase!, id: id!);
 
     super.initState();
   }
@@ -88,7 +84,7 @@ class _ContainerDescriptionEditWidgetState
                       labelText: 'Container description',
                     ),
                     onChanged: (value) {
-                      database!.writeTxnSync((isar) {
+                      isarDatabase!.writeTxnSync((isar) {
                         ContainerEntry containerEntry =
                             isar.containerEntrys.getSync(id!)!;
                         containerEntry.description = descriptionController.text;

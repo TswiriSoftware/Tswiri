@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/barcode_scanning/barcode_value_scanning/single_barcode_scan_view.dart';
+import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:isar/isar.dart';
@@ -12,11 +12,9 @@ class ContainerBarcodeEiditWidget extends StatefulWidget {
   const ContainerBarcodeEiditWidget({
     Key? key,
     required this.containerUID,
-    required this.database,
   }) : super(key: key);
 
   final String containerUID;
-  final Isar database;
 
   @override
   State<ContainerBarcodeEiditWidget> createState() =>
@@ -31,7 +29,7 @@ class _ContainerBarcodeEiditWidgetState
 
   @override
   void initState() {
-    containerEntry = widget.database.containerEntrys
+    containerEntry = isarDatabase!.containerEntrys
         .filter()
         .containerUIDMatches(widget.containerUID)
         .findFirstSync();
@@ -84,7 +82,7 @@ class _ContainerBarcodeEiditWidgetState
 
                           barcodeUID = "'";
                           containerEntry!.barcodeUID = null;
-                          widget.database.writeTxnSync((isar) {
+                          isarDatabase!.writeTxnSync((isar) {
                             isar.containerEntrys.putSync(containerEntry!);
                           });
                           setState(() {});
@@ -95,7 +93,7 @@ class _ContainerBarcodeEiditWidgetState
                           //If the user scanned a new barcode.
                           setState(() {});
                           containerEntry!.barcodeUID = barcodeUID;
-                          widget.database.writeTxnSync((isar) {
+                          isarDatabase!.writeTxnSync((isar) {
                             isar.containerEntrys.putSync(containerEntry!);
                           });
                         }

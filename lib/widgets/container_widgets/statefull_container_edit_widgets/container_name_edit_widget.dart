@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
-import 'package:isar/isar.dart';
 
 import '../../../isar_database/functions/isar_functions.dart';
 import '../../basic_outline_containers/custom_outline_container.dart';
@@ -11,11 +10,9 @@ class ContainerNameEditWidget extends StatefulWidget {
   const ContainerNameEditWidget({
     Key? key,
     required this.containerUID,
-    required this.database,
   }) : super(key: key);
 
   final String containerUID;
-  final Isar database;
 
   @override
   State<ContainerNameEditWidget> createState() =>
@@ -29,24 +26,24 @@ class _ContainerNameEditWidgetState extends State<ContainerNameEditWidget> {
   Color? containerTypeColor;
   Color? displayColor;
   ContainerEntry? containerEntry;
-  Isar? database;
 
   @override
   void initState() {
     //database.
-    database = widget.database;
 
     //Container ID.
     id = getContainerID(
-        containerEntrys: database!.containerEntrys,
+        containerEntrys: isarDatabase!.containerEntrys,
         containerUID: widget.containerUID);
 
     //Container Name.
-    name = database!.containerEntrys.getSync(id!)?.name ?? widget.containerUID;
+    name =
+        isarDatabase!.containerEntrys.getSync(id!)?.name ?? widget.containerUID;
     nameController.text = name!;
 
     //Container Outline Color.
-    containerTypeColor = getContainerTypeColor(database: database!, id: id!);
+    containerTypeColor =
+        getContainerTypeColor(database: isarDatabase!, id: id!);
 
     super.initState();
   }
@@ -101,7 +98,7 @@ class _ContainerNameEditWidgetState extends State<ContainerNameEditWidget> {
                     onChanged: (value) {
                       setState(() {});
                       //Update name.
-                      database!.writeTxnSync((isar) {
+                      isarDatabase!.writeTxnSync((isar) {
                         ContainerEntry? containerEntry =
                             isar.containerEntrys.getSync(id!);
                         containerEntry!.name = nameController.text;

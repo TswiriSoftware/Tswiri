@@ -45,14 +45,6 @@ class BarcodeDetectorPainterCalibration extends CustomPainter {
         Offset(boundingBoxLeft, boundingBoxTop),
       );
 
-      // canvas.drawRect(
-      //   Rect.fromLTRB(boundingBoxLeft, boundingBoxTop, boundingBoxRight,
-      //       boundingBoxBottom),
-      //   paintSimple(Colors.lightGreenAccent, 3),
-
-      // );
-      // canvas.drawPoints(PointMode.points, points, paint)
-
       var barcodeCentreX = (boundingBoxLeft + boundingBoxRight) / 2;
       var barcodeCentreY = (boundingBoxTop + boundingBoxBottom) / 2;
 

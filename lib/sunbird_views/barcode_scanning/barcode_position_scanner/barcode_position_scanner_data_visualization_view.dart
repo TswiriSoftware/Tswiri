@@ -1,14 +1,9 @@
 import 'dart:developer';
-
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/barcode_position_calulation/barcode_position_calculator.dart';
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
-import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
 import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/painters/barcode_position_visualizer_painter.dart';
-import 'package:isar/isar.dart';
-import '../../../isar_database/marker/marker.dart';
 import '../../../objects/display_point.dart';
 
 // ignore: todo
@@ -17,11 +12,9 @@ import '../../../objects/display_point.dart';
 class BarcodePositionScannerDataVisualizationView extends StatefulWidget {
   const BarcodePositionScannerDataVisualizationView({
     Key? key,
-    required this.database,
     required this.parentContainerUID,
   }) : super(key: key);
 
-  final Isar database;
   final String parentContainerUID;
 
   @override
@@ -31,6 +24,8 @@ class BarcodePositionScannerDataVisualizationView extends StatefulWidget {
 
 class _BarcodePositionScannerDataVisualizationViewState
     extends State<BarcodePositionScannerDataVisualizationView> {
+  get isarDatabase => null;
+
   @override
   void initState() {
     super.initState();
@@ -94,12 +89,11 @@ class _BarcodePositionScannerDataVisualizationViewState
   Future<List<DisplayPoint>> calculateDisplaypoints() async {
     //Calculate realBarcodePositions.
     List<RealBarcodePosition> realBarcodePositions =
-        calculateRealBarcodePositions(
-            database: widget.database, parentUID: widget.parentContainerUID);
+        calculateRealBarcodePositions(parentUID: widget.parentContainerUID);
 
     log(realBarcodePositions.toString());
 
-    List<String> markers = widget.database.markers
+    List<String> markers = isarDatabase!.markers
         .filter()
         .parentContainerUIDMatches(widget.parentContainerUID)
         .barcodeUIDProperty()

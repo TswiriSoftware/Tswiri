@@ -14,7 +14,7 @@ import 'package:hive/hive.dart';
 
 import '../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 import '../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
-import '../../sunbirdViews/app_settings/app_settings.dart';
+import '../../sunbird_views/app_settings/app_settings.dart';
 
 ///Calculates the average interBarcodeOffset.
 /// i. Takes into account for offset direction.
@@ -145,20 +145,6 @@ List<RealBarcodePosition> extractListOfScannedBarcodes(
   List<RealBarcodePosition> realPositionData = [];
   List<RealBarcodePosition> allBarcodesInScan = [];
   for (RealInterBarcodeOffset interBarcodeData in allRealInterBarcodeData) {
-    int startIndex = allBarcodes.indexWhere(
-        (element) => element.uid.toString() == interBarcodeData.uidStart);
-    int endIndex = allBarcodes.indexWhere(
-        (element) => element.uid.toString() == interBarcodeData.uidEnd);
-
-    bool startIsFixed = false;
-    bool endIsFixed = false;
-    if (startIndex != -1) {
-      startIsFixed = allBarcodes[startIndex].isMarker;
-    }
-    if (endIndex != -1) {
-      endIsFixed = allBarcodes[endIndex].isMarker;
-    }
-
     allBarcodesInScan.addAll([
       RealBarcodePosition(
         uid: interBarcodeData.uidStart,
@@ -175,260 +161,260 @@ List<RealBarcodePosition> extractListOfScannedBarcodes(
   return realPositionData;
 }
 
-///This builds the realInterBarcodeData objects and returns a list:
-///
-///i. It takes the phones rotation into consideration.
-///
-///ii. It calculates the real life distance between barcodes.
-///
-///iii. It calculates the distance between the camera and the barcode.
-///
-///
-List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets({
-  required List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData,
-  required List<DistanceFromCameraLookupEntry> calibrationLookupTable,
-  required List<BarcodeDataEntry> allBarcodes,
-  required double focalLength,
-}) {
-  List<RealInterBarcodeOffset> allRealInterBarcodeData = [];
+// ///This builds the realInterBarcodeData objects and returns a list:
+// ///
+// ///i. It takes the phones rotation into consideration.
+// ///
+// ///ii. It calculates the real life distance between barcodes.
+// ///
+// ///iii. It calculates the distance between the camera and the barcode.
+// ///
+// ///
+// List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets({
+//   required List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData,
+//   required List<DistanceFromCameraLookupEntry> calibrationLookupTable,
+//   required List<BarcodeDataEntry> allBarcodes,
+//   required double focalLength,
+// }) {
+//   List<RealInterBarcodeOffset> allRealInterBarcodeData = [];
 
-  for (RawOnImageInterBarcodeData interBarcodeDataInstance
-      in allOnImageInterBarcodeData) {
-    //1. Calculate both onImageBarcodeCenters
-    Offset startBarcodeCenter =
-        calculateBarcodeCenterPoint(interBarcodeDataInstance.startBarcode);
-    Offset endBarcodeCenter =
-        calculateBarcodeCenterPoint(interBarcodeDataInstance.endBarcode);
+//   for (RawOnImageInterBarcodeData interBarcodeDataInstance
+//       in allOnImageInterBarcodeData) {
+//     //1. Calculate both onImageBarcodeCenters
+//     Offset startBarcodeCenter =
+//         calculateBarcodeCenterPoint(interBarcodeDataInstance.startBarcode);
+//     Offset endBarcodeCenter =
+//         calculateBarcodeCenterPoint(interBarcodeDataInstance.endBarcode);
 
-    //2. Rotate both barcode center vectors by phone angle.
-    double phoneAngleRadians =
-        interBarcodeDataInstance.accelerometerData.calculatePhoneAngle();
-    Offset rotatedStartBarcodeCenter = rotateOffset(
-        offset: startBarcodeCenter, angleRadians: phoneAngleRadians);
-    Offset rotatedEndBarcodeCenter =
-        rotateOffset(offset: endBarcodeCenter, angleRadians: phoneAngleRadians);
+//     //2. Rotate both barcode center vectors by phone angle.
+//     double phoneAngleRadians =
+//         interBarcodeDataInstance.accelerometerData.calculatePhoneAngle();
+//     Offset rotatedStartBarcodeCenter = rotateOffset(
+//         offset: startBarcodeCenter, angleRadians: phoneAngleRadians);
+//     Offset rotatedEndBarcodeCenter =
+//         rotateOffset(offset: endBarcodeCenter, angleRadians: phoneAngleRadians);
 
-    //3. Calculate the interBarcode Offset
-    Offset interBarcodeOffset =
-        rotatedEndBarcodeCenter - rotatedStartBarcodeCenter;
+//     //3. Calculate the interBarcode Offset
+//     Offset interBarcodeOffset =
+//         rotatedEndBarcodeCenter - rotatedStartBarcodeCenter;
 
-    //4. Check offset direction.
-    //Flips the direction if necessary
-    if (!(int.parse(interBarcodeDataInstance.startBarcode.displayValue!) <
-        int.parse(interBarcodeDataInstance.endBarcode.displayValue!))) {
-      interBarcodeOffset = -interBarcodeOffset;
-    }
+//     //4. Check offset direction.
+//     //Flips the direction if necessary
+//     if (!(int.parse(interBarcodeDataInstance.startBarcode.displayValue!) <
+//         int.parse(interBarcodeDataInstance.endBarcode.displayValue!))) {
+//       interBarcodeOffset = -interBarcodeOffset;
+//     }
 
-    //5. Calculate real life offset.
-    //Calculate the milimeter value of 1 on image unit (OIU). (Pixel ?)
-    double startBarcodeMMperPX = calculateBacodeMMperOIU(
-      barcodeDataEntries: allBarcodes,
-      diagonalLength: interBarcodeDataInstance.startDiagonalLength,
-      barcodeID: interBarcodeDataInstance.uidStart,
-    );
+//     //5. Calculate real life offset.
+//     //Calculate the milimeter value of 1 on image unit (OIU). (Pixel ?)
+//     double startBarcodeMMperPX = calculateBacodeMMperOIU(
+//       barcodeDataEntries: allBarcodes,
+//       diagonalLength: interBarcodeDataInstance.startDiagonalLength,
+//       barcodeID: interBarcodeDataInstance.uidStart,
+//     );
 
-    double endBarcodeMMperPX = calculateBacodeMMperOIU(
-      barcodeDataEntries: allBarcodes,
-      diagonalLength: interBarcodeDataInstance.endDiagonalLength,
-      barcodeID: interBarcodeDataInstance.uidEnd,
-    );
+//     double endBarcodeMMperPX = calculateBacodeMMperOIU(
+//       barcodeDataEntries: allBarcodes,
+//       diagonalLength: interBarcodeDataInstance.endDiagonalLength,
+//       barcodeID: interBarcodeDataInstance.uidEnd,
+//     );
 
-    //Calculate the real distance of the offset.
-    Offset realOffsetStartBarcode = interBarcodeOffset / startBarcodeMMperPX;
-    Offset realOffsetEndBarcode = interBarcodeOffset / endBarcodeMMperPX;
-    //Calculate the average distance of the offsets.
-    Offset averageRealInterBarcodeOffset =
-        (realOffsetStartBarcode + realOffsetEndBarcode) / 2;
+//     //Calculate the real distance of the offset.
+//     Offset realOffsetStartBarcode = interBarcodeOffset / startBarcodeMMperPX;
+//     Offset realOffsetEndBarcode = interBarcodeOffset / endBarcodeMMperPX;
+//     //Calculate the average distance of the offsets.
+//     Offset averageRealInterBarcodeOffset =
+//         (realOffsetStartBarcode + realOffsetEndBarcode) / 2;
 
-    //Use focal length
-    //6. Find the distance bewteen the camera and barcodes.
-    //startBarcode
-    double startBarcodeDistanceFromCamera = findDistanceFromCamera(
-      barcodeOnImageDiagonalLength:
-          interBarcodeDataInstance.startDiagonalLength,
-      barcodeValue: interBarcodeDataInstance.startBarcode,
-      allBarcodes: allBarcodes,
-      focalLength: focalLength,
-    );
-    //endBarcode
-    double endBarcodeDistanceFromCamera = findDistanceFromCamera(
-      barcodeOnImageDiagonalLength: interBarcodeDataInstance.endDiagonalLength,
-      barcodeValue: interBarcodeDataInstance.endBarcode,
-      allBarcodes: allBarcodes,
-      focalLength: focalLength,
-    );
+//     //Use focal length
+//     //6. Find the distance bewteen the camera and barcodes.
+//     //startBarcode
+//     double startBarcodeDistanceFromCamera = findDistanceFromCamera(
+//       barcodeOnImageDiagonalLength:
+//           interBarcodeDataInstance.startDiagonalLength,
+//       barcodeValue: interBarcodeDataInstance.startBarcode,
+//       allBarcodes: allBarcodes,
+//       focalLength: focalLength,
+//     );
+//     //endBarcode
+//     double endBarcodeDistanceFromCamera = findDistanceFromCamera(
+//       barcodeOnImageDiagonalLength: interBarcodeDataInstance.endDiagonalLength,
+//       barcodeValue: interBarcodeDataInstance.endBarcode,
+//       allBarcodes: allBarcodes,
+//       focalLength: focalLength,
+//     );
 
-    //Calculate the zOffset
-    double zOffset =
-        endBarcodeDistanceFromCamera - startBarcodeDistanceFromCamera;
+//     //Calculate the zOffset
+//     double zOffset =
+//         endBarcodeDistanceFromCamera - startBarcodeDistanceFromCamera;
 
-    //Creating the realInterBarcodeOffset.
-    RealInterBarcodeOffset realInterBarcodeDataInstance =
-        RealInterBarcodeOffset(
-            uid: interBarcodeDataInstance.uid,
-            uidStart: interBarcodeDataInstance.uidStart,
-            uidEnd: interBarcodeDataInstance.uidEnd,
-            offset: averageRealInterBarcodeOffset,
-            zOffset: zOffset,
-            timestamp: interBarcodeDataInstance.timestamp);
+//     //Creating the realInterBarcodeOffset.
+//     RealInterBarcodeOffset realInterBarcodeDataInstance =
+//         RealInterBarcodeOffset(
+//             uid: interBarcodeDataInstance.uid,
+//             uidStart: interBarcodeDataInstance.uidStart,
+//             uidEnd: interBarcodeDataInstance.uidEnd,
+//             offset: averageRealInterBarcodeOffset,
+//             zOffset: zOffset,
+//             timestamp: interBarcodeDataInstance.timestamp);
 
-    allRealInterBarcodeData.add(realInterBarcodeDataInstance);
-  }
-  return allRealInterBarcodeData;
-}
+//     allRealInterBarcodeData.add(realInterBarcodeDataInstance);
+//   }
+//   return allRealInterBarcodeData;
+// }
 
-///Rotates the offset by the given angle.
-Offset rotateOffset({required Offset offset, required double angleRadians}) {
-  double x = offset.dx * cos(angleRadians) - offset.dy * sin(angleRadians);
-  double y = offset.dx * sin(angleRadians) + offset.dy * cos(angleRadians);
-  return Offset(x, y);
-}
+// ///Rotates the offset by the given angle.
+// Offset rotateOffset({required Offset offset, required double angleRadians}) {
+//   double x = offset.dx * cos(angleRadians) - offset.dy * sin(angleRadians);
+//   double y = offset.dx * sin(angleRadians) + offset.dy * cos(angleRadians);
+//   return Offset(x, y);
+// }
 
-//calculates the mm per OIU for the given barcodeID.
-double calculateBacodeMMperOIU({
-  required List<BarcodeDataEntry> barcodeDataEntries,
-  required double diagonalLength,
-  required String barcodeID,
-}) {
-  //If the barcode has not been generated. use default barcode size.
-  int index =
-      barcodeDataEntries.indexWhere((element) => element.uid == barcodeID);
+// //calculates the mm per OIU for the given barcodeID.
+// double calculateBacodeMMperOIU({
+//   required List<BarcodeDataEntry> barcodeDataEntries,
+//   required double diagonalLength,
+//   required String barcodeID,
+// }) {
+//   //If the barcode has not been generated. use default barcode size.
+//   int index =
+//       barcodeDataEntries.indexWhere((element) => element.uid == barcodeID);
 
-  if (index != -1) {
-    return diagonalLength / barcodeDataEntries[index].barcodeSize;
-  } else {
-    //get shared prefs.
-    return diagonalLength / defaultBarcodeDiagonalLength!;
-  }
-}
+//   if (index != -1) {
+//     return diagonalLength / barcodeDataEntries[index].barcodeSize;
+//   } else {
+//     //get shared prefs.
+//     return diagonalLength / defaultBarcodeDiagonalLength!;
+//   }
+// }
 
-//Uses the lookup table matchedCalibration data to find the distance from camera.
-double findDistanceFromCamera({
-  required double barcodeOnImageDiagonalLength,
-  required BarcodeValue barcodeValue,
-  required List<BarcodeDataEntry> allBarcodes,
-  required double focalLength,
-}) {
-  int index = allBarcodes
-      .indexWhere((element) => element.uid == barcodeValue.displayValue!);
+// //Uses the lookup table matchedCalibration data to find the distance from camera.
+// double findDistanceFromCamera({
+//   required double barcodeOnImageDiagonalLength,
+//   required BarcodeValue barcodeValue,
+//   required List<BarcodeDataEntry> allBarcodes,
+//   required double focalLength,
+// }) {
+//   int index = allBarcodes
+//       .indexWhere((element) => element.uid == barcodeValue.displayValue!);
 
-  if (index != -1) {
-    double barcodeRealDiagonalLength = allBarcodes[index].barcodeSize;
-    double distanceFromCamera =
-        focalLength * barcodeRealDiagonalLength / barcodeOnImageDiagonalLength;
-    return distanceFromCamera;
-  } else {
-    double distanceFromCamera = focalLength *
-        defaultBarcodeDiagonalLength! /
-        barcodeOnImageDiagonalLength;
-    return distanceFromCamera;
-  }
-}
+//   if (index != -1) {
+//     double barcodeRealDiagonalLength = allBarcodes[index].barcodeSize;
+//     double distanceFromCamera =
+//         focalLength * barcodeRealDiagonalLength / barcodeOnImageDiagonalLength;
+//     return distanceFromCamera;
+//   } else {
+//     double distanceFromCamera = focalLength *
+//         defaultBarcodeDiagonalLength! /
+//         barcodeOnImageDiagonalLength;
+//     return distanceFromCamera;
+//   }
+// }
 
-///processRealInterBarcodeData
-///
-///1. Removes any outliers from allRealInterBarcodeOffsets
-///
-///2. Calculates the averages from the remaining data.
-List<RealInterBarcodeOffset> processRealInterBarcodeData(
-    {required List<RealInterBarcodeOffset> uniqueRealInterBarcodeOffsets,
-    required List<RealInterBarcodeOffset> listOfRealInterBarcodeOffsets}) {
-  //Calculates the average of each RealInterBarcode Data and removes outliers
-  List<RealInterBarcodeOffset> finalRealInterBarcodeOffsets = [];
-  for (RealInterBarcodeOffset realInterBacrodeOffset
-      in uniqueRealInterBarcodeOffsets) {
-    //All similar interBarcodeOffsets ex 1_2 will return all 1_2 interbarcodeOffsets
-    List<RealInterBarcodeOffset> similarInterBarcodeOffsets =
-        findSimilarInterBarcodeOffsets(
-            listOfRealInterBarcodeOffsets, realInterBacrodeOffset);
+// ///processRealInterBarcodeData
+// ///
+// ///1. Removes any outliers from allRealInterBarcodeOffsets
+// ///
+// ///2. Calculates the averages from the remaining data.
+// List<RealInterBarcodeOffset> processRealInterBarcodeData(
+//     {required List<RealInterBarcodeOffset> uniqueRealInterBarcodeOffsets,
+//     required List<RealInterBarcodeOffset> listOfRealInterBarcodeOffsets}) {
+//   //Calculates the average of each RealInterBarcode Data and removes outliers
+//   List<RealInterBarcodeOffset> finalRealInterBarcodeOffsets = [];
+//   for (RealInterBarcodeOffset realInterBacrodeOffset
+//       in uniqueRealInterBarcodeOffsets) {
+//     //All similar interBarcodeOffsets ex 1_2 will return all 1_2 interbarcodeOffsets
+//     List<RealInterBarcodeOffset> similarInterBarcodeOffsets =
+//         findSimilarInterBarcodeOffsets(
+//             listOfRealInterBarcodeOffsets, realInterBacrodeOffset);
 
-    //Sort similarInterBarcodeOffsets by the magnitude of the Offset. (aka. the distance of the offset).
-    similarInterBarcodeOffsets
-        .sort((a, b) => a.offset.distance.compareTo(b.offset.distance));
+//     //Sort similarInterBarcodeOffsets by the magnitude of the Offset. (aka. the distance of the offset).
+//     similarInterBarcodeOffsets
+//         .sort((a, b) => a.offset.distance.compareTo(b.offset.distance));
 
-    //Indexes (Stats)
-    int medianIndex = (similarInterBarcodeOffsets.length ~/ 2);
-    int quartile1Index = ((similarInterBarcodeOffsets.length / 2) ~/ 2);
-    int quartile3Index = medianIndex + quartile1Index;
+//     //Indexes (Stats)
+//     int medianIndex = (similarInterBarcodeOffsets.length ~/ 2);
+//     int quartile1Index = ((similarInterBarcodeOffsets.length / 2) ~/ 2);
+//     int quartile3Index = medianIndex + quartile1Index;
 
-    //Values of indexes
-    double median = similarInterBarcodeOffsets[medianIndex].offset.distance;
-    double quartile1 = calculateQuartileValue(
-        similarInterBarcodeOffsets, quartile1Index, median);
-    double quartile3 = calculateQuartileValue(
-        similarInterBarcodeOffsets, quartile3Index, median);
+//     //Values of indexes
+//     double median = similarInterBarcodeOffsets[medianIndex].offset.distance;
+//     double quartile1 = calculateQuartileValue(
+//         similarInterBarcodeOffsets, quartile1Index, median);
+//     double quartile3 = calculateQuartileValue(
+//         similarInterBarcodeOffsets, quartile3Index, median);
 
-    //Boundry calculations
-    double interQuartileRange = quartile3 - quartile1;
-    double q1Boundry = quartile1 - interQuartileRange * 1.5; //Lower boundry
-    double q3Boundry = quartile3 + interQuartileRange * 1.5; //Upper boundry
+//     //Boundry calculations
+//     double interQuartileRange = quartile3 - quartile1;
+//     double q1Boundry = quartile1 - interQuartileRange * 1.5; //Lower boundry
+//     double q3Boundry = quartile3 + interQuartileRange * 1.5; //Upper boundry
 
-    //Remove data outside the boundries
-    similarInterBarcodeOffsets.removeWhere((element) =>
-        element.offset.distance <= q1Boundry &&
-        element.offset.distance >= q3Boundry);
+//     //Remove data outside the boundries
+//     similarInterBarcodeOffsets.removeWhere((element) =>
+//         element.offset.distance <= q1Boundry &&
+//         element.offset.distance >= q3Boundry);
 
-    //Loops through all remaining similar interBarcodeOffsets to calculate the average
-    for (RealInterBarcodeOffset similarInterBarcodeOffset
-        in similarInterBarcodeOffsets) {
-      calculateAverageOffsets(
-          similarInterBarcodeOffset, realInterBacrodeOffset);
-      realInterBacrodeOffset.zOffset =
-          (realInterBacrodeOffset.zOffset + similarInterBarcodeOffset.zOffset) /
-              2;
-    }
-    finalRealInterBarcodeOffsets.add(realInterBacrodeOffset);
-  }
+//     //Loops through all remaining similar interBarcodeOffsets to calculate the average
+//     for (RealInterBarcodeOffset similarInterBarcodeOffset
+//         in similarInterBarcodeOffsets) {
+//       calculateAverageOffsets(
+//           similarInterBarcodeOffset, realInterBacrodeOffset);
+//       realInterBacrodeOffset.zOffset =
+//           (realInterBacrodeOffset.zOffset + similarInterBarcodeOffset.zOffset) /
+//               2;
+//     }
+//     finalRealInterBarcodeOffsets.add(realInterBacrodeOffset);
+//   }
 
-  return finalRealInterBarcodeOffsets;
-}
+//   return finalRealInterBarcodeOffsets;
+// }
 
-//Calculates the quartile value.
-double calculateQuartileValue(
-    List<RealInterBarcodeOffset> similarInterBarcodeOffsets,
-    int quartile1Index,
-    double median) {
-  return (similarInterBarcodeOffsets[quartile1Index].offset.distance + median) /
-      2;
-}
+// //Calculates the quartile value.
+// double calculateQuartileValue(
+//     List<RealInterBarcodeOffset> similarInterBarcodeOffsets,
+//     int quartile1Index,
+//     double median) {
+//   return (similarInterBarcodeOffsets[quartile1Index].offset.distance + median) /
+//       2;
+// }
 
-///This returns the matchedCalibrationData lookup table
-///
-///This lookup table contains 2 things:
-///(onImageBarcodeSize , realDistanceFromCamera)
-Future<List<DistanceFromCameraLookupEntry>> getMatchedCalibrationData() async {
-  Box<DistanceFromCameraLookupEntry> matchedCalibrationDataBox =
-      await Hive.openBox(distanceLookupTableBoxName);
+// ///This returns the matchedCalibrationData lookup table
+// ///
+// ///This lookup table contains 2 things:
+// ///(onImageBarcodeSize , realDistanceFromCamera)
+// Future<List<DistanceFromCameraLookupEntry>> getMatchedCalibrationData() async {
+//   Box<DistanceFromCameraLookupEntry> matchedCalibrationDataBox =
+//       await Hive.openBox(distanceLookupTableBoxName);
 
-  return matchedCalibrationDataBox.values.toList();
-}
+//   return matchedCalibrationDataBox.values.toList();
+// }
 
-///Returns a list of generated barcodeData
-///
-///This list contains 2 things
-///(BarcodeID, realBarcodeSize)
-Future<List<BarcodeDataEntry>> getAllExistingBarcodes() async {
-  Box<BarcodeDataEntry> generatedBarcodeData =
-      await Hive.openBox(allBarcodesBoxName);
-  return generatedBarcodeData.values.toList();
-}
+// ///Returns a list of generated barcodeData
+// ///
+// ///This list contains 2 things
+// ///(BarcodeID, realBarcodeSize)
+// Future<List<BarcodeDataEntry>> getAllExistingBarcodes() async {
+//   Box<BarcodeDataEntry> generatedBarcodeData =
+//       await Hive.openBox(allBarcodesBoxName);
+//   return generatedBarcodeData.values.toList();
+// }
 
-///This builds the objects That describes the startBarcode, EndBarcode, AccelerometerData and timestamp
-///
-///It builds all the objects relative to the first onImageBarcodeData.
-List<RawOnImageInterBarcodeData> buildAllOnImageInterBarcodeData(
-    List<RawOnImageBarcodeData> allRawOnImageBarcodeData) {
-  List<RawOnImageInterBarcodeData> allInterBarcodeData = [];
-  for (RawOnImageBarcodeData onImageBarcodeData in allRawOnImageBarcodeData) {
-    for (var barcodeIndex = 1;
-        barcodeIndex < onImageBarcodeData.barcodes.length;
-        barcodeIndex++) {
-      allInterBarcodeData.add(RawOnImageInterBarcodeData(
-          startBarcode: onImageBarcodeData.barcodes[0].value,
-          endBarcode: onImageBarcodeData.barcodes[barcodeIndex].value,
-          accelerometerData: onImageBarcodeData.accelerometerData,
-          timestamp: onImageBarcodeData.timestamp));
-    }
-  }
-  return allInterBarcodeData;
-}
+// ///This builds the objects That describes the startBarcode, EndBarcode, AccelerometerData and timestamp
+// ///
+// ///It builds all the objects relative to the first onImageBarcodeData.
+// List<RawOnImageInterBarcodeData> buildAllOnImageInterBarcodeData(
+//     List<RawOnImageBarcodeData> allRawOnImageBarcodeData) {
+//   List<RawOnImageInterBarcodeData> allInterBarcodeData = [];
+//   for (RawOnImageBarcodeData onImageBarcodeData in allRawOnImageBarcodeData) {
+//     for (var barcodeIndex = 1;
+//         barcodeIndex < onImageBarcodeData.barcodes.length;
+//         barcodeIndex++) {
+//       allInterBarcodeData.add(RawOnImageInterBarcodeData(
+//           startBarcode: onImageBarcodeData.barcodes[0].value,
+//           endBarcode: onImageBarcodeData.barcodes[barcodeIndex].value,
+//           accelerometerData: onImageBarcodeData.accelerometerData,
+//           timestamp: onImageBarcodeData.timestamp));
+//     }
+//   }
+//   return allInterBarcodeData;
+// }

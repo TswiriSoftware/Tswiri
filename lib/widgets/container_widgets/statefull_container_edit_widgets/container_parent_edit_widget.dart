@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
@@ -11,11 +12,9 @@ import '../../../sunbird_views/container_system/container_select_views/container
 class ContainerParentEditWidget extends StatefulWidget {
   const ContainerParentEditWidget({
     Key? key,
-    required this.database,
     required this.currentContainerUID,
   }) : super(key: key);
 
-  final Isar database;
   final String currentContainerUID;
 
   @override
@@ -31,7 +30,7 @@ class _ContainerParentEditWidgetState extends State<ContainerParentEditWidget> {
 
   @override
   void initState() {
-    parentContainerUID = widget.database.containerRelationships
+    parentContainerUID = isarDatabase!.containerRelationships
         .filter()
         .containerUIDMatches(widget.currentContainerUID)
         .findFirstSync()
@@ -39,7 +38,7 @@ class _ContainerParentEditWidgetState extends State<ContainerParentEditWidget> {
 
     if (parentContainerUID != null) {
       //Get containerEntry.
-      parentContainerEntry = widget.database.containerEntrys
+      parentContainerEntry = isarDatabase!.containerEntrys
           .filter()
           .containerUIDMatches(parentContainerUID!)
           .findFirstSync();
@@ -82,7 +81,6 @@ class _ContainerParentEditWidgetState extends State<ContainerParentEditWidget> {
                           MaterialPageRoute(
                             builder: (context) => ContainerSelectorView(
                               currentContainerUID: widget.currentContainerUID,
-                              database: widget.database,
                               multipleSelect: false,
                             ),
                           ),
@@ -93,17 +91,18 @@ class _ContainerParentEditWidgetState extends State<ContainerParentEditWidget> {
                             parentContainerName = selectedParent.name;
                           });
 
-                          ContainerRelationship? containerRelationship = widget
-                              .database.containerRelationships
-                              .filter()
-                              .containerUIDMatches(widget.currentContainerUID)
-                              .findFirstSync();
+                          ContainerRelationship? containerRelationship =
+                              isarDatabase!.containerRelationships
+                                  .filter()
+                                  .containerUIDMatches(
+                                      widget.currentContainerUID)
+                                  .findFirstSync();
                           //Update existing relationship.
                           if (containerRelationship != null) {
                             containerRelationship.parentUID =
                                 parentContainerUID;
 
-                            widget.database.writeTxnSync(
+                            isarDatabase!.writeTxnSync(
                               (isar) {
                                 isar.containerRelationships
                                     .putSync(containerRelationship);
@@ -115,7 +114,7 @@ class _ContainerParentEditWidgetState extends State<ContainerParentEditWidget> {
                                 ContainerRelationship()
                                   ..containerUID = widget.currentContainerUID
                                   ..parentUID = selectedParent.name;
-                            widget.database.writeTxnSync(
+                            isarDatabase!.writeTxnSync(
                               (isar) {
                                 isar.containerRelationships
                                     .putSync(containerRelationship);
@@ -125,7 +124,7 @@ class _ContainerParentEditWidgetState extends State<ContainerParentEditWidget> {
                         } else if (selectedParent == null &&
                             parentContainerEntry != null) {
                           //delete relationship.
-                          widget.database.writeTxnSync((isar) {
+                          isarDatabase!.writeTxnSync((isar) {
                             isar.containerRelationships.deleteSync(isar
                                 .containerRelationships
                                 .filter()

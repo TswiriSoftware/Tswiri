@@ -6,14 +6,12 @@ import '../../../isar_database/functions/isar_functions.dart';
 import '../../../widgets/search_bar_widget.dart';
 
 class ContainerSelectorView extends StatefulWidget {
-  const ContainerSelectorView(
-      {Key? key,
-      required this.multipleSelect,
-      this.currentContainerUID,
-      this.database})
-      : super(key: key);
+  const ContainerSelectorView({
+    Key? key,
+    required this.multipleSelect,
+    this.currentContainerUID,
+  }) : super(key: key);
 
-  final Isar? database;
   final String? currentContainerUID;
   final bool multipleSelect;
   @override
@@ -22,21 +20,14 @@ class ContainerSelectorView extends StatefulWidget {
 
 class _ContainerSelectorViewState extends State<ContainerSelectorView> {
   List<ContainerEntry> searchResults = [];
-  Isar? database;
   @override
   void initState() {
-    //Open Isar
-    database = widget.database;
-    database ??= openIsar();
     runFilter();
     super.initState();
   }
 
   @override
   void dispose() {
-    if (widget.database == null) {
-      database!.close();
-    }
     super.dispose();
   }
 
@@ -104,7 +95,6 @@ class _ContainerSelectorViewState extends State<ContainerSelectorView> {
                           },
                           //Container Card.
                           child: ContainerCardWidget(
-                            database: database!,
                             containerEntry: searchResult,
                           ),
                         );
@@ -150,9 +140,7 @@ class _ContainerSelectorViewState extends State<ContainerSelectorView> {
 
   ///Filter for database.
   Future<void> runFilter({String? enteredKeyword}) async {
-    //database ??= await openIsar(database);
-
-    List<ContainerEntry> results = database!.containerEntrys
+    List<ContainerEntry> results = isarDatabase!.containerEntrys
         .filter()
         .nameContains(enteredKeyword ?? '', caseSensitive: false)
         .findAllSync();

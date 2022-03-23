@@ -1,12 +1,9 @@
-import 'dart:developer';
-
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/objects/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/painters/barcode_position_painter.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_camera_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_processing_view.dart';
-import 'package:isar/isar.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
@@ -15,13 +12,11 @@ import 'package:sensors_plus/sensors_plus.dart';
 class BarcodePositionScannerView extends StatefulWidget {
   const BarcodePositionScannerView({
     Key? key,
-    required this.database,
     required this.barcodesToScan,
     required this.gridMarkers,
     required this.parentContainerUID,
   }) : super(key: key);
 
-  final Isar database;
   final List<String> barcodesToScan;
   final List<String> gridMarkers;
   final String parentContainerUID;
@@ -83,7 +78,6 @@ class _BarcodePositionScannerViewState
               MaterialPageRoute(
                 builder: (context) => BarcodePositionScannerProcessingView(
                   allRawOnImageBarcodeData: allRawOnImageBarcodeData,
-                  database: widget.database,
                   parentContainerUID: widget.parentContainerUID,
                   relevantBarcodes: allRelevantBarcodes,
                 ),

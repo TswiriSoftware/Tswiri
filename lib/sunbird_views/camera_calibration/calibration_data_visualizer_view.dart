@@ -1,17 +1,14 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/calibrationFunctions/calibration_functions.dart';
-import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
 import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
-import 'package:flutter_google_ml_kit/main.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcode_size_distance_entry/barcode_size_distance_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
+import 'package:flutter_google_ml_kit/widgets/orange_text_button_widget.dart';
 
-import 'package:hive/hive.dart';
+import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
-import '../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
-import '../../functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
-import '../../globalValues/global_colours.dart';
+import 'painters/camera_calibration_visualizer_painter.dart';
 
 class CalibrationDataVisualizerView extends StatefulWidget {
   const CalibrationDataVisualizerView({Key? key}) : super(key: key);
@@ -34,40 +31,12 @@ class _CalibrationDataVisualizerViewState
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: skyBlue80,
           title: const Text('Calibration Data Visualizer'),
           centerTitle: true,
           elevation: 0,
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.all(18.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              FloatingActionButton(
-                heroTag: null,
-                onPressed: () async {
-                  Box<DistanceFromCameraLookupEntry> matchedDataBox =
-                      await Hive.openBox(distanceLookupTableBoxName);
-                  matchedDataBox.clear();
-                  final prefs = await SharedPreferences.getInstance();
-                  prefs.setDouble(focalLengthPreference, 0);
-                  setState(() {});
-                },
-                child: const Icon(Icons.delete),
-              ),
-              FloatingActionButton(
-                heroTag: null,
-                onPressed: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const HomeView()));
-                },
-                child: const Icon(Icons.check_circle_outline_rounded),
-              ),
-            ],
-          ),
-        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+        floatingActionButton: _deleteButton(),
         body: FutureBuilder<List<List<Offset>>>(
             future: _getPoints(context),
             builder: (context, snapshot) {
@@ -76,15 +45,13 @@ class _CalibrationDataVisualizerViewState
               } else {
                 List<List<Offset>> dataPoints = snapshot.data!;
 
-                //print(dataPoints.runtimeType);
-                //print(dataPoints);
                 return Center(
                   child: InteractiveViewer(
                     maxScale: 6,
                     minScale: 0.3,
                     child: CustomPaint(
                       size: Size.infinite,
-                      painter: OpenPainter(
+                      painter: CameraCalibrationVisualizerPainter(
                         dataPoints: dataPoints,
                       ),
                     ),
@@ -93,56 +60,74 @@ class _CalibrationDataVisualizerViewState
               }
             }));
   }
-}
 
-class OpenPainter extends CustomPainter {
-  OpenPainter({
-    required this.dataPoints,
-  });
+  Future<List<List<Offset>>> _getPoints(BuildContext context) async {
+    List<BarcodeSizeDistanceEntry> sizeDistanceEntry =
+        isarDatabase!.barcodeSizeDistanceEntrys.where().findAllSync();
 
-  // ignore: prefer_typing_uninitialized_variables
-  var dataPoints;
+    Size size = Size(
+        MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
 
-  @override
-  paint(Canvas canvas, Size size) {
-    canvas.drawPoints(
-        PointMode.points, dataPoints[1], paintSimple(Colors.red, 3));
-    canvas.drawPoints(
-        PointMode.points, dataPoints[0], paintSimple(Colors.blue, 3));
-  }
+    List<Offset> points = listOfPoints(sizeDistanceEntry, size);
 
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
-}
+    final prefs = await SharedPreferences.getInstance();
+    double focalLength = prefs.getDouble(focalLengthPreference) ?? 0;
+    List<Offset> equationPoints = [];
 
-Future<List<List<Offset>>> _getPoints(BuildContext context) async {
-  Box<DistanceFromCameraLookupEntry> matchedDataBox =
-      await Hive.openBox(distanceLookupTableBoxName);
-
-  Size size = Size(
-      MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
-  List<Offset> points = listOfPoints(matchedDataBox, size);
-
-  //Plot equation using focal length
-  List<BarcodeDataEntry> allBarcodes = await getAllExistingBarcodes();
-  int index = allBarcodes.indexWhere((element) => element.uid == '1');
-  final prefs = await SharedPreferences.getInstance();
-  double focalLength = prefs.getDouble(focalLengthPreference) ?? 0;
-  List<Offset> equationPoints = [];
-  if (index != -1) {
-    double barcodeSize = allBarcodes[index].barcodeSize;
     for (var i = 50; i < 2000; i++) {
-      double distanceFromCamera = focalLength * barcodeSize / i.toDouble();
+      double distanceFromCamera =
+          focalLength * defaultBarcodeDiagonalLength! / i.toDouble();
       Offset dataPoint = Offset(i.toDouble(), distanceFromCamera);
 
       equationPoints.add(Offset(
           ((dataPoint.dx + size.width / 2) / (size.width / 50)),
           ((dataPoint.dy + size.height / 2) / (size.height / 50))));
     }
+
+    List<List<Offset>> allPoints = [];
+    allPoints.add(points);
+    allPoints.add(equationPoints);
+    return allPoints;
   }
 
-  List<List<Offset>> allPoints = [];
-  allPoints.add(points);
-  allPoints.add(equationPoints);
-  return allPoints;
+  Widget _deleteButton() {
+    return FloatingActionButton(
+      heroTag: null,
+      onPressed: () async {
+        await showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(
+                'Delete all calibration data?',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              actionsAlignment: MainAxisAlignment.spaceBetween,
+              actions: [
+                OrangeTextButton(
+                  text: 'yes',
+                  onTap: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    prefs.setDouble(focalLengthPreference, 0);
+                    isarDatabase!.writeTxnSync((isar) =>
+                        isar.barcodeSizeDistanceEntrys.where().deleteAllSync());
+                    Navigator.pop(context);
+                  },
+                ),
+                OrangeTextButton(
+                  text: 'no',
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        setState(() {});
+      },
+      child: const Icon(Icons.delete),
+    );
+  }
 }

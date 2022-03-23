@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_generation_entry/barcode_generation_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/sunbirdViews/app_settings/app_settings.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_dark_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
@@ -22,7 +22,6 @@ class BarcodeGeneratorView extends StatefulWidget {
 }
 
 class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
-  Isar? database;
   int timestamp = 0;
 
   int rangeStart = 1;
@@ -39,10 +38,6 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
 
   @override
   void initState() {
-    // TODO: implement initState
-
-    database = openIsar();
-
     getHistory();
 
     super.initState();
@@ -50,7 +45,6 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
 
   @override
   void dispose() {
-    database?.close();
     // TODO: implement dispose
     super.dispose();
   }
@@ -166,7 +160,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
             //Debugging.
             InkWell(
               onTap: () {
-                database!.writeTxnSync((isar) {
+                isarDatabase!.writeTxnSync((isar) {
                   isar.barcodeGenerationEntrys.where().deleteAllSync();
                   isar.barcodePropertys.where().deleteAllSync();
                   getHistory();
@@ -275,7 +269,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
   }
 
   void writeToDatabase() {
-    database!.writeTxnSync((isar) {
+    isarDatabase!.writeTxnSync((isar) {
       //Create a barcodeGenerationEntry.
       isar.barcodeGenerationEntrys.putSync(BarcodeGenerationEntry()
         ..timestamp = timestamp
@@ -289,7 +283,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
   }
 
   void getHistory() {
-    lastBarcodeGenerationEntry = database!.barcodeGenerationEntrys
+    lastBarcodeGenerationEntry = isarDatabase!.barcodeGenerationEntrys
         .where()
         .sortByTimestampDesc()
         .findFirstSync();
@@ -299,7 +293,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
       minValue = lastBarcodeGenerationEntry!.rangeEnd + 1;
       maxValue = minValue + 100;
     }
-    barcodeGenerationHistory = database!.barcodeGenerationEntrys
+    barcodeGenerationHistory = isarDatabase!.barcodeGenerationEntrys
         .where()
         .sortByTimestampDesc()
         .findAllSync();

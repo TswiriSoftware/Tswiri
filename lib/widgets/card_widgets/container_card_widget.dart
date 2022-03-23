@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
+import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:isar/isar.dart';
 
@@ -12,25 +13,23 @@ class ContainerCardWidget extends StatelessWidget {
   const ContainerCardWidget({
     Key? key,
     required this.containerEntry,
-    required this.database,
   }) : super(key: key);
 
   final ContainerEntry containerEntry;
-  final Isar database;
 
   @override
   Widget build(BuildContext context) {
     return Builder(
       builder: (context) {
         //Get outline color.
-        Color color = Color(int.parse(database.containerTypes
+        Color color = Color(int.parse(isarDatabase!.containerTypes
                 .filter()
                 .containerTypeMatches(containerEntry.containerType)
                 .findFirstSync()!
                 .containerColor))
             .withOpacity(1);
 
-        String numberOfChildren = database.containerRelationships
+        String numberOfChildren = isarDatabase!.containerRelationships
             .filter()
             .parentUIDMatches(containerEntry.containerUID)
             .findAllSync()
