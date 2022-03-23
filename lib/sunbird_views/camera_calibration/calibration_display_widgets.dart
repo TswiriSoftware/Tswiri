@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
-import '../../../globalValues/global_colours.dart';
+import '../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
+import '../../globalValues/global_colours.dart';
 
 class DisplayMatchedDataWidget extends StatelessWidget {
   const DisplayMatchedDataWidget({Key? key, required this.dataObject})

@@ -1,10 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/objects/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_painter.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/painters/barcode_position_painter.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_camera_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_processing_view.dart';
 import 'package:isar/isar.dart';
@@ -12,7 +11,6 @@ import 'package:vector_math/vector_math.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:sensors_plus/sensors_plus.dart';
-import 'dart:isolate';
 
 class BarcodePositionScannerView extends StatefulWidget {
   const BarcodePositionScannerView({
@@ -61,8 +59,8 @@ class _BarcodePositionScannerViewState
     barcodesToScan = widget.barcodesToScan;
     gridMarkers = widget.gridMarkers;
 
-    log('barcodesToScan: ' + barcodesToScan.toString());
-    log('gridMarkers: ' + gridMarkers.toString());
+    //log('barcodesToScan: ' + barcodesToScan.toString());
+    //log('gridMarkers: ' + gridMarkers.toString());
     super.initState();
   }
 
@@ -104,7 +102,6 @@ class _BarcodePositionScannerViewState
         ));
   }
 
-  // @override
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;
     isBusy = true;
@@ -126,8 +123,8 @@ class _BarcodePositionScannerViewState
           ),
         );
       }
-      //Paint square on screen around barcode.
 
+      //Paint different colors around barcodes depending on their type, Normal, Marker, non-relevant.
       final painter = BarcodePositionPainter(
         barcodes: barcodes,
         absoluteImageSize: inputImage.inputImageData!.size,

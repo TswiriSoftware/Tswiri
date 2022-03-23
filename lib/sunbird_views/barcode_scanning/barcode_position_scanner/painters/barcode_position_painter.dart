@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-import '../../../VisionDetectorViews/painters/coordinates_translator.dart';
+import '../../../../VisionDetectorViews/painters/coordinates_translator.dart';
 
 class BarcodePositionPainter extends CustomPainter {
   BarcodePositionPainter({
@@ -32,6 +32,7 @@ class BarcodePositionPainter extends CustomPainter {
     final Paint background = Paint()..color = const Color(0x99000000);
 
     for (final Barcode barcode in barcodes) {
+      //Text to display barcode display value.
       final ParagraphBuilder builder = ParagraphBuilder(
         ParagraphStyle(
             textAlign: TextAlign.left,

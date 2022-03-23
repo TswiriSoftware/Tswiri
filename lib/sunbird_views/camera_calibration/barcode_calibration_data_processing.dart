@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import '../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 import '../../functions/barcodeTools/get_data_functions.dart';
-import 'widgets/calibration_display_widgets.dart';
+import 'calibration_display_widgets.dart';
 
 class BarcodeCalibrationDataProcessingView extends StatefulWidget {
   const BarcodeCalibrationDataProcessingView(

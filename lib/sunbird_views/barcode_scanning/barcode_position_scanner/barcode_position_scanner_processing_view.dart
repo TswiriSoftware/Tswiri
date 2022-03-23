@@ -1,22 +1,18 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_data_entry.dart';
-
-import 'package:flutter_google_ml_kit/functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-
 import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
-
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_data_visualization_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/functions/build_real_inter_barcode_offsets.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/functions/functions.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/dark_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
 import 'package:isar/isar.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 
@@ -79,17 +75,18 @@ class _BarcodePositionScannerProcessingViewState
               allRawOnImageBarcodeData: widget.allRawOnImageBarcodeData),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              List<RealInterBarcodeOffset> data = snapshot.data!;
-
-              return _listView(data);
+              //Return the listView.
+              return _listView(snapshot.data!);
             } else if (snapshot.hasError) {
+              //If there is an error.
               return Text(
                 "${snapshot.error}",
                 style: const TextStyle(fontSize: 20, color: deeperOrange),
               );
+            } else {
+              //If it is loading.
+              return const CircularProgressIndicator();
             }
-            // By default, show a loading spinner
-            return const CircularProgressIndicator();
           },
         ),
       ),
@@ -217,19 +214,12 @@ class _BarcodePositionScannerProcessingViewState
   Future<List<RealInterBarcodeOffset>> processData({
     required List<RawOnImageBarcodeData> allRawOnImageBarcodeData,
   }) async {
-    //1.1 List of all matchedCalibration Data
-    List<DistanceFromCameraLookupEntry> distanceFromCameraLookup =
-        await getMatchedCalibrationData();
-
-    //1.2 This list contains all barcodes and their real life sizes.
-    List<BarcodeDataEntry> allBarcodes = await getAllExistingBarcodes();
-
     //2. This list contains all onImageInterBarcodeData.
     List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData =
         buildAllOnImageInterBarcodeData(allRawOnImageBarcodeData);
 
+    //3. Remove any non-relevant barcodes.
     List<RawOnImageInterBarcodeData> allRelevantOnImageInterBarcodeData = [];
-
     for (RawOnImageInterBarcodeData item in allOnImageInterBarcodeData) {
       if (widget.relevantBarcodes.contains(item.startBarcode.displayValue) &&
           widget.relevantBarcodes.contains(item.endBarcode.displayValue)) {
@@ -237,7 +227,7 @@ class _BarcodePositionScannerProcessingViewState
       }
     }
 
-    //3.1 Calculates all real interBarcodeOffsets.
+    //4.1 Calculates all real interBarcodeOffsets.
     //Get the camera's focal length
     final prefs = await SharedPreferences.getInstance();
     double focalLength = prefs.getDouble(focalLengthPreference) ?? 0;
@@ -246,16 +236,15 @@ class _BarcodePositionScannerProcessingViewState
     List<RealInterBarcodeOffset> allRealInterBarcodeOffsets =
         buildAllRealInterBarcodeOffsets(
       allOnImageInterBarcodeData: allRelevantOnImageInterBarcodeData,
-      calibrationLookupTable: distanceFromCameraLookup,
-      allBarcodes: allBarcodes,
+      database: widget.database,
       focalLength: focalLength,
     );
 
-    //3.2 This list contains only unique realInterBarcodeOffsets
+    //4.2 This list contains only unique realInterBarcodeOffsets
     List<RealInterBarcodeOffset> uniqueRealInterBarcodeOffsets =
         allRealInterBarcodeOffsets.toSet().toList();
 
-    //4. To build the list of final RealInterBarcodeOffsets we:
+    //5. To build the list of final RealInterBarcodeOffsets we:
     //  i. Remove all the outliers from allOnImageInterBarcodeData
     //  ii. Then use the uniqueRealInterBarcodeOffsets as a reference to
     //      calculate the average from allRealInterBarcodeOffsets.
@@ -265,6 +254,7 @@ class _BarcodePositionScannerProcessingViewState
             uniqueRealInterBarcodeOffsets: uniqueRealInterBarcodeOffsets,
             listOfRealInterBarcodeOffsets: allRealInterBarcodeOffsets);
 
+    //Write to Isar.
     List<RealInterBarcodeVectorEntry> interbarcodeOffsetEntries = [];
 
     for (RealInterBarcodeOffset interBarcodeOffset
@@ -280,8 +270,6 @@ class _BarcodePositionScannerProcessingViewState
 
     widget.database.writeTxnSync((isar) => isar.realInterBarcodeVectorEntrys
         .putAllSync(interbarcodeOffsetEntries));
-
-    log(interbarcodeOffsetEntries.toString());
 
     return finalRealInterBarcodeOffsets;
   }
