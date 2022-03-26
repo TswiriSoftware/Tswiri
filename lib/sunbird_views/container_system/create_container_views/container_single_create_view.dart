@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
@@ -17,16 +16,10 @@ import 'package:isar/isar.dart';
 import '../../../isar_database/functions/isar_functions.dart';
 
 class SingleContainerCreateView extends StatefulWidget {
-  const SingleContainerCreateView(
-      {Key? key, this.containerType, this.parentUID, this.parentName})
+  const SingleContainerCreateView({Key? key, this.parentContainer})
       : super(key: key);
 
-  ///Pass a containerType if you can.
-  final String? containerType;
-
-  ///Pass a parentUID if you can.
-  final String? parentUID;
-  final String? parentName;
+  final ContainerEntry? parentContainer;
 
   @override
   State<SingleContainerCreateView> createState() =>
@@ -35,18 +28,17 @@ class SingleContainerCreateView extends StatefulWidget {
 
 class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
   String? title;
-  String? parentUID;
-  String? parentName;
   String? containerType;
   String? barcodeUID;
+  ContainerEntry? parentContainerEntry;
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
 
   @override
   void initState() {
-    containerType = widget.containerType ?? 'area';
-    parentUID = widget.parentUID;
+    parentContainerEntry = widget.parentContainer;
+    log(parentContainerEntry.toString());
 
     super.initState();
   }
@@ -88,14 +80,14 @@ class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
               //Description
               _newContainerDescriptionWidget(),
 
+              //ParentUID
+              _newContainerParentWidget(),
+
               //Type
               _newContainerTypeWidget(),
 
               //BarcodeUID
               _newContainerBarcodeScanWidget(),
-
-              //ParentUID
-              _newContainerParentWidget(),
 
               //Create container.s
               _createContainerButton()
@@ -138,11 +130,38 @@ class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
     return NewContainerTypeWidget(
       containerType: containerType,
       builder: Builder(builder: (context) {
-        List<ContainerType> containerTypes =
-            isarDatabase!.containerTypes.where().findAllSync();
+        //List of containerTypes.
+        List<ContainerType> containerTypes = [];
+
+        //Can contain logic.
+        if (parentContainerEntry?.containerUID == null) {
+          containerTypes = isarDatabase!.containerTypes
+              .filter()
+              .containerTypeMatches('area')
+              .findAllSync();
+        } else if (parentContainerEntry?.containerType != null) {
+          //Get all the container Types that the parent container can container.
+          List<String> canContain = isarDatabase!.containerTypes
+              .filter()
+              .containerTypeMatches(parentContainerEntry!.containerType)
+              .findFirstSync()!
+              .canContain;
+
+          containerTypes = isarDatabase!.containerTypes
+              .where()
+              .repeat(
+                  canContain,
+                  (q, String element) =>
+                      q.filter().containerTypeMatches(element))
+              .findAllSync();
+
+          if (!canContain.contains(containerType)) {
+            containerType = containerTypes.first.containerType;
+          }
+        }
 
         return DropdownButton<String>(
-          value: containerType,
+          value: containerType ?? containerTypes.first.containerType,
           items: containerTypes
               .map((containerType) => DropdownMenuItem<String>(
                   value: containerType.containerType,
@@ -187,28 +206,37 @@ class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
   }
 
   Widget _newContainerParentWidget() {
-    return NewContainerParentWidget(
-      parentUID: parentUID,
-      parentName: parentName,
-      onTap: (() async {
-        ContainerEntry? selectedParentContainer = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const ContainerSelectorView(
-              multipleSelect: false,
-            ),
-          ),
-        );
-        if (selectedParentContainer != null) {
-          parentUID = selectedParentContainer.containerUID;
-          parentName = selectedParentContainer.name;
-          setState(() {});
+    return Builder(
+      builder: (context) {
+        //If a container is an area it cannot have a parent.
+        if (containerType == 'area') {
+          return Container();
         } else {
-          parentUID = "'";
-          parentName = "'";
-          setState(() {});
+          return NewContainerParentWidget(
+            parentUID: parentContainerEntry?.containerUID,
+            parentName: parentContainerEntry?.name,
+            onTap: (() async {
+              ContainerEntry? selectedParentContainer = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ContainerSelectorView(
+                    multipleSelect: false,
+                  ),
+                ),
+              );
+              if (selectedParentContainer != null) {
+                parentContainerEntry = selectedParentContainer;
+                setState(() {});
+              } else {
+                //parentUID = "'";
+                //parentName = "'";
+                parentContainerEntry = null;
+                setState(() {});
+              }
+            }),
+          );
         }
-      }),
+      },
     );
   }
 
@@ -217,61 +245,125 @@ class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Builder(builder: (context) {
-          if (containerType != null) {
-            return InkWell(
-              child: const CustomOutlineContainer(
-                child: Text('Create'),
-                margin: 5,
-                padding: 10,
-                outlineColor: Colors.blue,
-              ),
-              onTap: () async {
-                String containerUID =
-                    '${containerType!}_${DateTime.now().millisecondsSinceEpoch}';
+        Builder(
+          builder: (context) {
+            if (containerType != null) {
+              final containerTypeProperties = isarDatabase!.containerTypes
+                  .filter()
+                  .containerTypeMatches(containerType!)
+                  .findFirstSync();
 
-                String name;
-                if (nameController.text.isNotEmpty) {
-                  name = nameController.text;
-                } else {
-                  name = containerUID;
-                }
-                String? description;
-                if (descriptionController.text.isNotEmpty) {
-                  description = descriptionController.text;
-                } else {
-                  description = null;
-                }
-
-                //Write to ContainerEntrys.
-                final newContainer = ContainerEntry()
-                  ..containerUID = containerUID
-                  ..containerType = containerType!
-                  ..name = name
-                  ..description = description
-                  ..barcodeUID = null;
-
-                final newContainerRelationship = ContainerRelationship()
-                  ..containerUID = containerUID
-                  ..parentUID = parentUID;
-
-                isarDatabase!.writeTxnSync((isar) {
-                  isar.containerEntrys.putSync(newContainer);
-                  isar.containerRelationships.putSync(newContainerRelationship);
-                });
-
-                Navigator.pop(context);
-              },
-            );
-          }
-          return const CustomOutlineContainer(
-            child: Text('Create'),
-            margin: 5,
-            padding: 10,
-            outlineColor: Colors.deepOrange,
-          );
-        }),
+              if (containerTypeProperties!.canBeOrigin == false &&
+                  parentContainerEntry != null) {
+                return _createContainerWithParent();
+              } else if (containerTypeProperties.canBeOrigin == true &&
+                  barcodeUID != null &&
+                  nameController.text.isNotEmpty) {
+                return _createContainer();
+              }
+            }
+            return Container();
+          },
+        ),
       ],
+    );
+  }
+
+  Widget _createContainer() {
+    return InkWell(
+      child: const CustomOutlineContainer(
+        child: Text('Create'),
+        margin: 5,
+        padding: 10,
+        outlineColor: Colors.blue,
+      ),
+      onTap: () async {
+        String containerUID =
+            '${containerType!}_${DateTime.now().millisecondsSinceEpoch}';
+
+        String name;
+        if (nameController.text.isNotEmpty) {
+          name = nameController.text;
+        } else {
+          name = containerUID;
+        }
+        String? description;
+        if (descriptionController.text.isNotEmpty) {
+          description = descriptionController.text;
+        } else {
+          description = null;
+        }
+
+        //Write to ContainerEntrys.
+        final newContainer = ContainerEntry()
+          ..containerUID = containerUID
+          ..containerType = containerType!
+          ..name = name
+          ..description = description
+          ..barcodeUID = null;
+
+        isarDatabase!.writeTxnSync((isar) {
+          isar.containerEntrys.putSync(newContainer);
+        });
+
+        if (parentContainerEntry?.containerUID != null) {
+          final newContainerRelationship = ContainerRelationship()
+            ..containerUID = containerUID
+            ..parentUID = parentContainerEntry!.containerUID;
+          isarDatabase!.writeTxnSync((isar) {
+            isar.containerRelationships.putSync(newContainerRelationship);
+          });
+        }
+
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  Widget _createContainerWithParent() {
+    return InkWell(
+      child: const CustomOutlineContainer(
+        child: Text('Create'),
+        margin: 5,
+        padding: 10,
+        outlineColor: Colors.blue,
+      ),
+      onTap: () async {
+        String containerUID =
+            '${containerType!}_${DateTime.now().millisecondsSinceEpoch}';
+
+        String name;
+        if (nameController.text.isNotEmpty) {
+          name = nameController.text;
+        } else {
+          name = containerUID;
+        }
+        String? description;
+        if (descriptionController.text.isNotEmpty) {
+          description = descriptionController.text;
+        } else {
+          description = null;
+        }
+
+        //Write to ContainerEntrys.
+        final newContainer = ContainerEntry()
+          ..containerUID = containerUID
+          ..containerType = containerType!
+          ..name = name
+          ..description = description
+          ..barcodeUID = null;
+
+        final newContainerRelationship = ContainerRelationship()
+          ..containerUID = containerUID
+          ..parentUID = parentContainerEntry!.containerUID;
+
+        isarDatabase!.writeTxnSync((isar) {
+          isar.containerEntrys.putSync(newContainer);
+          isar.containerRelationships.putSync(newContainerRelationship);
+        });
+
+        Navigator.pop(context);
+      },
     );
   }
 }

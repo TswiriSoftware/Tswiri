@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
+import 'package:isar/isar.dart';
 
 import '../../../isar_database/functions/isar_functions.dart';
 import '../../basic_outline_containers/custom_outline_container.dart';
@@ -9,10 +10,10 @@ import '../../basic_outline_containers/light_container.dart';
 class ContainerNameEditWidget extends StatefulWidget {
   const ContainerNameEditWidget({
     Key? key,
-    required this.containerUID,
+    required this.containerEntry,
   }) : super(key: key);
 
-  final String containerUID;
+  final ContainerEntry containerEntry;
 
   @override
   State<ContainerNameEditWidget> createState() =>
@@ -30,20 +31,18 @@ class _ContainerNameEditWidgetState extends State<ContainerNameEditWidget> {
   @override
   void initState() {
     //database.
-
-    //Container ID.
-    id = getContainerID(
-        containerEntrys: isarDatabase!.containerEntrys,
-        containerUID: widget.containerUID);
+    containerEntry = isarDatabase!.containerEntrys
+        .filter()
+        .containerUIDMatches(widget.containerEntry.containerUID)
+        .findFirstSync();
 
     //Container Name.
-    name =
-        isarDatabase!.containerEntrys.getSync(id!)?.name ?? widget.containerUID;
+    name = containerEntry?.name ?? containerEntry!.containerUID;
     nameController.text = name!;
 
     //Container Outline Color.
     containerTypeColor =
-        getContainerTypeColor(database: isarDatabase!, id: id!);
+        getContainerColor(containerUID: widget.containerEntry.containerUID);
 
     super.initState();
   }
@@ -99,10 +98,8 @@ class _ContainerNameEditWidgetState extends State<ContainerNameEditWidget> {
                       setState(() {});
                       //Update name.
                       isarDatabase!.writeTxnSync((isar) {
-                        ContainerEntry? containerEntry =
-                            isar.containerEntrys.getSync(id!);
                         containerEntry!.name = nameController.text;
-                        isar.containerEntrys.putSync(containerEntry);
+                        isar.containerEntrys.putSync(containerEntry!);
                       });
                     },
                   ),

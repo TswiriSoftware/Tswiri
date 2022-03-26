@@ -3,8 +3,8 @@ class Settings {
   Settings(
       {required this.cameraPreset,
       required this.hapticFeedback,
-      required this.defaultBarcodeDiagonalLength});
+      required this.defaultBarcodeSize});
   String cameraPreset;
   bool hapticFeedback;
-  double defaultBarcodeDiagonalLength;
+  double defaultBarcodeSize;
 }

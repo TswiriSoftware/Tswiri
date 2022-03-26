@@ -1,6 +1,6 @@
 //Get all app settings
 import 'dart:math';
-
+import 'dart:developer' as d;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
@@ -95,5 +95,20 @@ double getDefaultBarcodeDiagonalLength(SharedPreferences prefs) {
 Future<void> setDefaultBarcodeDiagonalLength(double value) async {
   final prefs = await SharedPreferences.getInstance();
   double c = sqrt((pow(value, 2) * 2));
-  prefs.setDouble(defaultBarcodeDiagonalLengthPreference, c);
+  defaultBarcodeDiagonalLength = c;
+  await prefs.setDouble(defaultBarcodeDiagonalLengthPreference, c);
+}
+
+double getDefaultBarcodeSize(SharedPreferences prefs) {
+  double defaultBarcodeSize =
+      prefs.getDouble(defaultBarcodeSizePeference) ?? 100;
+  d.log(defaultBarcodeSize.toString());
+
+  return defaultBarcodeSize;
+}
+
+Future<void> setDefaultBarcodeSize(double value) async {
+  final prefs = await SharedPreferences.getInstance();
+  double c = value;
+  prefs.setDouble(defaultBarcodeSizePeference, c);
 }

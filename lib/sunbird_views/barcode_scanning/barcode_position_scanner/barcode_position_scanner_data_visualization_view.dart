@@ -1,13 +1,14 @@
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/barcode_position_calulation/barcode_position_calculator.dart';
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
+import 'package:flutter_google_ml_kit/objects/display_point.dart';
 import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/painters/barcode_position_visualizer_painter.dart';
-import '../../../objects/display_point.dart';
-
-// ignore: todo
-//TODO: Refactor this @049er
+import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
+import 'package:isar/isar.dart';
 
 class BarcodePositionScannerDataVisualizationView extends StatefulWidget {
   const BarcodePositionScannerDataVisualizationView({
@@ -24,8 +25,6 @@ class BarcodePositionScannerDataVisualizationView extends StatefulWidget {
 
 class _BarcodePositionScannerDataVisualizationViewState
     extends State<BarcodePositionScannerDataVisualizationView> {
-  get isarDatabase => null;
-
   @override
   void initState() {
     super.initState();
@@ -68,6 +67,13 @@ class _BarcodePositionScannerDataVisualizationViewState
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Error no positions to display',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            );
           } else {
             List<DisplayPoint> myPoints = snapshot.data!;
             return Center(
@@ -91,9 +97,12 @@ class _BarcodePositionScannerDataVisualizationViewState
     List<RealBarcodePosition> realBarcodePositions =
         calculateRealBarcodePositions(parentUID: widget.parentContainerUID);
 
-    log(realBarcodePositions.toString());
+    if (realBarcodePositions.isEmpty) {
+      return Future.error("realBarcodePositions.isEmpty",
+          StackTrace.fromString("This is its trace"));
+    }
 
-    List<String> markers = isarDatabase!.markers
+    List<String>? markers = isarDatabase?.markers
         .filter()
         .parentContainerUIDMatches(widget.parentContainerUID)
         .barcodeUIDProperty()
@@ -109,6 +118,7 @@ class _BarcodePositionScannerDataVisualizationViewState
       width: width,
       height: height,
     );
+
     List<DisplayPoint> myPoints = [];
 
     for (var i = 0; i < realBarcodePositions.length; i++) {
@@ -129,7 +139,7 @@ class _BarcodePositionScannerDataVisualizationViewState
         roundDouble(realBarcodePosition.zOffset!, 5),
       ];
 
-      if (markers.contains(realBarcodePosition.uid)) {
+      if (markers != null && markers.contains(realBarcodePosition.uid)) {
         myPoints.add(DisplayPoint(
             isMarker: true,
             barcodeID: realBarcodePosition.uid,

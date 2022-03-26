@@ -12,10 +12,11 @@ class OrangeTextButton extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: OrangeOutlineContainer(
-          padding: 8,
+          margin: 2.5,
+          padding: 5,
           child: Text(
             text,
-            style: Theme.of(context).textTheme.bodyLarge,
+            style: Theme.of(context).textTheme.bodyMedium,
           )),
     );
   }

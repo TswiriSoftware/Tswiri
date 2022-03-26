@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
@@ -85,16 +87,16 @@ class _SettingsViewState extends State<SettingsView> {
 
     bool hapticFeedback = prefs.getBool(hapticFeedBackPreference) ?? true;
 
-    double defaultBarcodeDiagonalLength =
-        prefs.getDouble(defaultBarcodeDiagonalLengthPreference) ?? 100;
+    double defaultBarcodeSize =
+        prefs.getDouble(defaultBarcodeSizePeference) ?? 100;
 
     Settings appSettings = Settings(
         cameraPreset: cameraPreset,
         hapticFeedback: hapticFeedback,
-        defaultBarcodeDiagonalLength: defaultBarcodeDiagonalLength);
+        defaultBarcodeSize: defaultBarcodeSize);
 
     if (barcodeSizeController.text.isEmpty) {
-      barcodeSizeController.text = defaultBarcodeDiagonalLength.toString();
+      barcodeSizeController.text = defaultBarcodeSize.toString();
     }
 
     return appSettings;
@@ -129,13 +131,18 @@ class _SettingsViewState extends State<SettingsView> {
           child: TextFormField(
             onFieldSubmitted: (value) {
               if (value.isNotEmpty) {
+                log(value);
                 setDefaultBarcodeDiagonalLength(double.parse(value));
+                setDefaultBarcodeSize(double.parse(value));
                 barcodeSizeController.text = double.parse(value).toString();
+
+                //log(defaultBarcodeDiagonalLength.toString());
               }
             },
             onChanged: (value) {
               if (value.isNotEmpty) {
                 setDefaultBarcodeDiagonalLength(double.parse(value));
+                setDefaultBarcodeSize(double.parse(value));
               }
             },
             textAlign: TextAlign.center,
@@ -160,12 +167,14 @@ class _SettingsViewState extends State<SettingsView> {
             onFieldSubmitted: (value) {
               if (value.isNotEmpty) {
                 setDefaultBarcodeDiagonalLength(double.parse(value));
+                setDefaultBarcodeSize(double.parse(value));
                 barcodeSizeController.text = double.parse(value).toString();
               }
             },
             onChanged: (value) {
               if (value.isNotEmpty) {
                 setDefaultBarcodeDiagonalLength(double.parse(value));
+                setDefaultBarcodeSize(double.parse(value));
               }
             },
             textAlign: TextAlign.center,

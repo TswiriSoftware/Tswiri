@@ -50,83 +50,28 @@ Isar? closeIsar(Isar? database) {
   return null;
 }
 
-//Get containerTypeColor from containerID
-Color getContainerTypeColor({required Isar database, required int id}) {
-  String contaienrType = database.containerEntrys.getSync(id)!.containerType;
+///Get containerTypeColor from containerUID.
+Color getContainerColor({required String containerUID}) {
+  String containerType = isarDatabase!.containerEntrys
+      .filter()
+      .containerUIDMatches(containerUID)
+      .findFirstSync()!
+      .containerType;
 
-  return Color(int.parse(database.containerTypes
+  Color containerTypeColor = Color(int.parse(isarDatabase!.containerTypes
           .filter()
-          .containerTypeMatches(contaienrType)
+          .containerTypeMatches(containerType)
           .findFirstSync()!
           .containerColor))
       .withOpacity(1);
+
+  return containerTypeColor;
 }
 
-//Get containerID from containerUID if it exists.
-int? getContainerID(
-    {required IsarCollection<ContainerEntry> containerEntrys,
-    required String containerUID}) {
-  return containerEntrys
+///Get containerEntry from containerUID
+ContainerEntry getContainerEntry({required String containerUID}) {
+  return isarDatabase!.containerEntrys
       .filter()
       .containerUIDMatches(containerUID)
-      .findFirstSync()
-      ?.id;
-}
-
-ContainerEntry? getParentContainerEntry(
-    {required Isar database, required String currentContainerUID}) {
-  String? parentContainerUID = database.containerRelationships
-      .filter()
-      .containerUIDMatches(currentContainerUID)
-      .findFirstSync()
-      ?.parentUID;
-  if (parentContainerUID != null) {
-    ContainerEntry? parentContainerEntry = database.containerEntrys
-        .filter()
-        .containerUIDMatches(parentContainerUID)
-        .findFirstSync();
-    return parentContainerEntry;
-  }
-  return null;
-}
-
-ContainerRelationship? getContainerRelationship(
-    {required Isar database, String? currentContainerUID}) {
-  if (currentContainerUID != null) {
-    return database.containerRelationships
-        .filter()
-        .containerUIDMatches(currentContainerUID)
-        .findFirstSync();
-  }
-  return null;
-}
-
-List<String>? getContainerChildren(
-    {required Isar database, required String currentContainerUID}) {
-  return database.containerRelationships
-      .filter()
-      .parentUIDMatches(currentContainerUID)
-      .containerUIDProperty()
-      .findAllSync();
-}
-
-String? getContainerName(
-    {required Isar database, required String containerUID}) {
-  return database.containerEntrys
-      .filter()
-      .containerUIDMatches(containerUID)
-      .findFirstSync()
-      ?.name;
-}
-
-String? getContainerDescription(
-    {required Isar database, required String? containerUID}) {
-  if (containerUID != null) {
-    return database.containerEntrys
-        .filter()
-        .containerUIDMatches(containerUID)
-        .findFirstSync()
-        ?.description;
-  }
-  return null;
+      .findFirstSync()!;
 }

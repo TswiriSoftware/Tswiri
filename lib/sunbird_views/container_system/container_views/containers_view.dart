@@ -6,11 +6,8 @@ import 'package:flutter_google_ml_kit/widgets/card_widgets/container_card_widget
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 import 'package:isar/isar.dart';
-
-import '../../../functions/barcodeTools/hide_keyboard.dart';
-import '../create_container_views/create_new_container_view.dart';
+import '../create_container_views/container_single_create_view.dart';
 import '../../../isar_database/functions/isar_functions.dart';
-
 import '../../../widgets/search_bar_widget.dart';
 import 'container_view.dart';
 
@@ -192,7 +189,7 @@ class _ContainersViewState extends State<ContainersView> {
     await Navigator.push(
       context,
       (MaterialPageRoute(
-        builder: (context) => const CreateNewContainerView(),
+        builder: (context) => const SingleContainerCreateView(),
       )),
     );
     setState(() {});
@@ -226,8 +223,9 @@ class _ContainersViewState extends State<ContainersView> {
             ..id = 1
             ..containerType = 'area'
             ..canContain = ['shelf', 'box', 'drawer']
-            ..structured = true
-            ..containerColor = const Color(0xFFff420e).value.toString(),
+            ..structured = false
+            ..containerColor = const Color(0xFFff420e).value.toString()
+            ..canBeOrigin = true,
           replaceOnConflict: true);
 
       database.containerTypes.putSync(
@@ -236,7 +234,8 @@ class _ContainersViewState extends State<ContainersView> {
             ..containerType = 'shelf'
             ..canContain = ['box', 'drawer']
             ..structured = true
-            ..containerColor = const Color(0xFF89da59).value.toString(),
+            ..containerColor = const Color(0xFF89da59).value.toString()
+            ..canBeOrigin = true,
           replaceOnConflict: true);
 
       database.containerTypes.putSync(
@@ -244,8 +243,9 @@ class _ContainersViewState extends State<ContainersView> {
             ..id = 3
             ..containerType = 'drawer'
             ..canContain = ['box', 'shelf']
-            ..structured = true
-            ..containerColor = Colors.blue.value.toString(),
+            ..structured = false
+            ..containerColor = Colors.blue.value.toString()
+            ..canBeOrigin = false,
           replaceOnConflict: true);
 
       database.containerTypes.putSync(
@@ -253,8 +253,9 @@ class _ContainersViewState extends State<ContainersView> {
             ..id = 4
             ..containerType = 'box'
             ..canContain = ['box', 'shelf']
-            ..structured = true
-            ..containerColor = const Color(0xFFF98866).value.toString(),
+            ..structured = false
+            ..containerColor = const Color(0xFFF98866).value.toString()
+            ..canBeOrigin = false,
           replaceOnConflict: true);
     });
   }

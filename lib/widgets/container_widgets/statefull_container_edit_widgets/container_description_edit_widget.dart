@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:isar/isar.dart';
 
 import '../../../isar_database/container_entry/container_entry.dart';
 import '../../../isar_database/functions/isar_functions.dart';
@@ -8,9 +9,9 @@ import '../../basic_outline_containers/light_container.dart';
 class ContainerDescriptionEditWidget extends StatefulWidget {
   const ContainerDescriptionEditWidget({
     Key? key,
-    required this.containerUID,
+    required this.containerEntry,
   }) : super(key: key);
-  final String containerUID;
+  final ContainerEntry containerEntry;
 
   @override
   State<ContainerDescriptionEditWidget> createState() =>
@@ -30,18 +31,18 @@ class _ContainerDescriptionEditWidgetState
   void initState() {
     //database.
 
-    //Container ID.
-    id = getContainerID(
-        containerEntrys: isarDatabase!.containerEntrys,
-        containerUID: widget.containerUID);
+    containerEntry = isarDatabase!.containerEntrys
+        .filter()
+        .containerUIDMatches(widget.containerEntry.containerUID)
+        .findFirstSync();
 
-    //Container Name.
-    description = isarDatabase!.containerEntrys.getSync(id!)?.description;
+    //Container description.
+    description = containerEntry?.description;
     descriptionController.text = description ?? '';
 
     //Container Outline Color.
     containerTypeColor =
-        getContainerTypeColor(database: isarDatabase!, id: id!);
+        getContainerColor(containerUID: widget.containerEntry.containerUID);
 
     super.initState();
   }
@@ -85,10 +86,9 @@ class _ContainerDescriptionEditWidgetState
                     ),
                     onChanged: (value) {
                       isarDatabase!.writeTxnSync((isar) {
-                        ContainerEntry containerEntry =
-                            isar.containerEntrys.getSync(id!)!;
-                        containerEntry.description = descriptionController.text;
-                        isar.containerEntrys.putSync(containerEntry);
+                        containerEntry!.description =
+                            descriptionController.text;
+                        isar.containerEntrys.putSync(containerEntry!);
                       });
                     },
                   ),

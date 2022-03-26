@@ -2,6 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_system/create_container_views/create_new_container_view.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/statefull_container_edit_widgets/container_barcode_edit_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/statefull_container_edit_widgets/container_children_position_edit_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/statefull_container_edit_widgets/container_description_edit_widget.dart';
@@ -9,10 +13,10 @@ import 'package:flutter_google_ml_kit/widgets/container_widgets/statefull_contai
 import 'package:flutter_google_ml_kit/widgets/container_widgets/statefull_container_edit_widgets/container_name_edit_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/statefull_container_edit_widgets/container_parent_edit_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/stateless_container_display_widgets/container_barcode_display_widget.dart';
-import 'package:flutter_google_ml_kit/widgets/container_widgets/stateless_container_display_widgets/container_children_display_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/stateless_container_display_widgets/container_description_display_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/stateless_container_display_widgets/container_name_display_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/container_widgets/stateless_container_display_widgets/container_parent_display_widget.dart';
+import 'package:flutter_google_ml_kit/widgets/orange_text_button_widget.dart';
 import 'package:isar/isar.dart';
 import '../../../functions/barcodeTools/hide_keyboard.dart';
 import '../../../isar_database/container_entry/container_entry.dart';
@@ -32,6 +36,7 @@ class _ContainerViewState extends State<ContainerView> {
   ContainerEntry? parentContainerEntry;
   List<ContainerEntry> children = [];
   bool editActive = false;
+  bool showChildren = false;
 
   @override
   void initState() {
@@ -178,9 +183,8 @@ class _ContainerViewState extends State<ContainerView> {
           );
         }),
 
-        //Container Children
-        ContainerChildrenDisplayWidget(
-            children: children, updateChildren: getContainerInfo),
+        //Children Widget
+        childrenWidget(),
       ],
     );
   }
@@ -190,12 +194,12 @@ class _ContainerViewState extends State<ContainerView> {
       children: [
         //Name edit
         ContainerNameEditWidget(
-          containerUID: containerEntry!.containerUID,
+          containerEntry: containerEntry!,
         ),
 
         //Description edit.
         ContainerDescriptionEditWidget(
-          containerUID: containerEntry!.containerUID,
+          containerEntry: containerEntry!,
         ),
 
         //Parent edit.
@@ -219,6 +223,144 @@ class _ContainerViewState extends State<ContainerView> {
         ),
       ],
     );
+  }
+
+  Widget childrenWidget() {
+    return LightContainer(
+      margin: 2.5,
+      padding: 2.5,
+      child: OrangeOutlineContainer(
+        margin: 0,
+        padding: 8,
+        borderWidth: 0.5,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Children:', style: Theme.of(context).textTheme.bodySmall),
+            const Divider(),
+            Row(
+              children: [
+                Text(
+                  'Number of children: ',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                Text(
+                  children.length.toString(),
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
+            Builder(builder: (context) {
+              if (showChildren) {
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.6,
+                  child: OrangeOutlineContainer(
+                    padding: 8,
+                    margin: 2.5,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: children.map((e) => childWidget(e)).toList(),
+                      ),
+                    ),
+                  ),
+                );
+              } else {
+                return Container();
+              }
+            }),
+            const SizedBox(
+              height: 5,
+            ),
+            Builder(builder: (context) {
+              String text;
+              if (!showChildren) {
+                text = 'view';
+              } else {
+                text = 'hide';
+              }
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  OrangeTextButton(
+                    text: 'add',
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        (MaterialPageRoute(
+                          builder: (context) => CreateNewContainerView(
+                            containerEntry: containerEntry,
+                          ),
+                        )),
+                      );
+                      getContainerInfo();
+                      setState(() {});
+                    },
+                  ),
+                  OrangeTextButton(
+                    text: text,
+                    onTap: () {
+                      if (children.isNotEmpty) {
+                        showChildren = !showChildren;
+                        setState(() {});
+                      }
+                    },
+                  ),
+                ],
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget childWidget(ContainerEntry containerEntry) {
+    return Builder(builder: (context) {
+      Color color =
+          getContainerColor(containerUID: containerEntry.containerUID);
+      return LightContainer(
+        padding: 0,
+        margin: 5,
+        child: CustomOutlineContainer(
+          outlineColor: color,
+          padding: 5,
+          margin: 5,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'containerName:',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const Divider(
+                height: 2.5,
+              ),
+              Text(
+                containerEntry.name ?? containerEntry.containerUID,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  OrangeTextButton(
+                      text: 'edit',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          (MaterialPageRoute(
+                            builder: (context) => ContainerView(
+                              containerUID: containerEntry.containerUID,
+                            ),
+                          )),
+                        );
+                      }),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   }
 
   void getContainerInfo() {

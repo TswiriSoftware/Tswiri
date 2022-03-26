@@ -5,6 +5,7 @@ import 'package:flutter_google_ml_kit/isar_database/barcode_generation_entry/bar
 import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/multiple_barcode_scanner/multiple_barcode_scanner_view.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_dark_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
@@ -174,6 +175,25 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
               ),
             ),
 
+            InkWell(
+              onTap: () async {
+                Set<String>? scannedBarcodes = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MultipleBarcodeScannerView()),
+                );
+                if (scannedBarcodes != null && scannedBarcodes.isNotEmpty) {
+                  createBarcodes(scannedBarcodes);
+                }
+              },
+              child: const OrangeOutlineContainer(
+                width: 100,
+                child: Icon(
+                  Icons.add,
+                ),
+              ),
+            ),
+
             LightDarkContainer(
                 child: Column(
               children: [
@@ -254,10 +274,10 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
 
   void generateBarcodes(int rangeStart, int rangeEnd) {
     timestamp = DateTime.now().millisecondsSinceEpoch;
-    int numberOfBarcodes = (rangeEnd - rangeStart + 1);
+    //int numberOfBarcodes = (rangeEnd - rangeStart + 1);
     generatedBarcodeUIDs = [];
 
-    for (var i = 0; i < numberOfBarcodes; i++) {
+    for (var i = rangeStart; i < rangeEnd; i++) {
       String barcodeUID = '${i + 1}_' + timestamp.toString();
       generatedBarcodeUIDs.add(barcodeUID);
       generatedBarcodeProperties.add(BarcodeProperty()
@@ -266,6 +286,20 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
     }
     log('generatedBarcodes: ' + generatedBarcodeUIDs.length.toString());
     setState(() {});
+  }
+
+  void createBarcodes(Set<String> scannedBarcodes) {
+    List<BarcodeProperty> scannedList = [];
+
+    for (String barcode in scannedBarcodes) {
+      String barcodeUID = barcode;
+      scannedList.add(BarcodeProperty()
+        ..barcodeUID = barcodeUID
+        ..size = defaultBarcodeDiagonalLength!);
+    }
+
+    isarDatabase!
+        .writeTxnSync((isar) => isar.barcodePropertys.putAllSync(scannedList));
   }
 
   void writeToDatabase() {

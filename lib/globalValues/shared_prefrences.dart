@@ -3,6 +3,9 @@
 ///Contains the default barcode Diagonal length. [double]
 String defaultBarcodeDiagonalLengthPreference = 'defaultBarcodeDiagonalLength';
 
+///Contains the default barcode Diagonal length. [double]
+String defaultBarcodeSizePeference = 'defaultBarcodeSize';
+
 ///Contains the focal length of the camera. [double]
 String focalLengthPreference = 'focalLength';
 

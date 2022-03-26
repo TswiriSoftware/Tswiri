@@ -9,8 +9,13 @@ class ContainerType {
   ///ContainerUID
   late String containerType;
 
-  ///ParentUID
+  ///Is children structured ?
+  ///If a container is structured it means that its children has to be are structured.
   late bool structured;
+
+  //Can this container be its childrens origin ?
+  //If it can then it needs a barcode.
+  late bool canBeOrigin;
 
   ///List of containers that this container can contain.
   late List<String> canContain;

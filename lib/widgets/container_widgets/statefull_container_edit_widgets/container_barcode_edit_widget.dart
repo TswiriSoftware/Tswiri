@@ -33,6 +33,7 @@ class _ContainerBarcodeEiditWidgetState
         .filter()
         .containerUIDMatches(widget.containerUID)
         .findFirstSync();
+
     barcodeUID = containerEntry?.barcodeUID;
 
     super.initState();
@@ -94,7 +95,8 @@ class _ContainerBarcodeEiditWidgetState
                           setState(() {});
                           containerEntry!.barcodeUID = barcodeUID;
                           isarDatabase!.writeTxnSync((isar) {
-                            isar.containerEntrys.putSync(containerEntry!);
+                            isar.containerEntrys.putSync(containerEntry!,
+                                replaceOnConflict: true);
                           });
                         }
                       },

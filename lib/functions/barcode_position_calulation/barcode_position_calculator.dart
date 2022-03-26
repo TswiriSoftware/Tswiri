@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/functions/dataProccessing/barcode_scanner_data_processing_functions.dart';
@@ -30,6 +31,11 @@ List<RealBarcodePosition> calculateRealBarcodePositions(
       .where((element) => element.barcodeUID != null)
       .toList();
 
+  if (childrenWithBarcodes.isEmpty) {
+    log('No Children With Barcodes');
+    return [];
+  }
+
   //2. Get RealInterBarcodeVectorEntrys.
   List<RealInterBarcodeVectorEntry> interBarcodeVectors = isarDatabase!
       .realInterBarcodeVectorEntrys
@@ -43,20 +49,33 @@ List<RealBarcodePosition> calculateRealBarcodePositions(
               .endBarcodeUIDMatches(element.barcodeUID!))
       .findAllSync();
 
+  if (childrenWithBarcodes.isEmpty) {
+    log('No interbarcodes vectors');
+    return [];
+  }
+
   //3. Get Markers
   List<Marker> markers = isarDatabase!.markers
       .filter()
       .parentContainerUIDMatches(parentUID)
       .findAllSync();
 
+  if (markers.isEmpty) {
+    log('No Markers');
+    return [];
+  }
+
   //4. Pick Origin
   Marker? origin;
+
+  //Parent ContainerUID
   ContainerEntry parentContainer = isarDatabase!.containerEntrys
       .filter()
       .containerUIDMatches(parentUID)
       .findFirstSync()!;
 
   if (parentContainer.barcodeUID != null) {
+    //TODO: implement check for null values.
     origin = markers
         .where((element) => element.barcodeUID == parentContainer.barcodeUID)
         .first;

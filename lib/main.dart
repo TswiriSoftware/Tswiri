@@ -4,7 +4,9 @@ import 'package:flutter_google_ml_kit/globalValues/isar_dir.dart';
 import 'package:flutter_google_ml_kit/globalValues/routes.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_generator/barcode_generator_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcode_manager/barcode_manager_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/camera_calibration_tools_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_manager.dart';
 import 'package:flutter_google_ml_kit/widgets/card_widgets/custom_card_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -26,9 +28,8 @@ List<CameraDescription> cameras = [];
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   cameras = await availableCameras();
-  //await Firebase.initializeApp();
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
@@ -157,9 +158,23 @@ class HomeView extends StatelessWidget {
               tileColor: Colors.deepOrange,
             ),
             CustomCard(
+              'Container Manager',
+              ContainerManagerView(),
+              Icons.add_box_outlined,
+              featureCompleted: true,
+              tileColor: Colors.deepOrange,
+            ),
+            CustomCard(
               'Generate Barcodes',
               BarcodeGeneratorView(),
               Icons.qr_code_2_rounded,
+              featureCompleted: true,
+              tileColor: Colors.deepOrange,
+            ),
+            CustomCard(
+              'Barcode Manager',
+              BarcodeManagerView(),
+              Icons.list,
               featureCompleted: true,
               tileColor: Colors.deepOrange,
             ),
