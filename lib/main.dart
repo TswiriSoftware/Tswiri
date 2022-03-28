@@ -7,6 +7,7 @@ import 'package:flutter_google_ml_kit/sunbird_views/barcode_generator/barcode_ge
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_manager/barcode_manager_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/camera_calibration_tools_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_manager.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/tag_manager/tag_manager_view.dart';
 import 'package:flutter_google_ml_kit/widgets/card_widgets/custom_card_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -97,7 +98,9 @@ class MyApp extends StatelessWidget {
           fillColor: MaterialStateProperty.all(Colors.deepOrange),
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
-            foregroundColor: Colors.black, backgroundColor: Colors.deepOrange),
+          foregroundColor: Colors.black,
+          backgroundColor: Colors.deepOrange,
+        ),
         textSelectionTheme:
             const TextSelectionThemeData(cursorColor: Colors.deepOrange),
         textTheme: const TextTheme(
@@ -161,6 +164,13 @@ class HomeView extends StatelessWidget {
               'Barcode Manager',
               BarcodeManagerView(),
               Icons.list,
+              featureCompleted: true,
+              tileColor: Colors.deepOrange,
+            ),
+            CustomCard(
+              'Tag Manager',
+              TagManagerView(),
+              Icons.tag,
               featureCompleted: true,
               tileColor: Colors.deepOrange,
             ),
