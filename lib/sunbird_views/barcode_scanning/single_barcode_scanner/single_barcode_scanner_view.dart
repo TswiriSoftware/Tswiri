@@ -88,16 +88,12 @@ class _SingleBarcodeScannerViewState extends State<SingleBarcodeScannerView> {
           //If it is the closest it will update the button value.
           if (clostesBarcodeDistance == null) {
             clostesBarcodeDistance = distanceFromCenter;
-            setState(() {
-              barcodeID = barcode.value.displayValue;
-            });
+            barcodeID = barcode.value.displayValue;
+            setState(() {});
           } else if (clostesBarcodeDistance > distanceFromCenter) {
             clostesBarcodeDistance = distanceFromCenter;
-            setState(() {
-              barcodeID = barcode.value.displayValue;
-            });
-          } else {
-            barcodeID = null;
+            barcodeID = barcode.value.displayValue;
+            setState(() {});
           }
         }
       }

@@ -7,7 +7,7 @@ import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_con
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:isar/isar.dart';
 
-import '../../../sunbird_views/container_system/container_select_views/container_selector_view.dart';
+import '../../../sunbird_views/container_system_debug/container_select_views/container_selector_view.dart';
 
 class ContainerParentEditWidget extends StatefulWidget {
   const ContainerParentEditWidget({

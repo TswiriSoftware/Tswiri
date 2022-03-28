@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_system/create_container_views/create_new_container_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_system_debug/create_container_views/create_new_container_view.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
@@ -23,15 +23,16 @@ import '../../../isar_database/container_entry/container_entry.dart';
 
 import '../../../isar_database/functions/isar_functions.dart';
 
-class ContainerView extends StatefulWidget {
-  const ContainerView({Key? key, required this.containerUID}) : super(key: key);
+class ContainerViewDebug extends StatefulWidget {
+  const ContainerViewDebug({Key? key, required this.containerUID})
+      : super(key: key);
   final String containerUID;
 
   @override
-  State<ContainerView> createState() => _ContainerViewState();
+  State<ContainerViewDebug> createState() => _ContainerViewDebugState();
 }
 
-class _ContainerViewState extends State<ContainerView> {
+class _ContainerViewDebugState extends State<ContainerViewDebug> {
   ContainerEntry? containerEntry;
   ContainerEntry? parentContainerEntry;
   List<ContainerEntry> children = [];
@@ -348,7 +349,7 @@ class _ContainerViewState extends State<ContainerView> {
                         Navigator.push(
                           context,
                           (MaterialPageRoute(
-                            builder: (context) => ContainerView(
+                            builder: (context) => ContainerViewDebug(
                               containerUID: containerEntry.containerUID,
                             ),
                           )),

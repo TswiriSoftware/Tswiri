@@ -9,7 +9,7 @@ import 'package:isar/isar.dart';
 import '../create_container_views/container_single_create_view.dart';
 import '../../../isar_database/functions/isar_functions.dart';
 import '../../../widgets/search_bar_widget.dart';
-import 'container_view.dart';
+import 'container_view_debug.dart';
 
 class ContainersView extends StatefulWidget {
   const ContainersView({Key? key}) : super(key: key);
@@ -139,7 +139,7 @@ class _ContainersViewState extends State<ContainersView> {
                   await Navigator.push(
                     context,
                     (MaterialPageRoute(
-                      builder: (context) => ContainerView(
+                      builder: (context) => ContainerViewDebug(
                         containerUID: containerEntry.containerUID,
                       ),
                     )),

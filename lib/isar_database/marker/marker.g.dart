@@ -59,7 +59,7 @@ class _MarkerWebAdapter extends IsarWebTypeAdapter<Marker> {
     object.barcodeUID = IsarNative.jsObjectGet(jsObj, 'barcodeUID') ?? '';
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
     object.parentContainerUID =
-        IsarNative.jsObjectGet(jsObj, 'parentContainerUID') ?? '';
+        IsarNative.jsObjectGet(jsObj, 'parentContainerUID');
     return object;
   }
 
@@ -72,7 +72,7 @@ class _MarkerWebAdapter extends IsarWebTypeAdapter<Marker> {
         return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
             as P;
       case 'parentContainerUID':
-        return (IsarNative.jsObjectGet(jsObj, 'parentContainerUID') ?? '') as P;
+        return (IsarNative.jsObjectGet(jsObj, 'parentContainerUID')) as P;
       default:
         throw 'Illegal propertyName';
     }
@@ -93,8 +93,11 @@ class _MarkerNativeAdapter extends IsarNativeTypeAdapter<Marker> {
     final _barcodeUID = IsarBinaryWriter.utf8Encoder.convert(value0);
     dynamicSize += (_barcodeUID.length) as int;
     final value1 = object.parentContainerUID;
-    final _parentContainerUID = IsarBinaryWriter.utf8Encoder.convert(value1);
-    dynamicSize += (_parentContainerUID.length) as int;
+    IsarUint8List? _parentContainerUID;
+    if (value1 != null) {
+      _parentContainerUID = IsarBinaryWriter.utf8Encoder.convert(value1);
+    }
+    dynamicSize += (_parentContainerUID?.length ?? 0) as int;
     final size = staticSize + dynamicSize;
 
     rawObj.buffer = alloc(size);
@@ -111,7 +114,7 @@ class _MarkerNativeAdapter extends IsarNativeTypeAdapter<Marker> {
     final object = Marker();
     object.barcodeUID = reader.readString(offsets[0]);
     object.id = id;
-    object.parentContainerUID = reader.readString(offsets[1]);
+    object.parentContainerUID = reader.readStringOrNull(offsets[1]);
     return object;
   }
 
@@ -124,7 +127,7 @@ class _MarkerNativeAdapter extends IsarNativeTypeAdapter<Marker> {
       case 0:
         return (reader.readString(offset)) as P;
       case 1:
-        return (reader.readString(offset)) as P;
+        return (reader.readStringOrNull(offset)) as P;
       default:
         throw 'Illegal propertyIndex';
     }
@@ -364,8 +367,17 @@ extension MarkerQueryFilter on QueryBuilder<Marker, Marker, QFilterCondition> {
     ));
   }
 
+  QueryBuilder<Marker, Marker, QAfterFilterCondition>
+      parentContainerUIDIsNull() {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.isNull,
+      property: 'parentContainerUID',
+      value: null,
+    ));
+  }
+
   QueryBuilder<Marker, Marker, QAfterFilterCondition> parentContainerUIDEqualTo(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
   }) {
     return addFilterConditionInternal(FilterCondition(
@@ -378,7 +390,7 @@ extension MarkerQueryFilter on QueryBuilder<Marker, Marker, QFilterCondition> {
 
   QueryBuilder<Marker, Marker, QAfterFilterCondition>
       parentContainerUIDGreaterThan(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
     bool include = false,
   }) {
@@ -393,7 +405,7 @@ extension MarkerQueryFilter on QueryBuilder<Marker, Marker, QFilterCondition> {
 
   QueryBuilder<Marker, Marker, QAfterFilterCondition>
       parentContainerUIDLessThan(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
     bool include = false,
   }) {
@@ -407,8 +419,8 @@ extension MarkerQueryFilter on QueryBuilder<Marker, Marker, QFilterCondition> {
   }
 
   QueryBuilder<Marker, Marker, QAfterFilterCondition> parentContainerUIDBetween(
-    String lower,
-    String upper, {
+    String? lower,
+    String? upper, {
     bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
@@ -552,7 +564,7 @@ extension MarkerQueryProperty on QueryBuilder<Marker, Marker, QQueryProperty> {
     return addPropertyNameInternal('id');
   }
 
-  QueryBuilder<Marker, String, QQueryOperations> parentContainerUIDProperty() {
+  QueryBuilder<Marker, String?, QQueryOperations> parentContainerUIDProperty() {
     return addPropertyNameInternal('parentContainerUID');
   }
 }

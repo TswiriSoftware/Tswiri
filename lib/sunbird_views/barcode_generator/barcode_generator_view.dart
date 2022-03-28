@@ -64,216 +64,235 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            LightDarkContainer(
-              child: Column(
-                children: [
-                  Text(
-                    'Select range to generate',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  const Divider(
-                    color: Colors.deepOrange,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text(
-                        'Range: ',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                      //RangeStart
-                      OrangeOutlineContainer(
-                        padding: 0,
-                        margin: 5,
-                        child: NumberPicker(
-                          haptics: true,
-                          selectedTextStyle: TextStyle(
-                              color: Colors.deepOrange[300], fontSize: 22),
-                          itemHeight: 50,
-                          itemWidth: 60,
-                          minValue: minValue,
-                          maxValue: maxValue,
-                          value: rangeStart,
-                          onChanged: (value) {
-                            setState(() {
-                              if (value >= rangeEnd) {
-                                rangeEnd = value;
-                              }
-                              rangeStart = value;
-                            });
-                          },
-                        ),
-                      ),
-                      Text(
-                        'to',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                      //RangeEnd
-                      OrangeOutlineContainer(
-                        padding: 0,
-                        margin: 5,
-                        child: NumberPicker(
-                          haptics: true,
-                          selectedTextStyle: TextStyle(
-                              color: Colors.deepOrange[300], fontSize: 22),
-                          itemHeight: 50,
-                          itemWidth: 60,
-                          minValue: minValue,
-                          maxValue: maxValue,
-                          value: rangeEnd,
-                          onChanged: (value) {
-                            setState(() {
-                              if (value <= rangeStart) {
-                                rangeStart = value;
-                              }
-                              rangeEnd = value;
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            //RangeSelector
+            rangeSelector(),
             //GenerateBarcodes.
-            InkWell(
-              onTap: () async {
-                generateBarcodes(rangeStart, rangeEnd);
-                writeToDatabase();
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BarcodeGenerationView(
-                      barcodeUIDs: generatedBarcodeUIDs,
-                    ),
-                  ),
-                );
-                getHistory();
-              },
-              child: const OrangeOutlineContainer(
-                width: 100,
-                child: Icon(
-                  Icons.print_rounded,
-                ),
-              ),
-            ),
-            //Debugging.
-            InkWell(
-              onTap: () {
-                isarDatabase!.writeTxnSync((isar) {
-                  isar.barcodeGenerationEntrys.where().deleteAllSync();
-                  isar.barcodePropertys.where().deleteAllSync();
-                  getHistory();
-                });
-              },
-              child: const OrangeOutlineContainer(
-                width: 100,
-                child: Icon(
-                  Icons.delete_forever,
-                ),
-              ),
-            ),
-
-            InkWell(
-              onTap: () async {
-                Set<String>? scannedBarcodes = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const MultipleBarcodeScannerView()),
-                );
-                if (scannedBarcodes != null && scannedBarcodes.isNotEmpty) {
-                  createBarcodes(scannedBarcodes);
-                }
-              },
-              child: const OrangeOutlineContainer(
-                width: 100,
-                child: Icon(
-                  Icons.add,
-                ),
-              ),
-            ),
-
-            LightDarkContainer(
-                child: Column(
-              children: [
-                Text(
-                  'History',
-                  style: Theme.of(context).textTheme.subtitle2,
-                ),
-                const Divider(
-                  color: Colors.white54,
-                ),
-                Column(
-                  children: barcodeGenerationHistory
-                          ?.map((e) => LightContainer(
-                                margin: 2.5,
-                                padding: 0,
-                                child: OrangeOutlineContainer(
-                                  padding: 10,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        DateFormat('yyyy-MM-dd, hh:mm a')
-                                            .format(DateTime
-                                                .fromMillisecondsSinceEpoch(
-                                                    e.timestamp))
-                                            .toString(),
-                                      ),
-                                      Text(
-                                        'Barcode Range: ' +
-                                            e.rangeStart.toString() +
-                                            ' to ' +
-                                            e.rangeEnd.toString(),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          InkWell(
-                                            onTap: () {
-                                              generateBarcodes(
-                                                  e.rangeStart, e.rangeEnd);
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      BarcodeGenerationView(
-                                                    barcodeUIDs:
-                                                        generatedBarcodeUIDs,
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                            child: OrangeOutlineContainer(
-                                                child: Text(
-                                              'Reprint',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium,
-                                            )),
-                                          )
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ))
-                          .toList() ??
-                      [],
-                ),
-              ],
-            ))
+            generateBarcodesButton(),
+            //Debugging delete all.
+            deleteAllButton(),
+            //Add pre generated barcodes.
+            addPreGeneratedBarcodes(),
+            //Generatiom history.
+            barcodeGenerationHistoryWidget(),
           ],
         ),
       ),
     );
   }
 
-  void generateBarcodes(int rangeStart, int rangeEnd) {
-    timestamp = DateTime.now().millisecondsSinceEpoch;
+  Widget rangeSelector() {
+    return LightDarkContainer(
+      child: Column(
+        children: [
+          Text(
+            'Select range to generate',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const Divider(
+            color: Colors.deepOrange,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(
+                'Range: ',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              //RangeStart
+              OrangeOutlineContainer(
+                padding: 0,
+                margin: 5,
+                child: NumberPicker(
+                  haptics: true,
+                  selectedTextStyle:
+                      TextStyle(color: Colors.deepOrange[300], fontSize: 22),
+                  itemHeight: 50,
+                  itemWidth: 60,
+                  minValue: minValue,
+                  maxValue: maxValue,
+                  value: rangeStart,
+                  onChanged: (value) {
+                    setState(() {
+                      if (value >= rangeEnd) {
+                        rangeEnd = value;
+                      }
+                      rangeStart = value;
+                    });
+                  },
+                ),
+              ),
+              Text(
+                'to',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              //RangeEnd
+              OrangeOutlineContainer(
+                padding: 0,
+                margin: 5,
+                child: NumberPicker(
+                  haptics: true,
+                  selectedTextStyle:
+                      TextStyle(color: Colors.deepOrange[300], fontSize: 22),
+                  itemHeight: 50,
+                  itemWidth: 60,
+                  minValue: minValue,
+                  maxValue: maxValue,
+                  value: rangeEnd,
+                  onChanged: (value) {
+                    setState(() {
+                      if (value <= rangeStart) {
+                        rangeStart = value;
+                      }
+                      rangeEnd = value;
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget generateBarcodesButton() {
+    return InkWell(
+      onTap: () async {
+        generateBarcodes(rangeStart, rangeEnd, null);
+        writeToDatabase();
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BarcodeGenerationView(
+              barcodeUIDs: generatedBarcodeUIDs,
+            ),
+          ),
+        );
+        getHistory();
+      },
+      child: const OrangeOutlineContainer(
+        width: 100,
+        child: Icon(
+          Icons.print_rounded,
+        ),
+      ),
+    );
+  }
+
+  Widget deleteAllButton() {
+    return InkWell(
+      onTap: () {
+        isarDatabase!.writeTxnSync((isar) {
+          isar.barcodeGenerationEntrys.where().deleteAllSync();
+          isar.barcodePropertys.where().deleteAllSync();
+          getHistory();
+        });
+      },
+      child: const OrangeOutlineContainer(
+        width: 100,
+        child: Icon(
+          Icons.delete_forever,
+        ),
+      ),
+    );
+  }
+
+  Widget addPreGeneratedBarcodes() {
+    return InkWell(
+      onTap: () async {
+        Set<String>? scannedBarcodes = await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const MultipleBarcodeScannerView()),
+        );
+        if (scannedBarcodes != null && scannedBarcodes.isNotEmpty) {
+          createBarcodes(scannedBarcodes);
+        }
+      },
+      child: const OrangeOutlineContainer(
+        width: 100,
+        child: Icon(
+          Icons.add,
+        ),
+      ),
+    );
+  }
+
+  Widget barcodeGenerationHistoryWidget() {
+    return LightDarkContainer(
+      child: Column(
+        children: [
+          Text(
+            'History',
+            style: Theme.of(context).textTheme.subtitle2,
+          ),
+          const Divider(
+            color: Colors.white54,
+          ),
+          Column(
+            children: barcodeGenerationHistory
+                    ?.map((e) => LightContainer(
+                          margin: 2.5,
+                          padding: 0,
+                          child: OrangeOutlineContainer(
+                            padding: 10,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  DateFormat('yyyy-MM-dd, hh:mm a')
+                                      .format(
+                                          DateTime.fromMillisecondsSinceEpoch(
+                                              e.timestamp))
+                                      .toString(),
+                                ),
+                                Text(
+                                  'Barcode Range: ' +
+                                      e.rangeStart.toString() +
+                                      ' to ' +
+                                      e.rangeEnd.toString(),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        generateBarcodes(e.rangeStart,
+                                            e.rangeEnd, e.timestamp);
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                BarcodeGenerationView(
+                                              barcodeUIDs: generatedBarcodeUIDs,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: OrangeOutlineContainer(
+                                          child: Text(
+                                        'Reprint',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                      )),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        ))
+                    .toList() ??
+                [],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void generateBarcodes(int rangeStart, int rangeEnd, int? timestamp) {
+    timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
     //int numberOfBarcodes = (rangeEnd - rangeStart + 1);
     generatedBarcodeUIDs = [];
 

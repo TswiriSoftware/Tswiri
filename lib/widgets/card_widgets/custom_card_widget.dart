@@ -37,10 +37,7 @@ class CustomCard extends StatelessWidget {
             children: [
               Text(
                 _label,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16),
+                style: Theme.of(context).textTheme.labelMedium,
                 textAlign: TextAlign.center,
               ),
               Padding(

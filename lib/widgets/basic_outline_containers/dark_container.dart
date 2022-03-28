@@ -7,13 +7,15 @@ class DarkContainer extends StatelessWidget {
       required this.child,
       this.margin,
       this.padding,
-      this.borderWidth})
+      this.borderWidth,
+      this.backgroundColor})
       : super(key: key);
 
   final Widget child;
   final double? padding;
   final double? margin;
   final double? borderWidth;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +27,7 @@ class DarkContainer extends StatelessWidget {
           borderRadius: const BorderRadius.all(
             Radius.circular(5),
           ),
-          color: Colors.black26,
+          color: backgroundColor ?? Colors.black26,
         ),
         child: child);
   }

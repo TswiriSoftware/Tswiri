@@ -22,7 +22,7 @@ import 'databaseAdapters/tagAdapters/tag_entry.dart';
 import 'databaseAdapters/typeAdapters/type_offset_adapter.dart';
 import 'sunbird_views/app_settings/app_settings_functions.dart';
 import 'sunbird_views/app_settings/app_settings_view.dart';
-import 'sunbird_views/container_system/container_views/containers_view.dart';
+import 'sunbird_views/container_system_debug/container_views/containers_view.dart';
 
 List<CameraDescription> cameras = [];
 
@@ -102,8 +102,8 @@ class MyApp extends StatelessWidget {
             const TextSelectionThemeData(cursorColor: Colors.deepOrange),
         textTheme: const TextTheme(
             labelLarge: TextStyle(fontSize: 20),
-            labelMedium: TextStyle(fontSize: 18),
-            labelSmall: TextStyle(fontSize: 15),
+            labelMedium: TextStyle(fontSize: 16),
+            labelSmall: TextStyle(fontSize: 14),
             titleLarge: TextStyle(fontSize: 25),
             titleMedium: TextStyle(fontSize: 18),
             titleSmall: TextStyle(fontSize: 16)),
@@ -136,9 +136,9 @@ class HomeView extends StatelessWidget {
               },
               icon: const Icon(Icons.settings))
         ],
-        title: const Text(
+        title: Text(
           'Sunbird',
-          style: TextStyle(fontSize: 25),
+          style: Theme.of(context).textTheme.labelLarge,
         ),
         centerTitle: true,
         elevation: 0,
@@ -151,23 +151,9 @@ class HomeView extends StatelessWidget {
           crossAxisCount: 2,
           children: const [
             CustomCard(
-              'Containers',
-              ContainersView(),
-              Icons.add_box_outlined,
-              featureCompleted: true,
-              tileColor: Colors.deepOrange,
-            ),
-            CustomCard(
               'Container Manager',
               ContainerManagerView(),
               Icons.add_box_outlined,
-              featureCompleted: true,
-              tileColor: Colors.deepOrange,
-            ),
-            CustomCard(
-              'Generate Barcodes',
-              BarcodeGeneratorView(),
-              Icons.qr_code_2_rounded,
               featureCompleted: true,
               tileColor: Colors.deepOrange,
             ),
@@ -179,9 +165,23 @@ class HomeView extends StatelessWidget {
               tileColor: Colors.deepOrange,
             ),
             CustomCard(
+              'Generate Barcodes',
+              BarcodeGeneratorView(),
+              Icons.qr_code_2_rounded,
+              featureCompleted: true,
+              tileColor: Colors.deepOrange,
+            ),
+            CustomCard(
               'Camera Calibraion',
               CameraCalibrationToolsView(),
               Icons.camera,
+              featureCompleted: true,
+              tileColor: Colors.deepOrange,
+            ),
+            CustomCard(
+              'Containers_debug',
+              ContainersView(),
+              Icons.add_box_outlined,
               featureCompleted: true,
               tileColor: Colors.deepOrange,
             ),

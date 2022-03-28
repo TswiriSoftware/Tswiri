@@ -7,7 +7,7 @@ class Marker {
 
   late String barcodeUID;
 
-  late String parentContainerUID;
+  late String? parentContainerUID;
 
   @override
   String toString() {

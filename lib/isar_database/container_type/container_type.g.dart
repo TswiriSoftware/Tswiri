@@ -17,12 +17,12 @@ extension GetContainerTypeCollection on Isar {
 final ContainerTypeSchema = CollectionSchema(
   name: 'ContainerType',
   schema:
-      '{"name":"ContainerType","idName":"id","properties":[{"name":"canBeChildrensOrigin","type":"Bool"},{"name":"canContain","type":"StringList"},{"name":"containerColor","type":"String"},{"name":"containerType","type":"String"},{"name":"structured","type":"Bool"}],"indexes":[],"links":[]}',
+      '{"name":"ContainerType","idName":"id","properties":[{"name":"canBeOrigin","type":"Bool"},{"name":"canContain","type":"StringList"},{"name":"containerColor","type":"String"},{"name":"containerType","type":"String"},{"name":"structured","type":"Bool"}],"indexes":[],"links":[]}',
   nativeAdapter: const _ContainerTypeNativeAdapter(),
   webAdapter: const _ContainerTypeWebAdapter(),
   idName: 'id',
   propertyIds: {
-    'canBeChildrensOrigin': 0,
+    'canBeOrigin': 0,
     'canContain': 1,
     'containerColor': 2,
     'containerType': 3,
@@ -53,7 +53,7 @@ class _ContainerTypeWebAdapter extends IsarWebTypeAdapter<ContainerType> {
   Object serialize(
       IsarCollection<ContainerType> collection, ContainerType object) {
     final jsObj = IsarNative.newJsObject();
-    IsarNative.jsObjectSet(jsObj, 'canBeChildrensOrigin', object.canBeOrigin);
+    IsarNative.jsObjectSet(jsObj, 'canBeOrigin', object.canBeOrigin);
     IsarNative.jsObjectSet(jsObj, 'canContain', object.canContain);
     IsarNative.jsObjectSet(jsObj, 'containerColor', object.containerColor);
     IsarNative.jsObjectSet(jsObj, 'containerType', object.containerType);
@@ -66,8 +66,7 @@ class _ContainerTypeWebAdapter extends IsarWebTypeAdapter<ContainerType> {
   ContainerType deserialize(
       IsarCollection<ContainerType> collection, dynamic jsObj) {
     final object = ContainerType();
-    object.canBeOrigin =
-        IsarNative.jsObjectGet(jsObj, 'canBeChildrensOrigin') ?? false;
+    object.canBeOrigin = IsarNative.jsObjectGet(jsObj, 'canBeOrigin') ?? false;
     object.canContain = (IsarNative.jsObjectGet(jsObj, 'canContain') as List?)
             ?.map((e) => e ?? '')
             .toList()
@@ -84,9 +83,8 @@ class _ContainerTypeWebAdapter extends IsarWebTypeAdapter<ContainerType> {
   @override
   P deserializeProperty<P>(Object jsObj, String propertyName) {
     switch (propertyName) {
-      case 'canBeChildrensOrigin':
-        return (IsarNative.jsObjectGet(jsObj, 'canBeChildrensOrigin') ?? false)
-            as P;
+      case 'canBeOrigin':
+        return (IsarNative.jsObjectGet(jsObj, 'canBeOrigin') ?? false) as P;
       case 'canContain':
         return ((IsarNative.jsObjectGet(jsObj, 'canContain') as List?)
                 ?.map((e) => e ?? '')
@@ -124,7 +122,7 @@ class _ContainerTypeNativeAdapter extends IsarNativeTypeAdapter<ContainerType> {
       AdapterAlloc alloc) {
     var dynamicSize = 0;
     final value0 = object.canBeOrigin;
-    final _canBeChildrensOrigin = value0;
+    final _canBeOrigin = value0;
     final value1 = object.canContain;
     dynamicSize += (value1.length) * 8;
     final bytesList1 = <IsarUint8List>[];
@@ -148,7 +146,7 @@ class _ContainerTypeNativeAdapter extends IsarNativeTypeAdapter<ContainerType> {
     rawObj.buffer_length = size;
     final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
     final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeBool(offsets[0], _canBeChildrensOrigin);
+    writer.writeBool(offsets[0], _canBeOrigin);
     writer.writeStringList(offsets[1], _canContain);
     writer.writeBytes(offsets[2], _containerColor);
     writer.writeBytes(offsets[3], _containerType);
@@ -279,10 +277,10 @@ extension ContainerTypeQueryWhere
 extension ContainerTypeQueryFilter
     on QueryBuilder<ContainerType, ContainerType, QFilterCondition> {
   QueryBuilder<ContainerType, ContainerType, QAfterFilterCondition>
-      canBeChildrensOriginEqualTo(bool value) {
+      canBeOriginEqualTo(bool value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
-      property: 'canBeChildrensOrigin',
+      property: 'canBeOrigin',
       value: value,
     ));
   }
@@ -672,14 +670,13 @@ extension ContainerTypeQueryLinks
 
 extension ContainerTypeQueryWhereSortBy
     on QueryBuilder<ContainerType, ContainerType, QSortBy> {
-  QueryBuilder<ContainerType, ContainerType, QAfterSortBy>
-      sortByCanBeChildrensOrigin() {
-    return addSortByInternal('canBeChildrensOrigin', Sort.asc);
+  QueryBuilder<ContainerType, ContainerType, QAfterSortBy> sortByCanBeOrigin() {
+    return addSortByInternal('canBeOrigin', Sort.asc);
   }
 
   QueryBuilder<ContainerType, ContainerType, QAfterSortBy>
-      sortByCanBeChildrensOriginDesc() {
-    return addSortByInternal('canBeChildrensOrigin', Sort.desc);
+      sortByCanBeOriginDesc() {
+    return addSortByInternal('canBeOrigin', Sort.desc);
   }
 
   QueryBuilder<ContainerType, ContainerType, QAfterSortBy>
@@ -722,14 +719,13 @@ extension ContainerTypeQueryWhereSortBy
 
 extension ContainerTypeQueryWhereSortThenBy
     on QueryBuilder<ContainerType, ContainerType, QSortThenBy> {
-  QueryBuilder<ContainerType, ContainerType, QAfterSortBy>
-      thenByCanBeChildrensOrigin() {
-    return addSortByInternal('canBeChildrensOrigin', Sort.asc);
+  QueryBuilder<ContainerType, ContainerType, QAfterSortBy> thenByCanBeOrigin() {
+    return addSortByInternal('canBeOrigin', Sort.asc);
   }
 
   QueryBuilder<ContainerType, ContainerType, QAfterSortBy>
-      thenByCanBeChildrensOriginDesc() {
-    return addSortByInternal('canBeChildrensOrigin', Sort.desc);
+      thenByCanBeOriginDesc() {
+    return addSortByInternal('canBeOrigin', Sort.desc);
   }
 
   QueryBuilder<ContainerType, ContainerType, QAfterSortBy>
@@ -773,8 +769,8 @@ extension ContainerTypeQueryWhereSortThenBy
 extension ContainerTypeQueryWhereDistinct
     on QueryBuilder<ContainerType, ContainerType, QDistinct> {
   QueryBuilder<ContainerType, ContainerType, QDistinct>
-      distinctByCanBeChildrensOrigin() {
-    return addDistinctByInternal('canBeChildrensOrigin');
+      distinctByCanBeOrigin() {
+    return addDistinctByInternal('canBeOrigin');
   }
 
   QueryBuilder<ContainerType, ContainerType, QDistinct>
@@ -799,9 +795,8 @@ extension ContainerTypeQueryWhereDistinct
 
 extension ContainerTypeQueryProperty
     on QueryBuilder<ContainerType, ContainerType, QQueryProperty> {
-  QueryBuilder<ContainerType, bool, QQueryOperations>
-      canBeChildrensOriginProperty() {
-    return addPropertyNameInternal('canBeChildrensOrigin');
+  QueryBuilder<ContainerType, bool, QQueryOperations> canBeOriginProperty() {
+    return addPropertyNameInternal('canBeOrigin');
   }
 
   QueryBuilder<ContainerType, List<String>, QQueryOperations>

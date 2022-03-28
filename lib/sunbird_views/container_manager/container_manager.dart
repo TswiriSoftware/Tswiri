@@ -5,10 +5,11 @@ import 'package:flutter_google_ml_kit/functions/hide_keyboard.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/add_container_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/widgets/container_display_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/dark_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:isar/isar.dart';
 
 class ContainerManagerView extends StatefulWidget {
@@ -39,6 +40,19 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
     return GestureDetector(
       onTap: () => hideKeyboard(context),
       child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddContainerView()),
+            );
+            setState(() {});
+          },
+          child: const Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
+        ),
         appBar: AppBar(
           title: Text('Container Manager',
               style: Theme.of(context).textTheme.titleMedium),
@@ -63,51 +77,18 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
         List<ContainerEntry> searchResults = searchContainers();
 
         return Expanded(
-          child: ListView.builder(
-            itemCount: searchResults.length,
-            itemBuilder: (context, index) {
-              ContainerEntry containerEntry = searchResults[index];
-              return containerDisplayWidget(containerEntry);
-            },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+            child: ListView.builder(
+              itemCount: searchResults.length,
+              itemBuilder: (context, index) {
+                ContainerEntry containerEntry = searchResults[index];
+                return containerDisplayWidget(containerEntry);
+              },
+            ),
           ),
         );
       }),
-    );
-  }
-
-  Widget containerDisplayWidget(ContainerEntry containerEntry) {
-    return LightContainer(
-      margin: 2.5,
-      padding: 0,
-      child: OrangeOutlineContainer(
-        margin: 2.5,
-        padding: 5,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Container Name/UID',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            Text(
-              containerEntry.name ?? containerEntry.containerUID,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const Divider(
-              height: 5,
-            ),
-            Text(
-              'Description',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            Text(
-              containerEntry.description ?? '',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            //TODO: what else to add here ? @049er
-          ],
-        ),
-      ),
     );
   }
 
@@ -138,106 +119,127 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
   Widget _searchBar() {
     return CustomOutlineContainer(
       outlineColor: Colors.deepOrange,
-      margin: 2.5,
+      backgroundColor: Colors.black12,
+      borderWidth: 1,
+      margin: 0,
       padding: 5,
       child: Builder(
         builder: ((context) {
           if (showFilter) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: Text(
-                              'Filter: ',
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              showFilter = !showFilter;
-                              setState(() {});
-                            },
-                            icon: const Icon(Icons.filter_alt_outlined),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: containerTypes
-                            .map((e) => containerTypeFilterWidget(e))
-                            .toList(),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
+            return searchFilter();
           } else {
-            return Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    style: const TextStyle(fontSize: 18),
-                    onEditingComplete: (() => hideKeyboard(context)),
-                    onChanged: (value) {
-                      enteredKeyword = value;
-                      setState(() {});
-                    },
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.all(5),
-                      icon: Icon(Icons.search),
-                      labelText: 'search',
-                      labelStyle: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ),
-                IconButton(
-                    onPressed: () {
-                      showFilter = !showFilter;
-                      setState(() {});
-                    },
-                    icon: const Icon(Icons.filter_alt_outlined))
-              ],
-            );
+            return searchInput();
           }
         }),
       ),
     );
   }
 
-  Widget containerTypeFilterWidget(String containerType) {
-    return LightContainer(
-      padding: 0,
-      margin: 2.5,
-      child: DarkContainer(
-        margin: 2.5,
-        padding: 5,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              containerType,
-              style: Theme.of(context).textTheme.titleMedium,
+  Widget searchFilter() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Text(
+                      'Filter: ',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showFilter = !showFilter;
+                      setState(() {});
+                    },
+                    icon: const Icon(Icons.filter_alt_outlined),
+                  ),
+                ],
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: containerTypes
+                    .map((e) => containerTypeFilterWidget(e))
+                    .toList(),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget searchInput() {
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            style: const TextStyle(fontSize: 18),
+            onEditingComplete: (() => hideKeyboard(context)),
+            onChanged: (value) {
+              enteredKeyword = value;
+              setState(() {});
+            },
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+              icon: Icon(Icons.search),
+              labelText: 'search',
+              labelStyle: TextStyle(fontSize: 18),
             ),
-            Checkbox(
+          ),
+        ),
+        IconButton(
+            onPressed: () {
+              showFilter = !showFilter;
+              setState(() {});
+            },
+            icon: const Icon(Icons.filter_alt_outlined))
+      ],
+    );
+  }
+
+  Widget containerTypeFilterWidget(String containerType) {
+    return Builder(builder: (context) {
+      Color containerTypeColor = Color(int.parse(isarDatabase!.containerTypes
+              .filter()
+              .containerTypeMatches(containerType)
+              .findFirstSync()!
+              .containerColor))
+          .withOpacity(1);
+      return LightContainer(
+        padding: 0,
+        margin: 2.5,
+        child: DarkContainer(
+          margin: 2.5,
+          padding: 5,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                containerType,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Checkbox(
+                activeColor: containerTypeColor,
+                fillColor: MaterialStateProperty.all(containerTypeColor),
                 value: filterList.contains(containerType),
                 onChanged: (value) {
                   _onSelected(value!, containerType);
-                })
-          ],
+                },
+              )
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   void _onSelected(bool selected, String dataName) {

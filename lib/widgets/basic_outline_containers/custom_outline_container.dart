@@ -1,23 +1,31 @@
 import 'package:flutter/material.dart';
 
 class CustomOutlineContainer extends StatelessWidget {
-  const CustomOutlineContainer({
-    Key? key,
-    required this.child,
-    required this.outlineColor,
-    this.margin,
-    this.padding,
-    this.borderWidth,
-  }) : super(key: key);
+  const CustomOutlineContainer(
+      {Key? key,
+      required this.child,
+      required this.outlineColor,
+      this.margin,
+      this.padding,
+      this.borderWidth,
+      this.width,
+      this.height,
+      this.backgroundColor})
+      : super(key: key);
 
   final Widget child;
   final Color outlineColor;
   final double? padding;
   final double? margin;
   final double? borderWidth;
+  final double? width;
+  final double? height;
+  final Color? backgroundColor;
   @override
   Widget build(BuildContext context) {
     return Container(
+        width: width,
+        height: height,
         padding: EdgeInsets.all(padding ?? 0),
         margin: EdgeInsets.all(margin ?? 0),
         decoration: BoxDecoration(
@@ -25,7 +33,7 @@ class CustomOutlineContainer extends StatelessWidget {
             borderRadius: const BorderRadius.all(
               Radius.circular(5),
             ),
-            color: Colors.black26),
+            color: backgroundColor ?? Colors.black26),
         child: child);
   }
 }
