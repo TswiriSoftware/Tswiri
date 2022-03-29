@@ -1,12 +1,21 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_photo/container_photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
+import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
+import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/widgets/container_display_widget.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_image_processing.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_view.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:isar/isar.dart';
 
 class ContainerView extends StatefulWidget {
@@ -22,11 +31,21 @@ class ContainerView extends StatefulWidget {
 class _ContainerViewState extends State<ContainerView> {
   TextEditingController nameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+  TextEditingController tagController = TextEditingController();
 
   ContainerEntry? containerEntry;
   Color? containerTypeColor;
+
   bool isEditting = false;
   bool isShowingChildren = false;
+  bool isShowingTagEditor = false;
+
+  List<ContainerPhoto> containerPhotos = [];
+  List<PhotoTag> photoTags = [];
+
+  List<int> assignedTags = [];
+  List<Tag> allTags = [];
+  List<Tag> displayTags = [];
 
   @override
   void initState() {
@@ -36,6 +55,32 @@ class _ContainerViewState extends State<ContainerView> {
 
     nameController.text = containerEntry?.name ?? containerEntry!.containerUID;
     descriptionController.text = containerEntry?.description ?? '';
+
+    assignedTags = isarDatabase!.containerTags
+        .filter()
+        .containerUIDMatches(containerEntry!.containerUID)
+        .tagIDProperty()
+        .findAllSync();
+
+    allTags = isarDatabase!.tags.where().findAllSync();
+
+    displayTags = allTags
+        .where((element) =>
+            !assignedTags.any((assignedTag) => assignedTag == element.id))
+        .toList();
+
+    containerPhotos = isarDatabase!.containerPhotos
+        .filter()
+        .containerUIDMatches(containerEntry!.containerUID)
+        .findAllSync();
+
+    photoTags = isarDatabase!.photoTags
+        .filter()
+        .repeat(
+            containerPhotos,
+            (q, ContainerPhoto element) =>
+                q.photoPathMatches(element.photoPath))
+        .findAllSync();
 
     super.initState();
   }
@@ -58,14 +103,527 @@ class _ContainerViewState extends State<ContainerView> {
             //NameWidget
             _entryInfo(),
             //Children
-            _childrenInfo()
+            _containsInfo(),
+            //Tags
+            containerTags(),
+            //Photo Tags
+            photosTags(),
+            //Photos
+            photos(),
           ],
         ),
       ),
     );
   }
 
-  Widget _childrenInfo() {
+  Widget photosTags() {
+    return LightContainer(
+      margin: 2.5,
+      padding: 0,
+      child: CustomOutlineContainer(
+        margin: 2.5,
+        padding: 5,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Photo Tags',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            Builder(
+              builder: (context) {
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.15,
+                  child: SingleChildScrollView(
+                    child: Wrap(
+                      children:
+                          photoTags.map((e) => photoTagWidget(e)).toList(),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+        outlineColor: containerTypeColor!,
+      ),
+    );
+  }
+
+  Widget photoTagWidget(PhotoTag photoTag) {
+    return Builder(builder: (context) {
+      return InkWell(
+        onLongPress: () {
+          photoTags.removeWhere((element) => element.id == photoTag.id);
+          isarDatabase!
+              .writeTxnSync((isar) => isar.photoTags.deleteSync(photoTag.id));
+          setState(() {});
+        },
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          margin: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+              border: Border.all(color: containerTypeColor!, width: 1),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(30),
+              ),
+              color: Colors.black26),
+          child: Builder(
+            builder: (context) {
+              return Text(
+                isarDatabase!.mlTags.getSync(photoTag.tagUID)!.tag,
+                style: Theme.of(context).textTheme.bodyLarge,
+              );
+            },
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget photos() {
+    return LightContainer(
+      margin: 2.5,
+      padding: 0,
+      child: CustomOutlineContainer(
+        margin: 2.5,
+        padding: 5,
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Photos',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                photoAddButton(),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+              child: Wrap(
+                runSpacing: 5,
+                spacing: 5,
+                children: containerPhotos
+                    .map((containerPhoto) => photoDisplay(containerPhoto))
+                    .toList(),
+              ),
+            )
+          ],
+        ),
+        outlineColor: containerTypeColor!,
+      ),
+    );
+  }
+
+  Widget photoDisplay(ContainerPhoto containerPhoto) {
+    return Builder(builder: (context) {
+      return Stack(
+        alignment: AlignmentDirectional.bottomStart,
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.3,
+            child: CustomOutlineContainer(
+                outlineColor: containerTypeColor!,
+                padding: 2,
+                child: Image.file(File(containerPhoto.photoPath))),
+          ),
+          IconButton(
+            onPressed: () {
+              containerPhotos
+                  .removeWhere((element) => element.id == containerPhoto.id);
+
+              isarDatabase!.writeTxnSync(
+                (isar) {
+                  isar.containerPhotos.deleteSync(containerPhoto.id);
+                  isar.photoTags
+                      .filter()
+                      .photoPathMatches(containerPhoto.photoPath)
+                      .deleteAllSync();
+                },
+              );
+              updatePhotoTags();
+              setState(() {});
+            },
+            icon: Icon(
+              Icons.delete,
+              color: containerTypeColor!,
+            ),
+          ),
+        ],
+      );
+    });
+  }
+
+  Widget photoAddButton() {
+    return InkWell(
+      onTap: () async {
+        PhotoData? result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ObjectDetectorView(),
+          ),
+        );
+
+        if (result != null) {
+          List<PhotoTag> newPhotoTags = [];
+
+          ContainerPhoto containerPhoto = ContainerPhoto()
+            ..containerUID = containerEntry!.containerUID
+            ..photoPath = result.photoPath;
+          //Add photo to list.
+          containerPhotos.add(containerPhoto);
+
+          for (String mlTag in result.photoTags) {
+            int? mlTagID = isarDatabase!.mlTags
+                .filter()
+                .tagMatches(mlTag)
+                .findFirstSync()
+                ?.id;
+
+            if (mlTagID != null) {
+              PhotoTag newPhotoTag = PhotoTag()
+                ..photoPath = result.photoPath
+                ..tagUID = mlTagID;
+
+              newPhotoTags.add(newPhotoTag);
+            }
+          }
+
+          isarDatabase!.writeTxnSync((isar) {
+            isar.photoTags.putAllSync(newPhotoTags, replaceOnConflict: true);
+
+            isar.containerPhotos.putSync(containerPhoto);
+          });
+          updatePhotoTags();
+        }
+        setState(() {});
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(right: 5),
+        child: CustomOutlineContainer(
+          width: 80,
+          height: 30,
+          padding: 5,
+          child: Center(
+            child: Text(
+              'add',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          outlineColor: containerTypeColor!,
+        ),
+      ),
+    );
+  }
+
+  Widget containerTags() {
+    return LightContainer(
+      margin: 2.5,
+      padding: 0,
+      child: CustomOutlineContainer(
+        outlineColor: containerTypeColor!,
+        margin: 2.5,
+        padding: 5,
+        child: Builder(
+          builder: (context) {
+            if (isShowingTagEditor) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Tags',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      tagSaveButton(),
+                    ],
+                  ),
+                  const Divider(),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.2,
+                    child: SingleChildScrollView(
+                      child: Wrap(
+                        children: assignedTags
+                            .map((e) => containerTagWidget(e))
+                            .toList(),
+                      ),
+                    ),
+                  ),
+                  const Divider(),
+                  Builder(builder: (context) {
+                    List<Tag> searchedTags = displayTags
+                        .where((element) =>
+                            element.tag.contains(tagController.text))
+                        .toList();
+
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.2,
+                      child: SingleChildScrollView(
+                        child: Wrap(
+                          children:
+                              searchedTags.map((e) => tagWidget(e)).toList(),
+                        ),
+                      ),
+                    );
+                  }),
+                  tagTextField(),
+                ],
+              );
+            } else {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Container Tags',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      tagEditButton(),
+                    ],
+                  ),
+                  const Divider(),
+                  Builder(
+                    builder: (context) {
+                      //Get container tags
+
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.1,
+                        child: SingleChildScrollView(
+                          child: Wrap(
+                            children: assignedTags
+                                .map((e) => containerTagWidget(e))
+                                .toList(),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget containerTagWidget(int tagID) {
+    return Builder(builder: (context) {
+      if (isarDatabase!.tags.filter().idEqualTo(tagID).findFirstSync() !=
+          null) {
+        return InkWell(
+          onLongPress: (() {
+            if (isShowingTagEditor) {
+              assignedTags.removeWhere((element) => element == tagID);
+
+              displayTags = allTags
+                  .where((element) => !assignedTags
+                      .any((assignedTag) => assignedTag == element.id))
+                  .toList();
+
+              setState(() {});
+            }
+          }),
+          child: Container(
+              padding: const EdgeInsets.all(8),
+              margin: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                  border: Border.all(color: containerTypeColor!, width: 1),
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(30),
+                  ),
+                  color: Colors.black26),
+              child: Builder(builder: (context) {
+                return Text(
+                  isarDatabase!.tags
+                      .filter()
+                      .idEqualTo(tagID)
+                      .findFirstSync()!
+                      .tag,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                );
+              })),
+        );
+      } else {
+        return Container();
+      }
+    });
+  }
+
+  Widget tagWidget(Tag tag) {
+    return InkWell(
+      onTap: () {
+        //TODO: Implement check if it is added already.
+
+        if (!assignedTags.any((element) => element == tag.id)) {
+          assignedTags.add(tag.id);
+
+          displayTags = displayTags
+              .where((element) =>
+                  !assignedTags.any((assignedTag) => assignedTag == element.id))
+              .toList();
+
+          setState(() {});
+        }
+      },
+      child: Container(
+          padding: const EdgeInsets.all(8),
+          margin: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+              border: Border.all(color: containerTypeColor!, width: 1),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(30),
+              ),
+              color: Colors.black26),
+          child: Text(
+            tag.tag,
+            style: Theme.of(context).textTheme.bodyLarge,
+          )),
+    );
+  }
+
+  Widget tagSaveButton() {
+    return InkWell(
+      onTap: () {
+        isShowingTagEditor = !isShowingTagEditor;
+        isarDatabase!.containerTags
+            .filter()
+            .containerUIDMatches(containerEntry!.containerUID)
+            .findAllSync();
+
+        isarDatabase!.writeTxnSync((isar) {
+          isar.containerTags
+              .filter()
+              .containerUIDMatches(containerEntry!.containerUID)
+              .deleteAllSync();
+          for (var i = 0; i < assignedTags.length; i++) {
+            isar.containerTags.putSync(ContainerTag()
+              ..containerUID = containerEntry!.containerUID
+              ..tagID = assignedTags[i]);
+          }
+        });
+        setState(() {});
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(right: 5),
+        child: CustomOutlineContainer(
+          width: 80,
+          height: 30,
+          padding: 5,
+          child: Center(
+            child: Text(
+              'Save',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          outlineColor: containerTypeColor!,
+        ),
+      ),
+    );
+  }
+
+  Widget tagEditButton() {
+    return InkWell(
+      onTap: () {
+        isShowingTagEditor = !isShowingTagEditor;
+        setState(() {});
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(right: 5),
+        child: CustomOutlineContainer(
+          width: 80,
+          height: 30,
+          padding: 5,
+          child: Center(
+            child: Text(
+              'Edit',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          outlineColor: containerTypeColor!,
+        ),
+      ),
+    );
+  }
+
+  Widget tagTextField() {
+    return OrangeOutlineContainer(
+      margin: 5,
+      padding: 8,
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: tagController,
+              onChanged: (value) {
+                setState(() {});
+              },
+              style: const TextStyle(fontSize: 18),
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(
+                contentPadding: EdgeInsets.only(left: 10),
+                labelText: 'Tag',
+                labelStyle: TextStyle(fontSize: 15),
+                border: OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white)),
+              ),
+            ),
+          ),
+          Builder(
+            builder: (context) {
+              return InkWell(
+                onTap: () {
+                  Tag? exists = isarDatabase!.tags
+                      .filter()
+                      .tagMatches(tagController.text.trim(),
+                          caseSensitive: false)
+                      .findFirstSync();
+
+                  String inputValue = tagController.text;
+
+                  if (exists == null && inputValue.isNotEmpty) {
+                    //Remove white spaces
+                    inputValue.trim();
+
+                    Tag newTag = Tag()..tag = inputValue;
+                    isarDatabase!.writeTxnSync(
+                      (isar) => isar.tags.putSync(newTag),
+                    );
+
+                    displayTags = isarDatabase!.tags
+                        .where()
+                        .findAllSync()
+                        .toList()
+                        .where((element) => !assignedTags
+                            .any((assignedTag) => assignedTag == element.id))
+                        .toList();
+
+                    tagController.text = '';
+                    setState(() {});
+                  }
+                },
+                child: OrangeOutlineContainer(
+                  child: Text(
+                    'Add',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
+              );
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _containsInfo() {
     return LightContainer(
       margin: 2.5,
       padding: 0,
@@ -79,7 +637,7 @@ class _ContainerViewState extends State<ContainerView> {
                 .filter()
                 .parentUIDMatches(containerEntry!.containerUID)
                 .findAllSync();
-            log(childrenRelationships.toString());
+
             List<ContainerEntry> children = [];
 
             if (childrenRelationships.isNotEmpty) {
@@ -92,17 +650,16 @@ class _ContainerViewState extends State<ContainerView> {
                   .findAllSync();
             }
 
-            log(children.toString());
             if (isShowingChildren) {
               return Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Children',
+                          'Contains',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         InkWell(
@@ -143,7 +700,7 @@ class _ContainerViewState extends State<ContainerView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Children',
+                            'Contains',
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                           Text(
@@ -189,7 +746,7 @@ class _ContainerViewState extends State<ContainerView> {
       child: CustomOutlineContainer(
         outlineColor: containerTypeColor!,
         margin: 2.5,
-        padding: 5,
+        padding: 10,
         child: Builder(
           builder: (context) {
             if (isEditting) {
@@ -377,5 +934,22 @@ class _ContainerViewState extends State<ContainerView> {
         ),
       ],
     );
+  }
+
+  void updatePhotoTags() {
+    containerPhotos = isarDatabase!.containerPhotos
+        .filter()
+        .containerUIDMatches(containerEntry!.containerUID)
+        .findAllSync();
+
+    photoTags = isarDatabase!.photoTags
+        .filter()
+        .repeat(
+            containerPhotos,
+            (q, ContainerPhoto element) =>
+                q.photoPathMatches(element.photoPath))
+        .findAllSync();
+
+    setState(() {});
   }
 }

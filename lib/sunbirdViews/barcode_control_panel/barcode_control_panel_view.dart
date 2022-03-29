@@ -94,7 +94,8 @@ class _BarcodeControlPanelViewState extends State<BarcodeControlPanelView> {
                       children: [
                         TagsContainerWidget(
                             barcodeID: barcodeAndTagData.barcodeID),
-                        BarcodePhotoView(barcodeID: barcodeAndTagData.barcodeID)
+                        BarcodePhotoView(
+                            containerUID: barcodeAndTagData.barcodeID)
                       ],
                     ),
                   ),

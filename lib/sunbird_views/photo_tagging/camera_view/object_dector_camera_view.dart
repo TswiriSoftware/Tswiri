@@ -2,8 +2,9 @@
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/objects/image_data.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import '../../../sunbird_views/app_settings/app_settings.dart';
+import '../../app_settings/app_settings.dart';
 import '../../../main.dart';
 import '../object_detector_image_processing.dart';
 
@@ -15,7 +16,6 @@ class ObjectDetectorCameraView extends StatefulWidget {
       required this.customPaint,
       required this.onImage,
       required this.color,
-      required this.barcodeID,
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
 
@@ -24,7 +24,7 @@ class ObjectDetectorCameraView extends StatefulWidget {
   final Function(InputImage inputImage) onImage;
   final CameraLensDirection initialDirection;
   final Color color;
-  final String barcodeID;
+
   @override
   _ObjectDetectorCameraViewState createState() =>
       _ObjectDetectorCameraViewState();
@@ -92,15 +92,15 @@ class _ObjectDetectorCameraViewState extends State<ObjectDetectorCameraView> {
               final image = await _controller.takePicture();
 
               //Pass the image to the processing screen :D
-              Navigator.pop(context);
-              Navigator.of(context).push(
+
+              PhotoData? result = await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => ObjectDetectorProcessingView(
                     imagePath: image.path,
-                    barcodeID: widget.barcodeID,
                   ),
                 ),
               );
+              Navigator.pop(context, result);
             } catch (e) {
               // If an error occurs, log the error to the console.
               //print(e);

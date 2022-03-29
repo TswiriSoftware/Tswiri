@@ -2,12 +2,17 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_photo/container_photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
+import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
+import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/single_barcode_scanner/single_barcode_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/widgets/container_display_widget.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_image_processing.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_view.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/dark_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
@@ -24,13 +29,18 @@ class AddContainerView extends StatefulWidget {
 
 class _AddContainerViewState extends State<AddContainerView> {
   Color? containerColor;
+
   ContainerType? selectedContainerType;
-  String? barcodeUID;
   ContainerEntry newContainerEntry = ContainerEntry();
+
+  String? barcodeUID;
   String? name;
   String? description;
-  ContainerEntry? parentContainer;
   Marker? marker;
+
+  ContainerEntry? parentContainer;
+
+  List<PhotoData> photoData = [];
 
   TextEditingController nameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
@@ -78,40 +88,72 @@ class _AddContainerViewState extends State<AddContainerView> {
                     children: [
                       containerTypeDisplay(selectedContainerType!),
                       //BarcodeUID
-                      Builder(builder: (context) {
-                        if (barcodeUID != null) {
-                          return Column(
-                            children: [
-                              scannedBarcode(),
-                              _nameAndDescription(),
-                              //ParentContaienr
-                              Builder(builder: (context) {
-                                if (selectedContainerType!.containerType ==
-                                    'area') {
-                                  return _createContainer();
-                                } else {
-                                  return Builder(builder: (context) {
-                                    if (parentContainer == null) {
-                                      return scanParent();
-                                    } else {
-                                      return Column(
-                                        children: [
-                                          _parentContainer(),
-                                          _createContainer(),
-                                        ],
-                                      );
-                                    }
-                                  });
-                                }
-                              }),
-                            ],
-                          );
-                        } else {
-                          return scanBarcode();
-                        }
-                      }),
                     ],
                   );
+                }
+              },
+            ),
+            //Barcode
+            Builder(
+              builder: (context) {
+                if (barcodeUID != null && selectedContainerType != null) {
+                  return Column(
+                    children: [
+                      scannedBarcode(),
+                      _nameAndDescription(),
+                      //ParentContaienr
+                    ],
+                  );
+                } else if (selectedContainerType != null) {
+                  return scanBarcode();
+                } else {
+                  return Container();
+                }
+              },
+            ),
+            //Parent
+            Builder(
+              builder: (context) {
+                if (selectedContainerType != null &&
+                    barcodeUID != null &&
+                    selectedContainerType!.containerType != 'area') {
+                  if (parentContainer == null) {
+                    return scanParent();
+                  } else {
+                    return _parentContainer();
+                  }
+                } else {
+                  return Container();
+                }
+              },
+            ),
+            //Photo ?
+            Builder(
+              builder: (context) {
+                if (selectedContainerType != null &&
+                        barcodeUID != null &&
+                        parentContainer != null ||
+                    (selectedContainerType != null &&
+                        selectedContainerType!.containerType == 'area' &&
+                        barcodeUID != null)) {
+                  return addPhoto();
+                } else {
+                  return Container();
+                }
+              },
+            ),
+            //Create
+            Builder(
+              builder: (context) {
+                if (selectedContainerType != null &&
+                        barcodeUID != null &&
+                        parentContainer != null ||
+                    (selectedContainerType != null &&
+                        selectedContainerType!.containerType == 'area' &&
+                        barcodeUID != null)) {
+                  return _createContainer();
+                } else {
+                  return Container();
                 }
               },
             ),
@@ -121,11 +163,65 @@ class _AddContainerViewState extends State<AddContainerView> {
     );
   }
 
+  Widget addPhoto() {
+    return LightContainer(
+        margin: 2.5,
+        padding: 0,
+        child: CustomOutlineContainer(
+            margin: 2.5,
+            padding: 5,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Do you want to take a photo of the contents',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    OrangeOutlineContainer(
+                        padding: 0,
+                        margin: 0,
+                        width: 40,
+                        height: 40,
+                        child: Center(
+                          child: IconButton(
+                            onPressed: () async {
+                              PhotoData? result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ObjectDetectorView(),
+                                ),
+                              );
+                              if (result != null) {
+                                photoData.add(result);
+                              }
+                              setState(() {});
+                              log(result.toString());
+                            },
+                            icon: const Icon(Icons.camera),
+                          ),
+                        ))
+                  ],
+                ),
+                Text(
+                  'Photos added: ' + photoData.length.toString(),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                Divider(),
+              ],
+            ),
+            outlineColor: containerColor!));
+  }
+
   Widget _parentContainer() {
     return LightContainer(
       margin: 2.5,
       padding: 0,
-      child: DarkContainer(
+      child: CustomOutlineContainer(
+        outlineColor: containerColor!,
         margin: 2.5,
         padding: 5,
         child: Column(
@@ -187,7 +283,43 @@ class _AddContainerViewState extends State<AddContainerView> {
               isar.containerRelationships.putSync(containerRelationship));
         }
 
-        log(containerEntry.toString());
+        List<ContainerPhoto> newPhotos = [];
+        List<PhotoTag> newPhotoTags = [];
+
+        //Photo Data.
+        if (photoData.isNotEmpty) {
+          for (PhotoData photo in photoData) {
+            //Container photo
+            ContainerPhoto containerPhoto = ContainerPhoto()
+              ..containerUID = containerEntry.containerUID
+              ..photoPath = photo.photoPath;
+            //Add photo to list.
+            newPhotos.add(containerPhoto);
+
+            for (String mlTag in photo.photoTags) {
+              int? mlTagID = isarDatabase!.mlTags
+                  .filter()
+                  .tagMatches(mlTag)
+                  .findFirstSync()
+                  ?.id;
+
+              if (mlTagID != null) {
+                PhotoTag newPhotoTag = PhotoTag()
+                  ..photoPath = photo.photoPath
+                  ..tagUID = mlTagID;
+                newPhotoTags.add(newPhotoTag);
+              }
+            }
+          }
+        }
+        isarDatabase!.writeTxnSync((isar) {
+          isar.containerPhotos.putAllSync(newPhotos);
+          isar.photoTags.putAllSync(newPhotoTags);
+        });
+
+        //log(newPhotoTags.toString());
+
+        //log(containerEntry.toString());
         Navigator.pop(context);
       },
       child: CustomOutlineContainer(
@@ -382,7 +514,8 @@ class _AddContainerViewState extends State<AddContainerView> {
             String? scannedBarcodeUID = await Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => const SingleBarcodeScannerView()),
+                builder: (context) => const SingleBarcodeScannerView(),
+              ),
             );
             //TODO: implement check
             log(scannedBarcodeUID.toString());

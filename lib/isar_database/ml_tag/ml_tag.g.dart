@@ -17,11 +17,11 @@ extension GetMlTagCollection on Isar {
 final MlTagSchema = CollectionSchema(
   name: 'MlTag',
   schema:
-      '{"name":"MlTag","idName":"id","properties":[{"name":"tag","type":"String"},{"name":"tagUID","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"MlTag","idName":"id","properties":[{"name":"tag","type":"String"}],"indexes":[],"links":[]}',
   nativeAdapter: const _MlTagNativeAdapter(),
   webAdapter: const _MlTagWebAdapter(),
   idName: 'id',
-  propertyIds: {'tag': 0, 'tagUID': 1},
+  propertyIds: {'tag': 0},
   listProperties: {},
   indexIds: {},
   indexTypes: {},
@@ -48,7 +48,6 @@ class _MlTagWebAdapter extends IsarWebTypeAdapter<MlTag> {
     final jsObj = IsarNative.newJsObject();
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
     IsarNative.jsObjectSet(jsObj, 'tag', object.tag);
-    IsarNative.jsObjectSet(jsObj, 'tagUID', object.tagUID);
     return jsObj;
   }
 
@@ -57,8 +56,6 @@ class _MlTagWebAdapter extends IsarWebTypeAdapter<MlTag> {
     final object = MlTag();
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
     object.tag = IsarNative.jsObjectGet(jsObj, 'tag') ?? '';
-    object.tagUID =
-        IsarNative.jsObjectGet(jsObj, 'tagUID') ?? double.negativeInfinity;
     return object;
   }
 
@@ -70,9 +67,6 @@ class _MlTagWebAdapter extends IsarWebTypeAdapter<MlTag> {
             as P;
       case 'tag':
         return (IsarNative.jsObjectGet(jsObj, 'tag') ?? '') as P;
-      case 'tagUID':
-        return (IsarNative.jsObjectGet(jsObj, 'tagUID') ??
-            double.negativeInfinity) as P;
       default:
         throw 'Illegal propertyName';
     }
@@ -92,8 +86,6 @@ class _MlTagNativeAdapter extends IsarNativeTypeAdapter<MlTag> {
     final value0 = object.tag;
     final _tag = IsarBinaryWriter.utf8Encoder.convert(value0);
     dynamicSize += (_tag.length) as int;
-    final value1 = object.tagUID;
-    final _tagUID = value1;
     final size = staticSize + dynamicSize;
 
     rawObj.buffer = alloc(size);
@@ -101,7 +93,6 @@ class _MlTagNativeAdapter extends IsarNativeTypeAdapter<MlTag> {
     final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
     final writer = IsarBinaryWriter(buffer, staticSize);
     writer.writeBytes(offsets[0], _tag);
-    writer.writeLong(offsets[1], _tagUID);
   }
 
   @override
@@ -110,7 +101,6 @@ class _MlTagNativeAdapter extends IsarNativeTypeAdapter<MlTag> {
     final object = MlTag();
     object.id = id;
     object.tag = reader.readString(offsets[0]);
-    object.tagUID = reader.readLong(offsets[1]);
     return object;
   }
 
@@ -122,8 +112,6 @@ class _MlTagNativeAdapter extends IsarNativeTypeAdapter<MlTag> {
         return id as P;
       case 0:
         return (reader.readString(offset)) as P;
-      case 1:
-        return (reader.readLong(offset)) as P;
       default:
         throw 'Illegal propertyIndex';
     }
@@ -360,53 +348,6 @@ extension MlTagQueryFilter on QueryBuilder<MlTag, MlTag, QFilterCondition> {
       caseSensitive: caseSensitive,
     ));
   }
-
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> tagUIDEqualTo(int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'tagUID',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> tagUIDGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'tagUID',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> tagUIDLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'tagUID',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> tagUIDBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'tagUID',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
-  }
 }
 
 extension MlTagQueryLinks on QueryBuilder<MlTag, MlTag, QFilterCondition> {}
@@ -427,14 +368,6 @@ extension MlTagQueryWhereSortBy on QueryBuilder<MlTag, MlTag, QSortBy> {
   QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByTagDesc() {
     return addSortByInternal('tag', Sort.desc);
   }
-
-  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByTagUID() {
-    return addSortByInternal('tagUID', Sort.asc);
-  }
-
-  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByTagUIDDesc() {
-    return addSortByInternal('tagUID', Sort.desc);
-  }
 }
 
 extension MlTagQueryWhereSortThenBy on QueryBuilder<MlTag, MlTag, QSortThenBy> {
@@ -453,14 +386,6 @@ extension MlTagQueryWhereSortThenBy on QueryBuilder<MlTag, MlTag, QSortThenBy> {
   QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByTagDesc() {
     return addSortByInternal('tag', Sort.desc);
   }
-
-  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByTagUID() {
-    return addSortByInternal('tagUID', Sort.asc);
-  }
-
-  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByTagUIDDesc() {
-    return addSortByInternal('tagUID', Sort.desc);
-  }
 }
 
 extension MlTagQueryWhereDistinct on QueryBuilder<MlTag, MlTag, QDistinct> {
@@ -472,10 +397,6 @@ extension MlTagQueryWhereDistinct on QueryBuilder<MlTag, MlTag, QDistinct> {
       {bool caseSensitive = true}) {
     return addDistinctByInternal('tag', caseSensitive: caseSensitive);
   }
-
-  QueryBuilder<MlTag, MlTag, QDistinct> distinctByTagUID() {
-    return addDistinctByInternal('tagUID');
-  }
 }
 
 extension MlTagQueryProperty on QueryBuilder<MlTag, MlTag, QQueryProperty> {
@@ -485,9 +406,5 @@ extension MlTagQueryProperty on QueryBuilder<MlTag, MlTag, QQueryProperty> {
 
   QueryBuilder<MlTag, String, QQueryOperations> tagProperty() {
     return addPropertyNameInternal('tag');
-  }
-
-  QueryBuilder<MlTag, int, QQueryOperations> tagUIDProperty() {
-    return addPropertyNameInternal('tagUID');
   }
 }

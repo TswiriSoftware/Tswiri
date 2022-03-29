@@ -1,12 +1,13 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'cameraView/object_dector_camera_view.dart';
+import 'camera_view/object_dector_camera_view.dart';
 
 ///Displays the cameraView of the object Dectector.
 class ObjectDetectorView extends StatefulWidget {
-  const ObjectDetectorView({Key? key, required this.barcodeID})
-      : super(key: key);
-  final String barcodeID;
+  const ObjectDetectorView({
+    Key? key,
+  }) : super(key: key);
+
   @override
   _ObjectDetectorView createState() => _ObjectDetectorView();
 }
@@ -33,7 +34,6 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
       customPaint: customPaint,
       onImage: (inputImage) {},
       initialDirection: CameraLensDirection.back,
-      barcodeID: widget.barcodeID,
     );
   }
 }

@@ -1,22 +1,23 @@
+import 'dart:developer';
 import 'dart:io';
-import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
-
-import '../../databaseAdapters/barcodePhotoAdapter/barcode_photo_entry.dart';
-import '../../globalValues/global_hive_databases.dart';
 import '../../objects/image_data.dart';
-import '../barcode_control_panel/barcode_control_panel_view.dart';
 import 'painter/object_detector_painter.dart';
 
 ///Displays the Photo and objects detected
 class ObjectDetectorProcessingView extends StatefulWidget {
-  const ObjectDetectorProcessingView(
-      {Key? key, required this.imagePath, required this.barcodeID})
+  const ObjectDetectorProcessingView({Key? key, required this.imagePath
+      //required this.barcodeID,
+      })
       : super(key: key);
   final String imagePath;
-  final String barcodeID;
+
+  //final String barcodeID;
   @override
   _ObjectDetectorProcessingView createState() =>
       _ObjectDetectorProcessingView();
@@ -37,6 +38,8 @@ class _ObjectDetectorProcessingView
 
   late String imagePath;
   //LocalModel model = LocalModel('object_detector.tflite');
+
+  PhotoData? result;
 
   @override
   void initState() {
@@ -75,16 +78,7 @@ class _ObjectDetectorProcessingView
                 backgroundColor: Colors.orange,
                 heroTag: null,
                 onPressed: () {
-                  Navigator.pop(
-                    context,
-                  );
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          BarcodeControlPanelView(barcodeID: widget.barcodeID),
-                    ),
-                  );
+                  Navigator.pop(context, result);
                 },
                 child: const Icon(Icons.check_circle_outline_rounded),
               ),
@@ -123,8 +117,7 @@ class _ObjectDetectorProcessingView
     //Get Image File.
     File imageFile = File(imagePath);
     String fileExtention = imageFile.path.split('.').last;
-    String fileName =
-        '${widget.barcodeID}_${DateTime.now().millisecondsSinceEpoch}';
+    String fileName = '_${DateTime.now().millisecondsSinceEpoch}';
 
     //Get the Storage Path if it does not exist create it.
     String storagePath = await getStorageDirectory();
@@ -168,12 +161,8 @@ class _ObjectDetectorProcessingView
     for (TextBlock block in recognisedText.blocks) {
       for (TextLine line in block.lines) {
         if (line.text.length >= 3) {
-          photoTags.add(line.text.toLowerCase());
+          //photoTags.add(line.text.toLowerCase());
         }
-
-        // for (TextElement element in line.elements) {
-        //   log(element.text.toString());
-        // }
       }
     }
 
@@ -192,24 +181,30 @@ class _ObjectDetectorProcessingView
         imageRotation: InputImageRotation.Rotation_90deg,
         size: imageSize);
 
+    PhotoData photoData =
+        PhotoData(photoPath: photoFilePath, photoTags: photoTags);
+
+    result = photoData;
+
+    List<MlTag> newMlTags = [];
+    for (String mlTag in photoData.photoTags) {
+      if (isarDatabase!.mlTags.filter().tagMatches(mlTag).findFirstSync() ==
+          null) {
+        //Create new ml tag
+        MlTag newMlTag = MlTag()..tag = mlTag;
+        newMlTags.add(newMlTag);
+      }
+    }
+    //Write new ml tags.
+    isarDatabase!.writeTxnSync(
+      (isar) => isar.mlTags.putAllSync(newMlTags),
+    );
+
+    //log(processedResult.toString());
+
     Map<String, List<String>> currentPhotoDataMap = {};
     currentPhotoDataMap.putIfAbsent(photoFilePath, () => photoTags);
 
-    Box<BarcodePhotosEntry> barcodePhotoEntries =
-        await Hive.openBox(barcodePhotosBoxName);
-
-    BarcodePhotosEntry? barcodePhotoEntry =
-        barcodePhotoEntries.get(widget.barcodeID);
-
-    if (barcodePhotoEntry == null) {
-      BarcodePhotosEntry newBarcodePhotosEntry = BarcodePhotosEntry(
-          uid: widget.barcodeID, photoData: currentPhotoDataMap);
-      barcodePhotoEntries.put(widget.barcodeID, newBarcodePhotosEntry);
-    } else {
-      barcodePhotoEntry.photoData.addAll(currentPhotoDataMap);
-    }
-
-    //log(barcodePhotoEntries.values.toString());
     return processedResult;
   }
 }
@@ -220,4 +215,14 @@ Future<String> getStorageDirectory() async {
   } else {
     return (await getApplicationDocumentsDirectory()).path;
   }
+}
+
+class PhotoData {
+  PhotoData({
+    required this.photoPath,
+    required this.photoTags,
+  });
+
+  final List<String> photoTags;
+  final String photoPath;
 }

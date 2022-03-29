@@ -8,11 +8,12 @@ import '../../objects/change_notifiers.dart';
 import '../basic_outline_containers/dark_container.dart';
 import '../basic_outline_containers/light_container.dart';
 import '../basic_outline_containers/orange_outline_container.dart';
-import '../../sunbirdViews/objectIdentifier/object_detector_view.dart';
+import '../../sunbird_views/photo_tagging/object_detector_view.dart';
 
 class BarcodePhotoView extends StatefulWidget {
-  const BarcodePhotoView({Key? key, required this.barcodeID}) : super(key: key);
-  final String barcodeID;
+  const BarcodePhotoView({Key? key, required this.containerUID})
+      : super(key: key);
+  final String containerUID;
   @override
   State<BarcodePhotoView> createState() => _BarcodePhotoViewState();
 }
@@ -42,7 +43,7 @@ class _BarcodePhotoViewState extends State<BarcodePhotoView> {
       photos.add(PhotoItem(
         photoPath: key,
         photoTags: value,
-        barcodeID: widget.barcodeID,
+        barcodeID: widget.containerUID,
       ));
     });
 
@@ -63,8 +64,7 @@ class _BarcodePhotoViewState extends State<BarcodePhotoView> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            ObjectDetectorView(barcodeID: widget.barcodeID),
+                        builder: (context) => const ObjectDetectorView(),
                       ),
                     );
                   },

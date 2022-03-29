@@ -5,12 +5,10 @@ part 'ml_tag.g.dart';
 class MlTag {
   int id = Isar.autoIncrement;
 
-  late int tagUID;
-
   late String tag;
 
   @override
   String toString() {
-    return 'tagUID: $tagUID, tag: $tag';
+    return 'tag: $tag';
   }
 }
