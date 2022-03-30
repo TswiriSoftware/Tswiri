@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/barcode_position_calulation/barcode_position_calculator.dart';
 import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';

@@ -1,20 +1,12 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_data_entry.dart';
 
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/data_capturing_functions.dart';
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
-import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
-import 'package:flutter_google_ml_kit/objects/raw_on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:hive/hive.dart';
 
-import '../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 import '../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
-import '../../sunbird_views/app_settings/app_settings.dart';
 
 ///Calculates the average interBarcodeOffset.
 /// i. Takes into account for offset direction.

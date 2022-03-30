@@ -1,13 +1,9 @@
 import 'dart:developer';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
 import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_hive_databases.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+//import 'package:hive_flutter/hive_flutter.dart';
 
-import '../../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
-import '../../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 import '../../../objects/display_point.dart';
 
 // ignore: todo
@@ -149,102 +145,102 @@ Future<List<DisplayPoint>> _getPoints(
     BuildContext context, int shelfUID) async {
   List<DisplayPoint> myPoints = [];
 
-  //Open realPositionBox.
-  Box<RealBarcodePositionEntry> realPositionsBox =
-      await Hive.openBox(realPositionsBoxName);
+  // //Open realPositionBox.
+  // Box<RealBarcodePositionEntry> realPositionsBox =
+  //     await Hive.openBox(realPositionsBoxName);
 
-  //Open generatedBarcodeData.
-  Box<BarcodeDataEntry> generatedBarcodeData =
-      await Hive.openBox(allBarcodesBoxName);
+  // //Open generatedBarcodeData.
+  // Box<BarcodeDataEntry> generatedBarcodeData =
+  //     await Hive.openBox(allBarcodesBoxName);
 
-  List<BarcodeDataEntry> generatedBarcodeDataList =
-      generatedBarcodeData.values.toList();
+  // List<BarcodeDataEntry> generatedBarcodeDataList =
+  //     generatedBarcodeData.values.toList();
 
-  //Set isMarker in position data.
-  for (BarcodeDataEntry barcodeDataEntry in generatedBarcodeDataList) {
-    if (barcodeDataEntry.isMarker) {
-      realPositionsBox.get(barcodeDataEntry.uid)!.isMarker = true;
-    }
-  }
+  // //Set isMarker in position data.
+  // for (BarcodeDataEntry barcodeDataEntry in generatedBarcodeDataList) {
+  //   if (barcodeDataEntry.isMarker) {
+  //     realPositionsBox.get(barcodeDataEntry.uid)!.isMarker = true;
+  //   }
+  // }
 
-  List<RealBarcodePositionEntry> realPositionsShelf = [];
+  // List<RealBarcodePositionEntry> realPositionsShelf = [];
 
-  if (shelfUID != 0) {
-    realPositionsShelf = realPositionsBox.values
-        .toList()
-        .where((element) => element.shelfUID == shelfUID)
-        .toList();
-  } else {
-    realPositionsShelf = realPositionsBox.values.toList();
-  }
+  // if (shelfUID != 0) {
+  //   realPositionsShelf = realPositionsBox.values
+  //       .toList()
+  //       .where((element) => element.shelfUID == shelfUID)
+  //       .toList();
+  // } else {
+  //   realPositionsShelf = realPositionsBox.values.toList();
+  // }
 
-  //Get Screen width and height.
-  double width = MediaQuery.of(context).size.width;
-  double height = MediaQuery.of(context).size.height;
+  // //Get Screen width and height.
+  // double width = MediaQuery.of(context).size.width;
+  // double height = MediaQuery.of(context).size.height;
 
-  //Calculate the unit vectors for the screen so that everything fits on it.
-  List<double> unitVector = unitVectors(
-      realPositionsBox: realPositionsBox, width: width, height: height);
+  // //Calculate the unit vectors for the screen so that everything fits on it.
+  // List<double> unitVector = unitVectors(
+  //     realPositionsBox: realPositionsBox, width: width, height: height);
 
-  for (var i = 0; i < realPositionsShelf.length; i++) {
-    RealBarcodePositionEntry realBarcodePosition = realPositionsBox.getAt(i)!;
+  // for (var i = 0; i < realPositionsShelf.length; i++) {
+  //   RealBarcodePositionEntry realBarcodePosition = realPositionsBox.getAt(i)!;
 
-    Offset barcodePosition = Offset(
-        (realBarcodePosition.offset.x * unitVector[0]) +
-            (width / 2) -
-            (width / 8),
-        (realBarcodePosition.offset.y * unitVector[1]) +
-            (height / 2) -
-            (height / 8));
+  //   Offset barcodePosition = Offset(
+  //       (realBarcodePosition.offset.x * unitVector[0]) +
+  //           (width / 2) -
+  //           (width / 8),
+  //       (realBarcodePosition.offset.y * unitVector[1]) +
+  //           (height / 2) -
+  //           (height / 8));
 
-    List<double> barcodeRealPosition = [
-      roundDouble(realBarcodePosition.offset.x, 5),
-      roundDouble(realBarcodePosition.offset.y, 5),
-      roundDouble(realBarcodePosition.zOffset, 5),
-    ];
+  //   List<double> barcodeRealPosition = [
+  //     roundDouble(realBarcodePosition.offset.x, 5),
+  //     roundDouble(realBarcodePosition.offset.y, 5),
+  //     roundDouble(realBarcodePosition.zOffset, 5),
+  //   ];
 
-    myPoints.add(DisplayPoint(
-        isMarker: realBarcodePosition.isMarker,
-        barcodeID: realBarcodePosition.uid,
-        barcodePosition: barcodePosition,
-        realBarcodePosition: barcodeRealPosition));
-  }
+  //   myPoints.add(DisplayPoint(
+  //       isMarker: realBarcodePosition.isMarker,
+  //       barcodeID: realBarcodePosition.uid,
+  //       barcodePosition: barcodePosition,
+  //       realBarcodePosition: barcodeRealPosition));
+  // }
 
   return myPoints;
 }
 
-List<double> unitVectors(
-    {required Box<RealBarcodePositionEntry> realPositionsBox,
-    required double width,
-    required double height}) {
-  double sX = 0;
-  double bX = 0;
-  double sY = 0;
-  double bY = 0;
+// List<double> unitVectors(
+//     {required Box<RealBarcodePositionEntry> realPositionsBox,
+//     required double width,
+//     required double height}) {
+//   double sX = 0;
+//   double bX = 0;
+//   double sY = 0;
+//   double bY = 0;
 
-  for (var i = 0; i < realPositionsBox.length; i++) {
-    RealBarcodePositionEntry data = realPositionsBox.getAt(i)!;
-    double xDistance = data.offset.x;
-    double yDistance = data.offset.y;
-    if (xDistance < sX) {
-      sX = xDistance;
-    }
-    if (xDistance > bX) {
-      bX = xDistance;
-    }
-    if (yDistance < sY) {
-      sY = yDistance;
-    }
-    if (yDistance > bY) {
-      bY = yDistance;
-    }
-  }
+//   for (var i = 0; i < realPositionsBox.length; i++) {
+//     RealBarcodePositionEntry data = realPositionsBox.getAt(i)!;
+//     double xDistance = data.offset.x;
+//     double yDistance = data.offset.y;
+//     if (xDistance < sX) {
+//       sX = xDistance;
+//     }
+//     if (xDistance > bX) {
+//       bX = xDistance;
+//     }
+//     if (yDistance < sY) {
+//       sY = yDistance;
+//     }
+//     if (yDistance > bY) {
+//       bY = yDistance;
+//     }
+//   }
 
-  double totalXdistance = (sX - bX).abs() + 500;
-  double totalYdistance = (sY - bY).abs() + 500;
+//   double totalXdistance = (sX - bX).abs() + 500;
+//   double totalYdistance = (sY - bY).abs() + 500;
 
-  double unitX = width / 2 / totalXdistance;
-  double unitY = height / 2 / totalYdistance;
+//   double unitX = width / 2 / totalXdistance;
+//   double unitY = height / 2 / totalYdistance;
 
-  return [unitX, unitY];
-}
+//   return [unitX, unitY];
+// }

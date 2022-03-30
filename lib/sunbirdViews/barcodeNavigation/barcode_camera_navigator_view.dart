@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+//import 'package:hive_flutter/hive_flutter.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
@@ -10,7 +10,6 @@ import '../../databaseAdapters/allBarcodes/barcode_data_entry.dart';
 import '../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
 import '../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 
-import '../../globalValues/global_hive_databases.dart';
 import '../../objects/real_inter_barcode_offset.dart';
 import '../barcode_control_panel/barcode_control_panel_view.dart';
 
@@ -89,16 +88,16 @@ class _BarcodeCameraNavigatorViewState
         backgroundColor: Colors.deepOrange,
         heroTag: null,
         onPressed: () async {
-          //Update the positions in the realBarcodePositionDataBox.
-          Box<RealBarcodePositionEntry> realBarcodePositionDataBox =
-              await Hive.openBox(realPositionsBoxName);
+          // //Update the positions in the realBarcodePositionDataBox.
+          // Box<RealBarcodePositionEntry> realBarcodePositionDataBox =
+          //     await Hive.openBox(realPositionsBoxName);
 
-          for (RealBarcodePositionEntry realBarcodePostionEntry
-              in positionsThatChanged) {
-            realBarcodePositionDataBox.put(
-                realBarcodePostionEntry.uid, realBarcodePostionEntry);
-            log('updated Positions.');
-          }
+          // for (RealBarcodePositionEntry realBarcodePostionEntry
+          //     in positionsThatChanged) {
+          //   realBarcodePositionDataBox.put(
+          //       realBarcodePostionEntry.uid, realBarcodePostionEntry);
+          //   log('updated Positions.');
+          // }
 
           if (widget.pop != null) {
             Navigator.pop(context);

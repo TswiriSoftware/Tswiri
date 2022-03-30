@@ -2,7 +2,6 @@
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/objects/image_data.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import '../../app_settings/app_settings.dart';
 import '../../../main.dart';

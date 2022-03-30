@@ -46,7 +46,6 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 

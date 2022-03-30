@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/hide_keyboard.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
