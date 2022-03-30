@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
 class LightContainer extends StatelessWidget {
-  const LightContainer(
-      {Key? key,
-      required this.child,
-      this.margin,
-      this.padding,
-      this.width,
-      this.height,
-      this.borderWidth})
-      : super(key: key);
+  const LightContainer({
+    Key? key,
+    required this.child,
+    this.margin,
+    this.padding,
+    this.width,
+    this.height,
+    this.borderWidth,
+    this.borderRadius,
+  }) : super(key: key);
 
   final Widget child;
   final double? padding;
@@ -17,6 +18,7 @@ class LightContainer extends StatelessWidget {
   final double? borderWidth;
   final double? width;
   final double? height;
+  final double? borderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +29,8 @@ class LightContainer extends StatelessWidget {
         padding: EdgeInsets.all(padding ?? 5),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.white60, width: borderWidth ?? 1),
-          borderRadius: const BorderRadius.all(
-            Radius.circular(5),
+          borderRadius: BorderRadius.all(
+            Radius.circular(borderRadius ?? 5),
           ),
           color: Colors.grey[800],
         ),

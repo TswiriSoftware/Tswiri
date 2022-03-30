@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
@@ -24,8 +25,7 @@ class _TagManagerViewState extends State<TagManagerView> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title:
-            Text('New Tag(s)', style: Theme.of(context).textTheme.titleMedium),
+        title: Text('Tags', style: Theme.of(context).textTheme.titleMedium),
         centerTitle: true,
         elevation: 0,
       ),
@@ -63,7 +63,10 @@ class _TagManagerViewState extends State<TagManagerView> {
     return InkWell(
       onLongPress: (() {
         isarDatabase!.writeTxnSync(
-          (isar) => isar.tags.deleteSync(tag.id),
+          (isar) {
+            isar.tags.deleteSync(tag.id);
+            isar.containerTags.filter().tagIDEqualTo(tag.id).deleteAllSync();
+          },
         );
         setState(() {});
       }),

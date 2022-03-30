@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
 class OrangeOutlineContainer extends StatelessWidget {
-  const OrangeOutlineContainer(
-      {Key? key,
-      required this.child,
-      this.margin,
-      this.padding,
-      this.height,
-      this.width,
-      this.borderWidth})
-      : super(key: key);
+  const OrangeOutlineContainer({
+    Key? key,
+    required this.child,
+    this.margin,
+    this.padding,
+    this.height,
+    this.width,
+    this.borderWidth,
+    this.borderRadius,
+  }) : super(key: key);
 
   final Widget child;
   final double? padding;
@@ -17,6 +18,7 @@ class OrangeOutlineContainer extends StatelessWidget {
   final double? width;
   final double? height;
   final double? borderWidth;
+  final double? borderRadius;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -27,8 +29,8 @@ class OrangeOutlineContainer extends StatelessWidget {
         decoration: BoxDecoration(
             border:
                 Border.all(color: Colors.deepOrange, width: borderWidth ?? 1),
-            borderRadius: const BorderRadius.all(
-              Radius.circular(5),
+            borderRadius: BorderRadius.all(
+              Radius.circular(borderRadius ?? 5),
             ),
             color: Colors.black26),
         child: child);

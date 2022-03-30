@@ -40,6 +40,52 @@ Isar openIsar() {
   return isar;
 }
 
+void createBasicContainerTypes() {
+  isarDatabase!.writeTxnSync(
+    (database) {
+      database.containerTypes.putSync(
+          ContainerType()
+            ..id = 1
+            ..containerType = 'area'
+            ..canContain = ['shelf', 'box', 'drawer']
+            ..structured = false
+            ..containerColor = const Color(0xFFff420e).value.toString()
+            ..canBeOrigin = true,
+          replaceOnConflict: true);
+
+      database.containerTypes.putSync(
+          ContainerType()
+            ..id = 2
+            ..containerType = 'shelf'
+            ..canContain = ['box', 'drawer']
+            ..structured = true
+            ..containerColor = const Color(0xFF89da59).value.toString()
+            ..canBeOrigin = true,
+          replaceOnConflict: true);
+
+      database.containerTypes.putSync(
+          ContainerType()
+            ..id = 3
+            ..containerType = 'drawer'
+            ..canContain = ['box', 'shelf']
+            ..structured = false
+            ..containerColor = Colors.blue.value.toString()
+            ..canBeOrigin = false,
+          replaceOnConflict: true);
+
+      database.containerTypes.putSync(
+          ContainerType()
+            ..id = 4
+            ..containerType = 'box'
+            ..canContain = ['box', 'shelf']
+            ..structured = false
+            ..containerColor = const Color(0xFFF98866).value.toString()
+            ..canBeOrigin = false,
+          replaceOnConflict: true);
+    },
+  );
+}
+
 Isar? closeIsar(Isar? database) {
   if (database != null) {
     //   if (database.isOpen) {

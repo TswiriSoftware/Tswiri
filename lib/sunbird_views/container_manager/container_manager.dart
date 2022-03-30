@@ -19,7 +19,7 @@ class ContainerManagerView extends StatefulWidget {
 
 class _ContainerManagerViewState extends State<ContainerManagerView> {
   String enteredKeyword = '';
-  List<String> filterList = ['area', 'shelf', 'drawer'];
+  List<String> filterList = ['area', 'shelf', 'drawer', 'box'];
   List<String> containerTypes = [];
   bool showFilter = false;
 
@@ -52,7 +52,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
           ),
         ),
         appBar: AppBar(
-          title: Text('Container Manager',
+          title: Text('Containers',
               style: Theme.of(context).textTheme.titleMedium),
           centerTitle: true,
           elevation: 0,

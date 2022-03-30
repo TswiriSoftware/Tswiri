@@ -28,8 +28,10 @@ class _BarcodeManagerViewState extends State<BarcodeManagerView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Barcode Manager',
-            style: Theme.of(context).textTheme.titleMedium),
+        title: Text(
+          'Barcodes',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         centerTitle: true,
         elevation: 0,
       ),
@@ -346,16 +348,6 @@ class _BarcodeManagerViewState extends State<BarcodeManagerView> {
       }),
     );
   }
-
-  // Widget _searchBar() {
-  //   return SearchBarWidget(
-  //     onChanged: (value) {
-  //       setState(() {
-  //         enteredKeyword = value;
-  //       });
-  //     },
-  //   );
-  // }
 
   Widget _optionsText() {
     return const Text(
