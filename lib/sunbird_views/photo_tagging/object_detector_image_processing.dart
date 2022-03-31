@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
@@ -45,7 +46,15 @@ class _ObjectDetectorProcessingView
     //Image Path.
     imagePath = widget.imagePath;
 
+    // File customModelFile = File('assets/custom_model.tflite');
+    // log(customModelFile.exists().toString());
+
     //TODO: figure out custom .tflite
+
+    //LocalModel customModel = LocalModel(modelPath)
+
+    // customObjectDetector = GoogleMlKit.vision
+    //     .objectDetector(CustomObjectDetectorOptions(LocalModel(modelPath)));
 
     //Object Detector Config.
     // objectDetector = GoogleMlKit.vision.objectDetector(
@@ -116,7 +125,7 @@ class _ObjectDetectorProcessingView
     //Get Image File.
     File imageFile = File(imagePath);
     String fileExtention = imageFile.path.split('.').last;
-    String fileName = '_${DateTime.now().millisecondsSinceEpoch}';
+    String fileName = '${DateTime.now().millisecondsSinceEpoch}';
 
     //Get the Storage Path if it does not exist create it.
     String storagePath = await getStorageDirectory();
@@ -125,7 +134,7 @@ class _ObjectDetectorProcessingView
     }
 
     //Create the photo file path.
-    String photoFilePath = '$storagePath/sunbird/$fileName' + fileExtention;
+    String photoFilePath = '$storagePath/sunbird/$fileName.' + fileExtention;
     //log(photoFilePath);
 
     await imageFile.copy(photoFilePath);

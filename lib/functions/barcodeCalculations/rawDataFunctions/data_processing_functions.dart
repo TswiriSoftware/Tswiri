@@ -1,7 +1,5 @@
 import 'package:flutter/rendering.dart';
 
-import '../../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
-
 ///Calculates the average distance from the camera of 2 barcodes
 double calcAveDisFromCamera(
     double qrCodeStartDistanceFromCamera, double qrCodeEndDistanceFromCamera) {
@@ -12,9 +10,9 @@ double calcAveDisFromCamera(
 List<double> getImageSizes(Map lookupTableMap) {
   List<double> imageSizesLookupTable = [];
   lookupTableMap.forEach((key, value) {
-    DistanceFromCameraLookupEntry data = value;
-    double test = data.onImageBarcodeDiagonalLength;
-    imageSizesLookupTable.add(test);
+    //DistanceFromCameraLookupEntry data = value;
+    //double test = data.onImageBarcodeDiagonalLength;
+    //imageSizesLookupTable.add(test);
   });
 
   return imageSizesLookupTable;

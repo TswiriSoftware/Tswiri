@@ -10,6 +10,7 @@ class LightContainer extends StatelessWidget {
     this.height,
     this.borderWidth,
     this.borderRadius,
+    this.borderColor,
   }) : super(key: key);
 
   final Widget child;
@@ -19,6 +20,7 @@ class LightContainer extends StatelessWidget {
   final double? width;
   final double? height;
   final double? borderRadius;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,8 @@ class LightContainer extends StatelessWidget {
         margin: EdgeInsets.all(margin ?? 5),
         padding: EdgeInsets.all(padding ?? 5),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.white60, width: borderWidth ?? 1),
+          border: Border.all(
+              color: borderColor ?? Colors.white60, width: borderWidth ?? 1),
           borderRadius: BorderRadius.all(
             Radius.circular(borderRadius ?? 5),
           ),

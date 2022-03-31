@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -39,9 +40,6 @@ class _ContainerViewState extends State<ContainerView> {
   bool isShowingChildren = false;
   bool isShowingTagEditor = false;
 
-  List<ContainerPhoto> containerPhotos = [];
-  List<PhotoTag> photoTags = [];
-
   List<int> assignedTags = [];
   List<Tag> allTags = [];
   List<Tag> displayTags = [];
@@ -49,6 +47,7 @@ class _ContainerViewState extends State<ContainerView> {
   @override
   void initState() {
     containerEntry = widget.containerEntry;
+
     containerTypeColor =
         getContainerColor(containerUID: containerEntry!.containerUID);
 
@@ -67,19 +66,6 @@ class _ContainerViewState extends State<ContainerView> {
         .where((element) =>
             !assignedTags.any((assignedTag) => assignedTag == element.id))
         .toList();
-
-    containerPhotos = isarDatabase!.containerPhotos
-        .filter()
-        .containerUIDMatches(containerEntry!.containerUID)
-        .findAllSync();
-
-    photoTags = isarDatabase!.photoTags
-        .filter()
-        .repeat(
-            containerPhotos,
-            (q, ContainerPhoto element) =>
-                q.photoPathMatches(element.photoPath))
-        .findAllSync();
 
     super.initState();
   }
@@ -105,79 +91,14 @@ class _ContainerViewState extends State<ContainerView> {
             _containsInfo(),
             //Tags
             containerTags(),
-            //Photo Tags
-            photosTags(),
             //Photos
             photos(),
+            //Photo Tags
+            photoTags(),
           ],
         ),
       ),
     );
-  }
-
-  Widget photosTags() {
-    return LightContainer(
-      margin: 2.5,
-      padding: 0,
-      child: CustomOutlineContainer(
-        margin: 2.5,
-        padding: 5,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Photo Tags',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            Builder(
-              builder: (context) {
-                return SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.15,
-                  child: SingleChildScrollView(
-                    child: Wrap(
-                      children:
-                          photoTags.map((e) => photoTagWidget(e)).toList(),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-        outlineColor: containerTypeColor!,
-      ),
-    );
-  }
-
-  Widget photoTagWidget(PhotoTag photoTag) {
-    return Builder(builder: (context) {
-      return InkWell(
-        onLongPress: () {
-          photoTags.removeWhere((element) => element.id == photoTag.id);
-          isarDatabase!
-              .writeTxnSync((isar) => isar.photoTags.deleteSync(photoTag.id));
-          setState(() {});
-        },
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          margin: const EdgeInsets.all(5),
-          decoration: BoxDecoration(
-              border: Border.all(color: containerTypeColor!, width: 1),
-              borderRadius: const BorderRadius.all(
-                Radius.circular(30),
-              ),
-              color: Colors.black26),
-          child: Builder(
-            builder: (context) {
-              return Text(
-                isarDatabase!.mlTags.getSync(photoTag.tagUID)!.tag,
-                style: Theme.of(context).textTheme.bodyLarge,
-              );
-            },
-          ),
-        ),
-      );
-    });
   }
 
   Widget photos() {
@@ -188,27 +109,35 @@ class _ContainerViewState extends State<ContainerView> {
         margin: 2.5,
         padding: 5,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Photos',
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                photoAddButton(),
+                photoActions(),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-              child: Wrap(
-                runSpacing: 5,
-                spacing: 5,
-                children: containerPhotos
-                    .map((containerPhoto) => photoDisplay(containerPhoto))
-                    .toList(),
-              ),
-            )
+            Builder(
+              builder: (context) {
+                List<ContainerPhoto> containerPhotos = isarDatabase!
+                    .containerPhotos
+                    .filter()
+                    .containerUIDMatches(containerEntry!.containerUID)
+                    .findAllSync();
+
+                return Wrap(
+                  runAlignment: WrapAlignment.start,
+                  alignment: WrapAlignment.spaceEvenly,
+                  spacing: 5,
+                  runSpacing: 5,
+                  children: containerPhotos.map((e) => photo(e)).toList(),
+                );
+              },
+            ),
           ],
         ),
         outlineColor: containerTypeColor!,
@@ -216,46 +145,36 @@ class _ContainerViewState extends State<ContainerView> {
     );
   }
 
-  Widget photoDisplay(ContainerPhoto containerPhoto) {
-    return Builder(builder: (context) {
-      return Stack(
-        alignment: AlignmentDirectional.bottomStart,
-        children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.3,
-            child: CustomOutlineContainer(
-                outlineColor: containerTypeColor!,
-                padding: 2,
-                child: Image.file(File(containerPhoto.photoPath))),
-          ),
-          IconButton(
-            onPressed: () {
-              containerPhotos
-                  .removeWhere((element) => element.id == containerPhoto.id);
-
-              isarDatabase!.writeTxnSync(
-                (isar) {
-                  isar.containerPhotos.deleteSync(containerPhoto.id);
-                  isar.photoTags
-                      .filter()
-                      .photoPathMatches(containerPhoto.photoPath)
-                      .deleteAllSync();
-                },
-              );
-              updatePhotoTags();
-              setState(() {});
-            },
-            icon: Icon(
-              Icons.delete,
-              color: containerTypeColor!,
+  Widget photo(ContainerPhoto containerPhoto) {
+    return Stack(
+      children: [
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.3,
+          child: CustomOutlineContainer(
+            outlineColor: containerTypeColor!,
+            padding: 2,
+            child: Image.file(
+              File(containerPhoto.photoPath),
             ),
           ),
-        ],
-      );
-    });
+        ),
+        IconButton(
+          onPressed: () {
+            File(containerPhoto.photoPath).delete();
+            isarDatabase!.writeTxnSync((isar) => isarDatabase!.containerPhotos
+                .filter()
+                .photoPathMatches(containerPhoto.photoPath)
+                .deleteFirstSync());
+            setState(() {});
+          },
+          icon: Icon(Icons.delete),
+          color: containerTypeColor,
+        ),
+      ],
+    );
   }
 
-  Widget photoAddButton() {
+  Widget photoActions() {
     return InkWell(
       onTap: () async {
         PhotoData? result = await Navigator.push(
@@ -266,13 +185,11 @@ class _ContainerViewState extends State<ContainerView> {
         );
 
         if (result != null) {
-          List<PhotoTag> newPhotoTags = [];
-
-          ContainerPhoto containerPhoto = ContainerPhoto()
+          ContainerPhoto newContainerPhoto = ContainerPhoto()
             ..containerUID = containerEntry!.containerUID
             ..photoPath = result.photoPath;
-          //Add photo to list.
-          containerPhotos.add(containerPhoto);
+
+          List<PhotoTag> newPhotoTags = [];
 
           for (String mlTag in result.photoTags) {
             int? mlTagID = isarDatabase!.mlTags
@@ -291,28 +208,102 @@ class _ContainerViewState extends State<ContainerView> {
           }
 
           isarDatabase!.writeTxnSync((isar) {
-            isar.photoTags.putAllSync(newPhotoTags, replaceOnConflict: true);
-
-            isar.containerPhotos.putSync(containerPhoto);
+            isar.containerPhotos.putSync(newContainerPhoto);
+            isar.photoTags.putAllSync(newPhotoTags);
           });
-          updatePhotoTags();
+
+          //updatePhotoTags();
         }
         setState(() {});
       },
-      child: Padding(
-        padding: const EdgeInsets.only(right: 5),
-        child: CustomOutlineContainer(
-          width: 80,
-          height: 30,
-          padding: 5,
-          child: Center(
-            child: Text(
-              'add',
+      child: CustomOutlineContainer(
+        width: 80,
+        height: 30,
+        padding: 5,
+        margin: 5,
+        child: Center(
+          child: Text(
+            'add',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+        outlineColor: containerTypeColor!,
+      ),
+    );
+  }
+
+  Widget photoTags() {
+    return LightContainer(
+      margin: 2.5,
+      padding: 0,
+      child: CustomOutlineContainer(
+        margin: 2.5,
+        padding: 5,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Photo Tags',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-          ),
-          outlineColor: containerTypeColor!,
+            Builder(
+              builder: (context) {
+                List<MlTag> mlTags = [];
+                List<PhotoTag> photoTags = [];
+
+                List<ContainerPhoto> containerPhotos = isarDatabase!
+                    .containerPhotos
+                    .filter()
+                    .containerUIDMatches(containerEntry!.containerUID)
+                    .findAllSync();
+
+                if (containerPhotos.isNotEmpty) {
+                  photoTags = isarDatabase!.photoTags
+                      .filter()
+                      .repeat(
+                          containerPhotos,
+                          (q, ContainerPhoto element) =>
+                              q.photoPathMatches(element.photoPath))
+                      .findAllSync();
+
+                  if (photoTags.isNotEmpty) {
+                    mlTags = isarDatabase!.mlTags
+                        .filter()
+                        .repeat(
+                            photoTags,
+                            (q, PhotoTag element) =>
+                                q.idEqualTo(element.tagUID))
+                        .findAllSync();
+                  }
+                }
+
+                return Center(
+                  child: Wrap(
+                    children: mlTags.map((e) => photoTag(e)).toList(),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
+        outlineColor: containerTypeColor!,
+      ),
+    );
+  }
+
+  Widget photoTag(MlTag mlTag) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      margin: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
+          border: Border.all(color: containerTypeColor!, width: 1),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(30),
+          ),
+          color: Colors.black26),
+      child: Text(
+        mlTag.tag,
+        style: Theme.of(context).textTheme.bodyLarge,
       ),
     );
   }
@@ -933,22 +924,5 @@ class _ContainerViewState extends State<ContainerView> {
         ),
       ],
     );
-  }
-
-  void updatePhotoTags() {
-    containerPhotos = isarDatabase!.containerPhotos
-        .filter()
-        .containerUIDMatches(containerEntry!.containerUID)
-        .findAllSync();
-
-    photoTags = isarDatabase!.photoTags
-        .filter()
-        .repeat(
-            containerPhotos,
-            (q, ContainerPhoto element) =>
-                q.photoPathMatches(element.photoPath))
-        .findAllSync();
-
-    setState(() {});
   }
 }

@@ -12,8 +12,6 @@ import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.da
 import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../databaseAdapters/calibrationAdapter/distance_from_camera_lookup_entry.dart';
-
 import 'camera_calibration_display_widgets.dart';
 
 class CameraCalibrationDataProcessingView extends StatefulWidget {
@@ -37,8 +35,6 @@ class CameraCalibrationDataProcessingView extends StatefulWidget {
 
 class _CameraCalibrationDataProcessingViewState
     extends State<CameraCalibrationDataProcessingView> {
-  List<DistanceFromCameraLookupEntry> displayList = [];
-
   @override
   void dispose() {
     super.dispose();

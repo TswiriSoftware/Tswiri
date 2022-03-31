@@ -397,13 +397,16 @@ class _SearchViewState extends State<SearchView> {
   Widget containerListViewTile(ContainerSearchBuilder element) {
     return Builder(
       builder: (context) {
-        Color containerColor = getContainerColor(
-            containerUID: element.containerEntry.containerUID);
+        Color containerColor =
+            getContainerColor(containerUID: element.containerEntry.containerUID)
+                .withOpacity(0.9);
 
         return LightContainer(
             margin: 2.5,
             padding: 1,
             borderRadius: 12,
+            borderWidth: 0.8,
+            borderColor: Colors.white,
             child: CustomOutlineContainer(
               padding: 5,
               margin: 1,
@@ -489,26 +492,46 @@ class _SearchViewState extends State<SearchView> {
   }
 
   Widget containerPhotos({required ContainerSearchBuilder element}) {
-    return Builder(builder: (context) {
-      if (showContainerPhotos &&
-          element.containerPhotos != null &&
-          element.containerPhotos!.isNotEmpty) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Wrap(
-              children:
-                  element.containerPhotos!.map((e) => photoWidget(e)).toList(),
-            ),
-            const Divider(
-              height: 5,
-            ),
-          ],
-        );
-      } else {
-        return Container();
-      }
-    });
+    return Builder(
+      builder: (context) {
+        if (showContainerPhotos &&
+            element.containerPhotos != null &&
+            element.containerPhotos!.isNotEmpty) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                children: element.containerPhotos!
+                    .map((e) => photoWidget(e))
+                    .toList(),
+              ),
+              const Divider(
+                height: 5,
+              ),
+            ],
+          );
+        } else if (showContainerPhotos) {
+          List<ContainerPhoto> containerPhotos = isarDatabase!.containerPhotos
+              .filter()
+              .containerUIDMatches(element.containerEntry.containerUID)
+              .findAllSync();
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                children: containerPhotos.map((e) => photoWidget(e)).toList(),
+              ),
+              const Divider(
+                height: 5,
+              ),
+            ],
+          );
+        } else {
+          return Container();
+        }
+      },
+    );
   }
 
   Widget photoWidget(ContainerPhoto containerPhoto) {
@@ -523,9 +546,10 @@ class _SearchViewState extends State<SearchView> {
     );
   }
 
-  Widget containerActions(
-      {required ContainerSearchBuilder element,
-      required Color containerColor}) {
+  Widget containerActions({
+    required ContainerSearchBuilder element,
+    required Color containerColor,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

@@ -81,6 +81,8 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:28.4.2')
     implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:16.2.1'
 
+    implementation 'org.tensorflow:tensorflow-lite-metadata:0.1.0'
+
     implementation 'com.google.android.gms:play-services-mlkit-image-labeling:16.0.5'
     implementation 'com.google.mlkit:image-labeling-custom:16.3.1'
     implementation 'com.google.mlkit:image-labeling-automl:16.2.1'

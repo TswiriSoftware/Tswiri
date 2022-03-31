@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/databaseAdapters/allBarcodes/barcode_data_entry.dart';
 
 import 'package:flutter_google_ml_kit/functions/barcodeCalculations/type_offset_converters.dart';
 import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
 import 'package:hive/hive.dart';
-
-import '../../databaseAdapters/scanningAdapter/real_barcode_position_entry.dart';
 
 ///Calculates the average interBarcodeOffset.
 /// i. Takes into account for offset direction.
@@ -58,23 +55,23 @@ List<RealInterBarcodeOffset> findSimilarInterBarcodeOffsets(
 }
 
 ///Writes all valid barcode positions to the Hive database.
-void writeValidBarcodePositionsToDatabase(
-    RealBarcodePosition realBarcodePosition,
-    Box<RealBarcodePositionEntry> realPositionalData,
-    int shelfUID) {
-  if (realBarcodePosition.offset != null) {
-    //Creates an entry for each realBarcodePosition
-    realPositionalData.put(
-        realBarcodePosition.uid,
-        RealBarcodePositionEntry(
-            uid: realBarcodePosition.uid,
-            offset: offsetToTypeOffset(realBarcodePosition.offset!),
-            zOffset: realBarcodePosition.zOffset ?? 0,
-            isMarker: false, //realBarcodePosition.isMarker,
-            shelfUID: shelfUID,
-            timestamp: realBarcodePosition.timestamp!));
-  }
-}
+// void writeValidBarcodePositionsToDatabase(
+//     RealBarcodePosition realBarcodePosition,
+//     Box<RealBarcodePositionEntry> realPositionalData,
+//     int shelfUID) {
+//   if (realBarcodePosition.offset != null) {
+//     //Creates an entry for each realBarcodePosition
+//     realPositionalData.put(
+//         realBarcodePosition.uid,
+//         RealBarcodePositionEntry(
+//             uid: realBarcodePosition.uid,
+//             offset: offsetToTypeOffset(realBarcodePosition.offset!),
+//             zOffset: realBarcodePosition.zOffset ?? 0,
+//             isMarker: false, //realBarcodePosition.isMarker,
+//             shelfUID: shelfUID,
+//             timestamp: realBarcodePosition.timestamp!));
+//   }
+// }
 
 //Checks if the index is valid.
 bool indexIsValid(int index) => index != -1;
@@ -132,7 +129,7 @@ List<RealInterBarcodeOffset> getRelevantInterBarcodeOffsets(
 ///Creates a list of all scanned barcodes , but with null positions , they still need to be populated.
 List<RealBarcodePosition> extractListOfScannedBarcodes(
   List<RealInterBarcodeOffset> allRealInterBarcodeData,
-  List<BarcodeDataEntry> allBarcodes,
+  //List<BarcodeDataEntry> allBarcodes,
 ) {
   List<RealBarcodePosition> realPositionData = [];
   List<RealBarcodePosition> allBarcodesInScan = [];
