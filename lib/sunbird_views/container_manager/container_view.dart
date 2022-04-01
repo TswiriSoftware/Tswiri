@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_photo/container_photo.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_photo_thumbnail/container_photo_thumbnail.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
@@ -16,7 +17,10 @@ import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detecto
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
+
+import 'objects/photo_data.dart';
 
 class ContainerView extends StatefulWidget {
   const ContainerView({Key? key, required this.containerEntry})
@@ -167,7 +171,7 @@ class _ContainerViewState extends State<ContainerView> {
                 .deleteFirstSync());
             setState(() {});
           },
-          icon: Icon(Icons.delete),
+          icon: const Icon(Icons.delete),
           color: containerTypeColor,
         ),
       ],
@@ -177,43 +181,74 @@ class _ContainerViewState extends State<ContainerView> {
   Widget photoActions() {
     return InkWell(
       onTap: () async {
-        PhotoData? result = await Navigator.push(
+        PhotoData? photoData = await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => const ObjectDetectorView(),
           ),
         );
 
-        if (result != null) {
+        if (photoData != null) {
           ContainerPhoto newContainerPhoto = ContainerPhoto()
             ..containerUID = containerEntry!.containerUID
-            ..photoPath = result.photoPath;
+            ..photoPath = photoData.photoPath;
+
+          ContainerPhotoThumbnail newThumbnail = ContainerPhotoThumbnail()
+            ..photoPath = photoData.photoPath
+            ..thumbnailPhotoPath = photoData.thumbnailPhotoPath;
 
           List<PhotoTag> newPhotoTags = [];
 
-          for (String mlTag in result.photoTags) {
-            int? mlTagID = isarDatabase!.mlTags
-                .filter()
-                .tagMatches(mlTag)
-                .findFirstSync()
-                ?.id;
+          for (DetectedObject detectedObject in photoData.photoObjects) {
+            List<Label> labels = detectedObject.getLabels();
 
-            if (mlTagID != null) {
+            for (Label label in labels) {
+              int mlTagID = isarDatabase!.mlTags
+                  .filter()
+                  .tagMatches(label.getText().toLowerCase())
+                  .findFirstSync()!
+                  .id;
+
+              List<double> boundingBox = [
+                detectedObject.getBoundinBox().left,
+                detectedObject.getBoundinBox().top,
+                detectedObject.getBoundinBox().right,
+                detectedObject.getBoundinBox().bottom
+              ];
+
               PhotoTag newPhotoTag = PhotoTag()
-                ..photoPath = result.photoPath
-                ..tagUID = mlTagID;
+                ..photoPath = photoData.photoPath
+                ..tagUID = mlTagID
+                ..boundingBox = boundingBox
+                ..confidence = label.getConfidence();
 
               newPhotoTags.add(newPhotoTag);
             }
           }
 
+          for (ImageLabel imageLabel in photoData.photoLabels) {
+            int mlTagID = isarDatabase!.mlTags
+                .filter()
+                .tagMatches(imageLabel.label.toLowerCase())
+                .findFirstSync()!
+                .id;
+
+            PhotoTag newPhotoTag = PhotoTag()
+              ..photoPath = photoData.photoPath
+              ..tagUID = mlTagID
+              ..boundingBox = null
+              ..confidence = imageLabel.confidence;
+
+            newPhotoTags.add(newPhotoTag);
+          }
+
           isarDatabase!.writeTxnSync((isar) {
             isar.containerPhotos.putSync(newContainerPhoto);
+            isar.containerPhotoThumbnails.putSync(newThumbnail);
             isar.photoTags.putAllSync(newPhotoTags);
           });
-
-          //updatePhotoTags();
         }
+
         setState(() {});
       },
       child: CustomOutlineContainer(

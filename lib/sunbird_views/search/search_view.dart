@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_photo/container_photo.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_photo_thumbnail/container_photo_thumbnail.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
@@ -337,13 +338,20 @@ class _SearchViewState extends State<SearchView> {
 
         List<ContainerSearchBuilder> containerSearchBuilders = [];
 
+        List<ContainerPhotoThumbnail> thumbnails = isarDatabase!
+            .containerPhotoThumbnails
+            .filter()
+            .repeat(
+                containerPhotos,
+                (q, ContainerPhoto element) =>
+                    q.photoPathMatches(element.photoPath))
+            .findAllSync();
+
         for (ContainerEntry containerEntry in containerEntries) {
           containerSearchBuilders.add(ContainerSearchBuilder(
-              containerEntry: containerEntry,
-              containerPhotos: containerPhotos
-                  .where((element) =>
-                      element.containerUID == containerEntry.containerUID)
-                  .toList()));
+            containerEntry: containerEntry,
+            containerPhotos: thumbnails,
+          ));
         }
 
         searchResults.addAll(containerSearchBuilders);
@@ -516,11 +524,22 @@ class _SearchViewState extends State<SearchView> {
               .containerUIDMatches(element.containerEntry.containerUID)
               .findAllSync();
 
+          List<ContainerPhotoThumbnail> thumbnails = [];
+          if (containerPhotos.isNotEmpty) {
+            thumbnails = isarDatabase!.containerPhotoThumbnails
+                .filter()
+                .repeat(
+                    containerPhotos,
+                    (q, ContainerPhoto element) =>
+                        q.photoPathMatches(element.photoPath))
+                .findAllSync();
+          }
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Wrap(
-                children: containerPhotos.map((e) => photoWidget(e)).toList(),
+                children: thumbnails.map((e) => photoWidget(e)).toList(),
               ),
               const Divider(
                 height: 5,
@@ -534,13 +553,13 @@ class _SearchViewState extends State<SearchView> {
     );
   }
 
-  Widget photoWidget(ContainerPhoto containerPhoto) {
+  Widget photoWidget(ContainerPhotoThumbnail containerPhotoThumbnail) {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.2,
       child: OrangeOutlineContainer(
         padding: 2,
         child: Image.file(
-          File(containerPhoto.photoPath),
+          File(containerPhotoThumbnail.thumbnailPhotoPath),
         ),
       ),
     );

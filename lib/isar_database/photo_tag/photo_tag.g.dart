@@ -17,12 +17,12 @@ extension GetPhotoTagCollection on Isar {
 final PhotoTagSchema = CollectionSchema(
   name: 'PhotoTag',
   schema:
-      '{"name":"PhotoTag","idName":"id","properties":[{"name":"photoPath","type":"String"},{"name":"tagUID","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"PhotoTag","idName":"id","properties":[{"name":"boundingBox","type":"DoubleList"},{"name":"confidence","type":"Double"},{"name":"photoPath","type":"String"},{"name":"tagUID","type":"Long"}],"indexes":[],"links":[]}',
   nativeAdapter: const _PhotoTagNativeAdapter(),
   webAdapter: const _PhotoTagWebAdapter(),
   idName: 'id',
-  propertyIds: {'photoPath': 0, 'tagUID': 1},
-  listProperties: {},
+  propertyIds: {'boundingBox': 0, 'confidence': 1, 'photoPath': 2, 'tagUID': 3},
+  listProperties: {'boundingBox'},
   indexIds: {},
   indexTypes: {},
   linkIds: {},
@@ -46,6 +46,8 @@ class _PhotoTagWebAdapter extends IsarWebTypeAdapter<PhotoTag> {
   @override
   Object serialize(IsarCollection<PhotoTag> collection, PhotoTag object) {
     final jsObj = IsarNative.newJsObject();
+    IsarNative.jsObjectSet(jsObj, 'boundingBox', object.boundingBox);
+    IsarNative.jsObjectSet(jsObj, 'confidence', object.confidence);
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
     IsarNative.jsObjectSet(jsObj, 'photoPath', object.photoPath);
     IsarNative.jsObjectSet(jsObj, 'tagUID', object.tagUID);
@@ -55,6 +57,12 @@ class _PhotoTagWebAdapter extends IsarWebTypeAdapter<PhotoTag> {
   @override
   PhotoTag deserialize(IsarCollection<PhotoTag> collection, dynamic jsObj) {
     final object = PhotoTag();
+    object.boundingBox = (IsarNative.jsObjectGet(jsObj, 'boundingBox') as List?)
+        ?.map((e) => e ?? double.negativeInfinity)
+        .toList()
+        .cast<double>();
+    object.confidence =
+        IsarNative.jsObjectGet(jsObj, 'confidence') ?? double.negativeInfinity;
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
     object.photoPath = IsarNative.jsObjectGet(jsObj, 'photoPath') ?? '';
     object.tagUID =
@@ -65,6 +73,14 @@ class _PhotoTagWebAdapter extends IsarWebTypeAdapter<PhotoTag> {
   @override
   P deserializeProperty<P>(Object jsObj, String propertyName) {
     switch (propertyName) {
+      case 'boundingBox':
+        return ((IsarNative.jsObjectGet(jsObj, 'boundingBox') as List?)
+            ?.map((e) => e ?? double.negativeInfinity)
+            .toList()
+            .cast<double>()) as P;
+      case 'confidence':
+        return (IsarNative.jsObjectGet(jsObj, 'confidence') ??
+            double.negativeInfinity) as P;
       case 'id':
         return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
             as P;
@@ -89,28 +105,37 @@ class _PhotoTagNativeAdapter extends IsarNativeTypeAdapter<PhotoTag> {
   void serialize(IsarCollection<PhotoTag> collection, IsarRawObject rawObj,
       PhotoTag object, int staticSize, List<int> offsets, AdapterAlloc alloc) {
     var dynamicSize = 0;
-    final value0 = object.photoPath;
-    final _photoPath = IsarBinaryWriter.utf8Encoder.convert(value0);
+    final value0 = object.boundingBox;
+    dynamicSize += (value0?.length ?? 0) * 8;
+    final _boundingBox = value0;
+    final value1 = object.confidence;
+    final _confidence = value1;
+    final value2 = object.photoPath;
+    final _photoPath = IsarBinaryWriter.utf8Encoder.convert(value2);
     dynamicSize += (_photoPath.length) as int;
-    final value1 = object.tagUID;
-    final _tagUID = value1;
+    final value3 = object.tagUID;
+    final _tagUID = value3;
     final size = staticSize + dynamicSize;
 
     rawObj.buffer = alloc(size);
     rawObj.buffer_length = size;
     final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
     final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeBytes(offsets[0], _photoPath);
-    writer.writeLong(offsets[1], _tagUID);
+    writer.writeDoubleList(offsets[0], _boundingBox);
+    writer.writeDouble(offsets[1], _confidence);
+    writer.writeBytes(offsets[2], _photoPath);
+    writer.writeLong(offsets[3], _tagUID);
   }
 
   @override
   PhotoTag deserialize(IsarCollection<PhotoTag> collection, int id,
       IsarBinaryReader reader, List<int> offsets) {
     final object = PhotoTag();
+    object.boundingBox = reader.readDoubleList(offsets[0]);
+    object.confidence = reader.readDouble(offsets[1]);
     object.id = id;
-    object.photoPath = reader.readString(offsets[0]);
-    object.tagUID = reader.readLong(offsets[1]);
+    object.photoPath = reader.readString(offsets[2]);
+    object.tagUID = reader.readLong(offsets[3]);
     return object;
   }
 
@@ -121,8 +146,12 @@ class _PhotoTagNativeAdapter extends IsarNativeTypeAdapter<PhotoTag> {
       case -1:
         return id as P;
       case 0:
-        return (reader.readString(offset)) as P;
+        return (reader.readDoubleList(offset)) as P;
       case 1:
+        return (reader.readDouble(offset)) as P;
+      case 2:
+        return (reader.readString(offset)) as P;
+      case 3:
         return (reader.readLong(offset)) as P;
       default:
         throw 'Illegal propertyIndex';
@@ -214,6 +243,85 @@ extension PhotoTagQueryWhere on QueryBuilder<PhotoTag, PhotoTag, QWhereClause> {
 
 extension PhotoTagQueryFilter
     on QueryBuilder<PhotoTag, PhotoTag, QFilterCondition> {
+  QueryBuilder<PhotoTag, PhotoTag, QAfterFilterCondition> boundingBoxIsNull() {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.isNull,
+      property: 'boundingBox',
+      value: null,
+    ));
+  }
+
+  QueryBuilder<PhotoTag, PhotoTag, QAfterFilterCondition>
+      boundingBoxAnyIsNull() {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'boundingBox',
+      value: null,
+    ));
+  }
+
+  QueryBuilder<PhotoTag, PhotoTag, QAfterFilterCondition>
+      boundingBoxAnyGreaterThan(double? value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: false,
+      property: 'boundingBox',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<PhotoTag, PhotoTag, QAfterFilterCondition>
+      boundingBoxAnyLessThan(double? value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: false,
+      property: 'boundingBox',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<PhotoTag, PhotoTag, QAfterFilterCondition> boundingBoxAnyBetween(
+      double? lower, double? upper) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'boundingBox',
+      lower: lower,
+      includeLower: false,
+      upper: upper,
+      includeUpper: false,
+    ));
+  }
+
+  QueryBuilder<PhotoTag, PhotoTag, QAfterFilterCondition> confidenceGreaterThan(
+      double value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: false,
+      property: 'confidence',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<PhotoTag, PhotoTag, QAfterFilterCondition> confidenceLessThan(
+      double value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: false,
+      property: 'confidence',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<PhotoTag, PhotoTag, QAfterFilterCondition> confidenceBetween(
+      double lower, double upper) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'confidence',
+      lower: lower,
+      includeLower: false,
+      upper: upper,
+      includeUpper: false,
+    ));
+  }
+
   QueryBuilder<PhotoTag, PhotoTag, QAfterFilterCondition> idEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
@@ -418,6 +526,14 @@ extension PhotoTagQueryLinks
 
 extension PhotoTagQueryWhereSortBy
     on QueryBuilder<PhotoTag, PhotoTag, QSortBy> {
+  QueryBuilder<PhotoTag, PhotoTag, QAfterSortBy> sortByConfidence() {
+    return addSortByInternal('confidence', Sort.asc);
+  }
+
+  QueryBuilder<PhotoTag, PhotoTag, QAfterSortBy> sortByConfidenceDesc() {
+    return addSortByInternal('confidence', Sort.desc);
+  }
+
   QueryBuilder<PhotoTag, PhotoTag, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -445,6 +561,14 @@ extension PhotoTagQueryWhereSortBy
 
 extension PhotoTagQueryWhereSortThenBy
     on QueryBuilder<PhotoTag, PhotoTag, QSortThenBy> {
+  QueryBuilder<PhotoTag, PhotoTag, QAfterSortBy> thenByConfidence() {
+    return addSortByInternal('confidence', Sort.asc);
+  }
+
+  QueryBuilder<PhotoTag, PhotoTag, QAfterSortBy> thenByConfidenceDesc() {
+    return addSortByInternal('confidence', Sort.desc);
+  }
+
   QueryBuilder<PhotoTag, PhotoTag, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -472,6 +596,10 @@ extension PhotoTagQueryWhereSortThenBy
 
 extension PhotoTagQueryWhereDistinct
     on QueryBuilder<PhotoTag, PhotoTag, QDistinct> {
+  QueryBuilder<PhotoTag, PhotoTag, QDistinct> distinctByConfidence() {
+    return addDistinctByInternal('confidence');
+  }
+
   QueryBuilder<PhotoTag, PhotoTag, QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
@@ -488,6 +616,15 @@ extension PhotoTagQueryWhereDistinct
 
 extension PhotoTagQueryProperty
     on QueryBuilder<PhotoTag, PhotoTag, QQueryProperty> {
+  QueryBuilder<PhotoTag, List<double>?, QQueryOperations>
+      boundingBoxProperty() {
+    return addPropertyNameInternal('boundingBox');
+  }
+
+  QueryBuilder<PhotoTag, double, QQueryOperations> confidenceProperty() {
+    return addPropertyNameInternal('confidence');
+  }
+
   QueryBuilder<PhotoTag, int, QQueryOperations> idProperty() {
     return addPropertyNameInternal('id');
   }

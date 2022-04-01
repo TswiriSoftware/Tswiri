@@ -1,8 +1,11 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/objects/photo_data.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
@@ -25,41 +28,24 @@ class ObjectDetectorProcessingView extends StatefulWidget {
 
 class _ObjectDetectorProcessingView
     extends State<ObjectDetectorProcessingView> {
-  //Object detector config
-  ObjectDetector objectDetector = GoogleMlKit.vision.objectDetector(
-      ObjectDetectorOptions(classifyObjects: true, trackMutipleObjects: true));
+  //Local Models
+  LocalModel googleVisionProductsModel = LocalModel(
+      'lite-model_on_device_vision_classifier_popular_us_products_V1_1.tflite');
+  LocalModel inceptionV4Model =
+      LocalModel('inception_v4_quant_1_metadata_1.tflite');
 
-  //Image labeler Config.
-  ImageLabeler imageLabeler = GoogleMlKit.vision
-      .imageLabeler(ImageLabelerOptions(confidenceThreshold: 0.6));
-
-  //Text Detector
+  //Text Detector.
   TextDetector textDetector = GoogleMlKit.vision.textDetector();
 
   late String imagePath;
-  //LocalModel model = LocalModel('object_detector.tflite');
 
-  PhotoData? result;
+  List<String> photoTags = [];
+  PhotoData? photoData;
 
   @override
   void initState() {
     //Image Path.
     imagePath = widget.imagePath;
-
-    // File customModelFile = File('assets/custom_model.tflite');
-    // log(customModelFile.exists().toString());
-
-    //TODO: figure out custom .tflite
-
-    //LocalModel customModel = LocalModel(modelPath)
-
-    // customObjectDetector = GoogleMlKit.vision
-    //     .objectDetector(CustomObjectDetectorOptions(LocalModel(modelPath)));
-
-    //Object Detector Config.
-    // objectDetector = GoogleMlKit.vision.objectDetector(
-    //     CustomObjectDetectorOptions(model,
-    //         classifyObjects: true, trackMutipleObjects: true));
 
     super.initState();
   }
@@ -69,7 +55,8 @@ class _ObjectDetectorProcessingView
 
   @override
   void dispose() {
-    objectDetector.close();
+    textDetector.close();
+
     super.dispose();
   }
 
@@ -86,7 +73,7 @@ class _ObjectDetectorProcessingView
                 backgroundColor: Colors.orange,
                 heroTag: null,
                 onPressed: () {
-                  Navigator.pop(context, result);
+                  Navigator.pop(context, photoData);
                 },
                 child: const Icon(Icons.check_circle_outline_rounded),
               ),
@@ -127,43 +114,71 @@ class _ObjectDetectorProcessingView
     String fileExtention = imageFile.path.split('.').last;
     String fileName = '${DateTime.now().millisecondsSinceEpoch}';
 
+    var image = img.decodeJpg(imageFile.readAsBytesSync());
+    var thumbnail = img.copyResize(image!, width: 120);
+
     //Get the Storage Path if it does not exist create it.
     String storagePath = await getStorageDirectory();
-    if (!await Directory('$storagePath/sunbird').exists()) {
-      Directory('$storagePath/sunbird').create();
+    if (!await Directory('$storagePath/sunbird/photos').exists()) {
+      Directory('$storagePath/sunbird/photos').create();
+    }
+    if (!await Directory('$storagePath/sunbird/thumbnails').exists()) {
+      Directory('$storagePath/sunbird/thumbnails').create();
     }
 
     //Create the photo file path.
-    String photoFilePath = '$storagePath/sunbird/$fileName.' + fileExtention;
+    String photoFilePath =
+        '$storagePath/sunbird/photos/$fileName.' + fileExtention;
+
+    String thumbnailPhotoPath =
+        '$storagePath/sunbird/thumbnails/$fileName.' + fileExtention;
+
     //log(photoFilePath);
 
+    File(thumbnailPhotoPath).writeAsBytesSync(img.encodePng(thumbnail));
     await imageFile.copy(photoFilePath);
 
     //Create InputImage.
     InputImage inputImage = InputImage.fromFile(imageFile);
 
-    List<String> photoTags = [];
+    //List of labels.
+    List<DetectedObject> detectedObjects = [];
+    List<ImageLabel> imageLabels = [];
+
+    //Label image if it is enabled.
+    if (googleImageLabeling!) {
+      imageLabels.addAll(await getImageLabels(inputImage));
+    }
+
+    //Google vision products if enabled
+    if (googleVisionProducts!) {
+      detectedObjects.addAll(
+          await getObjectsOnImage(googleVisionProductsModel, 0.7, inputImage));
+    }
+
+    //InceptionV4 products if enabled
+    if (inceptionV4!) {
+      detectedObjects
+          .addAll(await getObjectsOnImage(inceptionV4Model, 0.1, inputImage));
+    }
 
     //Image Processing:
 
-    ///Objects
-    final objects = await objectDetector.processImage(inputImage);
-    for (DetectedObject object in objects) {
-      //log('Object label: ' + object.getLabels().toList().toString());
+    //Objects
+    for (DetectedObject object in detectedObjects) {
       List<Label> objectLabels = object.getLabels();
       for (Label objectLabel in objectLabels) {
         photoTags.add(objectLabel.getText());
       }
     }
 
-    ///Labels
-    final labels = await imageLabeler.processImage(inputImage);
-    for (ImageLabel label in labels) {
-      //log('Image Label: ' + label.label);
+    //Image Labels
+    for (ImageLabel label in imageLabels) {
+      log('Image Label: ' + label.label);
       photoTags.add(label.label);
     }
 
-    ///Text
+    //Text
     final RecognisedText recognisedText =
         await textDetector.processImage(inputImage);
     for (TextBlock block in recognisedText.blocks) {
@@ -174,6 +189,15 @@ class _ObjectDetectorProcessingView
       }
     }
 
+    //If new mlTags are found they will be added to the database.
+    createNewMlTags(photoTags);
+
+    photoData = PhotoData(
+        thumbnailPhotoPath: thumbnailPhotoPath,
+        photoPath: photoFilePath,
+        photoObjects: detectedObjects,
+        photoLabels: imageLabels);
+
     //Decode Image for properties
     var decodedImage = await decodeImageFromList(imageFile.readAsBytesSync());
 
@@ -183,23 +207,23 @@ class _ObjectDetectorProcessingView
 
     //Create the object that contains all data from the object Detector and Image Labeler.
     ImageData processedResult = ImageData(
-        detectedObjects: objects,
-        detectedLabels: labels,
+        detectedObjects: detectedObjects,
+        detectedLabels: imageLabels,
         detectedText: recognisedText,
         imageRotation: InputImageRotation.Rotation_90deg,
         size: imageSize);
 
-    PhotoData photoData =
-        PhotoData(photoPath: photoFilePath, photoTags: photoTags);
+    return processedResult;
+  }
 
-    result = photoData;
-
+  void createNewMlTags(List<String> photoTags) {
     List<MlTag> newMlTags = [];
-    for (String mlTag in photoData.photoTags) {
+
+    for (String mlTag in photoTags) {
       if (isarDatabase!.mlTags.filter().tagMatches(mlTag).findFirstSync() ==
           null) {
         //Create new ml tag
-        MlTag newMlTag = MlTag()..tag = mlTag;
+        MlTag newMlTag = MlTag()..tag = mlTag.toLowerCase();
         newMlTags.add(newMlTag);
       }
     }
@@ -207,13 +231,43 @@ class _ObjectDetectorProcessingView
     isarDatabase!.writeTxnSync(
       (isar) => isar.mlTags.putAllSync(newMlTags),
     );
+  }
 
-    //log(processedResult.toString());
+  Future<List<DetectedObject>> getObjectsOnImage(LocalModel localModel,
+      double confidenceThreshold, InputImage inputImage) async {
+    //Create objectDetector.
+    ObjectDetector objectDetector = GoogleMlKit.vision.objectDetector(
+      CustomObjectDetectorOptions(
+        localModel,
+        classifyObjects: true,
+        confidenceThreshold: confidenceThreshold,
+        trackMutipleObjects: true,
+      ),
+    );
 
-    Map<String, List<String>> currentPhotoDataMap = {};
-    currentPhotoDataMap.putIfAbsent(photoFilePath, () => photoTags);
+    //Get list of objects.
+    List<DetectedObject> detectedObjects =
+        await objectDetector.processImage(inputImage);
 
-    return processedResult;
+    //Close object detector.
+    objectDetector.close();
+
+    return detectedObjects;
+  }
+
+  Future<List<ImageLabel>> getImageLabels(InputImage inputImage) async {
+    //Image labeler Config.
+    ImageLabeler imageLabeler = GoogleMlKit.vision
+        .imageLabeler(ImageLabelerOptions(confidenceThreshold: 0.4));
+
+    //Get list of objects.
+    List<ImageLabel> detectedLabels =
+        await imageLabeler.processImage(inputImage);
+
+    //Close object detector.
+    imageLabeler.close();
+
+    return detectedLabels;
   }
 }
 
@@ -223,14 +277,4 @@ Future<String> getStorageDirectory() async {
   } else {
     return (await getApplicationDocumentsDirectory()).path;
   }
-}
-
-class PhotoData {
-  PhotoData({
-    required this.photoPath,
-    required this.photoTags,
-  });
-
-  final List<String> photoTags;
-  final String photoPath;
 }

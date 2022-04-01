@@ -13,7 +13,7 @@ class ObjectDetectorPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     List<DetectedObject> _objects = objectData.detectedObjects;
-    List<TextBlock> _textData = objectData.detectedText.blocks;
+    List<TextBlock> _textData = objectData.detectedText!.blocks;
     Size absoluteSize = objectData.size;
     InputImageRotation rotation = objectData.imageRotation;
 

@@ -4,6 +4,7 @@ import 'package:flutter_google_ml_kit/isar_database/barcode_generation_entry/bar
 import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_size_distance_entry/barcode_size_distance_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_photo/container_photo.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_photo_thumbnail/container_photo_thumbnail.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
@@ -32,7 +33,8 @@ Isar openIsar() {
       MlTagSchema,
       PhotoTagSchema,
       RealInterBarcodeVectorEntrySchema,
-      BarcodeSizeDistanceEntrySchema
+      BarcodeSizeDistanceEntrySchema,
+      ContainerPhotoThumbnailSchema,
     ],
     directory: isarDirectory!.path,
     inspector: true,

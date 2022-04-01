@@ -3,6 +3,10 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
+import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
+import 'package:numberpicker/numberpicker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app_settings_functions.dart';
@@ -19,6 +23,9 @@ class _SettingsViewState extends State<SettingsView> {
   late String selectedCameraPreset;
   late bool vibration;
   late double getDefaultBarcodeDiagonalLength;
+  late bool googleImageLabeling;
+  late bool googleVisionProducts;
+  late bool inceptionV4;
 
   @override
   void initState() {
@@ -26,6 +33,7 @@ class _SettingsViewState extends State<SettingsView> {
   }
 
   final TextEditingController barcodeSizeController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,13 +66,15 @@ class _SettingsViewState extends State<SettingsView> {
                       child: Column(
                         children: [
                           //Camera Resolution.
-                          cameraResolution(snapshot),
+                          cameraResolution(snapshot.data!),
                           const Divider(),
                           //Default barcode size
-                          defaultBarcodeSize(snapshot),
+                          defaultBarcodeSize(snapshot.data!),
                           const Divider(),
                           //HapticFeedBack.
-                          hapticFeedback(snapshot),
+                          hapticFeedback(snapshot.data!),
+                          const Divider(),
+                          models(snapshot.data!),
                         ],
                       ),
                     ),
@@ -85,15 +95,42 @@ class _SettingsViewState extends State<SettingsView> {
 
     await setCameraResolution(cameraPreset);
 
-    bool hapticFeedback = prefs.getBool(hapticFeedBackPreference) ?? true;
-
     double defaultBarcodeSize =
         prefs.getDouble(defaultBarcodeSizePeference) ?? 100;
 
+    bool hapticFeedback = prefs.getBool(hapticFeedBackPreference) ?? true;
+
+    bool googleImageLabeling =
+        prefs.getBool(googleImageLabelingPreference) ?? true;
+    googleImageLabelingConfidenceThreshold =
+        prefs.getDouble(googleImageLabelingConfidenceThresholdPreference) ??
+            0.5;
+
+    bool googleVisionProducts =
+        prefs.getBool(googleVisionProductsPreference) ?? true;
+    googleVisionProductsConfidenceThreshold =
+        prefs.getDouble(googleVisionProductsConfidenceThresholdPreference) ??
+            0.7;
+
+    bool inceptionV4 = prefs.getBool(inceptionV4Preference) ?? true;
+    inceptionV4PreferenceConfidenceThreshold =
+        prefs.getDouble(inceptionV4PreferenceConfidenceThresholdPreference) ??
+            0.5;
+
     Settings appSettings = Settings(
-        cameraPreset: cameraPreset,
-        hapticFeedback: hapticFeedback,
-        defaultBarcodeSize: defaultBarcodeSize);
+      cameraPreset: cameraPreset,
+      hapticFeedback: hapticFeedback,
+      defaultBarcodeSize: defaultBarcodeSize,
+      googleImageLabeling: googleImageLabeling,
+      googleImageLabelingConfidenceThreshold:
+          googleImageLabelingConfidenceThreshold!,
+      googleVisionProducts: googleVisionProducts,
+      googleVisionProductsConfidenceThreshold:
+          googleVisionProductsConfidenceThreshold!,
+      inceptionV4: inceptionV4,
+      inceptionV4PreferenceConfidenceThreshold:
+          inceptionV4PreferenceConfidenceThreshold!,
+    );
 
     if (barcodeSizeController.text.isEmpty) {
       barcodeSizeController.text = defaultBarcodeSize.toString();
@@ -102,7 +139,7 @@ class _SettingsViewState extends State<SettingsView> {
     return appSettings;
   }
 
-  Widget cameraResolution(snapshot) {
+  Widget cameraResolution(Settings snapshot) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -114,14 +151,14 @@ class _SettingsViewState extends State<SettingsView> {
               setCameraResolution(selectedCameraPreset);
             });
           },
-          value: snapshot.data!.cameraPreset,
+          value: snapshot.cameraPreset,
           items: cameraResolutionPresets,
         ),
       ],
     );
   }
 
-  Widget defaultBarcodeSize(snapshot) {
+  Widget defaultBarcodeSize(Settings snapshot) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -193,22 +230,142 @@ class _SettingsViewState extends State<SettingsView> {
     );
   }
 
-  Widget hapticFeedback(snapshot) {
+  Widget hapticFeedback(Settings snapshot) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const Text('Vibration: '),
         Checkbox(
-            checkColor: Colors.white,
-            fillColor: MaterialStateProperty.resolveWith(getColor),
-            value: snapshot.data!.hapticFeedback,
-            onChanged: (bool? value) {
-              setState(() {
-                vibration = value!;
-                setHapticFeedback(vibration);
-              });
-            }),
+          checkColor: Colors.white,
+          fillColor: MaterialStateProperty.resolveWith(getColor),
+          value: snapshot.hapticFeedback,
+          onChanged: (bool? value) {
+            setState(() {
+              vibration = value!;
+              setHapticFeedback(vibration);
+            });
+          },
+        ),
       ],
+    );
+  }
+
+  Widget models(Settings snapshot) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Text(
+            'Labeling: ',
+            style: Theme.of(context).textTheme.labelMedium,
+          ),
+        ),
+        googleVisionImageLabelingSettings(snapshot),
+        googleVisionProductsSettings(snapshot),
+        inceptionV4Settings(snapshot),
+      ],
+    );
+  }
+
+  Widget googleVisionImageLabelingSettings(Settings snapshot) {
+    return OrangeOutlineContainer(
+      margin: 2.5,
+      padding: 5,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Google Vision: ',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              Checkbox(
+                checkColor: Colors.white,
+                fillColor: MaterialStateProperty.resolveWith(getColor),
+                value: snapshot.googleImageLabeling,
+                onChanged: (bool? value) async {
+                  final prefs = await SharedPreferences.getInstance();
+                  setState(() {
+                    googleImageLabeling = value!;
+                    prefs.setBool(
+                        googleImageLabelingPreference, googleImageLabeling);
+                  });
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget googleVisionProductsSettings(Settings snapshot) {
+    return OrangeOutlineContainer(
+      margin: 2.5,
+      padding: 5,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Google Vision Products: ',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              Checkbox(
+                checkColor: Colors.white,
+                fillColor: MaterialStateProperty.resolveWith(getColor),
+                value: snapshot.googleVisionProducts,
+                onChanged: (bool? value) async {
+                  final prefs = await SharedPreferences.getInstance();
+                  setState(() {
+                    googleVisionProducts = value!;
+                    prefs.setBool(
+                        googleVisionProductsPreference, googleVisionProducts);
+                  });
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget inceptionV4Settings(Settings snapshot) {
+    return OrangeOutlineContainer(
+      margin: 2.5,
+      padding: 5,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'InceptionV4 ',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              Checkbox(
+                checkColor: Colors.white,
+                fillColor: MaterialStateProperty.resolveWith(getColor),
+                value: snapshot.inceptionV4,
+                onChanged: (bool? value) async {
+                  final prefs = await SharedPreferences.getInstance();
+                  setState(() {
+                    inceptionV4 = value!;
+                    prefs.setBool(inceptionV4Preference, inceptionV4);
+                  });
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

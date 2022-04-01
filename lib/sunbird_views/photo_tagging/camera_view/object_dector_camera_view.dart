@@ -2,10 +2,12 @@
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/objects/photo_data.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_image_processing.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import '../../app_settings/app_settings.dart';
 import '../../../main.dart';
-import '../object_detector_image_processing.dart';
+//import '../object_detector_image_processing.dart';
 
 ///This displays the camera view and allows for taking photos.
 class ObjectDetectorCameraView extends StatefulWidget {
@@ -90,8 +92,6 @@ class _ObjectDetectorCameraViewState extends State<ObjectDetectorCameraView> {
               // Get the photo's location.
               final image = await _controller.takePicture();
 
-              //Pass the image to the processing screen :D
-
               PhotoData? result = await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => ObjectDetectorProcessingView(
@@ -99,6 +99,7 @@ class _ObjectDetectorCameraViewState extends State<ObjectDetectorCameraView> {
                   ),
                 ),
               );
+
               Navigator.pop(context, result);
             } catch (e) {
               // If an error occurs, log the error to the console.

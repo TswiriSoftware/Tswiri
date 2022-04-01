@@ -11,13 +11,16 @@ import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/single_barcode_scanner/single_barcode_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/widgets/container_display_widget.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_image_processing.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_view.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/dark_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
+
+import '../../isar_database/container_photo_thumbnail/container_photo_thumbnail.dart';
+import 'objects/photo_data.dart';
 
 class AddContainerView extends StatefulWidget {
   const AddContainerView({Key? key, this.barcodeUID}) : super(key: key);
@@ -284,6 +287,7 @@ class _AddContainerViewState extends State<AddContainerView> {
         }
 
         List<ContainerPhoto> newPhotos = [];
+        List<ContainerPhotoThumbnail> newPhotosThumbnails = [];
         List<PhotoTag> newPhotoTags = [];
 
         //Photo Data.
@@ -296,24 +300,60 @@ class _AddContainerViewState extends State<AddContainerView> {
             //Add photo to list.
             newPhotos.add(containerPhoto);
 
-            for (String mlTag in photo.photoTags) {
-              int? mlTagID = isarDatabase!.mlTags
-                  .filter()
-                  .tagMatches(mlTag)
-                  .findFirstSync()
-                  ?.id;
+            ContainerPhotoThumbnail newThumbnail = ContainerPhotoThumbnail()
+              ..photoPath = photo.photoPath
+              ..thumbnailPhotoPath = photo.thumbnailPhotoPath;
 
-              if (mlTagID != null) {
+            newPhotosThumbnails.add(newThumbnail);
+
+            for (DetectedObject detectedObject in photo.photoObjects) {
+              List<Label> labels = detectedObject.getLabels();
+
+              for (Label label in labels) {
+                int mlTagID = isarDatabase!.mlTags
+                    .filter()
+                    .tagMatches(label.getText().toLowerCase())
+                    .findFirstSync()!
+                    .id;
+
+                List<double> boundingBox = [
+                  detectedObject.getBoundinBox().left,
+                  detectedObject.getBoundinBox().top,
+                  detectedObject.getBoundinBox().right,
+                  detectedObject.getBoundinBox().bottom
+                ];
+
                 PhotoTag newPhotoTag = PhotoTag()
                   ..photoPath = photo.photoPath
-                  ..tagUID = mlTagID;
+                  ..tagUID = mlTagID
+                  ..boundingBox = boundingBox
+                  ..confidence = label.getConfidence();
+
                 newPhotoTags.add(newPhotoTag);
               }
             }
+
+            for (ImageLabel imageLabel in photo.photoLabels) {
+              int mlTagID = isarDatabase!.mlTags
+                  .filter()
+                  .tagMatches(imageLabel.label.toLowerCase())
+                  .findFirstSync()!
+                  .id;
+
+              PhotoTag newPhotoTag = PhotoTag()
+                ..photoPath = photo.photoPath
+                ..tagUID = mlTagID
+                ..boundingBox = null
+                ..confidence = imageLabel.confidence;
+
+              newPhotoTags.add(newPhotoTag);
+            }
           }
         }
+
         isarDatabase!.writeTxnSync((isar) {
           isar.containerPhotos.putAllSync(newPhotos);
+          isar.containerPhotoThumbnails.putAllSync(newPhotosThumbnails);
           isar.photoTags.putAllSync(newPhotoTags);
         });
 

@@ -18,6 +18,19 @@ Future getCurrentAppSettings() async {
   hapticFeedBack = getHapticFeedback(prefs);
   //Get default getDefaultBarcodeDiagonalLength
   defaultBarcodeDiagonalLength = getDefaultBarcodeDiagonalLength(prefs);
+
+  //Get activated models
+  googleImageLabeling = prefs.getBool(googleImageLabelingPreference) ?? true;
+  googleImageLabelingConfidenceThreshold =
+      prefs.getDouble(googleImageLabelingConfidenceThresholdPreference) ?? 0.5;
+
+  googleVisionProducts = prefs.getBool(googleVisionProductsPreference) ?? true;
+  googleVisionProductsConfidenceThreshold =
+      prefs.getDouble(googleImageLabelingConfidenceThresholdPreference) ?? 0.5;
+
+  inceptionV4 = prefs.getBool(inceptionV4Preference) ?? true;
+  inceptionV4PreferenceConfidenceThreshold =
+      prefs.getDouble(googleImageLabelingConfidenceThresholdPreference) ?? 0.5;
 }
 
 ///Returns the [ResolutionPreset]

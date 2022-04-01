@@ -20,3 +20,14 @@ bool? hapticFeedBack;
 
 //defaultBarcodeDiagonalLengthPreference
 double? defaultBarcodeDiagonalLength;
+
+//ImageLabeling
+bool? googleImageLabeling;
+double? googleImageLabelingConfidenceThreshold;
+
+//Object Labeling
+bool? googleVisionProducts;
+double? googleVisionProductsConfidenceThreshold;
+
+bool? inceptionV4;
+double? inceptionV4PreferenceConfidenceThreshold;
