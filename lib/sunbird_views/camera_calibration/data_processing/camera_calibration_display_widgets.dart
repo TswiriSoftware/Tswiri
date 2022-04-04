@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_size_distance_entry/barcode_size_distance_entry.dart';
-import '../../../globalValues/global_colours.dart';
 
 class CameraCalibrationDisplayWidget extends StatelessWidget {
   const CameraCalibrationDisplayWidget({Key? key, required this.dataObject})
