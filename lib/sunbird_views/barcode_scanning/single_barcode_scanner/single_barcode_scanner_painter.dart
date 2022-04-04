@@ -2,8 +2,9 @@ import 'dart:ui';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/barcodeCalculations/calculate_barcode_positional_data.dart';
-import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
+import 'package:flutter_google_ml_kit/functions/barcode_calculations/calculate_barcode_positional_data.dart';
+import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
+
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 

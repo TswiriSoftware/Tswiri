@@ -1,7 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/paintFunctions/simple_paint.dart';
+
+import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
 import 'package:flutter_google_ml_kit/objects/display_point.dart';
 
 class BarcodePositionVisualizerPainter extends CustomPainter {
