@@ -23,13 +23,13 @@ class Settings {
 
   ///googleImageLabeling and confidence
   bool googleImageLabeling;
-  double googleImageLabelingConfidenceThreshold;
+  int googleImageLabelingConfidenceThreshold;
 
   ///googleVisionProducts and confidence
   bool googleVisionProducts;
-  double googleVisionProductsConfidenceThreshold;
+  int googleVisionProductsConfidenceThreshold;
 
   ///inceptionV4 and confidence
   bool inceptionV4;
-  double inceptionV4PreferenceConfidenceThreshold;
+  int inceptionV4PreferenceConfidenceThreshold;
 }

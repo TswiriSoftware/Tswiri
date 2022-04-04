@@ -114,26 +114,21 @@ class _ObjectDetectorProcessingView
     String fileExtention = imageFile.path.split('.').last;
     String fileName = '${DateTime.now().millisecondsSinceEpoch}';
 
-    var image = img.decodeJpg(imageFile.readAsBytesSync());
-    var thumbnail = img.copyResize(image!, width: 120);
-
     //Get the Storage Path if it does not exist create it.
     String storagePath = await getStorageDirectory();
-    if (!await Directory('$storagePath/sunbird/photos').exists()) {
-      Directory('$storagePath/sunbird/photos').create();
-    }
-    if (!await Directory('$storagePath/sunbird/thumbnails').exists()) {
-      Directory('$storagePath/sunbird/thumbnails').create();
+    if (!await Directory('$storagePath/sunbird').exists()) {
+      Directory('$storagePath/sunbird').create();
     }
 
     //Create the photo file path.
-    String photoFilePath =
-        '$storagePath/sunbird/photos/$fileName.' + fileExtention;
+    String photoFilePath = '$storagePath/sunbird/$fileName.' + fileExtention;
 
     String thumbnailPhotoPath =
-        '$storagePath/sunbird/thumbnails/$fileName.' + fileExtention;
+        '$storagePath/sunbird/${fileName}_thumbnail.' + fileExtention;
 
-    //log(photoFilePath);
+    //Create Thumbnail
+    var image = img.decodeJpg(imageFile.readAsBytesSync());
+    var thumbnail = img.copyResize(image!, width: 120);
 
     File(thumbnailPhotoPath).writeAsBytesSync(img.encodePng(thumbnail));
     await imageFile.copy(photoFilePath);
@@ -146,20 +141,21 @@ class _ObjectDetectorProcessingView
     List<ImageLabel> imageLabels = [];
 
     //Label image if it is enabled.
-    if (googleImageLabeling!) {
-      imageLabels.addAll(await getImageLabels(inputImage));
+    if (googleImageLabeling) {
+      imageLabels.addAll(await getImageLabels(
+          inputImage, googleImageLabelingConfidenceThreshold / 100));
     }
 
     //Google vision products if enabled
-    if (googleVisionProducts!) {
-      detectedObjects.addAll(
-          await getObjectsOnImage(googleVisionProductsModel, 0.7, inputImage));
+    if (googleVisionProducts) {
+      detectedObjects.addAll(await getObjectsOnImage(googleVisionProductsModel,
+          googleVisionProductsConfidenceThreshold / 100, inputImage));
     }
 
     //InceptionV4 products if enabled
-    if (inceptionV4!) {
-      detectedObjects
-          .addAll(await getObjectsOnImage(inceptionV4Model, 0.1, inputImage));
+    if (inceptionV4) {
+      detectedObjects.addAll(await getObjectsOnImage(inceptionV4Model,
+          inceptionV4PreferenceConfidenceThreshold / 100, inputImage));
     }
 
     //Image Processing:
@@ -255,10 +251,11 @@ class _ObjectDetectorProcessingView
     return detectedObjects;
   }
 
-  Future<List<ImageLabel>> getImageLabels(InputImage inputImage) async {
+  Future<List<ImageLabel>> getImageLabels(
+      InputImage inputImage, double confidence) async {
     //Image labeler Config.
     ImageLabeler imageLabeler = GoogleMlKit.vision
-        .imageLabeler(ImageLabelerOptions(confidenceThreshold: 0.4));
+        .imageLabeler(ImageLabelerOptions(confidenceThreshold: confidence));
 
     //Get list of objects.
     List<ImageLabel> detectedLabels =

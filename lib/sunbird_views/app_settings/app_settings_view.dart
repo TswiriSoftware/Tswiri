@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
@@ -18,18 +19,32 @@ class SettingsView extends StatefulWidget {
 
 class _SettingsViewState extends State<SettingsView> {
   late String selectedCameraPreset;
-  late bool vibration;
-  late double getDefaultBarcodeDiagonalLength;
-  late bool googleImageLabeling;
-  late bool googleVisionProducts;
-  late bool inceptionV4;
+  // late bool vibration;
+  // late double getDefaultBarcodeDiagonalLength;
+  // late bool googleImageLabeling;
+  // late bool googleVisionProducts;
+  // late bool inceptionV4;
 
   @override
   void initState() {
+    googleImageLabelingConfidenceThresholdController.text =
+        googleImageLabelingConfidenceThreshold.toString();
+    googleVisionProductsConfidenceThresholdController.text =
+        googleVisionProductsConfidenceThreshold.toString();
+    inceptionV4PreferenceConfidenceThresholdController.text =
+        inceptionV4PreferenceConfidenceThreshold.toString();
     super.initState();
   }
 
   final TextEditingController barcodeSizeController = TextEditingController();
+  final TextEditingController googleImageLabelingConfidenceThresholdController =
+      TextEditingController();
+  final TextEditingController
+      googleVisionProductsConfidenceThresholdController =
+      TextEditingController();
+  final TextEditingController
+      inceptionV4PreferenceConfidenceThresholdController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -46,37 +61,39 @@ class _SettingsViewState extends State<SettingsView> {
           future: getCurrentAppSettingsInView(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return Column(
-                children: [
-                  //Camera resolution
-                  Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.only(bottom: 5, top: 5),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white60, width: 2),
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(5),
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    //Camera resolution
+                    Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(bottom: 5, top: 5),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white60, width: 2),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(5),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            //Camera Resolution.
+                            cameraResolution(snapshot.data!),
+                            const Divider(),
+                            //Default barcode size
+                            defaultBarcodeSize(snapshot.data!),
+                            const Divider(),
+                            //HapticFeedBack.
+                            hapticFeedback(snapshot.data!),
+                            const Divider(),
+                            models(snapshot.data!),
+                          ],
+                        ),
                       ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          //Camera Resolution.
-                          cameraResolution(snapshot.data!),
-                          const Divider(),
-                          //Default barcode size
-                          defaultBarcodeSize(snapshot.data!),
-                          const Divider(),
-                          //HapticFeedBack.
-                          hapticFeedback(snapshot.data!),
-                          const Divider(),
-                          models(snapshot.data!),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               );
             } else {
               return const CircularProgressIndicator();
@@ -100,19 +117,16 @@ class _SettingsViewState extends State<SettingsView> {
     bool googleImageLabeling =
         prefs.getBool(googleImageLabelingPreference) ?? true;
     googleImageLabelingConfidenceThreshold =
-        prefs.getDouble(googleImageLabelingConfidenceThresholdPreference) ??
-            0.5;
+        prefs.getInt(googleImageLabelingConfidenceThresholdPreference) ?? 50;
 
     bool googleVisionProducts =
         prefs.getBool(googleVisionProductsPreference) ?? true;
     googleVisionProductsConfidenceThreshold =
-        prefs.getDouble(googleVisionProductsConfidenceThresholdPreference) ??
-            0.7;
+        prefs.getInt(googleVisionProductsConfidenceThresholdPreference) ?? 50;
 
     bool inceptionV4 = prefs.getBool(inceptionV4Preference) ?? true;
     inceptionV4PreferenceConfidenceThreshold =
-        prefs.getDouble(inceptionV4PreferenceConfidenceThresholdPreference) ??
-            0.5;
+        prefs.getInt(inceptionV4PreferenceConfidenceThresholdPreference) ?? 50;
 
     Settings appSettings = Settings(
       cameraPreset: cameraPreset,
@@ -120,13 +134,13 @@ class _SettingsViewState extends State<SettingsView> {
       defaultBarcodeSize: defaultBarcodeSize,
       googleImageLabeling: googleImageLabeling,
       googleImageLabelingConfidenceThreshold:
-          googleImageLabelingConfidenceThreshold!,
+          googleImageLabelingConfidenceThreshold,
       googleVisionProducts: googleVisionProducts,
       googleVisionProductsConfidenceThreshold:
-          googleVisionProductsConfidenceThreshold!,
+          googleVisionProductsConfidenceThreshold,
       inceptionV4: inceptionV4,
       inceptionV4PreferenceConfidenceThreshold:
-          inceptionV4PreferenceConfidenceThreshold!,
+          inceptionV4PreferenceConfidenceThreshold,
     );
 
     if (barcodeSizeController.text.isEmpty) {
@@ -238,8 +252,8 @@ class _SettingsViewState extends State<SettingsView> {
           value: snapshot.hapticFeedback,
           onChanged: (bool? value) {
             setState(() {
-              vibration = value!;
-              setHapticFeedback(vibration);
+              hapticFeedBack = value!;
+              setHapticFeedback(hapticFeedBack);
             });
           },
         ),
@@ -294,6 +308,35 @@ class _SettingsViewState extends State<SettingsView> {
               ),
             ],
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Google Vision Confidnce: ',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.15,
+                child: TextFormField(
+                  controller: googleImageLabelingConfidenceThresholdController,
+                  onFieldSubmitted: (value) async {
+                    final prefs = await SharedPreferences.getInstance();
+                    googleImageLabelingConfidenceThreshold = int.parse(value);
+                    prefs.setInt(
+                        googleImageLabelingConfidenceThresholdPreference,
+                        googleImageLabelingConfidenceThreshold);
+                  },
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: const InputDecoration(
+                    prefix: Text('0.'),
+                    border: UnderlineInputBorder(),
+                  ),
+                ),
+              )
+            ],
+          ),
         ],
       ),
     );
@@ -328,6 +371,35 @@ class _SettingsViewState extends State<SettingsView> {
               ),
             ],
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Google Vision Products Confidnce: ',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.15,
+                child: TextFormField(
+                  controller: googleVisionProductsConfidenceThresholdController,
+                  onFieldSubmitted: (value) async {
+                    final prefs = await SharedPreferences.getInstance();
+                    googleVisionProductsConfidenceThreshold = int.parse(value);
+                    prefs.setInt(
+                        googleVisionProductsConfidenceThresholdPreference,
+                        googleVisionProductsConfidenceThreshold);
+                  },
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: const InputDecoration(
+                    prefix: Text('0.'),
+                    border: UnderlineInputBorder(),
+                  ),
+                ),
+              )
+            ],
+          ),
         ],
       ),
     );
@@ -359,6 +431,36 @@ class _SettingsViewState extends State<SettingsView> {
                   });
                 },
               ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Google Vision Products Confidnce: ',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.15,
+                child: TextFormField(
+                  controller:
+                      inceptionV4PreferenceConfidenceThresholdController,
+                  onFieldSubmitted: (value) async {
+                    final prefs = await SharedPreferences.getInstance();
+                    inceptionV4PreferenceConfidenceThreshold = int.parse(value);
+                    prefs.setInt(
+                        inceptionV4PreferenceConfidenceThresholdPreference,
+                        inceptionV4PreferenceConfidenceThreshold);
+                  },
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: const InputDecoration(
+                    prefix: Text('0.'),
+                    border: UnderlineInputBorder(),
+                  ),
+                ),
+              )
             ],
           ),
         ],

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
@@ -88,6 +90,9 @@ class _ContainerGridViewState extends State<ContainerGridView> {
                                         .parentContainerUIDMatches(
                                             containerEntry.containerUID)
                                         .findAllSync();
+
+                                    log(existingMarkers.toString());
+
                                     //isarDatabase!.markers.filter().cont
                                   }
                                 },

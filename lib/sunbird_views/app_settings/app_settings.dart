@@ -16,18 +16,18 @@ List<DropdownMenuItem<String>> cameraResolutionPresets = [
 ];
 
 //Haptic feedback in camera navigation.
-bool? hapticFeedBack;
+bool hapticFeedBack = true;
 
 //defaultBarcodeDiagonalLengthPreference
 double? defaultBarcodeDiagonalLength;
 
 //ImageLabeling
-bool? googleImageLabeling;
-double? googleImageLabelingConfidenceThreshold;
+bool googleImageLabeling = true;
+int googleImageLabelingConfidenceThreshold = 50;
 
 //Object Labeling
-bool? googleVisionProducts;
-double? googleVisionProductsConfidenceThreshold;
+bool googleVisionProducts = true;
+int googleVisionProductsConfidenceThreshold = 50;
 
-bool? inceptionV4;
-double? inceptionV4PreferenceConfidenceThreshold;
+bool inceptionV4 = true;
+int inceptionV4PreferenceConfidenceThreshold = 50;

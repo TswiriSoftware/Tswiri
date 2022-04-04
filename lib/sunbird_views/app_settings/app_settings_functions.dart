@@ -22,15 +22,15 @@ Future getCurrentAppSettings() async {
   //Get activated models
   googleImageLabeling = prefs.getBool(googleImageLabelingPreference) ?? true;
   googleImageLabelingConfidenceThreshold =
-      prefs.getDouble(googleImageLabelingConfidenceThresholdPreference) ?? 0.5;
+      prefs.getInt(googleImageLabelingConfidenceThresholdPreference) ?? 50;
 
   googleVisionProducts = prefs.getBool(googleVisionProductsPreference) ?? true;
   googleVisionProductsConfidenceThreshold =
-      prefs.getDouble(googleImageLabelingConfidenceThresholdPreference) ?? 0.5;
+      prefs.getInt(googleImageLabelingConfidenceThresholdPreference) ?? 50;
 
   inceptionV4 = prefs.getBool(inceptionV4Preference) ?? true;
   inceptionV4PreferenceConfidenceThreshold =
-      prefs.getDouble(googleImageLabelingConfidenceThresholdPreference) ?? 0.5;
+      prefs.getInt(googleImageLabelingConfidenceThresholdPreference) ?? 50;
 }
 
 ///Returns the [ResolutionPreset]
@@ -83,7 +83,7 @@ Future setHapticFeedback(bool vibration) async {
 ///Sets the Camera Resolution in shared Prefs.
 bool getHapticFeedback(SharedPreferences prefs) {
   hapticFeedBack = (prefs.getBool(hapticFeedBackPreference) ?? true);
-  return hapticFeedBack!;
+  return hapticFeedBack;
 }
 
 Color getColor(Set<MaterialState> states) {

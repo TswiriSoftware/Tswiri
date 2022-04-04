@@ -42,6 +42,7 @@ class _ObjectDetectorCameraViewState extends State<ObjectDetectorCameraView> {
     _controller = CameraController(
       cameras.first,
       cameraResolution ?? ResolutionPreset.high,
+      enableAudio: false,
     );
 
     // Next, initialize the controller. This returns a Future.
