@@ -158,14 +158,15 @@ class _ContainerChildrenPositionEditState
         InkWell(
           onTap: () async {
             //View map of children.
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    BarcodePositionScannerDataVisualizationView(
-                        parentContainerUID: widget.currentContainerUID),
-              ),
-            );
+            // await Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) =>
+            //         BarcodePositionScannerDataVisualizationView(
+            //             parentContainerUID: widget.currentContainerUID,
+            //             barcodesToScan: ,),
+            //   ),
+            // );
           },
           child: OrangeOutlineContainer(
             child: Text(

@@ -61,8 +61,6 @@ class _ContainerMarkerEditWidgetState extends State<ContainerMarkerEditWidget> {
 
   Widget _markerListView() {
     return Builder(builder: (context) {
-      //TODO: check if container is the origin to its children.
-
       //ContainerEntry.
       ContainerEntry containerEntry =
           getContainerEntry(containerUID: widget.currentContainerUID);

@@ -6,6 +6,7 @@ class PhotoData {
     required this.thumbnailPhotoPath,
     required this.photoObjects,
     required this.photoLabels,
+    required this.recognisedTexts,
   });
 
   ///Photo Path
@@ -19,4 +20,7 @@ class PhotoData {
 
   ///Photo labels [DetectedObject]
   final List<DetectedObject> photoObjects;
+
+  ///Photo Text Labels [RecognisedText]
+  final RecognisedText recognisedTexts;
 }

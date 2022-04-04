@@ -128,7 +128,6 @@ List<RealInterBarcodeOffset> processRealInterBarcodeData(
         element.offset.distance <= q1Boundry &&
         element.offset.distance >= q3Boundry);
 
-    //TODO: investigate.
     //Loops through all remaining similar interBarcodeOffsets to calculate the average
     for (RealInterBarcodeOffset similarInterBarcodeOffset
         in similarInterBarcodeOffsets) {

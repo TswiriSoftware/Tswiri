@@ -74,7 +74,6 @@ List<RealBarcodePosition> calculateRealBarcodePositions(
       .findFirstSync()!;
 
   if (parentContainer.barcodeUID != null) {
-    //TODO: implement check for null values.
     origin = markers
         .where((element) => element.barcodeUID == parentContainer.barcodeUID)
         .first;

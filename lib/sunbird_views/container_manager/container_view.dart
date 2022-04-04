@@ -10,7 +10,7 @@ import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dar
 import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/widgets/container_display_widget.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/container_grid.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_view.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
@@ -204,6 +204,8 @@ class _ContainerViewState extends State<ContainerView> {
               int mlTagID = isarDatabase!.mlTags
                   .filter()
                   .tagMatches(label.getText().toLowerCase())
+                  .and()
+                  .tagTypeEqualTo(mlTagType.objectLabel)
                   .findFirstSync()!
                   .id;
 
@@ -228,6 +230,8 @@ class _ContainerViewState extends State<ContainerView> {
             int mlTagID = isarDatabase!.mlTags
                 .filter()
                 .tagMatches(imageLabel.label.toLowerCase())
+                .and()
+                .tagTypeEqualTo(mlTagType.imageLabel)
                 .findFirstSync()!
                 .id;
 
@@ -238,6 +242,26 @@ class _ContainerViewState extends State<ContainerView> {
               ..confidence = imageLabel.confidence;
 
             newPhotoTags.add(newPhotoTag);
+          }
+
+          for (TextBlock textBlock in photoData.recognisedTexts.blocks) {
+            if (textBlock.text.length >= 4) {
+              int mlTagID = isarDatabase!.mlTags
+                  .filter()
+                  .tagMatches(textBlock.text.toLowerCase())
+                  .and()
+                  .tagTypeEqualTo(mlTagType.text)
+                  .findFirstSync()!
+                  .id;
+
+              PhotoTag newPhotoTag = PhotoTag()
+                ..photoPath = photoData.photoPath
+                ..tagUID = mlTagID
+                ..boundingBox = null
+                ..confidence = 1;
+
+              newPhotoTags.add(newPhotoTag);
+            }
           }
 
           isarDatabase!.writeTxnSync((isar) {
@@ -653,109 +677,177 @@ class _ContainerViewState extends State<ContainerView> {
       child: CustomOutlineContainer(
         margin: 2.5,
         padding: 10,
-        child: Builder(
-          builder: (context) {
-            List<ContainerRelationship> childrenRelationships = isarDatabase!
-                .containerRelationships
-                .filter()
-                .parentUIDMatches(containerEntry!.containerUID)
-                .findAllSync();
-
-            List<ContainerEntry> children = [];
-
-            if (childrenRelationships.isNotEmpty) {
-              children = isarDatabase!.containerEntrys
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Contains', style: Theme.of(context).textTheme.labelSmall),
+                gridEditor(),
+              ],
+            ),
+            Builder(builder: (context) {
+              List<ContainerRelationship> childrenRelationships = isarDatabase!
+                  .containerRelationships
                   .filter()
-                  .repeat(
-                      childrenRelationships,
-                      (q, ContainerRelationship element) =>
-                          q.containerUIDMatches(element.containerUID))
+                  .parentUIDMatches(containerEntry!.containerUID)
                   .findAllSync();
-            }
 
-            if (isShowingChildren) {
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Contains',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            isShowingChildren = !isShowingChildren;
-                            setState(() {});
-                          },
-                          child: CustomOutlineContainer(
-                            padding: 5,
-                            width: 80,
-                            height: 30,
-                            child: Center(
-                              child: Text(
-                                'Hide',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ),
-                            outlineColor: containerTypeColor!,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Column(
-                    children:
-                        children.map((e) => containerDisplayWidget(e)).toList(),
-                  ),
-                ],
+              List<ContainerEntry> children = [];
+
+              if (childrenRelationships.isNotEmpty) {
+                children = isarDatabase!.containerEntrys
+                    .filter()
+                    .repeat(
+                        childrenRelationships,
+                        (q, ContainerRelationship element) =>
+                            q.containerUIDMatches(element.containerUID))
+                    .findAllSync();
+              }
+
+              return Text(
+                'Number of Containers: ' + children.length.toString(),
+                style: Theme.of(context).textTheme.bodyLarge,
               );
-            } else {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Contains',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          Text(
-                            childrenRelationships.length.toString(),
-                            style: Theme.of(context).textTheme.labelMedium,
-                          ),
-                        ],
-                      ),
-                      InkWell(
-                        onTap: () {
-                          isShowingChildren = !isShowingChildren;
-                          setState(() {});
-                        },
-                        child: CustomOutlineContainer(
-                          padding: 5,
-                          width: 80,
-                          height: 30,
-                          child: Center(
-                            child: Text(
-                              'View',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                          ),
-                          outlineColor: containerTypeColor!,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              );
-            }
-          },
+            })
+          ],
+        ),
+
+        // Builder(
+        //   builder: (context) {
+
+        // List<ContainerRelationship> childrenRelationships = isarDatabase!
+        //     .containerRelationships
+        //     .filter()
+        //     .parentUIDMatches(containerEntry!.containerUID)
+        //     .findAllSync();
+
+        // List<ContainerEntry> children = [];
+
+        // if (childrenRelationships.isNotEmpty) {
+        //   children = isarDatabase!.containerEntrys
+        //       .filter()
+        //       .repeat(
+        //           childrenRelationships,
+        //           (q, ContainerRelationship element) =>
+        //               q.containerUIDMatches(element.containerUID))
+        //       .findAllSync();
+        // }
+
+        //     if (isShowingChildren) {
+        //       return Column(
+        //         children: [
+        //           Padding(
+        //             padding: const EdgeInsets.symmetric(vertical: 0),
+        //             child: Row(
+        //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //               children: [
+        //                 Text(
+        //                   'Contains',
+        //                   style: Theme.of(context).textTheme.bodySmall,
+        //                 ),
+        //                 gridEditor(),
+        //                 InkWell(
+        //                   onTap: () {
+        //                     isShowingChildren = !isShowingChildren;
+        //                     setState(() {});
+        //                   },
+        //                   child: CustomOutlineContainer(
+        //                     padding: 5,
+        //                     width: 80,
+        //                     height: 30,
+        //                     child: Center(
+        //                       child: Text(
+        //                         'Hide',
+        //                         style: Theme.of(context).textTheme.bodyMedium,
+        //                       ),
+        //                     ),
+        //                     outlineColor: containerTypeColor!,
+        //                   ),
+        //                 ),
+        //               ],
+        //             ),
+        //           ),
+        //           Column(
+        //             children:
+        //                 children.map((e) => containerDisplayWidget(e)).toList(),
+        //           ),
+        //         ],
+        //       );
+        //     } else {
+        //       return Column(
+        //         crossAxisAlignment: CrossAxisAlignment.start,
+        //         children: [
+        //           Row(
+        //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //             children: [
+        //               Column(
+        //                 crossAxisAlignment: CrossAxisAlignment.start,
+        //                 children: [
+        //                   Text(
+        //                     'Contains',
+        //                     style: Theme.of(context).textTheme.bodySmall,
+        //                   ),
+        //                   Text(
+        //                     childrenRelationships.length.toString(),
+        //                     style: Theme.of(context).textTheme.labelMedium,
+        //                   ),
+        //                 ],
+        //               ),
+        //               gridEditor(),
+        //               InkWell(
+        //                 onTap: () {
+        //                   isShowingChildren = !isShowingChildren;
+        //                   setState(() {});
+        //                 },
+        //                 child: CustomOutlineContainer(
+        //                   padding: 5,
+        //                   width: 80,
+        //                   height: 30,
+        //                   child: Center(
+        //                     child: Text(
+        //                       'View',
+        //                       style: Theme.of(context).textTheme.bodyMedium,
+        //                     ),
+        //                   ),
+        //                   outlineColor: containerTypeColor!,
+        //                 ),
+        //               ),
+        //             ],
+        //           ),
+        //         ],
+        //       );
+        //     }
+        //   },
+        // ),
+
+        outlineColor: containerTypeColor!,
+      ),
+    );
+  }
+
+  Widget gridEditor() {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ContainerGridView(
+                containerEntry: containerEntry!,
+                containerTypeColor: containerTypeColor!),
+          ),
+        );
+      },
+      child: CustomOutlineContainer(
+        padding: 5,
+        width: 80,
+        height: 30,
+        child: Center(
+          child: Text(
+            'Edit',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
         ),
         outlineColor: containerTypeColor!,
       ),

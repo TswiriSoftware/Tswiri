@@ -26,10 +26,7 @@ class _CreateNewContainerViewState extends State<CreateNewContainerView> {
         ),
         actions: [
           IconButton(
-              onPressed: () {
-                //TODO: Info Dialog => Single Create VS batch Create.
-              },
-              icon: const Icon(Icons.info_outline_rounded))
+              onPressed: () {}, icon: const Icon(Icons.info_outline_rounded))
         ],
         centerTitle: true,
         elevation: 0,

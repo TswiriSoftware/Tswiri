@@ -68,7 +68,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
             //GenerateBarcodes.
             generateBarcodesButton(),
             //Debugging delete all.
-            deleteAllButton(),
+            //deleteAllButton(),
             //Add pre generated barcodes.
             addPreGeneratedBarcodes(),
             //Generatiom history.
@@ -169,32 +169,36 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
         );
         getHistory();
       },
-      child: const OrangeOutlineContainer(
-        width: 100,
-        child: Icon(
-          Icons.print_rounded,
+      child: OrangeOutlineContainer(
+        width: 200,
+        height: 50,
+        child: Center(
+          child: Text(
+            'Generate Barcodes',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
         ),
       ),
     );
   }
 
-  Widget deleteAllButton() {
-    return InkWell(
-      onTap: () {
-        isarDatabase!.writeTxnSync((isar) {
-          isar.barcodeGenerationEntrys.where().deleteAllSync();
-          isar.barcodePropertys.where().deleteAllSync();
-          getHistory();
-        });
-      },
-      child: const OrangeOutlineContainer(
-        width: 100,
-        child: Icon(
-          Icons.delete_forever,
-        ),
-      ),
-    );
-  }
+  // Widget deleteAllButton() {
+  //   return InkWell(
+  //     onTap: () {
+  //       isarDatabase!.writeTxnSync((isar) {
+  //         isar.barcodeGenerationEntrys.where().deleteAllSync();
+  //         isar.barcodePropertys.where().deleteAllSync();
+  //         getHistory();
+  //       });
+  //     },
+  //     child: const OrangeOutlineContainer(
+  //       width: 100,
+  //       child: Icon(
+  //         Icons.delete_forever,
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget addPreGeneratedBarcodes() {
     return InkWell(
@@ -208,10 +212,14 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
           createBarcodes(scannedBarcodes);
         }
       },
-      child: const OrangeOutlineContainer(
-        width: 100,
-        child: Icon(
-          Icons.add,
+      child: OrangeOutlineContainer(
+        width: 200,
+        height: 30,
+        child: Center(
+          child: Text(
+            'Add other Barcodes',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
         ),
       ),
     );

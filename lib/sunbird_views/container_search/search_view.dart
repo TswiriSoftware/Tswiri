@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -11,7 +10,8 @@ import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/search/objects/container_search_builder.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/navigator_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_search/objects/container_search_builder.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
@@ -565,10 +565,9 @@ class _SearchViewState extends State<SearchView> {
     );
   }
 
-  Widget containerActions({
-    required ContainerSearchBuilder element,
-    required Color containerColor,
-  }) {
+  Widget containerActions(
+      {required ContainerSearchBuilder element,
+      required Color containerColor}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -598,6 +597,13 @@ class _SearchViewState extends State<SearchView> {
         InkWell(
           onTap: () {
             //TODO: implement navigator. @049er
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    NavigatorView(containerEntry: element.containerEntry),
+              ),
+            );
           },
           child: CustomOutlineContainer(
             padding: 5,

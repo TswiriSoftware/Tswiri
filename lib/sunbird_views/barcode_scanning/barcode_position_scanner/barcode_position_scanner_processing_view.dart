@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
@@ -18,14 +20,15 @@ class BarcodePositionScannerProcessingView extends StatefulWidget {
     Key? key,
     required this.allRawOnImageBarcodeData,
     required this.parentContainerUID,
-    required this.relevantBarcodes,
+    required this.barcodesToScan,
+    required this.gridMarkers,
   }) : super(key: key);
 
   final List<RawOnImageBarcodeData> allRawOnImageBarcodeData;
 
   final String parentContainerUID;
-  final List<String> relevantBarcodes;
-
+  final List<String> barcodesToScan;
+  final List<String> gridMarkers;
   @override
   _BarcodePositionScannerProcessingViewState createState() =>
       _BarcodePositionScannerProcessingViewState();
@@ -34,8 +37,11 @@ class BarcodePositionScannerProcessingView extends StatefulWidget {
 class _BarcodePositionScannerProcessingViewState
     extends State<BarcodePositionScannerProcessingView> {
   int shelfUID = 1;
+  List<String> relevantBarcodes = [];
   @override
   void initState() {
+    relevantBarcodes.addAll(widget.barcodesToScan);
+    relevantBarcodes.addAll(widget.gridMarkers);
     super.initState();
   }
 
@@ -176,6 +182,8 @@ class _BarcodePositionScannerProcessingViewState
           MaterialPageRoute(
             builder: (context) => BarcodePositionScannerDataVisualizationView(
               parentContainerUID: widget.parentContainerUID,
+              barcodesToScan: widget.barcodesToScan,
+              gridMarkers: widget.gridMarkers,
             ),
           ),
         );
@@ -213,14 +221,14 @@ class _BarcodePositionScannerProcessingViewState
     List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData =
         buildAllOnImageInterBarcodeData(allRawOnImageBarcodeData);
 
-    //3. Remove any non-relevant barcodes.
-    List<RawOnImageInterBarcodeData> allRelevantOnImageInterBarcodeData = [];
-    for (RawOnImageInterBarcodeData item in allOnImageInterBarcodeData) {
-      if (widget.relevantBarcodes.contains(item.startBarcode.displayValue) &&
-          widget.relevantBarcodes.contains(item.endBarcode.displayValue)) {
-        allRelevantOnImageInterBarcodeData.add(item);
-      }
-    }
+    // //3. Remove any non-relevant barcodes.
+    // List<RawOnImageInterBarcodeData> allRelevantOnImageInterBarcodeData = [];
+    // for (RawOnImageInterBarcodeData item in allOnImageInterBarcodeData) {
+    //   if (relevantBarcodes.contains(item.startBarcode.displayValue) &&
+    //       relevantBarcodes.contains(item.endBarcode.displayValue)) {
+    //     allRelevantOnImageInterBarcodeData.add(item);
+    //   }
+    // }
 
     //4.1 Calculates all real interBarcodeOffsets.
     //Get the camera's focal length
@@ -230,7 +238,7 @@ class _BarcodePositionScannerProcessingViewState
     //Check Function for details.
     List<RealInterBarcodeOffset> allRealInterBarcodeOffsets =
         buildAllRealInterBarcodeOffsets(
-      allOnImageInterBarcodeData: allRelevantOnImageInterBarcodeData,
+      allOnImageInterBarcodeData: allOnImageInterBarcodeData,
       database: isarDatabase!,
       focalLength: focalLength,
     );
@@ -262,6 +270,8 @@ class _BarcodePositionScannerProcessingViewState
         ..z = interBarcodeOffset.zOffset;
       interbarcodeOffsetEntries.add(vectorEntry);
     }
+
+    log(interbarcodeOffsetEntries.toString());
 
     isarDatabase!.writeTxnSync((isar) => isar.realInterBarcodeVectorEntrys
         .putAllSync(interbarcodeOffsetEntries));

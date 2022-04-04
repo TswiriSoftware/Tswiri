@@ -24,8 +24,8 @@ class RawOnImageInterBarcodeData {
 
   ///Check if startBarcode displayValue is less than endBarcode DisplayValue.
   bool checkBarcodes() {
-    return int.parse(startBarcode.displayValue!) <
-        int.parse(endBarcode.displayValue!);
+    return int.parse(startBarcode.displayValue!.split('_').first) <
+        int.parse(endBarcode.displayValue!.split('_').first);
   }
 
   ///Gets the start barcode's diagonal length in px.

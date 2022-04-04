@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/objects/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
@@ -54,8 +56,8 @@ class _BarcodePositionScannerViewState
     barcodesToScan = widget.barcodesToScan;
     gridMarkers = widget.gridMarkers;
 
-    //log('barcodesToScan: ' + barcodesToScan.toString());
-    //log('gridMarkers: ' + gridMarkers.toString());
+    log('barcodesToScan: ' + barcodesToScan.toString());
+    log('gridMarkers: ' + gridMarkers.toString());
     super.initState();
   }
 
@@ -71,7 +73,6 @@ class _BarcodePositionScannerViewState
         floatingActionButton: FloatingActionButton(
           heroTag: null,
           onPressed: () {
-            List<String> allRelevantBarcodes = barcodesToScan + gridMarkers;
             Navigator.pop(context);
             Navigator.push(
               context,
@@ -79,7 +80,8 @@ class _BarcodePositionScannerViewState
                 builder: (context) => BarcodePositionScannerProcessingView(
                   allRawOnImageBarcodeData: allRawOnImageBarcodeData,
                   parentContainerUID: widget.parentContainerUID,
-                  relevantBarcodes: allRelevantBarcodes,
+                  gridMarkers: gridMarkers,
+                  barcodesToScan: barcodesToScan,
                 ),
               ),
             );

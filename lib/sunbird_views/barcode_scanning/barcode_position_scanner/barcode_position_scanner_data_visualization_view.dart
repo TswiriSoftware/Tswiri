@@ -12,9 +12,13 @@ class BarcodePositionScannerDataVisualizationView extends StatefulWidget {
   const BarcodePositionScannerDataVisualizationView({
     Key? key,
     required this.parentContainerUID,
+    required this.barcodesToScan,
+    required this.gridMarkers,
   }) : super(key: key);
 
   final String parentContainerUID;
+  final List<String> barcodesToScan;
+  final List<String> gridMarkers;
 
   @override
   _BarcodePositionScannerDataVisualizationViewState createState() =>
@@ -167,19 +171,21 @@ class _BarcodePositionScannerDataVisualizationViewState
 
     for (var i = 0; i < realBarcodePositions.length; i++) {
       RealBarcodePosition data = realBarcodePositions.elementAt(i);
-      double xDistance = data.offset!.dx;
-      double yDistance = data.offset!.dy;
-      if (xDistance < sX) {
-        sX = xDistance;
-      }
-      if (xDistance > bX) {
-        bX = xDistance;
-      }
-      if (yDistance < sY) {
-        sY = yDistance;
-      }
-      if (yDistance > bY) {
-        bY = yDistance;
+      if (data.offset != null) {
+        double xDistance = data.offset!.dx;
+        double yDistance = data.offset!.dy;
+        if (xDistance < sX) {
+          sX = xDistance;
+        }
+        if (xDistance > bX) {
+          bX = xDistance;
+        }
+        if (yDistance < sY) {
+          sY = yDistance;
+        }
+        if (yDistance > bY) {
+          bY = yDistance;
+        }
       }
     }
 

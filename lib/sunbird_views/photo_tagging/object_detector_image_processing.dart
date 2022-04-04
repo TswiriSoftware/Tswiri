@@ -185,14 +185,13 @@ class _ObjectDetectorProcessingView
       }
     }
 
-    //If new mlTags are found they will be added to the database.
-    createNewMlTags(photoTags);
-
     photoData = PhotoData(
-        thumbnailPhotoPath: thumbnailPhotoPath,
-        photoPath: photoFilePath,
-        photoObjects: detectedObjects,
-        photoLabels: imageLabels);
+      thumbnailPhotoPath: thumbnailPhotoPath,
+      photoPath: photoFilePath,
+      photoObjects: detectedObjects,
+      photoLabels: imageLabels,
+      recognisedTexts: recognisedText,
+    );
 
     //Decode Image for properties
     var decodedImage = await decodeImageFromList(imageFile.readAsBytesSync());
@@ -209,20 +208,69 @@ class _ObjectDetectorProcessingView
         imageRotation: InputImageRotation.Rotation_90deg,
         size: imageSize);
 
+    //If new mlTags are found they will be added to the database.
+    createNewMlTags(detectedObjects, imageLabels, recognisedText);
+
     return processedResult;
   }
 
-  void createNewMlTags(List<String> photoTags) {
+  void createNewMlTags(List<DetectedObject> detectedObjects,
+      List<ImageLabel> imageLabels, RecognisedText recognisedTexts) {
     List<MlTag> newMlTags = [];
 
-    for (String mlTag in photoTags) {
-      if (isarDatabase!.mlTags.filter().tagMatches(mlTag).findFirstSync() ==
-          null) {
-        //Create new ml tag
-        MlTag newMlTag = MlTag()..tag = mlTag.toLowerCase();
-        newMlTags.add(newMlTag);
+    for (DetectedObject detectedObject in detectedObjects) {
+      for (Label label in detectedObject.getLabels()) {
+        MlTag mlTag = MlTag()
+          ..tag = label.getText().toLowerCase()
+          ..tagType = mlTagType.objectLabel;
+
+        if (isarDatabase!.mlTags
+                .where()
+                .filter()
+                .tagMatches(mlTag.tag)
+                .and()
+                .tagTypeEqualTo(mlTagType.objectLabel)
+                .findFirstSync() ==
+            null) {
+          newMlTags.add(mlTag);
+        }
       }
     }
+
+    for (ImageLabel imageLabel in imageLabels) {
+      MlTag mlTag = MlTag()
+        ..tag = imageLabel.label.toLowerCase()
+        ..tagType = mlTagType.imageLabel;
+
+      if (isarDatabase!.mlTags
+              .where()
+              .filter()
+              .tagMatches(mlTag.tag)
+              .and()
+              .tagTypeEqualTo(mlTagType.imageLabel)
+              .findFirstSync() ==
+          null) {
+        newMlTags.add(mlTag);
+      }
+    }
+
+    for (TextBlock recognisedText in recognisedTexts.blocks) {
+      MlTag mlTag = MlTag()
+        ..tag = recognisedText.text.toLowerCase()
+        ..tagType = mlTagType.text;
+
+      if (isarDatabase!.mlTags
+              .where()
+              .filter()
+              .tagMatches(mlTag.tag)
+              .and()
+              .tagTypeEqualTo(mlTagType.text)
+              .findFirstSync() ==
+          null) {
+        newMlTags.add(mlTag);
+      }
+    }
+
     //Write new ml tags.
     isarDatabase!.writeTxnSync(
       (isar) => isar.mlTags.putAllSync(newMlTags),

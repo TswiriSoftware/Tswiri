@@ -44,8 +44,13 @@ List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
 
     //4. Check offset direction.
     //Flips the direction if necessary
-    if (!(int.parse(interBarcodeDataInstance.startBarcode.displayValue!) <
-        int.parse(interBarcodeDataInstance.endBarcode.displayValue!))) {
+    int startBarcode = int.parse(
+        interBarcodeDataInstance.startBarcode.displayValue!.split('_').first);
+
+    int endBarcode = int.parse(
+        interBarcodeDataInstance.endBarcode.displayValue!.split('_').first);
+
+    if (!(startBarcode < endBarcode)) {
       interBarcodeOffset = -interBarcodeOffset;
     }
 

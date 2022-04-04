@@ -18,8 +18,6 @@ class _TagManagerViewState extends State<TagManagerView> {
 
   bool showFilter = false;
 
-  //TODO: implement swipe between normal tags and mlTags @049er.
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
