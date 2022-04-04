@@ -14,17 +14,17 @@ class CameraCalibrationDisplayWidget extends StatelessWidget {
       child: Container(
         decoration: const BoxDecoration(
             border: Border(
-                bottom: BorderSide(color: deepSpaceSparkle),
-                top: BorderSide(color: deepSpaceSparkle),
-                left: BorderSide(color: deepSpaceSparkle),
-                right: BorderSide(color: deepSpaceSparkle))),
+                bottom: BorderSide(color: Colors.deepOrange),
+                top: BorderSide(color: Colors.deepOrange),
+                left: BorderSide(color: Colors.deepOrange),
+                right: BorderSide(color: Colors.deepOrange))),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
               decoration: const BoxDecoration(
-                  border: Border(right: BorderSide(color: deepSpaceSparkle))),
+                  border: Border(right: BorderSide(color: Colors.deepOrange))),
               child: Padding(
                 padding: const EdgeInsets.only(right: 10, left: 10),
                 child: SizedBox(
@@ -58,12 +58,12 @@ class DisplayDataHeader extends StatelessWidget {
     return Center(
       child: Container(
         decoration: const BoxDecoration(
-            color: deepSpaceSparkle,
+            color: Colors.deepOrange,
             border: Border(
-                bottom: BorderSide(color: deepSpaceSparkle),
-                top: BorderSide(color: deepSpaceSparkle),
-                left: BorderSide(color: deepSpaceSparkle),
-                right: BorderSide(color: deepSpaceSparkle))),
+                bottom: BorderSide(color: Colors.deepOrange),
+                top: BorderSide(color: Colors.deepOrange),
+                left: BorderSide(color: Colors.deepOrange),
+                right: BorderSide(color: Colors.deepOrange))),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,

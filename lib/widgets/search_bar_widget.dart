@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../functions/barcodeTools/hide_keyboard.dart';
+import '../functions/keyboard_functions/hide_keyboard.dart';
 
 ///This is the searchBar widget.
 class SearchBarWidget extends StatelessWidget {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/mathfunctions/round_to_double.dart';
+import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
 
@@ -37,7 +37,7 @@ class RealPositionDisplayWidget extends StatelessWidget {
               height: 28,
               width: (MediaQuery.of(context).size.width * 0.195),
               decoration: BoxDecoration(
-                  color: deepSpaceSparkle[100],
+                  color: Colors.deepOrange[400],
                   shape: BoxShape.rectangle,
                   borderRadius: const BorderRadius.all(Radius.circular(3))),
               child: Container(
@@ -53,7 +53,7 @@ class RealPositionDisplayWidget extends StatelessWidget {
               height: 28,
               width: (MediaQuery.of(context).size.width * 0.195),
               decoration: BoxDecoration(
-                  color: deepSpaceSparkle[100],
+                  color: Colors.deepOrange[400],
                   shape: BoxShape.rectangle,
                   borderRadius: const BorderRadius.all(Radius.circular(3))),
               child: Container(
@@ -69,7 +69,7 @@ class RealPositionDisplayWidget extends StatelessWidget {
               height: 28,
               width: (MediaQuery.of(context).size.width * 0.195),
               decoration: BoxDecoration(
-                  color: deepSpaceSparkle[100],
+                  color: Colors.deepOrange[400],
                   shape: BoxShape.rectangle,
                   borderRadius: const BorderRadius.all(Radius.circular(3))),
               child: Container(
@@ -85,7 +85,7 @@ class RealPositionDisplayWidget extends StatelessWidget {
               height: 28,
               width: (MediaQuery.of(context).size.width * 0.2),
               decoration: BoxDecoration(
-                  color: deepSpaceSparkle[100],
+                  color: Colors.deepOrange[400],
                   shape: BoxShape.rectangle,
                   borderRadius: const BorderRadius.all(Radius.circular(3))),
               child: Container(

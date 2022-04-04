@@ -17,8 +17,6 @@ import 'package:flutter/material.dart';
 import 'sunbird_views/app_settings/app_settings_functions.dart';
 import 'sunbird_views/app_settings/app_settings_view.dart';
 import 'sunbird_views/container_system_debug/container_views/containers_view.dart';
-import 'sunbird_views/photo_tagging/camera_view/object_dector_camera_view.dart';
-import 'sunbird_views/photo_tagging/object_detector_view.dart';
 
 List<CameraDescription> cameras = [];
 
