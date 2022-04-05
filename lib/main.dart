@@ -1,5 +1,7 @@
 import 'package:camera/camera.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_google_ml_kit/firebase_options.dart';
 import 'package:flutter_google_ml_kit/globalValues/isar_dir.dart';
 import 'package:flutter_google_ml_kit/globalValues/routes.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
@@ -9,11 +11,14 @@ import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/camera_ca
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_manager.dart';
 
 import 'package:flutter_google_ml_kit/sunbird_views/container_search/search_view.dart';
+
+import 'package:flutter_google_ml_kit/sunbird_views/firebase_login/login_screen.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/tag_manager/tag_manager_view.dart';
 import 'package:flutter_google_ml_kit/widgets/card_widgets/custom_card_widget.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'sunbird_views/app_settings/app_settings_functions.dart';
 import 'sunbird_views/app_settings/app_settings_view.dart';
 import 'sunbird_views/container_system_debug/container_views/containers_view.dart';
@@ -27,11 +32,18 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  runApp(MaterialApp(
-    title: 'Sunbird',
-    initialRoute: '/',
-    routes: allRoutes,
-    debugShowCheckedModeBanner: false,
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  runApp(ChangeNotifierProvider(
+    create: (context) => ApplicationState(),
+    child: MaterialApp(
+      title: 'Sunbird',
+      initialRoute: '/',
+      routes: allRoutes,
+      debugShowCheckedModeBanner: false,
+    ),
   ));
 
   //Get camera's
@@ -186,6 +198,13 @@ class HomeView extends StatelessWidget {
               featureCompleted: true,
               tileColor: Colors.deepOrange,
             ),
+            // CustomCard(
+            //   'Login',
+            //   LoginView(),
+            //   Icons.login,
+            //   featureCompleted: true,
+            //   tileColor: Colors.deepOrange,
+            // ),
           ],
         ),
       ),

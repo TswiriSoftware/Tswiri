@@ -26,12 +26,12 @@ class MlTagTypeConverter extends TypeConverter<mlTagType, int> {
   const MlTagTypeConverter(); // Converters need to have an empty const constructor
 
   @override
-  mlTagType fromIsar(int relationshipIndex) {
-    return mlTagType.values[relationshipIndex];
+  mlTagType fromIsar(int object) {
+    return mlTagType.values[object];
   }
 
   @override
-  int toIsar(mlTagType relationship) {
-    return relationship.index;
+  int toIsar(mlTagType object) {
+    return object.index;
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -54,6 +55,7 @@ class _SearchViewState extends State<SearchView> {
         children: [
           //SearchBar with filters
 
+          _numberOfResults(),
           _containerListView(),
           _searchBar(),
         ],
@@ -81,6 +83,21 @@ class _SearchViewState extends State<SearchView> {
             _searchField(),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _numberOfResults() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Number Of Results: ' + searchResults.length.toString(),
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ],
       ),
     );
   }
@@ -298,11 +315,14 @@ class _SearchViewState extends State<SearchView> {
         List<ContainerSearchBuilder> containerSearchBuilders = isarDatabase!
             .containerEntrys
             .filter()
-            .nameContains(enteredKeyword, caseSensitive: false)
-            .or()
-            .descriptionContains(enteredKeyword, caseSensitive: false)
-            .or()
-            .containerUIDStartsWith(enteredKeyword)
+            .group((q) => q
+                .nameContains(enteredKeyword, caseSensitive: false)
+                .or()
+                .descriptionContains(enteredKeyword, caseSensitive: false)
+                .or()
+                .containerUIDContains(
+                  enteredKeyword,
+                ))
             .findAllSync()
             .map((e) => ContainerSearchBuilder(containerEntry: e))
             .toList();
@@ -369,6 +389,8 @@ class _SearchViewState extends State<SearchView> {
             .filter()
             .repeat(tags, (q, Tag element) => q.idEqualTo(element.id))
             .findAllSync();
+
+        //Not sure why but need to check if its empty ?
 
         List<ContainerSearchBuilder> containerSearchBuilders = isarDatabase!
             .containerEntrys

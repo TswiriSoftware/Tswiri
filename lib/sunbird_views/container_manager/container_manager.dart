@@ -22,7 +22,7 @@ class ContainerManagerView extends StatefulWidget {
 
 class _ContainerManagerViewState extends State<ContainerManagerView> {
   //String enteredKeyword = '';
-  List<String> filterList = ['area', 'shelf', 'drawer', 'box'];
+  List<String> containerTypeList = ['area', 'shelf', 'drawer', 'box'];
   List<String> containerTypes = [];
 
   bool showFilter = false;
@@ -246,15 +246,13 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
     log(enabled.toString());
     log(searchController.text);
 
-    if (filterList.isNotEmpty) {
+    if (containerTypeList.isNotEmpty) {
       searchResults = isarDatabase!.containerEntrys
           .filter()
-          .group(
-            (q) => q.repeat(
-              filterList,
-              (q, String element) => q.containerTypeMatches(
-                element,
-              ),
+          .repeat(
+            containerTypeList,
+            (q, String element) => q.containerTypeMatches(
+              element,
             ),
           )
           .and()
@@ -300,7 +298,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
                   child: Checkbox(
                     activeColor: containerTypeColor,
                     fillColor: MaterialStateProperty.all(containerTypeColor),
-                    value: filterList.contains(containerType),
+                    value: containerTypeList.contains(containerType),
                     onChanged: (value) {
                       _onSelected(value!, containerType);
                       searchContainers();
@@ -327,11 +325,11 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
   void _onSelected(bool selected, String dataName) {
     if (selected == true) {
       setState(() {
-        filterList.add(dataName);
+        containerTypeList.add(dataName);
       });
     } else {
       setState(() {
-        filterList.remove(dataName);
+        containerTypeList.remove(dataName);
       });
     }
   }
