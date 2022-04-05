@@ -33,8 +33,13 @@ def keystoreProperties = new Properties()
    }
 
 
+
 android {
     compileSdkVersion 31
+    
+    ndkPath = "/home/werner/sdk/ndk/24.0.8215888/"
+
+
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -99,3 +104,5 @@ dependencies {
 
     implementation 'com.google.mlkit:text-recognition:16.0.0-beta1'
 }
+
+android.buildTypes.release.ndk.debugSymbolLevel = 'symbol_table'
