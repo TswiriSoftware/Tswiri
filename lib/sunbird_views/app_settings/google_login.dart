@@ -100,41 +100,6 @@ class _GoogleLoginViewState extends State<GoogleLoginView> {
   }
 
   Future<void> _handleSignOut() => _googleSignIn.disconnect();
-
-  Widget _buildBody() {
-    final GoogleSignInAccount? user = _currentUser;
-    if (user != null) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          ListTile(
-            leading: GoogleUserCircleAvatar(
-              identity: user,
-            ),
-            title: Text(user.displayName ?? ''),
-            subtitle: Text(user.email),
-          ),
-          const Text('Signed in successfully.'),
-          //Text(_contactText),
-          ElevatedButton(
-            child: const Text('SIGN OUT'),
-            onPressed: _handleSignOut,
-          ),
-        ],
-      );
-    } else {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          const Text('You are not currently signed in.'),
-          ElevatedButton(
-            child: const Text('SIGN IN'),
-            onPressed: _handleSignIn,
-          ),
-        ],
-      );
-    }
-  }
 }
 
 GoogleSignIn _googleSignIn = GoogleSignIn(

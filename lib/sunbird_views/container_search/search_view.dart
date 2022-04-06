@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -541,10 +540,12 @@ class _SearchViewState extends State<SearchView> {
             ],
           );
         } else if (showContainerPhotos) {
-          List<ContainerPhoto> containerPhotos = isarDatabase!.containerPhotos
+          //BUG HERE :D:D:D:D:D:D: fix it @049er
+          List<ContainerPhoto> containerPhotos = [];
+          containerPhotos.addAll(isarDatabase!.containerPhotos
               .filter()
               .containerUIDMatches(element.containerEntry.containerUID)
-              .findAllSync();
+              .findAllSync());
 
           List<ContainerPhotoThumbnail> thumbnails = [];
           if (containerPhotos.isNotEmpty) {
@@ -618,6 +619,7 @@ class _SearchViewState extends State<SearchView> {
         ),
         InkWell(
           onTap: () {
+            // ignore: todo
             //TODO: implement navigator. @049er
             Navigator.push(
               context,

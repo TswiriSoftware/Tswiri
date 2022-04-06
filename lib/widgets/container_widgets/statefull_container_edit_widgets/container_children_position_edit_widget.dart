@@ -6,7 +6,6 @@ import 'package:flutter_google_ml_kit/isar_database/container_relationship/conta
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_data_visualization_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_view.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';

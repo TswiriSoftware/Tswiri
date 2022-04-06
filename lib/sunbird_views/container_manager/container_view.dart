@@ -527,8 +527,6 @@ class _ContainerViewState extends State<ContainerView> {
   Widget tagWidget(Tag tag) {
     return InkWell(
       onTap: () {
-        //TODO: Implement check if it is added already.
-
         if (!assignedTags.any((element) => element == tag.id)) {
           assignedTags.add(tag.id);
 

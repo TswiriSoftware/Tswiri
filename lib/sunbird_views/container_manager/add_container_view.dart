@@ -213,7 +213,7 @@ class _AddContainerViewState extends State<AddContainerView> {
                   'Photos added: ' + photoData.length.toString(),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                Divider(),
+                const Divider(),
               ],
             ),
             outlineColor: containerColor!));
@@ -557,8 +557,8 @@ class _AddContainerViewState extends State<AddContainerView> {
                 builder: (context) => const SingleBarcodeScannerView(),
               ),
             );
-            //TODO: implement check
-            log(scannedBarcodeUID.toString());
+
+            //log(scannedBarcodeUID.toString());
             if (scannedBarcodeUID != null) {
               ContainerEntry? linkedContainer = isarDatabase!.containerEntrys
                   .filter()
