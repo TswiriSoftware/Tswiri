@@ -81,7 +81,7 @@ void createBasicContainerTypes() {
             ..containerType = 'box'
             ..canContain = ['box', 'shelf']
             ..structured = false
-            ..containerColor = const Color(0xFFF98866).value.toString()
+            ..containerColor = Color(0xFFF98866).value.toString()
             ..canBeOrigin = false,
           replaceOnConflict: true);
     },
