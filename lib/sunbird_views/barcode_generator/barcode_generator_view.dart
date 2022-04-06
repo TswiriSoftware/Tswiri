@@ -25,7 +25,7 @@ class BarcodeGeneratorView extends StatefulWidget {
 class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
   int timestamp = 0;
 
-  int rangeStart = 1;
+  int rangeStart = 0;
   int rangeEnd = 1;
 
   BarcodeGenerationEntry? lastBarcodeGenerationEntry;
@@ -34,7 +34,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
   List<String> generatedBarcodeUIDs = [];
   List<BarcodeProperty> generatedBarcodeProperties = [];
 
-  int minValue = 1;
+  int minValue = 0;
   int maxValue = 100;
 
   @override
@@ -68,7 +68,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
             //GenerateBarcodes.
             generateBarcodesButton(),
             //Debugging delete all.
-            //deleteAllButton(),
+            deleteAllButton(),
             //Add pre generated barcodes.
             addPreGeneratedBarcodes(),
             //Generatiom history.
@@ -182,23 +182,23 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
     );
   }
 
-  // Widget deleteAllButton() {
-  //   return InkWell(
-  //     onTap: () {
-  //       isarDatabase!.writeTxnSync((isar) {
-  //         isar.barcodeGenerationEntrys.where().deleteAllSync();
-  //         isar.barcodePropertys.where().deleteAllSync();
-  //         getHistory();
-  //       });
-  //     },
-  //     child: const OrangeOutlineContainer(
-  //       width: 100,
-  //       child: Icon(
-  //         Icons.delete_forever,
-  //       ),
-  //     ),
-  //   );
-  // }
+  Widget deleteAllButton() {
+    return InkWell(
+      onTap: () {
+        isarDatabase!.writeTxnSync((isar) {
+          isar.barcodeGenerationEntrys.where().deleteAllSync();
+          isar.barcodePropertys.where().deleteAllSync();
+          getHistory();
+        });
+      },
+      child: const OrangeOutlineContainer(
+        width: 100,
+        child: Icon(
+          Icons.delete_forever,
+        ),
+      ),
+    );
+  }
 
   Widget addPreGeneratedBarcodes() {
     return InkWell(

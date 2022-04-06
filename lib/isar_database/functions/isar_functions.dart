@@ -100,7 +100,7 @@ Isar? closeIsar(Isar? database) {
 
 ///Get containerTypeColor from containerUID.
 Color getContainerColor({required String containerUID}) {
-  String containerType = isarDatabase!.containerEntrys
+  String? containerType = isarDatabase!.containerEntrys
       .filter()
       .containerUIDMatches(containerUID)
       .findFirstSync()!

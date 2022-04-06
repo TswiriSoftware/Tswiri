@@ -162,11 +162,32 @@ class _ContainerViewState extends State<ContainerView> {
         ),
         IconButton(
           onPressed: () {
+            //Delete Photo.
             File(containerPhoto.photoPath).delete();
-            isarDatabase!.writeTxnSync((isar) => isarDatabase!.containerPhotos
-                .filter()
-                .photoPathMatches(containerPhoto.photoPath)
-                .deleteFirstSync());
+
+            //Delete Photo Thumbnail.
+            File(isarDatabase!.containerPhotoThumbnails
+                    .filter()
+                    .photoPathMatches(containerPhoto.photoPath)
+                    .findFirstSync()!
+                    .thumbnailPhotoPath)
+                .delete();
+
+            isarDatabase!.writeTxnSync((isar) {
+              isar.containerPhotos
+                  .filter()
+                  .photoPathMatches(containerPhoto.photoPath)
+                  .deleteFirstSync();
+              isar.containerPhotoThumbnails
+                  .filter()
+                  .photoPathMatches(containerPhoto.photoPath)
+                  .deleteFirstSync();
+              isar.photoTags
+                  .filter()
+                  .photoPathMatches(containerPhoto.photoPath)
+                  .deleteAllSync();
+            });
+
             setState(() {});
           },
           icon: const Icon(Icons.delete),
