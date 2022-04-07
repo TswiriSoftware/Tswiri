@@ -253,10 +253,10 @@ class _SingleContainerCreateViewState extends State<SingleContainerCreateView> {
                   .containerTypeMatches(containerType!)
                   .findFirstSync();
 
-              if (containerTypeProperties!.canBeOrigin == false &&
+              if (containerTypeProperties!.moveable == false &&
                   parentContainerEntry != null) {
                 return _createContainerWithParent();
-              } else if (containerTypeProperties.canBeOrigin == true &&
+              } else if (containerTypeProperties.moveable == true &&
                   barcodeUID != null &&
                   nameController.text.isNotEmpty) {
                 return _createContainer();

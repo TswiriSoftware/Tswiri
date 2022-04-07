@@ -11,11 +11,11 @@ class ContainerType {
 
   ///Is children structured ?
   ///If a container is structured it means that its children has to be are structured.
-  late bool structured;
+  late bool hasMarker; // hasMarkers ?
 
   //Can this container be its childrens origin ?
   //If it can then it needs a barcode.
-  late bool canBeOrigin;
+  late bool moveable; // Movable ?
 
   ///List of containers that this container can contain.
   late List<String> canContain;
@@ -25,6 +25,6 @@ class ContainerType {
 
   @override
   String toString() {
-    return 'containerType: $containerType,\nstructured: $structured,\ncanContain: $canContain,\ncolor $containerColor';
+    return 'containerType: $containerType,\nstructured: $hasMarker,\ncanContain: $canContain,\ncolor $containerColor';
   }
 }

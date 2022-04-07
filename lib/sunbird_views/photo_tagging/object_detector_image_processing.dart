@@ -146,11 +146,11 @@ class _ObjectDetectorProcessingView
           inputImage, googleImageLabelingConfidenceThreshold / 100));
     }
 
-    //Google vision products if enabled
-    if (googleVisionProducts) {
-      detectedObjects.addAll(await getObjectsOnImage(googleVisionProductsModel,
-          googleVisionProductsConfidenceThreshold / 100, inputImage));
-    }
+    // //Google vision products if enabled
+    // if (googleVisionProducts) {
+    //   detectedObjects.addAll(await getObjectsOnImage(googleVisionProductsModel,
+    //       googleVisionProductsConfidenceThreshold / 100, inputImage));
+    // }
 
     //InceptionV4 products if enabled
     if (inceptionV4) {

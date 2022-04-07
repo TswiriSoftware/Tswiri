@@ -10,7 +10,7 @@ import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dar
 import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/container_grid.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/container_grid_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_view.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
@@ -703,7 +703,6 @@ class _ContainerViewState extends State<ContainerView> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Contains', style: Theme.of(context).textTheme.labelSmall),
-                gridEditor(),
               ],
             ),
             Builder(builder: (context) {
@@ -724,123 +723,59 @@ class _ContainerViewState extends State<ContainerView> {
                             q.containerUIDMatches(element.containerUID))
                     .findAllSync();
               }
-
-              return Text(
-                'Number of Containers: ' + children.length.toString(),
-                style: Theme.of(context).textTheme.bodyLarge,
-              );
+              if (children.isNotEmpty) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Number of Containers: ' + children.length.toString(),
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    gridEditor(),
+                  ],
+                );
+              } else {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Please scan your containers',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    initialScan(),
+                  ],
+                );
+              }
             })
           ],
         ),
+        outlineColor: containerTypeColor!,
+      ),
+    );
+  }
 
-        // Builder(
-        //   builder: (context) {
-
-        // List<ContainerRelationship> childrenRelationships = isarDatabase!
-        //     .containerRelationships
-        //     .filter()
-        //     .parentUIDMatches(containerEntry!.containerUID)
-        //     .findAllSync();
-
-        // List<ContainerEntry> children = [];
-
-        // if (childrenRelationships.isNotEmpty) {
-        //   children = isarDatabase!.containerEntrys
-        //       .filter()
-        //       .repeat(
-        //           childrenRelationships,
-        //           (q, ContainerRelationship element) =>
-        //               q.containerUIDMatches(element.containerUID))
-        //       .findAllSync();
-        // }
-
-        //     if (isShowingChildren) {
-        //       return Column(
-        //         children: [
-        //           Padding(
-        //             padding: const EdgeInsets.symmetric(vertical: 0),
-        //             child: Row(
-        //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //               children: [
-        //                 Text(
-        //                   'Contains',
-        //                   style: Theme.of(context).textTheme.bodySmall,
-        //                 ),
-        //                 gridEditor(),
-        //                 InkWell(
-        //                   onTap: () {
-        //                     isShowingChildren = !isShowingChildren;
-        //                     setState(() {});
-        //                   },
-        //                   child: CustomOutlineContainer(
-        //                     padding: 5,
-        //                     width: 80,
-        //                     height: 30,
-        //                     child: Center(
-        //                       child: Text(
-        //                         'Hide',
-        //                         style: Theme.of(context).textTheme.bodyMedium,
-        //                       ),
-        //                     ),
-        //                     outlineColor: containerTypeColor!,
-        //                   ),
-        //                 ),
-        //               ],
-        //             ),
-        //           ),
-        //           Column(
-        //             children:
-        //                 children.map((e) => containerDisplayWidget(e)).toList(),
-        //           ),
-        //         ],
-        //       );
-        //     } else {
-        //       return Column(
-        //         crossAxisAlignment: CrossAxisAlignment.start,
-        //         children: [
-        //           Row(
-        //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //             children: [
-        //               Column(
-        //                 crossAxisAlignment: CrossAxisAlignment.start,
-        //                 children: [
-        //                   Text(
-        //                     'Contains',
-        //                     style: Theme.of(context).textTheme.bodySmall,
-        //                   ),
-        //                   Text(
-        //                     childrenRelationships.length.toString(),
-        //                     style: Theme.of(context).textTheme.labelMedium,
-        //                   ),
-        //                 ],
-        //               ),
-        //               gridEditor(),
-        //               InkWell(
-        //                 onTap: () {
-        //                   isShowingChildren = !isShowingChildren;
-        //                   setState(() {});
-        //                 },
-        //                 child: CustomOutlineContainer(
-        //                   padding: 5,
-        //                   width: 80,
-        //                   height: 30,
-        //                   child: Center(
-        //                     child: Text(
-        //                       'View',
-        //                       style: Theme.of(context).textTheme.bodyMedium,
-        //                     ),
-        //                   ),
-        //                   outlineColor: containerTypeColor!,
-        //                 ),
-        //               ),
-        //             ],
-        //           ),
-        //         ],
-        //       );
-        //     }
-        //   },
-        // ),
-
+  Widget initialScan() {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ContainerGridView(
+                containerEntry: containerEntry!,
+                containerTypeColor: containerTypeColor!),
+          ),
+        );
+      },
+      child: CustomOutlineContainer(
+        padding: 5,
+        width: 80,
+        height: 30,
+        child: Center(
+          child: Text(
+            'Scan',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
         outlineColor: containerTypeColor!,
       ),
     );

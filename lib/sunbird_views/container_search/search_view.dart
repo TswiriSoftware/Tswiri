@@ -51,39 +51,46 @@ class _SearchViewState extends State<SearchView> {
         centerTitle: true,
         elevation: 0,
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: floatingSearchBar(),
       body: Column(
         children: [
           //SearchBar with filters
 
           _numberOfResults(),
           _containerListView(),
-          _searchBar(),
+          //_searchBar(),
         ],
       ),
     );
   }
 
-//The searchBar widget.
-  Widget _searchBar() {
-    return LightContainer(
-      padding: 0,
-      margin: 2.5,
-      borderRadius: 27,
-      child: OrangeOutlineContainer(
-        padding: 10,
-        margin: 2,
-        borderRadius: 25,
-        child: Column(
-          children: [
-            _searchOptions(),
-            const Divider(
-              height: 10,
-              thickness: 2,
-            ),
-            _searchField(),
-          ],
+  Widget floatingSearchBar() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          margin: const EdgeInsets.symmetric(horizontal: 2.5, vertical: 5),
+          decoration: BoxDecoration(
+              border: Border.all(color: Colors.deepOrange, width: 1),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(30),
+              ),
+              color: const Color(0xFF232323)),
+          child: Column(
+            children: [
+              _searchOptions(),
+              const Divider(
+                height: 10,
+                thickness: 1,
+              ),
+              _searchField(),
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -337,53 +344,58 @@ class _SearchViewState extends State<SearchView> {
             .tagContains(enteredKeyword, caseSensitive: false)
             .findAllSync();
 
-        List<PhotoTag> photoTags = [];
-        photoTags.addAll(isarDatabase!.photoTags
-            .filter()
-            .repeat(mlTags, (q, MlTag element) => q.tagUIDEqualTo(element.id))
-            .sortByConfidence()
-            .findAllSync());
+        if (mlTags.isNotEmpty) {
+          List<PhotoTag> photoTags = [];
+          photoTags.addAll(isarDatabase!.photoTags
+              .filter()
+              .repeat(mlTags, (q, MlTag element) => q.tagUIDEqualTo(element.id))
+              .sortByConfidence()
+              .findAllSync());
 
-        List<ContainerPhoto> containerPhotos = [];
-        containerPhotos.addAll(isarDatabase!.containerPhotos
-            .filter()
-            .repeat(photoTags,
-                (q, PhotoTag element) => q.photoPathMatches(element.photoPath))
-            .findAllSync());
-
-        //log(photoTags.toString());
-        //log(containerPhotos.toString());
-
-        List<ContainerEntry> containerEntries = isarDatabase!.containerEntrys
-            .filter()
-            .repeat(
-                containerPhotos,
-                (q, ContainerPhoto element) =>
-                    q.containerUIDMatches(element.containerUID))
-            .findAllSync();
-
-        List<ContainerSearchBuilder> containerSearchBuilders = [];
-
-        for (ContainerEntry containerEntry in containerEntries) {
-          List<ContainerPhoto> currentContainerPhoto = containerPhotos
-              .where((element) =>
-                  element.containerUID == containerEntry.containerUID)
-              .toList();
-          List<ContainerPhotoThumbnail> thumbnails = [];
-
-          thumbnails.addAll(isarDatabase!.containerPhotoThumbnails
+          List<ContainerPhoto> containerPhotos = [];
+          containerPhotos.addAll(isarDatabase!.containerPhotos
               .filter()
               .repeat(
-                  currentContainerPhoto,
-                  (q, ContainerPhoto element) =>
+                  photoTags,
+                  (q, PhotoTag element) =>
                       q.photoPathMatches(element.photoPath))
               .findAllSync());
 
-          containerSearchBuilders.add(ContainerSearchBuilder(
-              containerEntry: containerEntry, containerThumbnails: thumbnails));
-        }
+          List<ContainerEntry> containerEntries = [];
+          containerEntries.addAll(isarDatabase!.containerEntrys
+              .filter()
+              .repeat(
+                  containerPhotos,
+                  (q, ContainerPhoto element) =>
+                      q.containerUIDMatches(element.containerUID))
+              .findAllSync());
 
-        searchResults.addAll(containerSearchBuilders);
+          if (containerEntries.isNotEmpty) {
+            List<ContainerSearchBuilder> containerSearchBuilders = [];
+
+            for (ContainerEntry containerEntry in containerEntries) {
+              List<ContainerPhoto> currentContainerPhoto = containerPhotos
+                  .where((element) =>
+                      element.containerUID == containerEntry.containerUID)
+                  .toList();
+              List<ContainerPhotoThumbnail> thumbnails = [];
+
+              thumbnails.addAll(isarDatabase!.containerPhotoThumbnails
+                  .filter()
+                  .repeat(
+                      currentContainerPhoto,
+                      (q, ContainerPhoto element) =>
+                          q.photoPathMatches(element.photoPath))
+                  .findAllSync());
+
+              containerSearchBuilders.add(ContainerSearchBuilder(
+                  containerEntry: containerEntry,
+                  containerThumbnails: thumbnails));
+            }
+
+            searchResults.addAll(containerSearchBuilders);
+          }
+        }
       }
 
       //Tag Search.
@@ -394,25 +406,27 @@ class _SearchViewState extends State<SearchView> {
             .tagContains(enteredKeyword, caseSensitive: false)
             .findAllSync();
 
-        List<ContainerTag> containerTags = isarDatabase!.containerTags
+        List<ContainerTag> containerTags = [];
+        containerTags.addAll(isarDatabase!.containerTags
             .filter()
             .repeat(tags, (q, Tag element) => q.idEqualTo(element.id))
-            .findAllSync();
+            .findAllSync());
 
         //Not sure why but need to check if its empty ?
+        if (containerTags.isNotEmpty) {
+          List<ContainerSearchBuilder> containerSearchBuilders = isarDatabase!
+              .containerEntrys
+              .filter()
+              .repeat(
+                  containerTags,
+                  (q, ContainerTag element) =>
+                      q.containerUIDMatches(element.containerUID))
+              .findAllSync()
+              .map((e) => ContainerSearchBuilder(containerEntry: e))
+              .toList();
 
-        List<ContainerSearchBuilder> containerSearchBuilders = isarDatabase!
-            .containerEntrys
-            .filter()
-            .repeat(
-                containerTags,
-                (q, ContainerTag element) =>
-                    q.containerUIDMatches(element.containerUID))
-            .findAllSync()
-            .map((e) => ContainerSearchBuilder(containerEntry: e))
-            .toList();
-
-        searchResults.addAll(containerSearchBuilders);
+          searchResults.addAll(containerSearchBuilders);
+        }
       }
     }
 

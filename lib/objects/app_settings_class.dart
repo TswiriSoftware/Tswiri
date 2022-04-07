@@ -6,8 +6,8 @@ class Settings {
     required this.defaultBarcodeSize,
     required this.googleImageLabeling,
     required this.googleImageLabelingConfidenceThreshold,
-    required this.googleVisionProducts,
-    required this.googleVisionProductsConfidenceThreshold,
+    //required this.googleVisionProducts,
+    //required this.googleVisionProductsConfidenceThreshold,
     required this.inceptionV4,
     required this.inceptionV4PreferenceConfidenceThreshold,
   });
@@ -25,9 +25,9 @@ class Settings {
   bool googleImageLabeling;
   int googleImageLabelingConfidenceThreshold;
 
-  ///googleVisionProducts and confidence
-  bool googleVisionProducts;
-  int googleVisionProductsConfidenceThreshold;
+  // ///googleVisionProducts and confidence
+  // bool googleVisionProducts;
+  // int googleVisionProductsConfidenceThreshold;
 
   ///inceptionV4 and confidence
   bool inceptionV4;

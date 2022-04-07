@@ -90,12 +90,12 @@ class _AddContainerViewState extends State<AddContainerView> {
                   return Column(
                     children: [
                       containerTypeDisplay(selectedContainerType!),
-                      //BarcodeUID
                     ],
                   );
                 }
               },
             ),
+
             //Barcode
             Builder(
               builder: (context) {
@@ -104,7 +104,6 @@ class _AddContainerViewState extends State<AddContainerView> {
                     children: [
                       scannedBarcode(),
                       _nameAndDescription(),
-                      //ParentContaienr
                     ],
                   );
                 } else if (selectedContainerType != null) {
@@ -114,12 +113,15 @@ class _AddContainerViewState extends State<AddContainerView> {
                 }
               },
             ),
+
             //Parent
             Builder(
               builder: (context) {
                 if (selectedContainerType != null &&
                     barcodeUID != null &&
-                    selectedContainerType!.containerType != 'area') {
+                    selectedContainerType!.containerType != 'area' &&
+                    (selectedContainerType!.moveable == false)) {
+                  //An area is special :D only 1 of its kind
                   if (parentContainer == null) {
                     return scanParent();
                   } else {
@@ -130,30 +132,43 @@ class _AddContainerViewState extends State<AddContainerView> {
                 }
               },
             ),
+
             //Photo ?
             Builder(
               builder: (context) {
-                if (selectedContainerType != null &&
+                if ((selectedContainerType != null &&
                         barcodeUID != null &&
-                        parentContainer != null ||
+                        selectedContainerType!.hasMarker == true &&
+                        selectedContainerType!.moveable == false &&
+                        parentContainer != null) ||
                     (selectedContainerType != null &&
-                        selectedContainerType!.containerType == 'area' &&
-                        barcodeUID != null)) {
+                        barcodeUID != null &&
+                        selectedContainerType!.hasMarker == false &&
+                        selectedContainerType!.moveable == true)) {
                   return addPhoto();
                 } else {
                   return Container();
                 }
               },
             ),
+
             //Create
             Builder(
               builder: (context) {
-                if (selectedContainerType != null &&
+                if ((selectedContainerType != null &&
                         barcodeUID != null &&
-                        parentContainer != null ||
+                        selectedContainerType!.hasMarker == true &&
+                        selectedContainerType!.moveable == false &&
+                        selectedContainerType!.containerType == 'area') ||
                     (selectedContainerType != null &&
-                        selectedContainerType!.containerType == 'area' &&
-                        barcodeUID != null)) {
+                        barcodeUID != null &&
+                        selectedContainerType!.hasMarker == true &&
+                        selectedContainerType!.moveable == false &&
+                        parentContainer != null) ||
+                    (selectedContainerType != null &&
+                        barcodeUID != null &&
+                        selectedContainerType!.hasMarker == false &&
+                        selectedContainerType!.moveable == true)) {
                   return _createContainer();
                 } else {
                   return Container();
@@ -183,30 +198,43 @@ class _AddContainerViewState extends State<AddContainerView> {
                       'Do you want to take a photo of the contents',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                    OrangeOutlineContainer(
-                        padding: 0,
-                        margin: 0,
-                        width: 40,
-                        height: 40,
-                        child: Center(
-                          child: IconButton(
-                            onPressed: () async {
-                              PhotoData? result = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ObjectDetectorView(),
-                                ),
-                              );
-                              if (result != null) {
-                                photoData.add(result);
-                              }
-                              setState(() {});
-                              log(result.toString());
-                            },
-                            icon: const Icon(Icons.camera),
+                    InkWell(
+                      onTap: () async {
+                        PhotoData? result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ObjectDetectorView(),
                           ),
-                        ))
+                        );
+                        if (result != null) {
+                          photoData.add(result);
+                        }
+                        setState(() {});
+                        log(result.toString());
+                      },
+                      child: CustomOutlineContainer(
+                          outlineColor: containerColor!,
+                          padding: 0,
+                          margin: 0,
+                          height: 30,
+                          width: 80,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text(
+                                  'Add',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                const Icon(
+                                  Icons.camera,
+                                  size: 20,
+                                )
+                              ],
+                            ),
+                          )),
+                    )
                   ],
                 ),
                 Text(
@@ -270,10 +298,11 @@ class _AddContainerViewState extends State<AddContainerView> {
         isarDatabase!.writeTxnSync(
             (isar) => isar.containerEntrys.putSync(containerEntry));
 
-        if (selectedContainerType!.canBeOrigin && marker != null) {
+        if (selectedContainerType!.moveable == false && marker != null) {
           marker!
             ..parentContainerUID = containerEntry.containerUID
             ..barcodeUID = barcodeUID!;
+          log(marker!.toString());
           isarDatabase!.writeTxnSync((isar) => isar.markers.putSync(marker!));
         }
 
@@ -456,7 +485,8 @@ class _AddContainerViewState extends State<AddContainerView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Builder(builder: (context) {
-              if (selectedContainerType!.canBeOrigin) {
+              if (selectedContainerType != null &&
+                  selectedContainerType!.moveable == false) {
                 marker = Marker()..barcodeUID = barcodeUID!;
 
                 return Text(
@@ -719,7 +749,7 @@ class _AddContainerViewState extends State<AddContainerView> {
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
                   Text(
-                    'Can be origin: ' + containerType.canBeOrigin.toString(),
+                    'Can be origin: ' + containerType.moveable.toString(),
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
                   Builder(builder: (context) {

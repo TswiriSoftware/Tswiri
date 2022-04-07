@@ -25,9 +25,9 @@ double? defaultBarcodeDiagonalLength;
 bool googleImageLabeling = true;
 int googleImageLabelingConfidenceThreshold = 50;
 
-//Object Labeling
-bool googleVisionProducts = true;
-int googleVisionProductsConfidenceThreshold = 50;
+// //Object Labeling
+// bool googleVisionProducts = true;
+// int googleVisionProductsConfidenceThreshold = 50;
 
 bool inceptionV4 = true;
 int inceptionV4PreferenceConfidenceThreshold = 50;

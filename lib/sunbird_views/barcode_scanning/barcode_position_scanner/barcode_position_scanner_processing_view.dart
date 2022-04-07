@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
@@ -13,6 +15,7 @@ import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_pos
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/functions/functions.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/dark_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
+import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BarcodePositionScannerProcessingView extends StatefulWidget {
@@ -259,6 +262,7 @@ class _BarcodePositionScannerProcessingViewState
 
     //Write to Isar.
     List<RealInterBarcodeVectorEntry> interbarcodeOffsetEntries = [];
+    List<String> scannedBarcodes = [];
 
     for (RealInterBarcodeOffset interBarcodeOffset
         in finalRealInterBarcodeOffsets) {
@@ -268,13 +272,47 @@ class _BarcodePositionScannerProcessingViewState
         ..x = interBarcodeOffset.offset.dx
         ..y = interBarcodeOffset.offset.dy
         ..z = interBarcodeOffset.zOffset;
+
+      scannedBarcodes.add(interBarcodeOffset.uidStart);
+      scannedBarcodes.add(interBarcodeOffset.uidEnd);
       interbarcodeOffsetEntries.add(vectorEntry);
     }
+    scannedBarcodes = scannedBarcodes.toSet().toList();
 
-    log(interbarcodeOffsetEntries.toString());
+    List<ContainerEntry> ContainerEntries = isarDatabase!.containerEntrys
+        .filter()
+        .repeat(scannedBarcodes,
+            (q, String element) => q.barcodeUIDMatches(element))
+        .findAllSync();
 
-    isarDatabase!.writeTxnSync((isar) => isar.realInterBarcodeVectorEntrys
-        .putAllSync(interbarcodeOffsetEntries));
+    List<ContainerRelationship> containerRelatiopnships = [];
+    //TODO: delete existing Container RelationShips?
+
+    ContainerRelationship? containerParent = isarDatabase!
+        .containerRelationships
+        .filter()
+        .containerUIDMatches(widget.parentContainerUID)
+        .findFirstSync();
+
+    for (ContainerEntry containerEntry in ContainerEntries) {
+      ContainerRelationship containerRelationship = ContainerRelationship()
+        ..containerUID = containerEntry.containerUID
+        ..parentUID = widget.parentContainerUID;
+
+      if (containerParent != null &&
+              containerParent.parentUID != containerEntry.containerUID &&
+              widget.parentContainerUID != containerEntry.containerUID ||
+          widget.parentContainerUID != containerEntry.containerUID) {
+        containerRelatiopnships.add(containerRelationship);
+      }
+    }
+
+    //log(interbarcodeOffsetEntries.toString());
+
+    isarDatabase!.writeTxnSync((isar) {
+      isar.realInterBarcodeVectorEntrys.putAllSync(interbarcodeOffsetEntries);
+      isar.containerRelationships.putAllSync(containerRelatiopnships);
+    });
 
     return finalRealInterBarcodeOffsets;
   }

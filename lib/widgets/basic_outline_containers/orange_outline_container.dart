@@ -10,6 +10,7 @@ class OrangeOutlineContainer extends StatelessWidget {
     this.width,
     this.borderWidth,
     this.borderRadius,
+    this.backgroundColor,
   }) : super(key: key);
 
   final Widget child;
@@ -19,6 +20,8 @@ class OrangeOutlineContainer extends StatelessWidget {
   final double? height;
   final double? borderWidth;
   final double? borderRadius;
+  final Color? backgroundColor;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -32,7 +35,7 @@ class OrangeOutlineContainer extends StatelessWidget {
             borderRadius: BorderRadius.all(
               Radius.circular(borderRadius ?? 5),
             ),
-            color: Colors.black26),
+            color: backgroundColor ?? Colors.black26),
         child: child);
   }
 }

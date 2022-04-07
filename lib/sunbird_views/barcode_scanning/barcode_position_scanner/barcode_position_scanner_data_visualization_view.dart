@@ -124,21 +124,21 @@ class _BarcodePositionScannerDataVisualizationViewState
     List<DisplayPoint> myPoints = [];
 
     for (var i = 0; i < realBarcodePositions.length; i++) {
-      RealBarcodePosition realBarcodePosition =
+      RealBarcodePosition? realBarcodePosition =
           realBarcodePositions.elementAt(i);
 
-      Offset barcodePosition = Offset(
-          (realBarcodePosition.offset!.dx * unitVector[0]) +
+      Offset? barcodePosition = Offset(
+          (realBarcodePosition.offset?.dx ?? 1 * unitVector[0]) +
               (width / 2) -
               (width / 8),
-          (realBarcodePosition.offset!.dy * unitVector[1]) +
+          (realBarcodePosition.offset?.dy ?? 1 * unitVector[1]) +
               (height / 2) -
               (height / 8));
 
       List<double> barcodeRealPosition = [
-        roundDouble(realBarcodePosition.offset!.dx, 5),
-        roundDouble(realBarcodePosition.offset!.dy, 5),
-        roundDouble(realBarcodePosition.zOffset!, 5),
+        roundDouble(realBarcodePosition.offset?.dx ?? 0, 5),
+        roundDouble(realBarcodePosition.offset?.dy ?? 0, 5),
+        roundDouble(realBarcodePosition.zOffset ?? 0, 5),
       ];
 
       if (markers != null && markers.contains(realBarcodePosition.uid)) {

@@ -24,9 +24,9 @@ Future getCurrentAppSettings() async {
   googleImageLabelingConfidenceThreshold =
       prefs.getInt(googleImageLabelingConfidenceThresholdPreference) ?? 50;
 
-  googleVisionProducts = prefs.getBool(googleVisionProductsPreference) ?? true;
-  googleVisionProductsConfidenceThreshold =
-      prefs.getInt(googleImageLabelingConfidenceThresholdPreference) ?? 50;
+  // googleVisionProducts = prefs.getBool(googleVisionProductsPreference) ?? true;
+  // googleVisionProductsConfidenceThreshold =
+  //     prefs.getInt(googleImageLabelingConfidenceThresholdPreference) ?? 50;
 
   inceptionV4 = prefs.getBool(inceptionV4Preference) ?? true;
   inceptionV4PreferenceConfidenceThreshold =

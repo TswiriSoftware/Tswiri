@@ -30,8 +30,8 @@ class _SettingsViewState extends State<SettingsView> {
   void initState() {
     googleImageLabelingConfidenceThresholdController.text =
         googleImageLabelingConfidenceThreshold.toString();
-    googleVisionProductsConfidenceThresholdController.text =
-        googleVisionProductsConfidenceThreshold.toString();
+    // googleVisionProductsConfidenceThresholdController.text =
+    //     googleVisionProductsConfidenceThreshold.toString();
     inceptionV4PreferenceConfidenceThresholdController.text =
         inceptionV4PreferenceConfidenceThreshold.toString();
 
@@ -125,10 +125,10 @@ class _SettingsViewState extends State<SettingsView> {
     googleImageLabelingConfidenceThreshold =
         prefs.getInt(googleImageLabelingConfidenceThresholdPreference) ?? 50;
 
-    bool googleVisionProducts =
-        prefs.getBool(googleVisionProductsPreference) ?? true;
-    googleVisionProductsConfidenceThreshold =
-        prefs.getInt(googleVisionProductsConfidenceThresholdPreference) ?? 50;
+    // bool googleVisionProducts =
+    //     prefs.getBool(googleVisionProductsPreference) ?? true;
+    // googleVisionProductsConfidenceThreshold =
+    //     prefs.getInt(googleVisionProductsConfidenceThresholdPreference) ?? 50;
 
     bool inceptionV4 = prefs.getBool(inceptionV4Preference) ?? true;
     inceptionV4PreferenceConfidenceThreshold =
@@ -141,9 +141,9 @@ class _SettingsViewState extends State<SettingsView> {
       googleImageLabeling: googleImageLabeling,
       googleImageLabelingConfidenceThreshold:
           googleImageLabelingConfidenceThreshold,
-      googleVisionProducts: googleVisionProducts,
-      googleVisionProductsConfidenceThreshold:
-          googleVisionProductsConfidenceThreshold,
+      // googleVisionProducts: googleVisionProducts,
+      // googleVisionProductsConfidenceThreshold:
+      //     googleVisionProductsConfidenceThreshold,
       inceptionV4: inceptionV4,
       inceptionV4PreferenceConfidenceThreshold:
           inceptionV4PreferenceConfidenceThreshold,
@@ -279,7 +279,7 @@ class _SettingsViewState extends State<SettingsView> {
           ),
         ),
         googleVisionImageLabelingSettings(snapshot),
-        googleVisionProductsSettings(snapshot),
+        //googleVisionProductsSettings(snapshot),
         inceptionV4Settings(snapshot),
       ],
     );
@@ -348,68 +348,68 @@ class _SettingsViewState extends State<SettingsView> {
     );
   }
 
-  Widget googleVisionProductsSettings(Settings snapshot) {
-    return OrangeOutlineContainer(
-      margin: 2.5,
-      padding: 5,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Google Vision Products: ',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              Checkbox(
-                checkColor: Colors.white,
-                fillColor: MaterialStateProperty.resolveWith(getColor),
-                value: snapshot.googleVisionProducts,
-                onChanged: (bool? value) async {
-                  final prefs = await SharedPreferences.getInstance();
-                  setState(() {
-                    googleVisionProducts = value!;
-                    prefs.setBool(
-                        googleVisionProductsPreference, googleVisionProducts);
-                  });
-                },
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Google Vision Products Confidnce: ',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.15,
-                child: TextFormField(
-                  controller: googleVisionProductsConfidenceThresholdController,
-                  onFieldSubmitted: (value) async {
-                    final prefs = await SharedPreferences.getInstance();
-                    googleVisionProductsConfidenceThreshold = int.parse(value);
-                    prefs.setInt(
-                        googleVisionProductsConfidenceThresholdPreference,
-                        googleVisionProductsConfidenceThreshold);
-                  },
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: const InputDecoration(
-                    prefix: Text('0.'),
-                    border: UnderlineInputBorder(),
-                  ),
-                ),
-              )
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget googleVisionProductsSettings(Settings snapshot) {
+  //   return OrangeOutlineContainer(
+  //     margin: 2.5,
+  //     padding: 5,
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Row(
+  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //           children: [
+  //             Text(
+  //               'Google Vision Products: ',
+  //               style: Theme.of(context).textTheme.bodyMedium,
+  //             ),
+  //             Checkbox(
+  //               checkColor: Colors.white,
+  //               fillColor: MaterialStateProperty.resolveWith(getColor),
+  //               value: snapshot.googleVisionProducts,
+  //               onChanged: (bool? value) async {
+  //                 final prefs = await SharedPreferences.getInstance();
+  //                 setState(() {
+  //                   googleVisionProducts = value!;
+  //                   prefs.setBool(
+  //                       googleVisionProductsPreference, googleVisionProducts);
+  //                 });
+  //               },
+  //             ),
+  //           ],
+  //         ),
+  //         Row(
+  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //           children: [
+  //             Text(
+  //               'Google Vision Products Confidnce: ',
+  //               style: Theme.of(context).textTheme.bodyMedium,
+  //             ),
+  //             SizedBox(
+  //               width: MediaQuery.of(context).size.width * 0.15,
+  //               child: TextFormField(
+  //                 controller: googleVisionProductsConfidenceThresholdController,
+  //                 onFieldSubmitted: (value) async {
+  //                   final prefs = await SharedPreferences.getInstance();
+  //                   googleVisionProductsConfidenceThreshold = int.parse(value);
+  //                   prefs.setInt(
+  //                       googleVisionProductsConfidenceThresholdPreference,
+  //                       googleVisionProductsConfidenceThreshold);
+  //                 },
+  //                 textAlign: TextAlign.center,
+  //                 keyboardType: TextInputType.number,
+  //                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+  //                 decoration: const InputDecoration(
+  //                   prefix: Text('0.'),
+  //                   border: UnderlineInputBorder(),
+  //                 ),
+  //               ),
+  //             )
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget inceptionV4Settings(Settings snapshot) {
     return OrangeOutlineContainer(

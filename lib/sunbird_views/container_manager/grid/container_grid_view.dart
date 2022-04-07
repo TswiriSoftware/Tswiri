@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
@@ -80,88 +82,97 @@ class _ContainerGridViewState extends State<ContainerGridView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                CustomOutlineContainer(
+                  outlineColor: containerTypeColor,
+                  width: 80,
+                  height: 35,
+                  margin: 0,
+                  padding: 0,
+                  child: Center(
+                    child: InkWell(
+                      onTap: () async {
+                        //Delete all relevant entries.
+
+                        List<RealInterBarcodeVectorEntry>
+                            allRelevantInterBarcodeData = isarDatabase!
+                                .realInterBarcodeVectorEntrys
+                                .filter()
+                                .repeat(
+                                    barcodesToScan,
+                                    (q, String element) => q
+                                        .startBarcodeUIDMatches(element)
+                                        .or()
+                                        .endBarcodeUIDMatches(element))
+                                .findAllSync();
+                        List<int> ids = [];
+                        for (RealInterBarcodeVectorEntry realInterBarcodeVectorEntry
+                            in allRelevantInterBarcodeData) {
+                          ids.add(realInterBarcodeVectorEntry.id);
+                        }
+
+                        isarDatabase!.writeTxnSync((isar) => isar
+                            .realInterBarcodeVectorEntrys
+                            .deleteAllSync(ids));
+
+                        setState(() {});
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Delete',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          const Icon(
+                            Icons.delete,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
                 Text(
                   'Grid',
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CustomOutlineContainer(
-                      outlineColor: containerTypeColor,
-                      width: 35,
-                      height: 35,
-                      margin: 0,
-                      padding: 0,
-                      child: Center(
-                        child: InkWell(
-                          onTap: () async {
-                            //Delete all relevant entries.
-
-                            List<RealInterBarcodeVectorEntry>
-                                allRelevantInterBarcodeData = isarDatabase!
-                                    .realInterBarcodeVectorEntrys
-                                    .filter()
-                                    .repeat(
-                                        barcodesToScan,
-                                        (q, String element) => q
-                                            .startBarcodeUIDMatches(element)
-                                            .or()
-                                            .endBarcodeUIDMatches(element))
-                                    .findAllSync();
-                            List<int> ids = [];
-                            for (RealInterBarcodeVectorEntry realInterBarcodeVectorEntry
-                                in allRelevantInterBarcodeData) {
-                              ids.add(realInterBarcodeVectorEntry.id);
-                            }
-
-                            isarDatabase!.writeTxnSync((isar) => isar
-                                .realInterBarcodeVectorEntrys
-                                .deleteAllSync(ids));
-
-                            setState(() {});
-                          },
-                          child: const Icon(
-                            Icons.delete,
-                            size: 20,
+                CustomOutlineContainer(
+                  outlineColor: containerTypeColor,
+                  width: 80,
+                  height: 35,
+                  margin: 0,
+                  padding: 0,
+                  child: Center(
+                    child: InkWell(
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BarcodePositionScannerView(
+                                barcodesToScan: barcodesToScan,
+                                gridMarkers: markersToScan,
+                                parentContainerUID:
+                                    containerEntry.containerUID),
                           ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    CustomOutlineContainer(
-                      outlineColor: containerTypeColor,
-                      width: 35,
-                      height: 35,
-                      margin: 0,
-                      padding: 0,
-                      child: Center(
-                        child: InkWell(
-                          onTap: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    BarcodePositionScannerView(
-                                        barcodesToScan: barcodesToScan,
-                                        gridMarkers: markersToScan,
-                                        parentContainerUID:
-                                            containerEntry.containerUID),
-                              ),
-                            );
+                        );
 
-                            setState(() {});
-                          },
-                          child: const Icon(
+                        setState(() {});
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Scan',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          const Icon(
                             Icons.scatter_plot_rounded,
                             size: 20,
                           ),
-                        ),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
@@ -262,28 +273,34 @@ class _ContainerGridViewState extends State<ContainerGridView> {
                 marker.barcodeUID,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              OrangeOutlineContainer(
-                width: 35,
-                height: 35,
-                margin: 0,
-                padding: 0,
-                child: Center(
-                  child: InkWell(
-                    onTap: () {
-                      if (marker.barcodeUID != containerEntry.barcodeUID) {
-                        isarDatabase!.writeTxnSync(
-                          (isar) => isar.markers.deleteSync(marker.id),
-                        );
-                        setState(() {});
-                      }
-                    },
-                    child: const Icon(
-                      Icons.delete,
-                      size: 20,
+              Builder(builder: (context) {
+                if (marker.barcodeUID != containerEntry.barcodeUID) {
+                  return OrangeOutlineContainer(
+                    width: 35,
+                    height: 35,
+                    margin: 0,
+                    padding: 0,
+                    child: Center(
+                      child: InkWell(
+                        onTap: () {
+                          if (marker.barcodeUID != containerEntry.barcodeUID) {
+                            isarDatabase!.writeTxnSync(
+                              (isar) => isar.markers.deleteSync(marker.id),
+                            );
+                            setState(() {});
+                          }
+                        },
+                        child: const Icon(
+                          Icons.delete,
+                          size: 20,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
+                  );
+                } else {
+                  return Container();
+                }
+              }),
             ],
           ),
           outlineColor: containerTypeColor),

@@ -11,11 +11,11 @@ class RealInterBarcodeVectorEntry {
   late String endBarcodeUID;
 
   //X vector.
-  late double x;
+  late double x; //Make nullale ?
   //Y vector.
-  late double y;
+  late double y; //Make nullable ?
   //Z vector.
-  late double z;
+  late double z; //Make nullable ?
 
   @override
   String toString() {

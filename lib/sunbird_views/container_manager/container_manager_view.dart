@@ -31,19 +31,15 @@ class ContainerManagerView extends StatefulWidget {
 }
 
 class _ContainerManagerViewState extends State<ContainerManagerView> {
-  //String enteredKeyword = '';
   List<String> containerTypeList = ['area', 'shelf', 'drawer', 'box'];
   List<String> containerTypes = [];
 
-  bool showFilter = false;
-
   TextEditingController searchController = TextEditingController();
+
   bool showFilterOptions = false;
-  //bool filterArea = true;
-
   bool showCheckBoxes = false;
-  List<String> selectedContainers = [];
 
+  List<String> selectedContainers = [];
   List<ContainerEntry> searchResults = [];
 
   @override
@@ -70,15 +66,34 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
           centerTitle: true,
           elevation: 0,
           actions: [
-            Builder(builder: (context) {
-              if (showCheckBoxes) {
-                return deleteButton();
-              } else {
-                return Container();
-              }
-            })
+            Builder(
+              builder: (context) {
+                if (showCheckBoxes) {
+                  return deleteButton();
+                } else {
+                  return Container();
+                }
+              },
+            )
           ],
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  floatingAddButton(),
+                ],
+              ),
+            ),
+            floatingSearchBar(),
+          ],
+        ), //floatingAddButton(),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -91,34 +106,50 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
             ),
             //ListView
             _listViewBuilder(),
-
-            //SearchBar
-            searchBar(),
           ],
         ),
       ),
     );
   }
 
-  Widget searchBar() {
-    return LightContainer(
-      padding: 0,
-      margin: 2.5,
-      borderRadius: 27,
-      child: OrangeOutlineContainer(
-        padding: 10,
-        margin: 2,
-        borderRadius: 25,
-        child: Column(
-          children: [
-            _searchOptions(),
-            const Divider(
-              height: 10,
-              thickness: 2,
-            ),
-            _searchField(),
-          ],
-        ),
+  Widget floatingAddButton() {
+    return FloatingActionButton(
+      heroTag: null,
+      onPressed: () async {
+        if (isarDatabase!.barcodePropertys.where().findAllSync().isEmpty) {
+          showAlertDialog(context);
+        }
+
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const AddContainerView()),
+        );
+        searchContainers();
+        setState(() {});
+      },
+      child: const Icon(
+        Icons.add,
+        color: Colors.white,
+      ),
+    );
+  }
+
+  Widget floatingSearchBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      margin: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+          border: Border.all(color: Colors.deepOrange, width: 1),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(30),
+          ),
+          color: const Color(0xFF232323)),
+      child: Column(
+        children: [
+          _searchOptions(),
+          const Divider(),
+          _searchField(),
+        ],
       ),
     );
   }
@@ -167,28 +198,24 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          'Options',
-                          style: Theme.of(context).textTheme.bodySmall,
+                    Text(
+                      'Options',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const VerticalDivider(),
+                    GestureDetector(
+                      onTap: () {
+                        showFilterOptions = false;
+                        setState(() {});
+                      },
+                      child: const OrangeOutlineContainer(
+                        padding: 0,
+                        margin: 0,
+                        child: Icon(
+                          Icons.arrow_drop_down_rounded,
+                          size: 25,
                         ),
-                        const VerticalDivider(),
-                        GestureDetector(
-                          onTap: () {
-                            showFilterOptions = false;
-                            setState(() {});
-                          },
-                          child: const OrangeOutlineContainer(
-                            padding: 0,
-                            margin: 0,
-                            child: Icon(
-                              Icons.arrow_drop_down_rounded,
-                              size: 25,
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
@@ -199,53 +226,22 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Text(
-                    'Options',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const VerticalDivider(),
-                  GestureDetector(
-                    onTap: () {
-                      showFilterOptions = true;
-                      setState(() {});
-                    },
-                    child: const OrangeOutlineContainer(
-                      margin: 0,
-                      padding: 0,
-                      child: Icon(
-                        Icons.arrow_drop_up_rounded,
-                        size: 25,
-                      ),
-                    ),
-                  ),
-                ],
+              Text(
+                'Options',
+                style: Theme.of(context).textTheme.bodySmall,
               ),
-              InkWell(
-                onTap: () async {
-                  if (isarDatabase!.barcodePropertys
-                      .where()
-                      .findAllSync()
-                      .isEmpty) {
-                    showAlertDialog(context);
-                  }
-
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const AddContainerView()),
-                  );
-                  searchContainers();
+              const VerticalDivider(),
+              GestureDetector(
+                onTap: () {
+                  showFilterOptions = true;
                   setState(() {});
                 },
                 child: const OrangeOutlineContainer(
-                  width: 35,
-                  height: 35,
-                  padding: 0,
                   margin: 0,
-                  child: Center(
-                    child: Icon(Icons.add),
+                  padding: 0,
+                  child: Icon(
+                    Icons.arrow_drop_up_rounded,
+                    size: 25,
                   ),
                 ),
               ),
@@ -572,12 +568,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
                 .findAllSync());
           }
         }
-        //log(markers.toString());
-        //log(interBarcodeData.toString());
-        //log(containerRelationships.toString());
-        //log(containerTags.toString());
-        //log(containerPhotos.toString());
-        //log(photoTags.toString());
+
         log(photoThumbnails.toString());
 
         //Delete marker. *
@@ -658,7 +649,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
                       q.containerUIDMatches(element.containerUID))
               .deleteAllSync();
         });
-
+        showCheckBoxes = false;
         searchContainers();
         setState(() {});
       },

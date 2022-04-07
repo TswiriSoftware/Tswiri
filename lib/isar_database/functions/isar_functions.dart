@@ -50,9 +50,9 @@ void createBasicContainerTypes() {
             ..id = 1
             ..containerType = 'area'
             ..canContain = ['shelf', 'box', 'drawer']
-            ..structured = false
-            ..containerColor = const Color(0xFFff420e).value.toString()
-            ..canBeOrigin = true,
+            ..hasMarker = true
+            ..moveable = false
+            ..containerColor = const Color(0xFFff420e).value.toString(),
           replaceOnConflict: true);
 
       database.containerTypes.putSync(
@@ -60,9 +60,9 @@ void createBasicContainerTypes() {
             ..id = 2
             ..containerType = 'shelf'
             ..canContain = ['box', 'drawer']
-            ..structured = true
-            ..containerColor = const Color(0xFF89da59).value.toString()
-            ..canBeOrigin = true,
+            ..hasMarker = true
+            ..moveable = false
+            ..containerColor = const Color(0xFF89da59).value.toString(),
           replaceOnConflict: true);
 
       database.containerTypes.putSync(
@@ -70,9 +70,9 @@ void createBasicContainerTypes() {
             ..id = 3
             ..containerType = 'drawer'
             ..canContain = ['box', 'shelf']
-            ..structured = false
-            ..containerColor = Colors.blue.value.toString()
-            ..canBeOrigin = false,
+            ..hasMarker = false
+            ..moveable = false
+            ..containerColor = Colors.blue.value.toString(),
           replaceOnConflict: true);
 
       database.containerTypes.putSync(
@@ -80,9 +80,9 @@ void createBasicContainerTypes() {
             ..id = 4
             ..containerType = 'box'
             ..canContain = ['box', 'shelf']
-            ..structured = false
-            ..containerColor = const Color(0xFFF98866).value.toString()
-            ..canBeOrigin = false,
+            ..hasMarker = false
+            ..moveable = true
+            ..containerColor = const Color(0xFFF98866).value.toString(),
           replaceOnConflict: true);
     },
   );

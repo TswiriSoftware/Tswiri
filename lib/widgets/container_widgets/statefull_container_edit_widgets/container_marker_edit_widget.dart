@@ -71,7 +71,7 @@ class _ContainerMarkerEditWidgetState extends State<ContainerMarkerEditWidget> {
           .containerTypeMatches(containerEntry.containerType)
           .findFirstSync()!;
 
-      if (containerType.canBeOrigin == true) {
+      if (containerType.moveable == true) {
         log('Can be childrens origin');
       } else {
         log('Cannot be childrens origin');
