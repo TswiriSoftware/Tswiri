@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -336,16 +337,22 @@ class _SearchViewState extends State<SearchView> {
             .tagContains(enteredKeyword, caseSensitive: false)
             .findAllSync();
 
-        List<PhotoTag> photoTags = isarDatabase!.photoTags
+        List<PhotoTag> photoTags = [];
+        photoTags.addAll(isarDatabase!.photoTags
             .filter()
             .repeat(mlTags, (q, MlTag element) => q.tagUIDEqualTo(element.id))
-            .findAllSync();
+            .sortByConfidence()
+            .findAllSync());
 
-        List<ContainerPhoto> containerPhotos = isarDatabase!.containerPhotos
+        List<ContainerPhoto> containerPhotos = [];
+        containerPhotos.addAll(isarDatabase!.containerPhotos
             .filter()
             .repeat(photoTags,
                 (q, PhotoTag element) => q.photoPathMatches(element.photoPath))
-            .findAllSync();
+            .findAllSync());
+
+        //log(photoTags.toString());
+        //log(containerPhotos.toString());
 
         List<ContainerEntry> containerEntries = isarDatabase!.containerEntrys
             .filter()
@@ -357,20 +364,23 @@ class _SearchViewState extends State<SearchView> {
 
         List<ContainerSearchBuilder> containerSearchBuilders = [];
 
-        List<ContainerPhotoThumbnail> thumbnails = isarDatabase!
-            .containerPhotoThumbnails
-            .filter()
-            .repeat(
-                containerPhotos,
-                (q, ContainerPhoto element) =>
-                    q.photoPathMatches(element.photoPath))
-            .findAllSync();
-
         for (ContainerEntry containerEntry in containerEntries) {
+          List<ContainerPhoto> currentContainerPhoto = containerPhotos
+              .where((element) =>
+                  element.containerUID == containerEntry.containerUID)
+              .toList();
+          List<ContainerPhotoThumbnail> thumbnails = [];
+
+          thumbnails.addAll(isarDatabase!.containerPhotoThumbnails
+              .filter()
+              .repeat(
+                  currentContainerPhoto,
+                  (q, ContainerPhoto element) =>
+                      q.photoPathMatches(element.photoPath))
+              .findAllSync());
+
           containerSearchBuilders.add(ContainerSearchBuilder(
-            containerEntry: containerEntry,
-            containerPhotos: thumbnails,
-          ));
+              containerEntry: containerEntry, containerThumbnails: thumbnails));
         }
 
         searchResults.addAll(containerSearchBuilders);
@@ -524,13 +534,13 @@ class _SearchViewState extends State<SearchView> {
     return Builder(
       builder: (context) {
         if (showContainerPhotos &&
-            element.containerPhotos != null &&
-            element.containerPhotos!.isNotEmpty) {
+            element.containerThumbnails != null &&
+            element.containerThumbnails!.isNotEmpty) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Wrap(
-                children: element.containerPhotos!
+                children: element.containerThumbnails!
                     .map((e) => photoWidget(e))
                     .toList(),
               ),
@@ -542,10 +552,17 @@ class _SearchViewState extends State<SearchView> {
         } else if (showContainerPhotos) {
           //BUG HERE :D:D:D:D:D:D: fix it @049er
           List<ContainerPhoto> containerPhotos = [];
-          containerPhotos.addAll(isarDatabase!.containerPhotos
+
+          if (isarDatabase!.containerPhotos
               .filter()
               .containerUIDMatches(element.containerEntry.containerUID)
-              .findAllSync());
+              .findAllSync()
+              .isNotEmpty) {
+            containerPhotos.addAll(isarDatabase!.containerPhotos
+                .filter()
+                .containerUIDMatches(element.containerEntry.containerUID)
+                .findAllSync());
+          }
 
           List<ContainerPhotoThumbnail> thumbnails = [];
           if (containerPhotos.isNotEmpty) {
@@ -557,6 +574,8 @@ class _SearchViewState extends State<SearchView> {
                         q.photoPathMatches(element.photoPath))
                 .findAllSync();
           }
+
+          //log(containerPhotos.toString());
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -619,7 +638,6 @@ class _SearchViewState extends State<SearchView> {
         ),
         InkWell(
           onTap: () {
-            // ignore: todo
             //TODO: implement navigator. @049er
             Navigator.push(
               context,

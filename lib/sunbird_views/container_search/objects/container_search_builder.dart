@@ -3,10 +3,11 @@ import 'package:flutter_google_ml_kit/isar_database/container_photo_thumbnail/co
 
 //Used to show relevant photos
 class ContainerSearchBuilder {
-  ContainerSearchBuilder({required this.containerEntry, this.containerPhotos});
+  ContainerSearchBuilder(
+      {required this.containerEntry, this.containerThumbnails});
   //The contaienr entry is required.
   final ContainerEntry containerEntry;
 
   //The photos are to show relevant photos for the user.
-  List<ContainerPhotoThumbnail>? containerPhotos;
+  List<ContainerPhotoThumbnail>? containerThumbnails;
 }
