@@ -9,10 +9,10 @@ class PhotoData {
     required this.recognisedTexts,
   });
 
-  ///Photo Path
+  ///Photo Path [String]
   final String photoPath;
 
-  ///Photo Path
+  ///Photo Path [String]
   final String thumbnailPhotoPath;
 
   ///Photo labels [ImageLabel]

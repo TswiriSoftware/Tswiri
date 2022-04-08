@@ -82,7 +82,7 @@ class _ObjectDetectorCameraViewState extends State<ObjectDetectorCameraView> {
         width: 60,
         height: 60,
         child: FloatingActionButton(
-          backgroundColor: Colors.orange,
+          backgroundColor: widget.color,
           heroTag: null,
           onPressed: () async {
             try {
@@ -97,6 +97,7 @@ class _ObjectDetectorCameraViewState extends State<ObjectDetectorCameraView> {
                 MaterialPageRoute(
                   builder: (context) => ObjectDetectorProcessingView(
                     imagePath: image.path,
+                    customColor: widget.color,
                   ),
                 ),
               );

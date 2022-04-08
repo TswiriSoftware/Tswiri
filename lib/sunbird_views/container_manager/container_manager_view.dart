@@ -15,8 +15,9 @@ import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_generator/barcode_generator_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/add_container_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/add_container_view_new.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view_new.dart';
 
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
@@ -116,13 +117,24 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
     return FloatingActionButton(
       heroTag: null,
       onPressed: () async {
-        if (isarDatabase!.barcodePropertys.where().findAllSync().isEmpty) {
-          showAlertDialog(context);
+        int numberOfLinkedBarcodes = isarDatabase!.containerEntrys
+            .where()
+            .barcodeUIDProperty()
+            .findAllSync()
+            .length;
+
+        int numberOfBarcodes =
+            isarDatabase!.barcodePropertys.where().findAllSync().length;
+
+        if (numberOfBarcodes == 0) {
+          showAlertDialogNoBarcodesGenerated(context);
+        } else if (numberOfBarcodes == numberOfLinkedBarcodes) {
+          showAlertDialogNoUnlinkedbarcodes(context);
         }
 
         await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const AddContainerView()),
+          MaterialPageRoute(builder: (context) => const AddContainerViewNew()),
         );
         searchContainers();
         setState(() {});
@@ -163,7 +175,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
             onChanged: (value) {
               searchContainers();
             },
-            autofocus: true,
+            autofocus: false,
             decoration: const InputDecoration(
               contentPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
               suffixIcon: Icon(Icons.search),
@@ -276,8 +288,8 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
     if (searchController.text.isNotEmpty) {
       enabled = true;
     }
-    log(enabled.toString());
-    log(searchController.text);
+    // log(enabled.toString());
+    // log(searchController.text);
 
     if (containerTypeList.isNotEmpty) {
       searchResults = isarDatabase!.containerEntrys
@@ -395,7 +407,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ContainerView(
+                  builder: (context) => ContainerViewNew(
                     containerEntry: containerEntry,
                   ),
                 ),
@@ -584,6 +596,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
         for (ContainerPhoto containerPhoto in containerPhotos) {
           File(containerPhoto.photoPath).deleteSync();
         }
+
         //Delete on device photo Thumbnails
         for (ContainerPhotoThumbnail thumbnail in photoThumbnails) {
           File(thumbnail.thumbnailPhotoPath).deleteSync();
@@ -657,7 +670,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
     );
   }
 
-  showAlertDialog(BuildContext context) {
+  showAlertDialogNoBarcodesGenerated(BuildContext context) {
     // show the dialog
     showDialog(
       context: context,
@@ -669,6 +682,45 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
           ),
           content: Text(
             "You dont have any Barcodes Generate some.",
+            style: Theme.of(alertDialogContext).textTheme.labelSmall,
+          ),
+          actions: [
+            OrangeOutlineContainer(
+              padding: 0,
+              margin: 0,
+              child: TextButton(
+                child: Text(
+                  "Generate Barcodes",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                onPressed: () async {
+                  Navigator.pop(alertDialogContext);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const BarcodeGeneratorView()),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  showAlertDialogNoUnlinkedbarcodes(BuildContext context) {
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext alertDialogContext) {
+        return AlertDialog(
+          title: Text(
+            "No Unlinked Barcodes",
+            style: Theme.of(alertDialogContext).textTheme.labelLarge,
+          ),
+          content: Text(
+            "You dont have any Barcodes left to scan Generate some more.",
             style: Theme.of(alertDialogContext).textTheme.labelSmall,
           ),
           actions: [

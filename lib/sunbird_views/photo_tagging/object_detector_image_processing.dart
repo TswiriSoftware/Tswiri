@@ -14,11 +14,14 @@ import 'painter/object_detector_painter.dart';
 
 ///Displays the Photo and objects detected
 class ObjectDetectorProcessingView extends StatefulWidget {
-  const ObjectDetectorProcessingView({Key? key, required this.imagePath
-      //required this.barcodeID,
-      })
-      : super(key: key);
+  const ObjectDetectorProcessingView({
+    Key? key,
+    required this.imagePath,
+    this.customColor,
+    //required this.barcodeID,
+  }) : super(key: key);
   final String imagePath;
+  final Color? customColor;
 
   //final String barcodeID;
   @override
@@ -42,6 +45,8 @@ class _ObjectDetectorProcessingView
   List<String> photoTags = [];
   PhotoData? photoData;
 
+  bool isDone = false;
+
   @override
   void initState() {
     //Image Path.
@@ -63,25 +68,23 @@ class _ObjectDetectorProcessingView
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              FloatingActionButton(
-                backgroundColor: Colors.orange,
-                heroTag: null,
-                onPressed: () {
-                  Navigator.pop(context, photoData);
-                },
-                child: const Icon(Icons.check_circle_outline_rounded),
-              ),
-            ],
-          ),
-        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        floatingActionButton: Builder(builder: (context) {
+          if (isDone) {
+            return FloatingActionButton(
+              backgroundColor: widget.customColor ?? Colors.orange,
+              heroTag: null,
+              onPressed: () {
+                Navigator.pop(context, photoData);
+              },
+              child: const Icon(Icons.check_circle_outline_rounded),
+            );
+          } else {
+            return Row();
+          }
+        }),
         appBar: AppBar(
-          backgroundColor: Colors.orange,
+          backgroundColor: widget.customColor,
           title: const Text('Processing Image'),
         ),
         body: Stack(
@@ -275,6 +278,11 @@ class _ObjectDetectorProcessingView
     isarDatabase!.writeTxnSync(
       (isar) => isar.mlTags.putAllSync(newMlTags),
     );
+
+    if (isDone == false) {
+      isDone = true;
+      setState(() {});
+    }
   }
 
   Future<List<DetectedObject>> getObjectsOnImage(LocalModel localModel,

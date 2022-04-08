@@ -6,16 +6,17 @@ class ContainerType {
   ///ID
   int id = Isar.autoIncrement;
 
-  ///ContainerUID
+  ///ContainerUID.
   late String containerType;
 
-  ///Is children structured ?
-  ///If a container is structured it means that its children has to be are structured.
-  late bool hasMarker; // hasMarkers ?
+  ///ContaunerDescription.
+  late String containerDescription;
 
-  //Can this container be its childrens origin ?
-  //If it can then it needs a barcode.
-  late bool moveable; // Movable ?
+  ///Can this container be moved.
+  late bool moveable;
+
+  ///Is this container's barcode a marker by defaut.
+  late bool markerToChilren;
 
   ///List of containers that this container can contain.
   late List<String> canContain;
@@ -25,6 +26,6 @@ class ContainerType {
 
   @override
   String toString() {
-    return 'containerType: $containerType,\nstructured: $hasMarker,\ncanContain: $canContain,\ncolor $containerColor';
+    return 'containerType: $containerType,\ncontainerDescription: $containerDescription,\nmoveable: $moveable,\ncanContain: $canContain,\ncolor $containerColor';
   }
 }

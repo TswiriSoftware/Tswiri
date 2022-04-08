@@ -134,47 +134,47 @@ class _AddContainerViewState extends State<AddContainerView> {
             ),
 
             //Photo ?
-            Builder(
-              builder: (context) {
-                if ((selectedContainerType != null &&
-                        barcodeUID != null &&
-                        selectedContainerType!.hasMarker == true &&
-                        selectedContainerType!.moveable == false &&
-                        parentContainer != null) ||
-                    (selectedContainerType != null &&
-                        barcodeUID != null &&
-                        selectedContainerType!.hasMarker == false &&
-                        selectedContainerType!.moveable == true)) {
-                  return addPhoto();
-                } else {
-                  return Container();
-                }
-              },
-            ),
+            // Builder(
+            //   builder: (context) {
+            //     if ((selectedContainerType != null &&
+            //             barcodeUID != null &&
+            //             selectedContainerType!.hasMarker == true &&
+            //             selectedContainerType!.moveable == false &&
+            //             parentContainer != null) ||
+            //         (selectedContainerType != null &&
+            //             barcodeUID != null &&
+            //             selectedContainerType!.hasMarker == false &&
+            //             selectedContainerType!.moveable == true)) {
+            //       return addPhoto();
+            //     } else {
+            //       return Container();
+            //     }
+            //   },
+            // ),
 
-            //Create
-            Builder(
-              builder: (context) {
-                if ((selectedContainerType != null &&
-                        barcodeUID != null &&
-                        selectedContainerType!.hasMarker == true &&
-                        selectedContainerType!.moveable == false &&
-                        selectedContainerType!.containerType == 'area') ||
-                    (selectedContainerType != null &&
-                        barcodeUID != null &&
-                        selectedContainerType!.hasMarker == true &&
-                        selectedContainerType!.moveable == false &&
-                        parentContainer != null) ||
-                    (selectedContainerType != null &&
-                        barcodeUID != null &&
-                        selectedContainerType!.hasMarker == false &&
-                        selectedContainerType!.moveable == true)) {
-                  return _createContainer();
-                } else {
-                  return Container();
-                }
-              },
-            ),
+            // //Create
+            // Builder(
+            //   builder: (context) {
+            //     if ((selectedContainerType != null &&
+            //             barcodeUID != null &&
+            //             selectedContainerType!.hasMarker == true &&
+            //             selectedContainerType!.moveable == false &&
+            //             selectedContainerType!.containerType == 'area') ||
+            //         (selectedContainerType != null &&
+            //             barcodeUID != null &&
+            //             selectedContainerType!.hasMarker == true &&
+            //             selectedContainerType!.moveable == false &&
+            //             parentContainer != null) ||
+            //         (selectedContainerType != null &&
+            //             barcodeUID != null &&
+            //             selectedContainerType!.hasMarker == false &&
+            //             selectedContainerType!.moveable == true)) {
+            //       return _createContainer();
+            //     } else {
+            //       return Container();
+            //     }
+            //   },
+            // ),
           ],
         ),
       ),
@@ -203,7 +203,9 @@ class _AddContainerViewState extends State<AddContainerView> {
                         PhotoData? result = await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const ObjectDetectorView(),
+                            builder: (context) => ObjectDetectorView(
+                              customColor: containerColor,
+                            ),
                           ),
                         );
                         if (result != null) {

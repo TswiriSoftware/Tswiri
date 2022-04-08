@@ -6,7 +6,10 @@ import 'camera_view/object_dector_camera_view.dart';
 class ObjectDetectorView extends StatefulWidget {
   const ObjectDetectorView({
     Key? key,
+    this.customColor,
   }) : super(key: key);
+
+  final Color? customColor;
 
   @override
   _ObjectDetectorView createState() => _ObjectDetectorView();
@@ -29,7 +32,7 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
   @override
   Widget build(BuildContext context) {
     return ObjectDetectorCameraView(
-      color: Colors.orange,
+      color: widget.customColor ?? Colors.orange,
       title: 'Object Detector',
       customPaint: customPaint,
       onImage: (inputImage) {},

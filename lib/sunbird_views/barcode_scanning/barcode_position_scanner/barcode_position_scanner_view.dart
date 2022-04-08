@@ -1,12 +1,11 @@
 import 'dart:developer';
 
-import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
 import 'package:flutter_google_ml_kit/objects/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/painters/barcode_position_painter.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_camera_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_processing_view.dart';
-import 'package:vector_math/vector_math.dart';
+import 'package:vector_math/vector_math.dart' as vm;
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:sensors_plus/sensors_plus.dart';
@@ -17,11 +16,13 @@ class BarcodePositionScannerView extends StatefulWidget {
     required this.barcodesToScan,
     required this.gridMarkers,
     required this.parentContainerUID,
+    this.customColor,
   }) : super(key: key);
 
   final List<String> barcodesToScan;
   final List<String> gridMarkers;
   final String parentContainerUID;
+  final Color? customColor;
 
   @override
   _BarcodePositionScannerViewState createState() =>
@@ -40,17 +41,17 @@ class _BarcodePositionScannerViewState
   bool isBusy = false;
   CustomPaint? customPaint;
 
-  Vector3 accelerometerEvent = Vector3(0, 0, 0);
-  Vector3 userAccelerometerEvent = Vector3(0, 0, 0);
+  vm.Vector3 accelerometerEvent = vm.Vector3(0, 0, 0);
+  vm.Vector3 userAccelerometerEvent = vm.Vector3(0, 0, 0);
 
   @override
   void initState() {
     //Listen to accelerometer events.
     accelerometerEvents.listen((AccelerometerEvent event) {
-      accelerometerEvent = Vector3(event.x, event.y, event.z);
+      accelerometerEvent = vm.Vector3(event.x, event.y, event.z);
     });
     userAccelerometerEvents.listen((UserAccelerometerEvent event) {
-      userAccelerometerEvent = Vector3(event.x, event.y, event.z);
+      userAccelerometerEvent = vm.Vector3(event.x, event.y, event.z);
     });
 
     barcodesToScan = widget.barcodesToScan;
@@ -71,6 +72,7 @@ class _BarcodePositionScannerViewState
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
+          backgroundColor: widget.customColor,
           heroTag: null,
           onPressed: () {
             Navigator.pop(context);
@@ -89,7 +91,7 @@ class _BarcodePositionScannerViewState
           child: const Icon(Icons.check_circle_outline_rounded),
         ),
         body: BarcodePositionScannerCameraView(
-          color: brightOrange,
+          color: widget.customColor ?? Colors.deepOrange,
           title: 'Position Scanner',
           customPaint: customPaint,
           onImage: (inputImage) {
