@@ -299,13 +299,11 @@ class _BarcodePositionScannerProcessingViewState
         ..parentUID = widget.parentContainerUID;
       log('parentUID ' + relationship!.parentUID.toString());
       log('containerUID ' + containerEntry.containerUID);
-      if (relationship != null &&
-          relationship.parentUID != containerEntry.containerUID &&
+      if (relationship.parentUID != containerEntry.containerUID &&
           widget.parentContainerUID != containerEntry.containerUID) {
         log('adding');
         containerRelatiopnships.add(containerRelationship);
-      } else if (relationship == null &&
-          widget.parentContainerUID != containerEntry.containerUID) {
+      } else if (widget.parentContainerUID != containerEntry.containerUID) {
         containerRelatiopnships.add(containerRelationship);
       }
     }
