@@ -288,8 +288,7 @@ class _BarcodePositionScannerProcessingViewState
     List<ContainerRelationship> containerRelatiopnships = [];
     //TODO: delete existing Container RelationShips?
 
-    ContainerRelationship? containerParent = isarDatabase!
-        .containerRelationships
+    ContainerRelationship? relationship = isarDatabase!.containerRelationships
         .filter()
         .containerUIDMatches(widget.parentContainerUID)
         .findFirstSync();
@@ -298,10 +297,14 @@ class _BarcodePositionScannerProcessingViewState
       ContainerRelationship containerRelationship = ContainerRelationship()
         ..containerUID = containerEntry.containerUID
         ..parentUID = widget.parentContainerUID;
-
-      if (containerParent != null &&
-              containerParent.parentUID != containerEntry.containerUID &&
-              widget.parentContainerUID != containerEntry.containerUID ||
+      log('parentUID ' + relationship!.parentUID.toString());
+      log('containerUID ' + containerEntry.containerUID);
+      if (relationship != null &&
+          relationship.parentUID != containerEntry.containerUID &&
+          widget.parentContainerUID != containerEntry.containerUID) {
+        log('adding');
+        containerRelatiopnships.add(containerRelationship);
+      } else if (relationship == null &&
           widget.parentContainerUID != containerEntry.containerUID) {
         containerRelatiopnships.add(containerRelationship);
       }

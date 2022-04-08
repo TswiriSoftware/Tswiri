@@ -38,6 +38,8 @@ class _ContainerGridViewState extends State<ContainerGridView> {
   List<Marker> gridMarkers = [];
   List<String> barcodesToScan = [];
   List<String> markersToScan = [];
+  List<ContainerEntry> children = [];
+
   @override
   void initState() {
     containerEntry = widget.containerEntry;
@@ -155,6 +157,8 @@ class _ContainerGridViewState extends State<ContainerGridView> {
                                     containerEntry.containerUID),
                           ),
                         );
+
+                        updateGrid();
 
                         setState(() {});
                       },
@@ -369,8 +373,6 @@ class _ContainerGridViewState extends State<ContainerGridView> {
                           .parentUIDMatches(containerEntry.containerUID)
                           .findAllSync();
 
-                  List<ContainerEntry> children = [];
-
                   if (childrenRelationships.isNotEmpty) {
                     children = isarDatabase!.containerEntrys
                         .filter()
@@ -398,23 +400,20 @@ class _ContainerGridViewState extends State<ContainerGridView> {
   }
 
   void updateGrid() {
-    List<ContainerRelationship> childrenRelationships = isarDatabase!
-        .containerRelationships
+    List<ContainerRelationship> childrenRelationships = [];
+
+    childrenRelationships.addAll(isarDatabase!.containerRelationships
         .filter()
         .parentUIDMatches(containerEntry.containerUID)
+        .findAllSync());
+
+    children = isarDatabase!.containerEntrys
+        .filter()
+        .repeat(
+            childrenRelationships,
+            (q, ContainerRelationship element) =>
+                q.containerUIDMatches(element.containerUID))
         .findAllSync();
-
-    List<ContainerEntry> children = [];
-
-    if (childrenRelationships.isNotEmpty) {
-      children = isarDatabase!.containerEntrys
-          .filter()
-          .repeat(
-              childrenRelationships,
-              (q, ContainerRelationship element) =>
-                  q.containerUIDMatches(element.containerUID))
-          .findAllSync();
-    }
 
     for (ContainerEntry child in children) {
       barcodesToScan.add(child.barcodeUID!);
