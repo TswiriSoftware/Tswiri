@@ -29,6 +29,7 @@ class _GoogleLoginViewState extends State<GoogleLoginView> {
     });
 
     _googleSignIn.signInSilently();
+
     super.initState();
   }
 
