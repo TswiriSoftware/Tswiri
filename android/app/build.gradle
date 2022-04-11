@@ -37,9 +37,7 @@ def keystoreProperties = new Properties()
 android {
     compileSdkVersion 31
     
-    //ndkPath = "/home/werner/sdk/ndk/24.0.8215888/"
-
-
+    ndkPath = "/home/werner/sdk/ndk/24.0.8215888/"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -61,6 +59,10 @@ android {
         targetSdkVersion 31
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        // ndk {
+        //     abiFilters += listOf("arm64-v8a")
+        // }
+
     }
 
     signingConfigs {
@@ -105,4 +107,4 @@ dependencies {
     implementation 'com.google.mlkit:text-recognition:16.0.0-beta1'
 }
 
-//android.buildTypes.release.ndk.debugSymbolLevel = 'symbol_table'
+android.buildTypes.release.ndk.debugSymbolLevel = 'symbol_table'
