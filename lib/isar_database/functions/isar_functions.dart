@@ -1,5 +1,5 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/globalValues/isar_dir.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_generation_entry/barcode_generation_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_size_distance_entry/barcode_size_distance_entry.dart';
@@ -15,6 +15,9 @@ import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_ent
 import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
 import 'package:isar/isar.dart';
 import '../container_entry/container_entry.dart';
+
+///Isar dir
+Directory? isarDirectory;
 
 Isar? isarDatabase;
 
@@ -43,56 +46,58 @@ Isar openIsar() {
 }
 
 void createBasicContainerTypes() {
-  isarDatabase!.writeTxnSync(
-    (database) {
-      database.containerTypes.putSync(
-          ContainerType()
-            ..id = 1
-            ..containerType = 'area'
-            ..containerDescription =
-                '- An Area is a stationary container with a marker.\n- which can contain all other types of containers.'
-            ..canContain = ['shelf', 'box', 'drawer']
-            ..moveable = false
-            ..markerToChilren = true
-            ..containerColor = const Color(0xFFff420e).value.toString(),
-          replaceOnConflict: true);
+  if (isarDatabase!.containerTypes.where().findAllSync().length <= 1) {
+    isarDatabase!.writeTxnSync(
+      (database) {
+        database.containerTypes.putSync(
+            ContainerType()
+              ..id = 1
+              ..containerType = 'area'
+              ..containerDescription =
+                  '- An Area is a stationary container with a marker.\n- which can contain all other types of containers.'
+              ..canContain = ['shelf', 'box', 'drawer']
+              ..moveable = false
+              ..markerToChilren = true
+              ..containerColor = const Color(0xFFff420e).value.toString(),
+            replaceOnConflict: true);
 
-      database.containerTypes.putSync(
-          ContainerType()
-            ..id = 2
-            ..containerType = 'shelf'
-            ..containerDescription =
-                '- A Shelf is a stationary container with a marker.\n- which can contain Boxes and/or Drawers.'
-            ..canContain = ['box', 'drawer']
-            ..moveable = false
-            ..markerToChilren = true
-            ..containerColor = const Color(0xFF89da59).value.toString(),
-          replaceOnConflict: true);
+        database.containerTypes.putSync(
+            ContainerType()
+              ..id = 2
+              ..containerType = 'shelf'
+              ..containerDescription =
+                  '- A Shelf is a stationary container with a marker.\n- which can contain Boxes and/or Drawers.'
+              ..canContain = ['box', 'drawer']
+              ..moveable = false
+              ..markerToChilren = true
+              ..containerColor = const Color(0xFF89da59).value.toString(),
+            replaceOnConflict: true);
 
-      database.containerTypes.putSync(
-          ContainerType()
-            ..id = 3
-            ..containerType = 'drawer'
-            ..containerDescription =
-                '- A Drawer is a stationary container.\n- which can container shelfs or boxes.'
-            ..canContain = ['box', 'shelf']
-            ..moveable = false
-            ..markerToChilren = false
-            ..containerColor = Colors.blue.value.toString(),
-          replaceOnConflict: true);
+        database.containerTypes.putSync(
+            ContainerType()
+              ..id = 3
+              ..containerType = 'drawer'
+              ..containerDescription =
+                  '- A Drawer is a stationary container.\n- which can container shelfs or boxes.'
+              ..canContain = ['box', 'shelf']
+              ..moveable = false
+              ..markerToChilren = false
+              ..containerColor = Colors.blue.value.toString(),
+            replaceOnConflict: true);
 
-      database.containerTypes.putSync(
-          ContainerType()
-            ..id = 4
-            ..containerType = 'box'
-            ..containerDescription = '- A Box is a moveable container.'
-            ..canContain = ['box', 'shelf']
-            ..moveable = true
-            ..markerToChilren = false
-            ..containerColor = const Color(0xFFF98866).value.toString(),
-          replaceOnConflict: true);
-    },
-  );
+        database.containerTypes.putSync(
+            ContainerType()
+              ..id = 4
+              ..containerType = 'box'
+              ..containerDescription = '- A Box is a moveable container.'
+              ..canContain = ['box', 'shelf']
+              ..moveable = true
+              ..markerToChilren = false
+              ..containerColor = const Color(0xFFF98866).value.toString(),
+            replaceOnConflict: true);
+      },
+    );
+  }
 }
 
 Isar? closeIsar(Isar? database) {

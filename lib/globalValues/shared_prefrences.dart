@@ -22,11 +22,6 @@ String googleImageLabelingPreference = 'googleVision';
 String googleImageLabelingConfidenceThresholdPreference =
     'googleImageLabelingConfidenceThresholdPreference';
 
-///Google Vision preference. [bool]
-String googleVisionProductsPreference = 'googleVisionProducts';
-String googleVisionProductsConfidenceThresholdPreference =
-    'googleVisionProductsConfidenceThresholdPreference';
-
 ///InceptionV4 preference. [bool]
 String inceptionV4Preference = 'inceptionV4';
 String inceptionV4PreferenceConfidenceThresholdPreference =
