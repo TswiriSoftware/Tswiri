@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -652,7 +651,6 @@ class _SearchViewState extends State<SearchView> {
         ),
         InkWell(
           onTap: () {
-            //TODO: implement navigator. @049er
             Navigator.push(
               context,
               MaterialPageRoute(

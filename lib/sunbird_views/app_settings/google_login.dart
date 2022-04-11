@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -95,7 +97,7 @@ class _GoogleLoginViewState extends State<GoogleLoginView> {
     try {
       await _googleSignIn.signIn();
     } catch (error) {
-      print(error);
+      log(error.toString());
     }
   }
 

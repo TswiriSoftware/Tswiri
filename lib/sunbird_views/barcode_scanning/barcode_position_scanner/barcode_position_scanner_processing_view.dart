@@ -279,7 +279,7 @@ class _BarcodePositionScannerProcessingViewState
     }
     scannedBarcodes = scannedBarcodes.toSet().toList();
 
-    List<ContainerEntry> ContainerEntries = isarDatabase!.containerEntrys
+    List<ContainerEntry> containerEntries = isarDatabase!.containerEntrys
         .filter()
         .repeat(scannedBarcodes,
             (q, String element) => q.barcodeUIDMatches(element))
@@ -293,7 +293,7 @@ class _BarcodePositionScannerProcessingViewState
         .containerUIDMatches(widget.parentContainerUID)
         .findFirstSync();
 
-    for (ContainerEntry containerEntry in ContainerEntries) {
+    for (ContainerEntry containerEntry in containerEntries) {
       ContainerRelationship containerRelationship = ContainerRelationship()
         ..containerUID = containerEntry.containerUID
         ..parentUID = widget.parentContainerUID;

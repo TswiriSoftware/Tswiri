@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/extentions/capitalize_first_character.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
@@ -51,7 +49,7 @@ class _ContainerTypeViewState extends State<ContainerTypeView> {
                     showCheckBox = false;
                   });
                 },
-                icon: Icon(Icons.delete),
+                icon: const Icon(Icons.delete),
               );
             } else {
               return Row();
