@@ -24,9 +24,9 @@ class _ContainersViewState extends State<ContainersView> {
 
   @override
   void initState() {
-    if (isarDatabase!.containerTypes.where().findAllSync().isEmpty) {
-      createBasicContainerTypes();
-    }
+    // if (isarDatabase!.containerTypes.where().findAllSync().isEmpty) {
+    //   createBasicContainerTypes();
+    // }
 
     super.initState();
   }
