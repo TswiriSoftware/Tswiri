@@ -19,7 +19,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'sunbird_views/app_settings/app_settings_functions.dart';
 import 'sunbird_views/app_settings/app_settings_view.dart';
-import 'sunbird_views/container_system_debug/container_views/containers_view.dart';
 
 List<CameraDescription> cameras = [];
 
@@ -98,11 +97,12 @@ class MyApp extends StatelessWidget {
             const TextSelectionThemeData(cursorColor: Colors.deepOrange),
         textTheme: const TextTheme(
             labelLarge: TextStyle(fontSize: 20),
-            labelMedium: TextStyle(fontSize: 16),
-            labelSmall: TextStyle(fontSize: 14),
+            labelMedium: TextStyle(fontSize: 17),
+            labelSmall: TextStyle(fontSize: 15),
             titleLarge: TextStyle(fontSize: 25),
             titleMedium: TextStyle(fontSize: 18),
-            titleSmall: TextStyle(fontSize: 16)),
+            titleSmall: TextStyle(fontSize: 16),
+            bodyLarge: TextStyle(fontSize: 15)),
         inputDecorationTheme: const InputDecorationTheme(
           focusedBorder:
               UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
@@ -188,13 +188,6 @@ class HomeView extends StatelessWidget {
               featureCompleted: true,
               tileColor: Colors.deepOrange,
             ),
-            // CustomCard(
-            //   'Containers_debug',
-            //   ContainersView(),
-            //   Icons.add_box_outlined,
-            //   featureCompleted: true,
-            //   tileColor: Colors.deepOrange,
-            // ),
           ],
         ),
       ),
