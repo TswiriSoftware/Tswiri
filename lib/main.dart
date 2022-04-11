@@ -2,7 +2,6 @@ import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/firebase_options.dart';
-import 'package:flutter_google_ml_kit/globalValues/isar_dir.dart';
 import 'package:flutter_google_ml_kit/globalValues/routes.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_generator/barcode_generator_view.dart';
@@ -11,6 +10,7 @@ import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/camera_ca
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_manager_view.dart';
 
 import 'package:flutter_google_ml_kit/sunbird_views/container_search/search_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_types/container_types_view.dart';
 
 import 'package:flutter_google_ml_kit/sunbird_views/tag_manager/tag_manager_view.dart';
 import 'package:flutter_google_ml_kit/widgets/card_widgets/custom_card_widget.dart';
@@ -90,7 +90,7 @@ class MyApp extends StatelessWidget {
           fillColor: MaterialStateProperty.all(Colors.deepOrange),
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          foregroundColor: Colors.black,
+          foregroundColor: Colors.white,
           backgroundColor: Colors.deepOrange,
         ),
         textSelectionTheme:
@@ -185,6 +185,13 @@ class HomeView extends StatelessWidget {
               'Camera Calibraion',
               CameraCalibrationToolsView(),
               Icons.camera,
+              featureCompleted: true,
+              tileColor: Colors.deepOrange,
+            ),
+            CustomCard(
+              'Container Types',
+              ContainerTypeView(),
+              Icons.code,
               featureCompleted: true,
               tileColor: Colors.deepOrange,
             ),
