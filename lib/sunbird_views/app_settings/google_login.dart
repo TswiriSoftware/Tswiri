@@ -480,36 +480,8 @@ Future<String> getStorageDirectory() async {
 
 
 
-  // Future createBackupFiles(String backupPath) async {
-  //   //Container Types
-  //   await createJsonFile(backupPath, 'containerTypes');
 
-  //   //Container Entries
-  //   await createJsonFile(backupPath, 'containerEntries');
-
-  //   //Container Photos
-  //   await createJsonFile(backupPath, 'containerPhotos');
-
-  //   //Container Photo Thumbnails
-  //   await createJsonFile(backupPath, 'containerPhotoThumbnails');
-
-  //   //Photo Tags
-  //   await createJsonFile(backupPath, 'photoTags');
-
-  //   //mlTags
-  //   await createJsonFile(backupPath, 'mlTags');
-
-  //   //Markers
-  //   await createJsonFile(backupPath, 'markers');
-
-  //   //RealInterBarcodeVectorEntry
-  //   await createJsonFile(backupPath, 'realInterBarcodeVectorEntry');
-
-  //   //mlTags
-  //   await createJsonFile(backupPath, 'mlTags');
-  // }
-  
-
+  ///DECOING JASON ?
 
   // var x = await driveApi.files.list(driveId: folderID);
               // log(x.toString());
