@@ -121,7 +121,7 @@ class _ContainerViewState extends State<ContainerView> {
         if (showTagSearch) {
           //Navigate to bottom
           scrollController.animateTo(100000,
-              duration: Duration(microseconds: 5000), curve: Curves.ease);
+              duration: const Duration(microseconds: 5000), curve: Curves.ease);
           return _floatingTagSearch();
         } else {
           return Row();
@@ -892,23 +892,24 @@ class _ContainerViewState extends State<ContainerView> {
             },
             autofocus: true,
             decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.search),
+                  const Icon(Icons.search),
                   IconButton(
                     onPressed: () {
                       setState(() {
                         showTagSearch = false;
                       });
                     },
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                   )
                 ],
               ),
               labelText: 'Enter tag name',
-              labelStyle: TextStyle(fontSize: 18),
+              labelStyle: const TextStyle(fontSize: 18),
               border: InputBorder.none,
             ),
           ),
