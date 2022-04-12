@@ -12,6 +12,7 @@ import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/single_barcode_scanner/single_barcode_scanner_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_view.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
@@ -646,7 +647,6 @@ class _NewContainerViewState extends State<NewContainerView> {
             backgroundColor: containerColor,
             onPressed: () {
               createContainer();
-              Navigator.pop(context);
             },
             label: Row(
               children: [
@@ -701,6 +701,14 @@ class _NewContainerViewState extends State<NewContainerView> {
         isarDatabase!.writeTxnSync((isar) =>
             isar.containerRelationships.putSync(newContainerRelationship));
       }
+      //TODO: auto create marker @049er
+
+      Navigator.pop(context);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  ContainerView(containerEntry: newContainerEntry)));
     }
   }
 
