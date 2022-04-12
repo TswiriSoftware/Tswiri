@@ -18,4 +18,20 @@ class PhotoTag {
   String toString() {
     return 'photoPath: $photoPath, tagUID: $tagUID';
   }
+
+  Map toJson() => {
+        'id': id,
+        'photoPath': photoPath,
+        'tagUID': tagUID,
+        'confidence': confidence,
+      };
+
+  PhotoTag fromJson(Map<String, dynamic> json) {
+    return PhotoTag()
+      ..id = json['id']
+      ..photoPath = json['photoPath']
+      ..tagUID = json['tagUID'] as int
+      ..confidence = json['confidence'] as double
+      ..boundingBox = (json['boundingBox'] as List<dynamic>).cast<double>();
+  }
 }

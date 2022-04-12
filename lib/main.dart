@@ -49,6 +49,7 @@ Future<void> main() async {
 
   //Request Permissions.
   var status = await Permission.storage.status;
+
   if (status.isDenied) {
     Permission.storage.request();
   }

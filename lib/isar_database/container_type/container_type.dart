@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:isar/isar.dart';
 part 'container_type.g.dart';
 
@@ -27,5 +30,26 @@ class ContainerType {
   @override
   String toString() {
     return 'containerType: $containerType,\ncontainerDescription: $containerDescription,\nmoveable: $moveable,\ncanContain: $canContain,\ncolor $containerColor';
+  }
+
+  Map toJson() => {
+        'id': id,
+        'containerType': containerType,
+        'containerDescription': containerDescription,
+        'moveable': moveable,
+        'markerToChilren': markerToChilren,
+        'canContain': canContain,
+        'containerColor': containerColor,
+      };
+
+  ContainerType fromJson(Map<String, dynamic> json) {
+    return ContainerType()
+      ..id = json['id']
+      ..canContain = (json['canContain'] as List<dynamic>).cast<String>()
+      ..containerColor = json['containerColor']
+      ..containerDescription = json['containerDescription']
+      ..containerType = json['containerType']
+      ..markerToChilren = json['markerToChilren']
+      ..moveable = json['moveable'];
   }
 }

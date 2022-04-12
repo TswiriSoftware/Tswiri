@@ -19,4 +19,24 @@ class ContainerEntry {
   String toString() {
     return 'UID: $containerUID,\nType: $containerType,\nName: $name,\nDescription: $description,\nBarcodeUID $barcodeUID\n';
   }
+
+  Map toJson() => {
+        'id': id,
+        'containerUID': containerUID,
+        'containerType': containerType,
+        'name': name,
+        'description': description,
+        'barcodeUID': barcodeUID,
+      };
+
+  ContainerEntry fromJson(Map<String, dynamic> json) {
+    return ContainerEntry()
+      ..id = json['id']
+      ..containerUID = json['containerUID']
+      ..containerType = json['containerType']
+      ..name = json['name']
+      ..containerType = json['containerType']
+      ..description = json['description']
+      ..barcodeUID = json['barcodeUID'];
+  }
 }

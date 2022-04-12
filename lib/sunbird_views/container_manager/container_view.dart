@@ -52,9 +52,13 @@ class _ContainerViewState extends State<ContainerView> {
   bool showTagEditor = false;
   bool showTagSave = false;
 
+  bool showTagSearch = false;
+  FocusNode myFocusNode = FocusNode();
+
   List<int> assignedTags = [];
   List<int> allTags = [];
   //List<int> unassignedTags = [];
+  ScrollController scrollController = ScrollController();
 
   //Styling
   late Color outlineColor;
@@ -112,8 +116,20 @@ class _ContainerViewState extends State<ContainerView> {
         centerTitle: true,
         elevation: 0,
       ),
-      resizeToAvoidBottomInset: false,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Builder(builder: (context) {
+        if (showTagSearch) {
+          //Navigate to bottom
+          scrollController.animateTo(100000,
+              duration: Duration(microseconds: 5000), curve: Curves.ease);
+          return _floatingTagSearch();
+        } else {
+          return Row();
+        }
+      }),
+      resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
+        controller: scrollController,
         child: Column(
           children: [
             ///Nav History///
@@ -127,20 +143,21 @@ class _ContainerViewState extends State<ContainerView> {
             _childrenTile(),
             const Divider(),
 
-            ///Tags Tile///
-            _tagsTile(),
-            const Divider(),
-
             //Photos///
             _photosTile(),
             const Divider(),
 
             //Photo Tags///
             _photoTagsTile(),
+            const Divider(),
+
+            ///Tags Tile///
+            _tagsTile(),
+            const Divider(),
 
             //Spacing
             SizedBox(
-              height: MediaQuery.of(context).size.height / 8,
+              height: MediaQuery.of(context).size.height / 4,
             )
           ],
         ),
@@ -711,10 +728,11 @@ class _ContainerViewState extends State<ContainerView> {
     );
   }
 
-  ///TAGS///
+  ///TAGS UPDATED///
 
   Widget _tagsTile() {
     return LightContainer(
+      key: const Key('tagsTile'),
       margin: 2.5,
       padding: 0,
       backgroundColor: Colors.transparent,
@@ -735,22 +753,86 @@ class _ContainerViewState extends State<ContainerView> {
                     'Tags',
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
-                  _tagExpansionButtonBuilder(),
                 ],
               ),
             ),
             _dividerHeavy(),
             _assignedTagsBuilder(),
-            _unAssignedTagsBuilder(),
-            _tagTextFieldBuilder(),
           ],
         ),
       ),
     );
   }
 
+  Widget _floatingTagSearch() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      margin: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+          border: Border.all(color: Colors.deepOrange, width: 1),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(30),
+          ),
+          color: const Color(0xFF232323)),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          //closeTagSearch(),
+          _unassignedTagsBuilder(),
+          _dividerHeavy(),
+          _tagSearchField(),
+        ],
+      ),
+    );
+  }
+
+  Widget _unassignedTagsBuilder() {
+    return Builder(builder: (context) {
+      List<int> displayTags = [];
+      if (tagController.text.isNotEmpty) {
+        displayTags.addAll(isarDatabase!.tags
+            .filter()
+            .tagContains(tagController.text.toLowerCase(), caseSensitive: false)
+            .findAllSync()
+            .map((e) => e.id)
+            .where((element) => !assignedTags.contains(element)));
+      } else {
+        displayTags.addAll(isarDatabase!.tags
+            .filter()
+            .tagContains(tagController.text.toLowerCase(), caseSensitive: false)
+            .findAllSync()
+            .map((e) => e.id)
+            .where((element) => !assignedTags.contains(element))
+            .take(5));
+      }
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _dividerLight(),
+            Text('Unassigned Tags',
+                style: Theme.of(context).textTheme.bodySmall),
+            const SizedBox(
+              height: 5,
+            ),
+            Wrap(
+              runSpacing: 5,
+              spacing: 5,
+              children: displayTags.map((e) => tag(tagID: e)).toList(),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
   Widget _assignedTagsBuilder() {
     return Builder(builder: (context) {
+      List<Widget> tags = assignedTags.map((e) => tag(tagID: e)).toList();
+      tags.add(tag(add: '+'));
+      log(tags.length.toString());
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
         child: Column(
@@ -763,7 +845,7 @@ class _ContainerViewState extends State<ContainerView> {
             Wrap(
               runSpacing: 5,
               spacing: 5,
-              children: assignedTags.map((e) => tag(e)).toList(),
+              children: tags,
             ),
           ],
         ),
@@ -771,145 +853,139 @@ class _ContainerViewState extends State<ContainerView> {
     });
   }
 
-  Widget _unAssignedTagsBuilder() {
-    return Builder(builder: (context) {
-      List<int> displayTags = [];
-      displayTags.addAll(isarDatabase!.tags
-          .filter()
-          .tagContains(tagController.text.toLowerCase(), caseSensitive: false)
-          .findAllSync()
-          .map((e) => e.id)
-          .where((element) => !assignedTags.contains(element)));
+  Widget _tagSearchField() {
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: tagController,
+            onChanged: (value) {
+              setState(() {});
+            },
+            focusNode: myFocusNode,
+            onSubmitted: (value) {
+              //Check if tag exists
+              Tag? exists = isarDatabase!.tags
+                  .filter()
+                  .tagMatches(tagController.text.trim(), caseSensitive: false)
+                  .findFirstSync();
 
-      if (showTagEditor) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _dividerLight(),
-              Text('Unassigned Tags',
-                  style: Theme.of(context).textTheme.bodySmall),
-              const SizedBox(
-                height: 5,
+              String inputValue = tagController.text;
+
+              if (exists == null && inputValue.isNotEmpty) {
+                //Remove white spaces
+                inputValue.trim();
+
+                Tag newTag = Tag()..tag = inputValue;
+                isarDatabase!.writeTxnSync(
+                  (isar) => isar.tags.putSync(newTag),
+                );
+
+                //tagController.text = '';
+                assignedTags.add(newTag.id);
+                updateTags();
+                tagController.clear();
+                myFocusNode.requestFocus();
+
+                setState(() {});
+              }
+            },
+            autofocus: true,
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.search),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        showTagSearch = false;
+                      });
+                    },
+                    icon: Icon(Icons.close),
+                  )
+                ],
               ),
-              Wrap(
-                runSpacing: 5,
-                spacing: 5,
-                children: displayTags.map((e) => tag(e)).toList(),
+              labelText: 'Enter tag name',
+              labelStyle: TextStyle(fontSize: 18),
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget tag({int? tagID, String? add}) {
+    if (tagID != null) {
+      return InkWell(
+        onTap: () {
+          if (assignedTags.contains(tagID)) {
+            setState(() {
+              assignedTags.removeWhere((element) => element == tagID);
+              isarDatabase!.writeTxnSync((isar) => isar.containerTags
+                  .filter()
+                  .tagIDEqualTo(tagID)
+                  .deleteFirstSync());
+            });
+          } else if (!assignedTags.contains(tagID)) {
+            setState(() {
+              assignedTags.add(tagID);
+              isarDatabase!.writeTxnSync(
+                  (isar) => isar.containerTags.putSync(ContainerTag()
+                    ..containerUID = containerEntry.containerUID
+                    ..tagID = tagID));
+            });
+          } else {
+            //Throw exception to let user know they need to enter edit mode
+          }
+        },
+        child: Container(
+          child: Builder(builder: (context) {
+            String tag = isarDatabase!.tags.getSync(tagID)!.tag;
+            return Text(tag);
+          }),
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+          decoration: BoxDecoration(
+              border: Border.all(color: containerColor, width: 1),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(30),
               ),
-            ],
+              color: Colors.white10),
+        ),
+      );
+    } else {
+      if (!showTagSearch) {
+        return InkWell(
+          onTap: () {
+            setState(() {
+              showTagSearch = true;
+            });
+          },
+          child: Container(
+            child: Builder(builder: (context) {
+              String tag = '+';
+              return Text(
+                tag,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              );
+            }),
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 15),
+            decoration: BoxDecoration(
+                border: Border.all(color: containerColor, width: 1),
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(50),
+                ),
+                color: containerColor),
           ),
         );
       } else {
-        return Row();
+        return Container();
       }
-    });
+    }
   }
 
-  Widget tag(int tagID) {
-    return InkWell(
-      onTap: () {
-        if (assignedTags.contains(tagID) && showTagEditor == true) {
-          setState(() {
-            assignedTags.removeWhere((element) => element == tagID);
-            isarDatabase!.writeTxnSync((isar) => isar.containerTags
-                .filter()
-                .tagIDEqualTo(tagID)
-                .deleteFirstSync());
-          });
-        } else if (!assignedTags.contains(tagID)) {
-          setState(() {
-            assignedTags.add(tagID);
-            isarDatabase!.writeTxnSync(
-                (isar) => isar.containerTags.putSync(ContainerTag()
-                  ..containerUID = containerEntry.containerUID
-                  ..tagID = tagID));
-          });
-        } else {
-          //Throw exception to let user know they need to enter edit mode
-        }
-      },
-      child: Container(
-        child: Builder(builder: (context) {
-          String tag = isarDatabase!.tags.getSync(tagID)!.tag;
-          return Text(tag);
-        }),
-        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-        decoration: BoxDecoration(
-            border: Border.all(color: containerColor, width: 1),
-            borderRadius: const BorderRadius.all(
-              Radius.circular(30),
-            ),
-            color: Colors.white10),
-      ),
-    );
-  }
-
-  Widget _tagExpansionButtonBuilder() {
-    return InkWell(
-      onTap: () {
-        //Change is editting.
-        showTagEditor = !showTagEditor;
-
-        //Update Widget.
-        setState(() {});
-      },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          CustomOutlineContainer(
-            width: 80,
-            height: 35,
-            backgroundColor: Colors.white10,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-              child: Builder(builder: (context) {
-                if (showTagEditor) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'hide',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      const Icon(
-                        Icons.arrow_drop_up,
-                        size: 20,
-                      ),
-                    ],
-                  );
-                } else {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'show',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      const Icon(
-                        Icons.arrow_drop_down,
-                        size: 20,
-                      ),
-                    ],
-                  );
-                }
-              }),
-            ),
-            outlineColor: containerColor,
-          ),
-        ],
-      ),
-    );
-  }
-
-  //Not in active use
   void saveTags() {
     //Find existing container Tags.
     List<ContainerTag> containerTags = [];
@@ -934,82 +1010,6 @@ class _ContainerViewState extends State<ContainerView> {
         (isar) => isar.containerTags.putAllSync(newContainerTags));
 
     log(newContainerTags.toString());
-  }
-
-  Widget _tagTextFieldBuilder() {
-    return Builder(builder: (context) {
-      if (showTagEditor) {
-        return CustomOutlineContainer(
-          outlineColor: containerColor,
-          margin: 5,
-          padding: 8,
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: tagController,
-                  onChanged: (value) {
-                    setState(() {});
-                  },
-                  style: const TextStyle(fontSize: 18),
-                  textCapitalization: TextCapitalization.words,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white10,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                    labelText: 'New Tag...',
-                    labelStyle:
-                        const TextStyle(fontSize: 15, color: Colors.white),
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide(color: containerColor)),
-                    focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: containerColor)),
-                  ),
-                ),
-              ),
-              Builder(builder: (context) {
-                return InkWell(
-                  onTap: () {
-                    //Check if tag exists
-                    Tag? exists = isarDatabase!.tags
-                        .filter()
-                        .tagMatches(tagController.text.trim(),
-                            caseSensitive: false)
-                        .findFirstSync();
-
-                    String inputValue = tagController.text;
-
-                    if (exists == null && inputValue.isNotEmpty) {
-                      //Remove white spaces
-                      inputValue.trim();
-
-                      Tag newTag = Tag()..tag = inputValue;
-                      isarDatabase!.writeTxnSync(
-                        (isar) => isar.tags.putSync(newTag),
-                      );
-
-                      tagController.text = '';
-                      assignedTags.add(newTag.id);
-                      updateTags();
-                      setState(() {});
-                    }
-                  },
-                  child: CustomOutlineContainer(
-                    backgroundColor: containerColor,
-                    margin: 2.5,
-                    padding: 10,
-                    outlineColor: containerColor,
-                    child: const Icon(Icons.add),
-                  ),
-                );
-              })
-            ],
-          ),
-        );
-      } else {
-        return Row();
-      }
-    });
   }
 
   void updateTags() {

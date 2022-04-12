@@ -520,11 +520,6 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
       descriptionController.text = containerType.containerDescription;
     }
 
-    // containerType.containerType = nameController.text.toLowerCase();
-    // containerType.containerDescription = descriptionController.text;
-    // containerType.canContain = canContainTypes;
-    // containerType.containerColor = containerColor.value.toString();
-
     log(containerColor.toString());
     isarDatabase!.writeTxnSync((isar) => isar.containerTypes.putSync(
         ContainerType()
