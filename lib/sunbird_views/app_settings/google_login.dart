@@ -201,7 +201,7 @@ class _GoogleLoginViewState extends State<GoogleLoginView> {
 
         //Ensure files exists
         await createJsonFile(backupPath, fileName);
-        var backupFileContent;
+        dynamic backupFileContent;
 
         //TODO: finish this up will take a while :D;
 
@@ -227,12 +227,6 @@ class _GoogleLoginViewState extends State<GoogleLoginView> {
                 .findAllSync()
                 .map((e) => e.toJson())
                 .toList());
-            break;
-          case '':
-            break;
-          case '':
-            break;
-          case '':
             break;
           case '':
             break;
@@ -317,7 +311,7 @@ class _GoogleLoginViewState extends State<GoogleLoginView> {
       final files = found.files;
 
       if (files == null) {
-        print("Sign-in first Error");
+        log("Sign-in first Error");
         return null;
       }
 
@@ -355,10 +349,11 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
 class GoogleAuthClient extends http.BaseClient {
   final Map<String, String> _headers;
 
-  final http.Client _client = new http.Client();
+  final http.Client _client = http.Client();
 
   GoogleAuthClient(this._headers);
 
+  @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
     return _client.send(request..headers.addAll(_headers));
   }

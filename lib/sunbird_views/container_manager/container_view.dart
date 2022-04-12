@@ -1018,7 +1018,7 @@ class _ContainerViewState extends State<ContainerView> {
           onTap: () {
             itemScrollController.scrollTo(
                 index: 5,
-                duration: Duration(seconds: 1),
+                duration: const Duration(seconds: 1),
                 curve: Curves.easeInOutCubic);
             setState(() {
               showTagSearch = true;

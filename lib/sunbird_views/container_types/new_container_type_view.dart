@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_google_ml_kit/extentions/capitalize_first_character.dart';
+import 'package:flutter_google_ml_kit/functions/keyboard_functions/hide_keyboard.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_system_debug/create_container_views/container_single_create_view.dart';
+
 import 'package:isar/isar.dart';
 
 import '../../widgets/basic_outline_containers/custom_outline_container.dart';
