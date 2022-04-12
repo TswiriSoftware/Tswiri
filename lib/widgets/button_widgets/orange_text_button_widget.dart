@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 
+//TODO: remove dependencies @049er
 class OrangeTextButton extends StatelessWidget {
   const OrangeTextButton({Key? key, required this.text, required this.onTap})
       : super(key: key);

@@ -5,7 +5,7 @@ import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_size_distance_entry/barcode_size_distance_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
-import 'package:flutter_google_ml_kit/widgets/orange_text_button_widget.dart';
+import 'package:flutter_google_ml_kit/widgets/button_widgets/orange_text_button_widget.dart';
 
 import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
