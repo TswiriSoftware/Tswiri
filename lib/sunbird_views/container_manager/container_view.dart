@@ -104,6 +104,8 @@ class _ContainerViewState extends State<ContainerView> {
     super.dispose();
   }
 
+  //TODO: implement ScrollablePositionedList.
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,7 +123,7 @@ class _ContainerViewState extends State<ContainerView> {
         if (showTagSearch) {
           //Navigate to bottom
           scrollController.animateTo(100000,
-              duration: Duration(microseconds: 5000), curve: Curves.ease);
+              duration: const Duration(microseconds: 5000), curve: Curves.ease);
           return _floatingTagSearch();
         } else {
           return Row();
@@ -946,7 +948,7 @@ class _ContainerViewState extends State<ContainerView> {
             String tag = isarDatabase!.tags.getSync(tagID)!.tag;
             return Text(tag);
           }),
-          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           decoration: BoxDecoration(
               border: Border.all(color: containerColor, width: 1),
               borderRadius: const BorderRadius.all(
