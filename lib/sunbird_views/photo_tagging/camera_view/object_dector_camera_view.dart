@@ -60,7 +60,11 @@ class _ObjectDetectorCameraViewState extends State<ObjectDetectorCameraView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        centerTitle: true,
+        title: Text(
+          widget.title,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         backgroundColor: widget.color,
       ),
       body: FutureBuilder<void>(

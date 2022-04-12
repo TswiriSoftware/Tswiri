@@ -21,8 +21,8 @@ import 'package:isar/isar.dart';
 import '../../isar_database/container_photo_thumbnail/container_photo_thumbnail.dart';
 import 'objects/photo_data.dart';
 
-class AddContainerViewNew extends StatefulWidget {
-  const AddContainerViewNew({Key? key, this.parentContainer, this.barcodeUID})
+class NewContainerView extends StatefulWidget {
+  const NewContainerView({Key? key, this.parentContainer, this.barcodeUID})
       : super(key: key);
 
   //This is passed in if this screen is called from another container.
@@ -32,10 +32,10 @@ class AddContainerViewNew extends StatefulWidget {
   final String? barcodeUID;
 
   @override
-  State<AddContainerViewNew> createState() => _AddContainerViewNewState();
+  State<NewContainerView> createState() => _NewContainerViewState();
 }
 
-class _AddContainerViewNewState extends State<AddContainerViewNew> {
+class _NewContainerViewState extends State<NewContainerView> {
   //1. Parent container if Provided. (Optional)
   ContainerEntry? parentContainer;
 

@@ -4,7 +4,7 @@ import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_pro
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_manager/objects/barcode_manager_object.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/add_container_view_new.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/new_container_view.dart';
 
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
@@ -147,7 +147,7 @@ class _BarcodeManagerViewState extends State<BarcodeManagerView> {
             await Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => AddContainerViewNew(
+                  builder: (context) => NewContainerView(
                         barcodeUID: barcodeUID,
                       )),
             );

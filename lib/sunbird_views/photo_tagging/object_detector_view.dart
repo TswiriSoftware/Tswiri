@@ -33,7 +33,7 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
   Widget build(BuildContext context) {
     return ObjectDetectorCameraView(
       color: widget.customColor ?? Colors.orange,
-      title: 'Object Detector',
+      title: 'Image Labeling',
       customPaint: customPaint,
       onImage: (inputImage) {},
       initialDirection: CameraLensDirection.back,

@@ -85,7 +85,11 @@ class _ObjectDetectorProcessingView
         }),
         appBar: AppBar(
           backgroundColor: widget.customColor,
-          title: const Text('Processing Image'),
+          centerTitle: true,
+          title: Text(
+            'Image Processing',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
         ),
         body: Stack(
           fit: StackFit.expand,

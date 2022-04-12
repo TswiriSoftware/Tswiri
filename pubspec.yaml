@@ -63,6 +63,7 @@ dependencies:
   firebase_auth: ^3.3.12
   cloud_firestore: ^3.1.11
   flutter_colorpicker: ^1.0.3
+  scrollable_positioned_list: ^0.2.3
   
 
 

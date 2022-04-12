@@ -5,11 +5,11 @@ import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
 
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/container_new_markers.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/grid_visualizer_painter.dart';
 
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/widgets/container_display_widget.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
@@ -418,5 +418,70 @@ class _ContainerGridViewState extends State<ContainerGridView> {
     }
 
     setState(() {});
+  }
+
+  Widget containerDisplayWidget(ContainerEntry containerEntry) {
+    return Builder(
+      builder: (context) {
+        Color containerTypeColor =
+            getContainerColor(containerUID: containerEntry.containerUID);
+        return InkWell(
+          onTap: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ContainerView(
+                  containerEntry: containerEntry,
+                ),
+              ),
+            );
+          },
+          child: LightContainer(
+            margin: 2.5,
+            padding: 2.5,
+            child: CustomOutlineContainer(
+              outlineColor: containerTypeColor,
+              margin: 2.5,
+              padding: 5,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Container Name/UID',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  Text(
+                    containerEntry.name ?? containerEntry.containerUID,
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                  const Divider(
+                    height: 5,
+                  ),
+                  Text(
+                    'Description',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  Text(
+                    containerEntry.description ?? '',
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                  const Divider(
+                    height: 5,
+                  ),
+                  Text(
+                    'BarcodeUID',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  Text(
+                    containerEntry.barcodeUID ?? '',
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }

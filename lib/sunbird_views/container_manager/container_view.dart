@@ -17,8 +17,9 @@ import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_ou
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-import 'add_container_view_new.dart';
+import 'new_container_view.dart';
 import 'objects/photo_data.dart';
 
 class ContainerView extends StatefulWidget {
@@ -34,7 +35,12 @@ class ContainerView extends StatefulWidget {
 }
 
 class _ContainerViewState extends State<ContainerView> {
-  //Conmtainer.
+  //Scroll controller
+  final ItemScrollController itemScrollController = ItemScrollController();
+  final ItemPositionsListener itemPositionsListener =
+      ItemPositionsListener.create();
+
+  //Container.
   late ContainerEntry containerEntry;
   late Color containerColor;
 
@@ -57,8 +63,6 @@ class _ContainerViewState extends State<ContainerView> {
 
   List<int> assignedTags = [];
   List<int> allTags = [];
-  //List<int> unassignedTags = [];
-  ScrollController scrollController = ScrollController();
 
   //Styling
   late Color outlineColor;
@@ -122,48 +126,72 @@ class _ContainerViewState extends State<ContainerView> {
       floatingActionButton: Builder(builder: (context) {
         if (showTagSearch) {
           //Navigate to bottom
-          scrollController.animateTo(100000,
-              duration: const Duration(microseconds: 5000), curve: Curves.ease);
+
           return _floatingTagSearch();
         } else {
           return Row();
         }
       }),
       resizeToAvoidBottomInset: true,
-      body: SingleChildScrollView(
-        controller: scrollController,
-        child: Column(
-          children: [
-            ///Nav History///
-            _navigationHistory(),
+      body: Builder(builder: (context) {
+        List<Widget> body = [
+          _navigationHistory(),
+          _bodyDivider(),
+          _infoTile(),
+          _bodyDivider(),
+          _childrenTile(),
+          _bodyDivider(),
+          _tagsTile(),
+          _bodyDivider(),
+          _photosTile(),
+          _bodyDivider(),
+          _photoTagsTile(),
+          SizedBox(
+            height: MediaQuery.of(context).size.height / 4,
+          ),
+        ];
+        return ScrollablePositionedList.builder(
+          itemCount: body.length,
+          itemBuilder: (context, index) => body[index],
+          itemScrollController: itemScrollController,
+          itemPositionsListener: itemPositionsListener,
+        );
+      }),
 
-            ///Info Tile///
-            _infoTile(),
-            const Divider(),
+      //  SingleChildScrollView(
+      //   controller: scrollController,
+      //   child: Column(
+      //     children: [
+      //       ///Nav History///
+      //       _navigationHistory(),
 
-            ///Children Tile///
-            _childrenTile(),
-            const Divider(),
+      //       ///Info Tile///
+      //       _infoTile(),
+      //       const Divider(),
 
-            //Photos///
-            _photosTile(),
-            const Divider(),
+      //       ///Children Tile///
+      //       _childrenTile(),
+      //       const Divider(),
 
-            //Photo Tags///
-            _photoTagsTile(),
-            const Divider(),
+      //       //Photos///
+      //       _photosTile(),
+      //       const Divider(),
 
-            ///Tags Tile///
-            _tagsTile(),
-            const Divider(),
+      //       //Photo Tags///
+      //       _photoTagsTile(),
+      //       const Divider(),
 
-            //Spacing
-            SizedBox(
-              height: MediaQuery.of(context).size.height / 4,
-            )
-          ],
-        ),
-      ),
+      //       ///Tags Tile///
+      //       _tagsTile(),
+      //       const Divider(),
+
+      //       //Spacing
+      // SizedBox(
+      //   height: MediaQuery.of(context).size.height / 4,
+      // )
+      //     ],
+      //   ),
+      // ),
     );
   }
 
@@ -644,7 +672,7 @@ class _ContainerViewState extends State<ContainerView> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => AddContainerViewNew(
+            builder: (context) => NewContainerView(
               parentContainer: containerEntry,
             ),
           ),
@@ -780,6 +808,7 @@ class _ContainerViewState extends State<ContainerView> {
         mainAxisSize: MainAxisSize.min,
         children: [
           //closeTagSearch(),
+          _closeTagSearch(),
           _unassignedTagsBuilder(),
           _dividerHeavy(),
           _tagSearchField(),
@@ -805,7 +834,7 @@ class _ContainerViewState extends State<ContainerView> {
             .findAllSync()
             .map((e) => e.id)
             .where((element) => !assignedTags.contains(element))
-            .take(5));
+            .take(3));
       }
 
       return Padding(
@@ -866,52 +895,78 @@ class _ContainerViewState extends State<ContainerView> {
             },
             focusNode: myFocusNode,
             onSubmitted: (value) {
-              //Check if tag exists
-              Tag? exists = isarDatabase!.tags
-                  .filter()
-                  .tagMatches(tagController.text.trim(), caseSensitive: false)
-                  .findFirstSync();
+              if (value.isEmpty) {
+                setState(() {
+                  showTagSearch = false;
+                });
+              } else {
+                //Check if tag exists
+                Tag? exists = isarDatabase!.tags
+                    .filter()
+                    .tagMatches(tagController.text.trim(), caseSensitive: false)
+                    .findFirstSync();
 
-              String inputValue = tagController.text;
+                String inputValue = tagController.text;
 
-              if (exists == null && inputValue.isNotEmpty) {
-                //Remove white spaces
-                inputValue.trim();
+                if (exists == null && inputValue.isNotEmpty) {
+                  //Remove white spaces
+                  inputValue.trim();
 
-                Tag newTag = Tag()..tag = inputValue;
-                isarDatabase!.writeTxnSync(
-                  (isar) => isar.tags.putSync(newTag),
-                );
+                  Tag newTag = Tag()..tag = inputValue;
+                  isarDatabase!.writeTxnSync(
+                    (isar) => isar.tags.putSync(newTag),
+                  );
 
-                //tagController.text = '';
-                assignedTags.add(newTag.id);
-                updateTags();
-                tagController.clear();
-                myFocusNode.requestFocus();
+                  //tagController.text = '';
+                  assignedTags.add(newTag.id);
+                  updateTags();
+                  tagController.clear();
+                  myFocusNode.requestFocus();
 
-                setState(() {});
+                  setState(() {});
+                }
               }
             },
             autofocus: true,
             decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: [
+                children: const [
                   Icon(Icons.search),
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        showTagSearch = false;
-                      });
-                    },
-                    icon: Icon(Icons.close),
-                  )
                 ],
               ),
               labelText: 'Enter tag name',
-              labelStyle: TextStyle(fontSize: 18),
+              labelStyle: const TextStyle(fontSize: 18),
               border: InputBorder.none,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _closeTagSearch() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        InkWell(
+          onTap: () {
+            setState(() {
+              showTagSearch = false;
+            });
+          },
+          child: CustomOutlineContainer(
+            padding: 2.5,
+            margin: 0,
+            outlineColor: containerColor,
+            child: const Center(
+              child: Icon(
+                Icons.close,
+                size: 20,
+                color: Colors.white,
+              ),
             ),
           ),
         ),
@@ -961,6 +1016,10 @@ class _ContainerViewState extends State<ContainerView> {
       if (!showTagSearch) {
         return InkWell(
           onTap: () {
+            itemScrollController.scrollTo(
+                index: 5,
+                duration: Duration(seconds: 1),
+                curve: Curves.easeInOutCubic);
             setState(() {
               showTagSearch = true;
             });
@@ -977,7 +1036,7 @@ class _ContainerViewState extends State<ContainerView> {
             decoration: BoxDecoration(
                 border: Border.all(color: containerColor, width: 1),
                 borderRadius: const BorderRadius.all(
-                  Radius.circular(50),
+                  Radius.circular(20),
                 ),
                 color: containerColor),
           ),
@@ -1063,10 +1122,10 @@ class _ContainerViewState extends State<ContainerView> {
           .containerUIDMatches(containerEntry.containerUID)
           .findAllSync());
 
-      List<Widget> photoWidgets =
-          containerPhotos.map((e) => photoDisplayWidget(e)).toList();
+      List<Widget> photoWidgets = [_photoAddButton()];
 
-      photoWidgets.add(_photoAddButton());
+      photoWidgets
+          .addAll(containerPhotos.map((e) => photoDisplayWidget(e)).toList());
 
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
@@ -1084,7 +1143,7 @@ class _ContainerViewState extends State<ContainerView> {
 
   Widget photoDisplayWidget(ContainerPhoto containerPhoto) {
     return Stack(
-      alignment: AlignmentDirectional.bottomStart,
+      alignment: AlignmentDirectional.topStart,
       children: [
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.29,
@@ -1097,21 +1156,25 @@ class _ContainerViewState extends State<ContainerView> {
           ),
         ),
         Container(
-          width: 40,
-          height: 40,
-          child: IconButton(
-            iconSize: 20,
-            onPressed: () {
-              deletePhoto(containerPhoto);
-              setState(() {});
-            },
-            icon: const Icon(Icons.delete),
-            color: Colors.white,
+          width: 35,
+          height: 35,
+          margin: const EdgeInsets.all(5),
+          padding: const EdgeInsets.all(0),
+          child: Center(
+            child: IconButton(
+              iconSize: 15,
+              onPressed: () {
+                deletePhoto(containerPhoto);
+                setState(() {});
+              },
+              icon: const Icon(Icons.delete),
+              color: Colors.white,
+            ),
           ),
           decoration: BoxDecoration(
               border: Border.all(color: containerColor, width: 1),
               borderRadius: const BorderRadius.all(
-                Radius.circular(20),
+                Radius.circular(5),
               ),
               color: containerColor.withOpacity(0.5)),
         ),
@@ -1137,9 +1200,9 @@ class _ContainerViewState extends State<ContainerView> {
       },
       child: CustomOutlineContainer(
           backgroundColor: Colors.white10,
-          margin: 2.5,
-          width: MediaQuery.of(context).size.width * 0.2,
-          height: MediaQuery.of(context).size.width * 0.2,
+          margin: 0,
+          width: MediaQuery.of(context).size.width * 0.29,
+          height: MediaQuery.of(context).size.width * 0.5,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
             child: Row(
@@ -1450,6 +1513,13 @@ class _ContainerViewState extends State<ContainerView> {
       height: 10,
       thickness: 1,
       color: Colors.white,
+    );
+  }
+
+  Widget _bodyDivider() {
+    return const Divider(
+      thickness: 0.5,
+      height: 5,
     );
   }
 }
