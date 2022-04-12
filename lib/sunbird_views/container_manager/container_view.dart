@@ -1042,7 +1042,6 @@ class _ContainerViewState extends State<ContainerView> {
                     'Photo(s)',
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
-                  _photoAddButton(),
                 ],
               ),
             ),
@@ -1062,32 +1061,28 @@ class _ContainerViewState extends State<ContainerView> {
           .containerUIDMatches(containerEntry.containerUID)
           .findAllSync());
 
-      if (containerPhotos.isNotEmpty) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-          child: Wrap(
-            runSpacing: 5,
-            spacing: 8,
-            children:
-                containerPhotos.map((e) => photoDisplayWidget(e)).toList(),
-          ),
-        );
-      } else {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'no photos',
-              style: Theme.of(context).textTheme.bodySmall,
-            )
-          ],
-        );
-      }
+      List<Widget> photoWidgets =
+          containerPhotos.map((e) => photoDisplayWidget(e)).toList();
+
+      photoWidgets.add(_photoAddButton());
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+        child: Wrap(
+          runAlignment: WrapAlignment.center,
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          runSpacing: 5,
+          spacing: 8,
+          children: photoWidgets,
+        ),
+      );
     });
   }
 
   Widget photoDisplayWidget(ContainerPhoto containerPhoto) {
     return Stack(
+      alignment: AlignmentDirectional.bottomStart,
       children: [
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.29,
@@ -1099,39 +1094,24 @@ class _ContainerViewState extends State<ContainerView> {
             ),
           ),
         ),
-        IconButton(
-          onPressed: () {
-            //Delete Photo.
-            File(containerPhoto.photoPath).delete();
-
-            //Delete Photo Thumbnail.
-            File(isarDatabase!.containerPhotoThumbnails
-                    .filter()
-                    .photoPathMatches(containerPhoto.photoPath)
-                    .findFirstSync()!
-                    .thumbnailPhotoPath)
-                .delete();
-
-            //Delete References from database.
-            isarDatabase!.writeTxnSync((isar) {
-              isar.containerPhotos
-                  .filter()
-                  .photoPathMatches(containerPhoto.photoPath)
-                  .deleteFirstSync();
-              isar.containerPhotoThumbnails
-                  .filter()
-                  .photoPathMatches(containerPhoto.photoPath)
-                  .deleteFirstSync();
-              isar.photoTags
-                  .filter()
-                  .photoPathMatches(containerPhoto.photoPath)
-                  .deleteAllSync();
-            });
-
-            setState(() {});
-          },
-          icon: const Icon(Icons.delete),
-          color: containerColor,
+        Container(
+          width: 40,
+          height: 40,
+          child: IconButton(
+            iconSize: 20,
+            onPressed: () {
+              deletePhoto(containerPhoto);
+              setState(() {});
+            },
+            icon: const Icon(Icons.delete),
+            color: Colors.white,
+          ),
+          decoration: BoxDecoration(
+              border: Border.all(color: containerColor, width: 1),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(20),
+              ),
+              color: containerColor.withOpacity(0.5)),
         ),
       ],
     );
@@ -1156,22 +1136,15 @@ class _ContainerViewState extends State<ContainerView> {
       child: CustomOutlineContainer(
           backgroundColor: Colors.white10,
           margin: 2.5,
-          width: 80,
-          height: 35,
+          width: MediaQuery.of(context).size.width * 0.2,
+          height: MediaQuery.of(context).size.width * 0.2,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'add',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                const Icon(
-                  Icons.camera,
+              children: const [
+                Icon(
+                  Icons.add_a_photo,
                   size: 20,
                 ),
               ],
@@ -1179,6 +1152,35 @@ class _ContainerViewState extends State<ContainerView> {
           ),
           outlineColor: containerColor),
     );
+  }
+
+  void deletePhoto(ContainerPhoto containerPhoto) {
+    //Delete Photo.
+    File(containerPhoto.photoPath).delete();
+
+    //Delete Photo Thumbnail.
+    File(isarDatabase!.containerPhotoThumbnails
+            .filter()
+            .photoPathMatches(containerPhoto.photoPath)
+            .findFirstSync()!
+            .thumbnailPhotoPath)
+        .delete();
+
+    //Delete References from database.
+    isarDatabase!.writeTxnSync((isar) {
+      isar.containerPhotos
+          .filter()
+          .photoPathMatches(containerPhoto.photoPath)
+          .deleteFirstSync();
+      isar.containerPhotoThumbnails
+          .filter()
+          .photoPathMatches(containerPhoto.photoPath)
+          .deleteFirstSync();
+      isar.photoTags
+          .filter()
+          .photoPathMatches(containerPhoto.photoPath)
+          .deleteAllSync();
+    });
   }
 
   void addNewPhoto(PhotoData photoData) {
