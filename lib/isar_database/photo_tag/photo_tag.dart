@@ -24,6 +24,7 @@ class PhotoTag {
         'photoPath': photoPath,
         'tagUID': tagUID,
         'confidence': confidence,
+        'boundingBox': boundingBox,
       };
 
   PhotoTag fromJson(Map<String, dynamic> json) {

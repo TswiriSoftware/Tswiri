@@ -14,6 +14,19 @@ class MlTag {
   String toString() {
     return 'tag: $tag';
   }
+
+  Map toJson() => {
+        'id': id,
+        'tag': tag,
+        'tagType': tagType.name,
+      };
+
+  MlTag fromJson(Map<String, dynamic> json) {
+    return MlTag()
+      ..id = json['id']
+      ..tag = json['tag']
+      ..tagType = mlTagType.values.byName(json['tagType']);
+  }
 }
 
 enum mlTagType {

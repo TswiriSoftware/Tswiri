@@ -13,4 +13,17 @@ class ContainerPhotoThumbnail {
   String toString() {
     return 'PhotoPath: $photoPath: ThumbnailPhotoPath: $thumbnailPhotoPath';
   }
+
+  Map toJson() => {
+        'id': id,
+        'photoPath': photoPath,
+        'thumbnailPhotoPath': thumbnailPhotoPath,
+      };
+
+  ContainerPhotoThumbnail fromJson(Map<String, dynamic> json) {
+    return ContainerPhotoThumbnail()
+      ..id = json['id']
+      ..photoPath = json['photoPath']
+      ..thumbnailPhotoPath = json['thumbnailPhotoPath'];
+  }
 }

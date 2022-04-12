@@ -16,4 +16,17 @@ class ContainerRelationship {
   String toString() {
     return 'containerUID: $containerUID,\nparentUID: $parentUID';
   }
+
+  Map toJson() => {
+        'id': id,
+        'containerUID': containerUID,
+        'parentUID': parentUID,
+      };
+
+  ContainerRelationship fromJson(Map<String, dynamic> json) {
+    return ContainerRelationship()
+      ..id = json['id']
+      ..containerUID = json['containerUID']
+      ..parentUID = json['parentUID'];
+  }
 }

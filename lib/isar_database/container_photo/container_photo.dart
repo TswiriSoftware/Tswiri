@@ -13,4 +13,17 @@ class ContainerPhoto {
   String toString() {
     return 'UID: $containerUID: Tag: $photoPath';
   }
+
+  Map toJson() => {
+        'id': id,
+        'containerUID': containerUID,
+        'photoPath': photoPath,
+      };
+
+  ContainerPhoto fromJson(Map<String, dynamic> json) {
+    return ContainerPhoto()
+      ..id = json['id']
+      ..containerUID = json['containerUID']
+      ..photoPath = json['photoPath'];
+  }
 }

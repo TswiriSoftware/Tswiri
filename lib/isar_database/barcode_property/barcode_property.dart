@@ -13,4 +13,17 @@ class BarcodeProperty {
   String toString() {
     return 'barcodeUID: $barcodeUID: size(mm): $size';
   }
+
+  Map toJson() => {
+        'id': id,
+        'barcodeUID': barcodeUID,
+        'size': size,
+      };
+
+  BarcodeProperty fromJson(Map<String, dynamic> json) {
+    return BarcodeProperty()
+      ..id = json['id']
+      ..barcodeUID = json['barcodeUID']
+      ..size = json['size'] as double;
+  }
 }
