@@ -57,6 +57,7 @@ Future<void> main() async {
   //Get App Settings. From Shared Prefernces.
   getCurrentAppSettings();
 
+  //Get support directory
   isarDirectory =
       await getApplicationSupportDirectory(); // path_provider package
 

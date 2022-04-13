@@ -23,13 +23,14 @@ import '../../isar_database/container_photo_thumbnail/container_photo_thumbnail.
 import 'objects/photo_data.dart';
 
 class NewContainerView extends StatefulWidget {
-  const NewContainerView(
-      {Key? key, this.parentContainer, this.barcodeUID, this.navigatorHistory})
-      : super(key: key);
+  const NewContainerView({
+    Key? key,
+    this.parentContainer,
+    this.barcodeUID,
+  }) : super(key: key);
 
   //This is passed in if this screen is called from another container.
   final ContainerEntry? parentContainer;
-  final List<ContainerEntry>? navigatorHistory;
 
   //If the barcodeUID is passed in.
   final String? barcodeUID;
@@ -711,14 +712,17 @@ class _NewContainerViewState extends State<NewContainerView> {
         isarDatabase!.writeTxnSync((isar) => isar.markers.putSync(newMarker));
       }
 
-      Navigator.pop(context);
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => ContainerView(
-                    containerEntry: newContainerEntry,
-                    navigatorHistory: widget.navigatorHistory,
-                  )));
+      if (parentContainer != null) {
+        Navigator.pop(context);
+      } else {
+        Navigator.pop(context);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ContainerView(
+                      containerEntry: newContainerEntry,
+                    )));
+      }
     }
   }
 

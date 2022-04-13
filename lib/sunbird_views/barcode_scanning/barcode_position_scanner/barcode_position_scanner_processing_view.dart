@@ -180,16 +180,6 @@ class _BarcodePositionScannerProcessingViewState
       heroTag: null,
       onPressed: () {
         Navigator.pop(context);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BarcodePositionScannerDataVisualizationView(
-              parentContainerUID: widget.parentContainerUID,
-              barcodesToScan: widget.barcodesToScan,
-              gridMarkers: widget.gridMarkers,
-            ),
-          ),
-        );
       },
       child: const Icon(Icons.check_circle_outline_rounded),
     );
@@ -293,58 +283,58 @@ class _BarcodePositionScannerProcessingViewState
         .containerUIDMatches(widget.parentContainerUID)
         .findFirstSync();
 
-    //TODO: Sort this mess out @049er.
+    // //TODO: Sort this mess out @049er.
 
-    for (ContainerEntry containerEntry in containerEntries) {
-      if (relationship != null &&
-          containerEntry.containerUID != widget.parentContainerUID &&
-          widget.parentContainerUID != relationship.containerUID) {
-        if (isarDatabase!.containerRelationships
-                .filter()
-                .containerUIDMatches(containerEntry.containerUID)
-                .and()
-                .parentUIDMatches(widget.parentContainerUID)
-                .findFirstSync() ==
-            null) {
-          if (isarDatabase!.containerRelationships
-                  .filter()
-                  .containerUIDMatches(containerEntry.containerUID)
-                  .findFirstSync() ==
-              null) {
-            ContainerRelationship containerRelationship =
-                ContainerRelationship()
-                  ..containerUID = containerEntry.containerUID
-                  ..parentUID = widget.parentContainerUID;
+    // for (ContainerEntry containerEntry in containerEntries) {
+    //   if (relationship != null &&
+    //       containerEntry.containerUID != widget.parentContainerUID &&
+    //       widget.parentContainerUID != relationship.containerUID) {
+    //     if (isarDatabase!.containerRelationships
+    //             .filter()
+    //             .containerUIDMatches(containerEntry.containerUID)
+    //             .and()
+    //             .parentUIDMatches(widget.parentContainerUID)
+    //             .findFirstSync() ==
+    //         null) {
+    //       if (isarDatabase!.containerRelationships
+    //               .filter()
+    //               .containerUIDMatches(containerEntry.containerUID)
+    //               .findFirstSync() ==
+    //           null) {
+    //         ContainerRelationship containerRelationship =
+    //             ContainerRelationship()
+    //               ..containerUID = containerEntry.containerUID
+    //               ..parentUID = widget.parentContainerUID;
 
-            containerRelatiopnships.add(containerRelationship);
-            log(containerRelationship.toString());
-          }
-        }
-      } else if (relationship == null &&
-          containerEntry.containerUID != widget.parentContainerUID) {
-        if (isarDatabase!.containerRelationships
-                .filter()
-                .containerUIDMatches(containerEntry.containerUID)
-                .and()
-                .parentUIDMatches(widget.parentContainerUID)
-                .findFirstSync() ==
-            null) {
-          if (isarDatabase!.containerRelationships
-                  .filter()
-                  .containerUIDMatches(containerEntry.containerUID)
-                  .findFirstSync() ==
-              null) {
-            ContainerRelationship containerRelationship =
-                ContainerRelationship()
-                  ..containerUID = containerEntry.containerUID
-                  ..parentUID = widget.parentContainerUID;
-            containerRelatiopnships.add(containerRelationship);
+    //         containerRelatiopnships.add(containerRelationship);
+    //         log(containerRelationship.toString());
+    //       }
+    //     }
+    //   } else if (relationship == null &&
+    //       containerEntry.containerUID != widget.parentContainerUID) {
+    //     if (isarDatabase!.containerRelationships
+    //             .filter()
+    //             .containerUIDMatches(containerEntry.containerUID)
+    //             .and()
+    //             .parentUIDMatches(widget.parentContainerUID)
+    //             .findFirstSync() ==
+    //         null) {
+    //       if (isarDatabase!.containerRelationships
+    //               .filter()
+    //               .containerUIDMatches(containerEntry.containerUID)
+    //               .findFirstSync() ==
+    //           null) {
+    //         ContainerRelationship containerRelationship =
+    //             ContainerRelationship()
+    //               ..containerUID = containerEntry.containerUID
+    //               ..parentUID = widget.parentContainerUID;
+    //         containerRelatiopnships.add(containerRelationship);
 
-            log(containerRelationship.toString());
-          }
-        }
-      }
-    }
+    //         log(containerRelationship.toString());
+    //       }
+    //     }
+    //   }
+    // }
 
     //log(interbarcodeOffsetEntries.toString());
 

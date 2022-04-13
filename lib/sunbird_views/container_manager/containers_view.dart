@@ -135,6 +135,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
           context,
           MaterialPageRoute(builder: (context) => const NewContainerView()),
         );
+
         searchContainers();
         setState(() {});
       },

@@ -75,8 +75,9 @@ class _NavigatorViewState extends State<NavigatorView> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>
-                  ContainerView(containerEntry: widget.containerEntry),
+              builder: (context) => ContainerView(
+                containerEntry: widget.containerEntry,
+              ),
             ),
           );
         },

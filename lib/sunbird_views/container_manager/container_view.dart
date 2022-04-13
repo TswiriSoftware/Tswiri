@@ -24,12 +24,10 @@ import 'new_container_view.dart';
 import 'objects/photo_data.dart';
 
 class ContainerView extends StatefulWidget {
-  const ContainerView(
-      {Key? key, required this.containerEntry, this.navigatorHistory})
+  const ContainerView({Key? key, required this.containerEntry})
       : super(key: key);
 
   final ContainerEntry containerEntry;
-  final List<ContainerEntry>? navigatorHistory;
 
   @override
   State<ContainerView> createState() => _ContainerViewState();
@@ -68,21 +66,19 @@ class _ContainerViewState extends State<ContainerView> {
   //Styling
   late Color outlineColor;
 
-  //Other
-  int length = 1;
-
   @override
   void initState() {
-    if (widget.navigatorHistory != null) {
-      length = length + widget.navigatorHistory!.length;
-    }
+    //Set containerEntry.
     containerEntry = widget.containerEntry;
 
+    //Set containerColor.
     containerColor =
         getContainerColor(containerUID: containerEntry.containerUID);
 
+    //Set outlineColor.
     outlineColor = containerColor.withOpacity(0.6);
 
+    //Set textControllers initial value.
     nameController.text = containerEntry.name ?? containerEntry.containerUID;
     descriptionController.text = containerEntry.description ?? '';
 
@@ -92,21 +88,15 @@ class _ContainerViewState extends State<ContainerView> {
         .tagIDProperty()
         .findAllSync();
 
+    //Get all tags.
     allTags =
         isarDatabase!.tags.where().findAllSync().map((e) => e.id).toList();
-
-    //log(widget.navigatorHistory.toString());
 
     super.initState();
   }
 
   @override
   void dispose() {
-    if (widget.navigatorHistory != null &&
-        widget.navigatorHistory!.length > 1) {
-      widget.navigatorHistory!.removeLast();
-    }
-
     super.dispose();
   }
 
@@ -137,17 +127,15 @@ class _ContainerViewState extends State<ContainerView> {
       resizeToAvoidBottomInset: true,
       body: Builder(builder: (context) {
         List<Widget> body = [
-          _navigationHistory(),
-          _bodyDivider(),
           _infoTile(),
+          _bodyDivider(),
+          _childrenTile(),
           _bodyDivider(),
           _tagsTile(),
           _bodyDivider(),
           _photosTile(),
           _bodyDivider(),
           _photoTagsTile(),
-          _bodyDivider(),
-          _childrenTile(),
           SizedBox(
             height: MediaQuery.of(context).size.height / 4,
           ),
@@ -452,7 +440,7 @@ class _ContainerViewState extends State<ContainerView> {
           .filter()
           .parentUIDMatches(containerEntry.containerUID)
           .findAllSync());
-      log(numberOfChildren.toString());
+      //log(numberOfChildren.toString());
       return LightContainer(
         backgroundColor: Colors.white10.withOpacity(0.05),
         child: Column(
@@ -496,22 +484,11 @@ class _ContainerViewState extends State<ContainerView> {
             ),
             InkWell(
               onTap: () async {
-                List<ContainerEntry> navigatorHistory =
-                    widget.navigatorHistory ?? [];
-                if (widget.navigatorHistory != null &&
-                    widget.navigatorHistory!.last.barcodeUID !=
-                        containerEntry.containerUID) {
-                  navigatorHistory.add(containerEntry);
-                } else if (widget.navigatorHistory == null) {
-                  navigatorHistory.add(containerEntry);
-                }
-
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => ContainerView(
                             containerEntry: childContainerEntry,
-                            navigatorHistory: navigatorHistory,
                           )),
                 );
                 setState(() {});
@@ -603,7 +580,6 @@ class _ContainerViewState extends State<ContainerView> {
           MaterialPageRoute(
             builder: (context) => NewContainerView(
               parentContainer: containerEntry,
-              navigatorHistory: widget.navigatorHistory,
             ),
           ),
         );
@@ -1356,75 +1332,6 @@ class _ContainerViewState extends State<ContainerView> {
   }
 
   ///MISC///
-
-  Widget _navigationHistory() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-      child: CustomOutlineContainer(
-        outlineColor: Colors.white38,
-        padding: 5,
-        child: Column(
-          children: [
-            Text(
-              'Navigator',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            const Divider(),
-            ListView.builder(
-                shrinkWrap: true,
-                itemCount: length,
-                itemBuilder: ((context, index) {
-                  if (index == length - 1) {
-                    return Row(
-                      children: [
-                        Builder(builder: (context) {
-                          return Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: List<int>.generate(
-                                    index + 1, (i) => i + 1)
-                                .map((e) => spacingContainer(containerEntry))
-                                .toList(),
-                          );
-                        }),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          containerEntry.name ?? containerEntry.containerUID,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
-                    );
-                  } else {
-                    return Row(
-                      children: [
-                        Builder(builder: (context) {
-                          return Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children:
-                                List<int>.generate(index + 1, (i) => i + 1)
-                                    .map((e) => spacingContainer(
-                                        widget.navigatorHistory![index]))
-                                    .toList(),
-                          );
-                        }),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          widget.navigatorHistory?[index].name ??
-                              widget.navigatorHistory![index].containerUID,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    );
-                  }
-                })),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget spacingContainer(ContainerEntry containerEntry) {
     return Container(
