@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/calibration_functions/calibration_functions.dart';
 
-import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
+import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_size_distance_entry/barcode_size_distance_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';

@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/barcode_calculations/calculate_barcode_positional_data.dart';
 import 'package:flutter_google_ml_kit/functions/barcode_calculations/data_capturing_functions.dart';
 import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.dart';
+import 'package:flutter_google_ml_kit/global_values/global_paints.dart';
 
-import 'package:flutter_google_ml_kit/globalValues/global_paints.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/objects/on_screen_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';

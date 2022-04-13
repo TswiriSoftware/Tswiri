@@ -1,8 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
-import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
+import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
+import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';

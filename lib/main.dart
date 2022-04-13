@@ -2,7 +2,8 @@ import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/firebase_options.dart';
-import 'package:flutter_google_ml_kit/globalValues/routes.dart';
+import 'package:flutter_google_ml_kit/global_values/routes.dart';
+
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_generator/barcode_generator_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_manager/barcode_manager_view.dart';
@@ -77,7 +78,6 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSwatch(
             primarySwatch: Colors.deepOrange, brightness: Brightness.dark),
         appBarTheme: AppBarTheme(
-          //foregroundColor: Colors.deepOrange[900],
           backgroundColor: Colors.deepOrange[500],
         ),
         buttonTheme: const ButtonThemeData(

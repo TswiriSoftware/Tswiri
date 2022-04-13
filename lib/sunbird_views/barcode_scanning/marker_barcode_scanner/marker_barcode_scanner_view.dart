@@ -1,4 +1,4 @@
-import 'package:flutter_google_ml_kit/globalValues/global_colours.dart';
+import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/single_barcode_scanner/single_barcode_scanner_camera_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/single_barcode_scanner/single_barcode_scanner_painter.dart';

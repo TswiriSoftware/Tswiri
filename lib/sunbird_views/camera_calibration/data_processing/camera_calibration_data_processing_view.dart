@@ -1,7 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/globalValues/shared_prefrences.dart';
+import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
+
 import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_size_distance_entry/barcode_size_distance_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
