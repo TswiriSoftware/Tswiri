@@ -293,26 +293,56 @@ class _BarcodePositionScannerProcessingViewState
         .containerUIDMatches(widget.parentContainerUID)
         .findFirstSync();
 
+    //TODO: Sort this mess out @049er.
+
     for (ContainerEntry containerEntry in containerEntries) {
       if (relationship != null &&
           containerEntry.containerUID != widget.parentContainerUID &&
           widget.parentContainerUID != relationship.containerUID) {
-        //TODO: CHECK IF RELATIONSHIP EXISTS
+        if (isarDatabase!.containerRelationships
+                .filter()
+                .containerUIDMatches(containerEntry.containerUID)
+                .and()
+                .parentUIDMatches(widget.parentContainerUID)
+                .findFirstSync() ==
+            null) {
+          if (isarDatabase!.containerRelationships
+                  .filter()
+                  .containerUIDMatches(containerEntry.containerUID)
+                  .findFirstSync() ==
+              null) {
+            ContainerRelationship containerRelationship =
+                ContainerRelationship()
+                  ..containerUID = containerEntry.containerUID
+                  ..parentUID = widget.parentContainerUID;
 
-        ContainerRelationship containerRelationship = ContainerRelationship()
-          ..containerUID = containerEntry.containerUID
-          ..parentUID = widget.parentContainerUID;
-
-        containerRelatiopnships.add(containerRelationship);
-        log(containerRelationship.toString());
+            containerRelatiopnships.add(containerRelationship);
+            log(containerRelationship.toString());
+          }
+        }
       } else if (relationship == null &&
           containerEntry.containerUID != widget.parentContainerUID) {
-        ContainerRelationship containerRelationship = ContainerRelationship()
-          ..containerUID = containerEntry.containerUID
-          ..parentUID = widget.parentContainerUID;
-        containerRelatiopnships.add(containerRelationship);
+        if (isarDatabase!.containerRelationships
+                .filter()
+                .containerUIDMatches(containerEntry.containerUID)
+                .and()
+                .parentUIDMatches(widget.parentContainerUID)
+                .findFirstSync() ==
+            null) {
+          if (isarDatabase!.containerRelationships
+                  .filter()
+                  .containerUIDMatches(containerEntry.containerUID)
+                  .findFirstSync() ==
+              null) {
+            ContainerRelationship containerRelationship =
+                ContainerRelationship()
+                  ..containerUID = containerEntry.containerUID
+                  ..parentUID = widget.parentContainerUID;
+            containerRelatiopnships.add(containerRelationship);
 
-        log(containerRelationship.toString());
+            log(containerRelationship.toString());
+          }
+        }
       }
     }
 

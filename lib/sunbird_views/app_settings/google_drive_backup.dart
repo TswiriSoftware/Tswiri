@@ -19,19 +19,20 @@ import 'package:path_provider/path_provider.dart';
 
 GoogleSignInAccount? _currentUser;
 
-class GoogleLoginView extends StatefulWidget {
-  const GoogleLoginView({Key? key}) : super(key: key);
+class GoogleDriveBackup extends StatefulWidget {
+  const GoogleDriveBackup({Key? key}) : super(key: key);
 
   @override
-  State<GoogleLoginView> createState() => _GoogleLoginViewState();
+  State<GoogleDriveBackup> createState() => _GoogleDriveBackupState();
 }
 
-class _GoogleLoginViewState extends State<GoogleLoginView> {
+class _GoogleDriveBackupState extends State<GoogleDriveBackup>
+    with TickerProviderStateMixin {
   final GoogleSignInAccount? user = _currentUser;
 
   bool isBusy = false;
   String state = '';
-
+  late AnimationController controller;
   @override
   void initState() {
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
@@ -42,6 +43,12 @@ class _GoogleLoginViewState extends State<GoogleLoginView> {
         //_handleGetContact(_currentUser!);
       }
     });
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..addListener(() {
+        setState(() {});
+      });
 
     _googleSignIn.signInSilently();
 
@@ -148,7 +155,9 @@ class _GoogleLoginViewState extends State<GoogleLoginView> {
           } else {
             return Column(
               children: [
-                const CircularProgressIndicator(),
+                LinearProgressIndicator(
+                  value: 0.5,
+                ),
                 OrangeOutlineContainer(
                     child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

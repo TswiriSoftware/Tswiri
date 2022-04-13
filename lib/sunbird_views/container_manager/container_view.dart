@@ -102,7 +102,8 @@ class _ContainerViewState extends State<ContainerView> {
 
   @override
   void dispose() {
-    if (widget.navigatorHistory != null) {
+    if (widget.navigatorHistory != null &&
+        widget.navigatorHistory!.length > 1) {
       widget.navigatorHistory!.removeLast();
     }
 
