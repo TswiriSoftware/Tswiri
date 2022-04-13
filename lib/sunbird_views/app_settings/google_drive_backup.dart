@@ -36,11 +36,14 @@ class GoogleDriveBackup extends StatefulWidget {
   State<GoogleDriveBackup> createState() => _GoogleDriveBackupState();
 }
 
-class _GoogleDriveBackupState extends State<GoogleDriveBackup> {
+class _GoogleDriveBackupState extends State<GoogleDriveBackup>
+    with TickerProviderStateMixin {
   final GoogleSignInAccount? user = _currentUser;
 
   bool isBusy = false;
   String state = '';
+  double progress = 0;
+  double stepValue = 1 / 13;
 
   @override
   void initState() {
@@ -190,9 +193,11 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup> {
                     ],
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: LinearProgressIndicator(),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: LinearProgressIndicator(
+                    value: progress,
+                  ),
                 ),
               ],
             );
@@ -203,6 +208,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup> {
   }
 
   Future uploadFiles(GoogleSignInAccount user) async {
+    progress = 0;
     List<String> filesToUpload = [
       'containerTypes.json',
       'containerEntries.json',
@@ -234,6 +240,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup> {
         //Inform user of progress
         setState(() {
           state = 'backing up: ' + fileName.split('.').first;
+          progress = progress + stepValue;
         });
 
         //Ensure files exists
