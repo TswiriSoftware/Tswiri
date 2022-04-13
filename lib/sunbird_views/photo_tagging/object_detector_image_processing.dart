@@ -283,6 +283,10 @@ class _ObjectDetectorProcessingView
       (isar) => isar.mlTags.putAllSync(newMlTags),
     );
 
+    for (var item in newMlTags) {
+      log(item.tag);
+    }
+
     if (isDone == false) {
       isDone = true;
       setState(() {});

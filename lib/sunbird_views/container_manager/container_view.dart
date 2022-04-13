@@ -12,6 +12,7 @@ import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/container_grid_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/photo_tags_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_view.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
@@ -157,41 +158,6 @@ class _ContainerViewState extends State<ContainerView> {
           itemPositionsListener: itemPositionsListener,
         );
       }),
-
-      //  SingleChildScrollView(
-      //   controller: scrollController,
-      //   child: Column(
-      //     children: [
-      //       ///Nav History///
-      //       _navigationHistory(),
-
-      //       ///Info Tile///
-      //       _infoTile(),
-      //       const Divider(),
-
-      //       ///Children Tile///
-      //       _childrenTile(),
-      //       const Divider(),
-
-      //       //Photos///
-      //       _photosTile(),
-      //       const Divider(),
-
-      //       //Photo Tags///
-      //       _photoTagsTile(),
-      //       const Divider(),
-
-      //       ///Tags Tile///
-      //       _tagsTile(),
-      //       const Divider(),
-
-      //       //Spacing
-      // SizedBox(
-      //   height: MediaQuery.of(context).size.height / 4,
-      // )
-      //     ],
-      //   ),
-      // ),
     );
   }
 
@@ -863,7 +829,7 @@ class _ContainerViewState extends State<ContainerView> {
     return Builder(builder: (context) {
       List<Widget> tags = assignedTags.map((e) => tag(tagID: e)).toList();
       tags.add(tag(add: '+'));
-      log(tags.length.toString());
+      //log(tags.length.toString());
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
         child: Column(
@@ -1070,7 +1036,7 @@ class _ContainerViewState extends State<ContainerView> {
     isarDatabase!.writeTxnSync(
         (isar) => isar.containerTags.putAllSync(newContainerTags));
 
-    log(newContainerTags.toString());
+    //log(newContainerTags.toString());
   }
 
   void updateTags() {
@@ -1142,43 +1108,57 @@ class _ContainerViewState extends State<ContainerView> {
   }
 
   Widget photoDisplayWidget(ContainerPhoto containerPhoto) {
-    return Stack(
-      alignment: AlignmentDirectional.topStart,
-      children: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.29,
-          child: CustomOutlineContainer(
-            outlineColor: containerColor,
-            padding: 2,
-            child: Image.file(
-              File(containerPhoto.photoPath),
+    return InkWell(
+      onTap: () async {
+        //await photoDialog(containerPhoto);
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PhotoTagsView(
+              containerPhoto: containerPhoto,
+              containerColor: containerColor,
             ),
           ),
-        ),
-        Container(
-          width: 35,
-          height: 35,
-          margin: const EdgeInsets.all(5),
-          padding: const EdgeInsets.all(0),
-          child: Center(
-            child: IconButton(
-              iconSize: 15,
-              onPressed: () {
-                deletePhoto(containerPhoto);
-                setState(() {});
-              },
-              icon: const Icon(Icons.delete),
-              color: Colors.white,
-            ),
-          ),
-          decoration: BoxDecoration(
-              border: Border.all(color: containerColor, width: 1),
-              borderRadius: const BorderRadius.all(
-                Radius.circular(5),
+        );
+      },
+      child: Stack(
+        alignment: AlignmentDirectional.topStart,
+        children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.29,
+            child: CustomOutlineContainer(
+              outlineColor: containerColor,
+              padding: 2,
+              child: Image.file(
+                File(containerPhoto.photoPath),
               ),
-              color: containerColor.withOpacity(0.5)),
-        ),
-      ],
+            ),
+          ),
+          Container(
+            width: 35,
+            height: 35,
+            margin: const EdgeInsets.all(5),
+            padding: const EdgeInsets.all(0),
+            child: Center(
+              child: IconButton(
+                iconSize: 15,
+                onPressed: () {
+                  deletePhoto(containerPhoto);
+                  setState(() {});
+                },
+                icon: const Icon(Icons.delete),
+                color: Colors.white,
+              ),
+            ),
+            decoration: BoxDecoration(
+                border: Border.all(color: containerColor, width: 1),
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(5),
+                ),
+                color: containerColor.withOpacity(0.5)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1395,7 +1375,7 @@ class _ContainerViewState extends State<ContainerView> {
         return Wrap(
           runSpacing: 5,
           spacing: 5,
-          children: mlTags.map((e) => photoTag(e)).toList(),
+          children: mlTags.map((e) => mlTag(e)).toList(),
         );
       } else {
         return Center(
@@ -1408,17 +1388,17 @@ class _ContainerViewState extends State<ContainerView> {
     });
   }
 
-  Widget photoTag(MlTag mlTag) {
+  Widget mlTag(MlTag mlTag) {
     return Container(
-      child: Text(mlTag.tag),
-      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-      decoration: BoxDecoration(
+        child: Text(mlTag.tag),
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+        decoration: BoxDecoration(
           border: Border.all(color: containerColor, width: 1),
           borderRadius: const BorderRadius.all(
             Radius.circular(30),
           ),
-          color: Colors.white10),
-    );
+          color: containerColor,
+        ));
   }
 
   ///MISC///
