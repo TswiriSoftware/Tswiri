@@ -2,10 +2,20 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter_google_ml_kit/isar_database/barcode_generation_entry/barcode_generation_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcode_size_distance_entry/barcode_size_distance_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_photo/container_photo.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_photo_thumbnail/container_photo_thumbnail.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
+import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
+import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
+import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -26,29 +36,20 @@ class GoogleDriveBackup extends StatefulWidget {
   State<GoogleDriveBackup> createState() => _GoogleDriveBackupState();
 }
 
-class _GoogleDriveBackupState extends State<GoogleDriveBackup>
-    with TickerProviderStateMixin {
+class _GoogleDriveBackupState extends State<GoogleDriveBackup> {
   final GoogleSignInAccount? user = _currentUser;
 
   bool isBusy = false;
   String state = '';
-  late AnimationController controller;
+
   @override
   void initState() {
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
       setState(() {
         _currentUser = account;
       });
-      if (_currentUser != null) {
-        //_handleGetContact(_currentUser!);
-      }
+      if (_currentUser != null) {}
     });
-    controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 5),
-    )..addListener(() {
-        setState(() {});
-      });
 
     _googleSignIn.signInSilently();
 
@@ -59,12 +60,27 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
-          'Google Login',
+          'Google Drive Backup',
           style: TextStyle(fontSize: 25),
         ),
         centerTitle: true,
         elevation: 0,
+        leading: Builder(builder: (context) {
+          if (isBusy) {
+            return Container();
+          } else {
+            return IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(
+                Icons.arrow_back,
+              ),
+            );
+          }
+        }),
       ),
       body: SingleChildScrollView(
         child: Builder(builder: (context) {
@@ -155,27 +171,29 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
           } else {
             return Column(
               children: [
-                LinearProgressIndicator(
-                  value: 0.5,
-                ),
                 OrangeOutlineContainer(
-                    child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                      children: [
-                        Text(
-                          'Busy with',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        Text(
-                          state,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ],
-                    ),
-                  ],
-                )),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            'Busy with',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          Text(
+                            state,
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: LinearProgressIndicator(),
+                ),
               ],
             );
           }
@@ -188,7 +206,17 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
     List<String> filesToUpload = [
       'containerTypes.json',
       'containerEntries.json',
-      'markers.json'
+      'markers.json',
+      'mlTags.json',
+      'photoTags.json',
+      'realInterBarcodeVectorEntry.json',
+      'tags.json',
+      'containerRelationships.json',
+      'containerPhotoThumbnails.json',
+      'containerPhotos.json',
+      'barcodeSizeDistanceEntrys.json',
+      'barcodePropertys.json',
+      'barcodeGenerationEntrys.json'
     ];
 
     final authHeaders = await user.authHeaders;
@@ -210,7 +238,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
 
         //Ensure files exists
         await createJsonFile(backupPath, fileName);
-        dynamic backupFileContent;
+        var backupFileContent;
 
         //TODO: finish this up will take a while :D;
 
@@ -237,6 +265,79 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
                 .map((e) => e.toJson())
                 .toList());
             break;
+          case 'mlTags.json':
+            backupFileContent = jsonEncode(isarDatabase!.mlTags
+                .where()
+                .findAllSync()
+                .map((e) => e.toJson())
+                .toList());
+            break;
+          case 'photoTags.json':
+            backupFileContent = jsonEncode(isarDatabase!.photoTags
+                .where()
+                .findAllSync()
+                .map((e) => e.toJson())
+                .toList());
+            break;
+          case 'realInterBarcodeVectorEntry.json':
+            backupFileContent = jsonEncode(isarDatabase!
+                .realInterBarcodeVectorEntrys
+                .where()
+                .findAllSync()
+                .map((e) => e.toJson())
+                .toList());
+            break;
+          case 'tags.json':
+            backupFileContent = jsonEncode(isarDatabase!.tags
+                .where()
+                .findAllSync()
+                .map((e) => e.toJson())
+                .toList());
+            break;
+          case 'containerRelationships.json':
+            backupFileContent = jsonEncode(isarDatabase!.containerRelationships
+                .where()
+                .findAllSync()
+                .map((e) => e.toJson())
+                .toList());
+            break;
+          case 'containerPhotoThumbnails.json':
+            backupFileContent = jsonEncode(isarDatabase!
+                .containerPhotoThumbnails
+                .where()
+                .findAllSync()
+                .map((e) => e.toJson())
+                .toList());
+            break;
+          case 'containerPhotos.json':
+            backupFileContent = jsonEncode(isarDatabase!.containerPhotos
+                .where()
+                .findAllSync()
+                .map((e) => e.toJson())
+                .toList());
+            break;
+          case 'barcodeSizeDistanceEntrys.json':
+            backupFileContent = jsonEncode(isarDatabase!
+                .barcodeSizeDistanceEntrys
+                .where()
+                .findAllSync()
+                .map((e) => e.toJson())
+                .toList());
+            break;
+          case 'barcodePropertys.json':
+            backupFileContent = jsonEncode(isarDatabase!.barcodePropertys
+                .where()
+                .findAllSync()
+                .map((e) => e.toJson())
+                .toList());
+            break;
+          case 'barcodeGenerationEntry.json':
+            backupFileContent = jsonEncode(isarDatabase!.barcodeGenerationEntrys
+                .where()
+                .findAllSync()
+                .map((e) => e.toJson())
+                .toList());
+            break;
           case '':
             break;
         }
@@ -244,11 +345,13 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
         //Open File.
         File file = File('$backupPath/sunbird/backup/$fileName');
 
-        //Write to file.
-        await file.writeAsString(backupFileContent);
+        if (backupFileContent != null) {
+          //Write to file.
+          await file.writeAsString(backupFileContent);
 
-        //Upload file to google drive
-        await putFile(driveApi, fileName, file, folderID);
+          //Upload file to google drive
+          await putFile(driveApi, fileName, file, folderID);
+        }
       }
     }
 
@@ -309,7 +412,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
 
   Future<String?> _getFolderID(drive.DriveApi driveApi) async {
     const mimeType = "application/vnd.google-apps.folder";
-    String folderName = "subirdBackup";
+    String folderName = "sunbird_backup";
 
     try {
       final found = await driveApi.files.list(
@@ -320,7 +423,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
       final files = found.files;
 
       if (files == null) {
-        log("Sign-in first Error");
+        print("Sign-in first Error");
         return null;
       }
 
@@ -332,7 +435,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
       // Create a folder
       drive.File folder = drive.File();
       folder.name = folderName;
-      //folder.mimeType = mimeType;
+      folder.mimeType = mimeType;
       final folderCreation = await driveApi.files.create(folder);
       //log("Folder ID: ${folderCreation.id}");
 
@@ -362,7 +465,6 @@ class GoogleAuthClient extends http.BaseClient {
 
   GoogleAuthClient(this._headers);
 
-  @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
     return _client.send(request..headers.addAll(_headers));
   }
@@ -378,36 +480,8 @@ Future<String> getStorageDirectory() async {
 
 
 
-  // Future createBackupFiles(String backupPath) async {
-  //   //Container Types
-  //   await createJsonFile(backupPath, 'containerTypes');
 
-  //   //Container Entries
-  //   await createJsonFile(backupPath, 'containerEntries');
-
-  //   //Container Photos
-  //   await createJsonFile(backupPath, 'containerPhotos');
-
-  //   //Container Photo Thumbnails
-  //   await createJsonFile(backupPath, 'containerPhotoThumbnails');
-
-  //   //Photo Tags
-  //   await createJsonFile(backupPath, 'photoTags');
-
-  //   //mlTags
-  //   await createJsonFile(backupPath, 'mlTags');
-
-  //   //Markers
-  //   await createJsonFile(backupPath, 'markers');
-
-  //   //RealInterBarcodeVectorEntry
-  //   await createJsonFile(backupPath, 'realInterBarcodeVectorEntry');
-
-  //   //mlTags
-  //   await createJsonFile(backupPath, 'mlTags');
-  // }
-  
-
+  ///DECOING JASON ?
 
   // var x = await driveApi.files.list(driveId: folderID);
               // log(x.toString());

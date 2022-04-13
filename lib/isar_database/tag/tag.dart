@@ -11,4 +11,15 @@ class Tag {
   String toString() {
     return 'tag: $tag';
   }
+
+  Map toJson() => {
+        'id': id,
+        'tag': tag,
+      };
+
+  Tag fromJson(Map<String, dynamic> json) {
+    return Tag()
+      ..id = json['id']
+      ..tag = json['tag'];
+  }
 }

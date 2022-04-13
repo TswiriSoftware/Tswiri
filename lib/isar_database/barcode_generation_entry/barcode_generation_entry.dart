@@ -19,4 +19,19 @@ class BarcodeGenerationEntry {
   String toString() {
     return 'timestamp: $timestamp,\n from: $rangeStart to $rangeEnd';
   }
+
+  Map toJson() => {
+        'id': id,
+        'timestamp': timestamp,
+        'rangeStart': rangeStart,
+        'rangeEnd': rangeEnd,
+      };
+
+  BarcodeGenerationEntry fromJson(Map<String, dynamic> json) {
+    return BarcodeGenerationEntry()
+      ..id = json['id']
+      ..timestamp = json['timestamp'] as int
+      ..rangeStart = json['rangeStart'] as int
+      ..rangeEnd = json['rangeEnd'] as int;
+  }
 }

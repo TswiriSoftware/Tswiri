@@ -15,4 +15,17 @@ class BarcodeSizeDistanceEntry {
   String toString() {
     return 'diagonalSize: $diagonalSize,\ndistanceFromCamera: $distanceFromCamera,\n';
   }
+
+  Map toJson() => {
+        'id': id,
+        'diagonalSize': diagonalSize,
+        'distanceFromCamera': distanceFromCamera,
+      };
+
+  BarcodeSizeDistanceEntry fromJson(Map<String, dynamic> json) {
+    return BarcodeSizeDistanceEntry()
+      ..id = json['id']
+      ..diagonalSize = json['diagonalSize'] as double
+      ..distanceFromCamera = json['distanceFromCamera'] as double;
+  }
 }
