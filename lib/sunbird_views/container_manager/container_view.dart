@@ -19,6 +19,7 @@ import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_con
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:string_similarity/string_similarity.dart';
 
 import 'new_container_view.dart';
 import 'objects/photo_data.dart';
@@ -897,7 +898,10 @@ class _ContainerViewState extends State<ContainerView> {
         child: Container(
           child: Builder(builder: (context) {
             String tag = isarDatabase!.tags.getSync(tagID)!.tag;
-            return Text(tag);
+            return Text(
+              tag,
+              maxLines: 1,
+            );
           }),
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           decoration: BoxDecoration(
@@ -913,7 +917,7 @@ class _ContainerViewState extends State<ContainerView> {
         return InkWell(
           onTap: () {
             itemScrollController.scrollTo(
-                index: 5,
+                index: 4,
                 duration: const Duration(seconds: 1),
                 curve: Curves.easeInOutCubic);
             setState(() {
@@ -1216,15 +1220,44 @@ class _ContainerViewState extends State<ContainerView> {
       newPhotoTags.add(newPhotoTag);
     }
 
+    List<String> existingTags = isarDatabase!.mlTags
+        .where()
+        .findAllSync()
+        .where((element) => element.tagType == mlTagType.text)
+        .map((e) => e.tag)
+        .toList();
+
     for (TextBlock textBlock in photoData.recognisedTexts.blocks) {
-      if (textBlock.text.length >= 4) {
-        int mlTagID = isarDatabase!.mlTags
-            .filter()
-            .tagMatches(textBlock.text.toLowerCase())
-            .and()
-            .tagTypeEqualTo(mlTagType.text)
-            .findFirstSync()!
-            .id;
+      if (textBlock.text.length >= 3) {
+        String similarTag = '';
+        double similarity = 0;
+
+        for (String existingTag in existingTags) {
+          double currentSimilarity =
+              textBlock.text.toLowerCase().similarityTo(existingTag);
+          if (currentSimilarity > similarity) {
+            similarTag = existingTag;
+            similarity = currentSimilarity;
+          }
+        }
+        int mlTagID;
+        if (similarity > 0.92) {
+          mlTagID = isarDatabase!.mlTags
+              .filter()
+              .tagMatches(similarTag.toLowerCase())
+              .and()
+              .tagTypeEqualTo(mlTagType.text)
+              .findFirstSync()!
+              .id;
+        } else {
+          mlTagID = isarDatabase!.mlTags
+              .filter()
+              .tagMatches(textBlock.text.toLowerCase())
+              .and()
+              .tagTypeEqualTo(mlTagType.text)
+              .findFirstSync()!
+              .id;
+        }
 
         PhotoTag newPhotoTag = PhotoTag()
           ..photoPath = photoData.photoPath
@@ -1320,7 +1353,11 @@ class _ContainerViewState extends State<ContainerView> {
 
   Widget mlTag(MlTag mlTag) {
     return Container(
-        child: Text(mlTag.tag),
+        child: Text(
+          mlTag.tag,
+          maxLines: 1,
+          textAlign: TextAlign.center,
+        ),
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
         decoration: BoxDecoration(
           border: Border.all(color: containerColor, width: 1),

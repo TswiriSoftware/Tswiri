@@ -64,6 +64,7 @@ dependencies:
   cloud_firestore: ^3.1.11
   flutter_colorpicker: ^1.0.3
   scrollable_positioned_list: ^0.2.3
+  string_similarity: ^2.0.0
   
 
 

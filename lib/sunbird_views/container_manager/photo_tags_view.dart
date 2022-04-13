@@ -136,6 +136,8 @@ class _PhotoTagsViewState extends State<PhotoTagsView> {
           child: Text(
             mltag.tag,
             style: Theme.of(context).textTheme.bodyLarge,
+            maxLines: 1,
+            textAlign: TextAlign.center,
           ),
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
           decoration: BoxDecoration(
@@ -390,6 +392,7 @@ class _PhotoTagsViewState extends State<PhotoTagsView> {
             child: Text(
               mlTag.tag,
               style: Theme.of(context).textTheme.bodyLarge,
+              maxLines: 1,
             ),
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
             decoration: BoxDecoration(

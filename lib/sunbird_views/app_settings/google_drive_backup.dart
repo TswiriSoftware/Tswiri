@@ -9,6 +9,7 @@ import 'package:flutter_google_ml_kit/isar_database/container_entry/container_en
 import 'package:flutter_google_ml_kit/isar_database/container_photo/container_photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_photo_thumbnail/container_photo_thumbnail.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
@@ -43,7 +44,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
   bool isBusy = false;
   String state = '';
   double progress = 0;
-  double stepValue = 1 / 13;
+  double stepValue = 1 / 14;
 
   @override
   void initState() {
@@ -222,7 +223,8 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
       'containerPhotos.json',
       'barcodeSizeDistanceEntrys.json',
       'barcodePropertys.json',
-      'barcodeGenerationEntrys.json'
+      'barcodeGenerationEntrys.json',
+      'containerTags.json'
     ];
 
     final authHeaders = await user.authHeaders;
@@ -340,6 +342,13 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
             break;
           case 'barcodeGenerationEntry.json':
             backupFileContent = jsonEncode(isarDatabase!.barcodeGenerationEntrys
+                .where()
+                .findAllSync()
+                .map((e) => e.toJson())
+                .toList());
+            break;
+          case 'containerTags.json':
+            backupFileContent = jsonEncode(isarDatabase!.containerTags
                 .where()
                 .findAllSync()
                 .map((e) => e.toJson())

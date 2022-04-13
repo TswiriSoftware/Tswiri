@@ -11,6 +11,7 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../objects/image_data.dart';
 import 'painter/object_detector_painter.dart';
+import 'package:string_similarity/string_similarity.dart';
 
 ///Displays the Photo and objects detected
 class ObjectDetectorProcessingView extends StatefulWidget {
@@ -47,6 +48,9 @@ class _ObjectDetectorProcessingView
 
   bool isDone = false;
 
+  String? photoPath;
+  String? photoThumbnailPath;
+
   @override
   void initState() {
     //Image Path.
@@ -61,7 +65,6 @@ class _ObjectDetectorProcessingView
   @override
   void dispose() {
     textDetector.close();
-
     super.dispose();
   }
 
@@ -84,6 +87,7 @@ class _ObjectDetectorProcessingView
           }
         }),
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: widget.customColor,
           centerTitle: true,
           title: Text(
@@ -261,20 +265,42 @@ class _ObjectDetectorProcessingView
       }
     }
 
+    List<String> existingTags = isarDatabase!.mlTags
+        .where()
+        .findAllSync()
+        .where((element) => element.tagType == mlTagType.text)
+        .map((e) => e.tag)
+        .toList();
+
+    log(existingTags.toString());
+
     for (TextBlock recognisedText in recognisedTexts.blocks) {
       MlTag mlTag = MlTag()
-        ..tag = recognisedText.text.toLowerCase()
+        ..tag = recognisedText.text.toLowerCase().trim()
         ..tagType = mlTagType.text;
 
-      if (isarDatabase!.mlTags
-              .where()
-              .filter()
-              .tagMatches(mlTag.tag)
-              .and()
-              .tagTypeEqualTo(mlTagType.text)
-              .findFirstSync() ==
-          null) {
-        newMlTags.add(mlTag);
+      String similarTag = '';
+      double similarity = 0;
+
+      for (String existingTag in existingTags) {
+        double currentSimilarity = mlTag.tag.similarityTo(existingTag);
+        if (currentSimilarity > similarity) {
+          similarTag = existingTag;
+          similarity = currentSimilarity;
+        }
+      }
+
+      if (similarity < 0.95) {
+        if (isarDatabase!.mlTags
+                .where()
+                .filter()
+                .tagMatches(mlTag.tag)
+                .and()
+                .tagTypeEqualTo(mlTagType.text)
+                .findFirstSync() ==
+            null) {
+          newMlTags.add(mlTag);
+        }
       }
     }
 

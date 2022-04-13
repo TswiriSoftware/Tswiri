@@ -330,7 +330,7 @@ class _NewContainerViewState extends State<NewContainerView> {
           ),
           InkWell(
             onTap: () async {
-              await barcodeScanner();
+              await barcodeScannerProcess();
             },
             child: _barcodeScannerButtonBuilder(),
           ),
@@ -383,7 +383,7 @@ class _NewContainerViewState extends State<NewContainerView> {
     });
   }
 
-  Future<void> barcodeScanner() async {
+  Future<void> barcodeScannerProcess() async {
     String? scannedBarcodeUID = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -391,7 +391,6 @@ class _NewContainerViewState extends State<NewContainerView> {
       ),
     );
 
-    //log(scannedBarcodeUID.toString());
     if (scannedBarcodeUID != null) {
       ContainerEntry? linkedContainer = isarDatabase!.containerEntrys
           .filter()
@@ -399,6 +398,11 @@ class _NewContainerViewState extends State<NewContainerView> {
           .findFirstSync();
       if (linkedContainer == null) {
         barcodeUID = scannedBarcodeUID;
+        nameController.text =
+            selectedContainerType!.containerType.capitalize() +
+                ' ' +
+                barcodeUID!.split('_').first;
+        name = nameController.text;
         setState(() {});
       } else {
         ScaffoldMessenger.of(context).showSnackBar(snackBar(linkedContainer));

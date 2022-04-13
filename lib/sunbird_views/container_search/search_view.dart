@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -402,14 +403,19 @@ class _SearchViewState extends State<SearchView> {
         //Here we have an option of tagContains or tagStartsWith
         List<Tag> tags = isarDatabase!.tags
             .filter()
-            .tagContains(enteredKeyword, caseSensitive: false)
+            .tagContains(enteredKeyword.toLowerCase(), caseSensitive: false)
             .findAllSync();
 
+        log(tags.toString());
+
         List<ContainerTag> containerTags = [];
+        log(isarDatabase!.containerTags.where().findAllSync().toString());
         containerTags.addAll(isarDatabase!.containerTags
             .filter()
-            .repeat(tags, (q, Tag element) => q.idEqualTo(element.id))
+            .repeat(tags, (q, Tag element) => q.tagIDEqualTo(element.id))
             .findAllSync());
+
+        log(containerTags.toString());
 
         //Not sure why but need to check if its empty ?
         if (containerTags.isNotEmpty) {

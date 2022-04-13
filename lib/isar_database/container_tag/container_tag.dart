@@ -15,4 +15,17 @@ class ContainerTag {
   String toString() {
     return 'UID: $containerUID: Tag: $tagID';
   }
+
+  Map toJson() => {
+        'id': id,
+        'containerUID': containerUID,
+        'tagID': tagID,
+      };
+
+  ContainerTag fromJson(Map<String, dynamic> json) {
+    return ContainerTag()
+      ..id = json['id']
+      ..containerUID = json['containerUID']
+      ..tagID = json['tagID'] as int;
+  }
 }

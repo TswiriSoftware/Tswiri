@@ -1,5 +1,7 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/objects/photo_data.dart';
@@ -34,6 +36,7 @@ class ObjectDetectorCameraView extends StatefulWidget {
 class _ObjectDetectorCameraViewState extends State<ObjectDetectorCameraView> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+  bool flash = false;
 
   @override
   void initState() {
@@ -82,42 +85,73 @@ class _ObjectDetectorCameraViewState extends State<ObjectDetectorCameraView> {
           }
         },
       ),
-      floatingActionButton: SizedBox(
-        width: 60,
-        height: 60,
-        child: FloatingActionButton(
-          backgroundColor: widget.color,
-          heroTag: null,
-          onPressed: () async {
-            try {
-              // Ensure that the camera is initialized.
-              await _initializeControllerFuture;
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _floatingActionButton(),
+            SizedBox(
+              width: 60,
+              height: 60,
+              child: FloatingActionButton(
+                backgroundColor: widget.color,
+                heroTag: null,
+                onPressed: () async {
+                  try {
+                    // Ensure that the camera is initialized.
+                    await _initializeControllerFuture;
 
-              // Attempt to take a picture and then get the location
-              // Get the photo's location.
-              final image = await _controller.takePicture();
+                    // Attempt to take a picture and then get the location
+                    // Get the photo's location.
+                    final image = await _controller.takePicture();
+                    _controller.setFlashMode(FlashMode.off);
+                    PhotoData? result = await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ObjectDetectorProcessingView(
+                          imagePath: image.path,
+                          customColor: widget.color,
+                        ),
+                      ),
+                    );
 
-              PhotoData? result = await Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => ObjectDetectorProcessingView(
-                    imagePath: image.path,
-                    customColor: widget.color,
-                  ),
+                    Navigator.pop(context, result);
+                  } catch (e) {
+                    // If an error occurs, log the error to the console.
+                    //print(e);
+                  }
+                },
+                child: const Icon(
+                  Icons.photo_camera,
                 ),
-              );
-
-              Navigator.pop(context, result);
-            } catch (e) {
-              // If an error occurs, log the error to the console.
-              //print(e);
-            }
-          },
-          child: const Icon(
-            Icons.photo_camera,
-          ),
+              ),
+            ),
+          ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  Widget _floatingActionButton() {
+    //if (cameras.length == 1) return null;
+    return FloatingActionButton(
+      backgroundColor: widget.color,
+      heroTag: 'flash',
+      child: Icon(
+        Platform.isIOS
+            ? Icons.flip_camera_ios_outlined
+            : Icons.flash_on_rounded,
+      ),
+      onPressed: () {
+        if (flash == true) {
+          _controller.setFlashMode(FlashMode.off);
+          flash = false;
+        } else {
+          flash = true;
+          _controller.setFlashMode(FlashMode.torch);
+        }
+      },
     );
   }
 }
