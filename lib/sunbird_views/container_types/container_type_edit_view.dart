@@ -75,9 +75,9 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
             IconButton(
               onPressed: () {
                 //Save changes
-                //saveChanges();
+                saveChanges();
               },
-              icon: const Icon(Icons.delete),
+              icon: const Icon(Icons.save),
             ),
           ],
         ),

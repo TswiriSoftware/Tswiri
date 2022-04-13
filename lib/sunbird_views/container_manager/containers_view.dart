@@ -273,7 +273,20 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
               itemCount: searchResults.length,
               itemBuilder: (context, index) {
                 ContainerEntry containerEntry = searchResults[index];
-                return containerDisplayWidget(containerEntry);
+                //log(index.toString());
+                if (index == searchResults.length - 1) {
+                  //log('message');
+                  return Column(
+                    children: [
+                      containerDisplayWidget(containerEntry),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.25,
+                      ),
+                    ],
+                  );
+                } else {
+                  return containerDisplayWidget(containerEntry);
+                }
               },
             ),
           ),
@@ -580,7 +593,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
           }
         }
 
-        log(photoThumbnails.toString());
+        //log(photoThumbnails.toString());
 
         //Delete marker. *
         //Delete realInterBarcodeData.*
@@ -593,12 +606,16 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
 
         //Delete on device Photos
         for (ContainerPhoto containerPhoto in containerPhotos) {
-          File(containerPhoto.photoPath).deleteSync();
+          if (File(containerPhoto.photoPath).existsSync()) {
+            File(containerPhoto.photoPath).deleteSync();
+          }
         }
 
         //Delete on device photo Thumbnails
         for (ContainerPhotoThumbnail thumbnail in photoThumbnails) {
-          File(thumbnail.thumbnailPhotoPath).deleteSync();
+          if (File(thumbnail.thumbnailPhotoPath).existsSync()) {
+            File(thumbnail.thumbnailPhotoPath).deleteSync();
+          }
         }
 
         isarDatabase!.writeTxnSync((isar) {

@@ -140,13 +140,13 @@ class _ContainerViewState extends State<ContainerView> {
           _bodyDivider(),
           _infoTile(),
           _bodyDivider(),
-          _childrenTile(),
-          _bodyDivider(),
           _tagsTile(),
           _bodyDivider(),
           _photosTile(),
           _bodyDivider(),
           _photoTagsTile(),
+          _bodyDivider(),
+          _childrenTile(),
           SizedBox(
             height: MediaQuery.of(context).size.height / 4,
           ),
@@ -357,7 +357,7 @@ class _ContainerViewState extends State<ContainerView> {
           CustomOutlineContainer(
             width: 80,
             height: 35,
-            backgroundColor: Colors.white10,
+            backgroundColor: containerColor,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
               child: Builder(builder: (context) {
@@ -451,30 +451,14 @@ class _ContainerViewState extends State<ContainerView> {
           .filter()
           .parentUIDMatches(containerEntry.containerUID)
           .findAllSync());
-      if (showChildren) {
-        return LightContainer(
-          backgroundColor: Colors.white10.withOpacity(0.05),
-          child: Column(
-            children:
-                numberOfChildren.map((e) => childContainerWidget(e)).toList(),
-          ),
-        );
-      } else {
-        return LightContainer(
-            backgroundColor: Colors.white10.withOpacity(0.05),
-            child: Row(
-              children: [
-                Text(
-                  'Number of Children: ',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                Text(
-                  numberOfChildren.length.toString(),
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ],
-            ));
-      }
+      log(numberOfChildren.toString());
+      return LightContainer(
+        backgroundColor: Colors.white10.withOpacity(0.05),
+        child: Column(
+          children:
+              numberOfChildren.map((e) => childContainerWidget(e)).toList(),
+        ),
+      );
     });
   }
 
@@ -505,14 +489,6 @@ class _ContainerViewState extends State<ContainerView> {
                 ),
                 Text(
                   childContainerEntry.name ?? childContainerEntry.containerUID,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                Text(
-                  'Description',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                Text(
-                  childContainerEntry.description ?? '-',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ],
@@ -557,11 +533,16 @@ class _ContainerViewState extends State<ContainerView> {
 
   Widget _showChildrenButton() {
     return InkWell(
-      onTap: () {
-        //Change is editting.
-        showChildren = !showChildren;
-
-        //Update Widget.
+      onTap: () async {
+        //Navigate to grid
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ContainerGridView(
+                containerEntry: containerEntry,
+                containerTypeColor: containerColor),
+          ),
+        );
         setState(() {});
       },
       child: Row(
@@ -570,45 +551,26 @@ class _ContainerViewState extends State<ContainerView> {
           CustomOutlineContainer(
             width: 80,
             height: 35,
-            backgroundColor: Colors.white10,
+            backgroundColor: containerColor,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
               child: Builder(builder: (context) {
-                if (showChildren) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'hide',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      const Icon(
-                        Icons.arrow_drop_up,
-                        size: 20,
-                      ),
-                    ],
-                  );
-                } else {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'show',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      const Icon(
-                        Icons.arrow_drop_down,
-                        size: 20,
-                      ),
-                    ],
-                  );
-                }
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Grid',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    const Icon(
+                      Icons.grid_4x4_outlined,
+                      size: 20,
+                    ),
+                  ],
+                );
               }),
             ),
             outlineColor: containerColor,
@@ -640,6 +602,7 @@ class _ContainerViewState extends State<ContainerView> {
           MaterialPageRoute(
             builder: (context) => NewContainerView(
               parentContainer: containerEntry,
+              navigatorHistory: widget.navigatorHistory,
             ),
           ),
         );
@@ -649,16 +612,16 @@ class _ContainerViewState extends State<ContainerView> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           CustomOutlineContainer(
-            width: 160,
+            width: 100,
             height: 35,
-            backgroundColor: Colors.white10,
+            backgroundColor: containerColor,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'add single',
+                    'new',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(
@@ -680,38 +643,28 @@ class _ContainerViewState extends State<ContainerView> {
 
   Widget _addMultipleChildren() {
     return InkWell(
-      onTap: () async {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ContainerGridView(
-                containerEntry: containerEntry,
-                containerTypeColor: containerColor),
-          ),
-        );
-        setState(() {});
-      },
+      onTap: () async {},
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           CustomOutlineContainer(
-            width: 160,
+            width: 100,
             height: 35,
-            backgroundColor: Colors.white10,
+            backgroundColor: containerColor,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Grid Settings',
+                    'scan',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(
                     width: 5,
                   ),
                   const Icon(
-                    Icons.add_to_photos,
+                    Icons.qr_code_scanner,
                     size: 20,
                   ),
                 ],
@@ -1397,7 +1350,7 @@ class _ContainerViewState extends State<ContainerView> {
           borderRadius: const BorderRadius.all(
             Radius.circular(30),
           ),
-          color: containerColor,
+          color: Colors.white10,
         ));
   }
 

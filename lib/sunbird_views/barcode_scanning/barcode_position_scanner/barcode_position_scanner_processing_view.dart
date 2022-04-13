@@ -294,17 +294,25 @@ class _BarcodePositionScannerProcessingViewState
         .findFirstSync();
 
     for (ContainerEntry containerEntry in containerEntries) {
-      ContainerRelationship containerRelationship = ContainerRelationship()
-        ..containerUID = containerEntry.containerUID
-        ..parentUID = widget.parentContainerUID;
-      log('parentUID ' + relationship!.parentUID.toString());
-      log('containerUID ' + containerEntry.containerUID);
-      if (relationship.parentUID != containerEntry.containerUID &&
-          widget.parentContainerUID != containerEntry.containerUID) {
-        log('adding');
+      if (relationship != null &&
+          containerEntry.containerUID != widget.parentContainerUID &&
+          widget.parentContainerUID != relationship.containerUID) {
+        //TODO: CHECK IF RELATIONSHIP EXISTS
+
+        ContainerRelationship containerRelationship = ContainerRelationship()
+          ..containerUID = containerEntry.containerUID
+          ..parentUID = widget.parentContainerUID;
+
         containerRelatiopnships.add(containerRelationship);
-      } else if (widget.parentContainerUID != containerEntry.containerUID) {
+        log(containerRelationship.toString());
+      } else if (relationship == null &&
+          containerEntry.containerUID != widget.parentContainerUID) {
+        ContainerRelationship containerRelationship = ContainerRelationship()
+          ..containerUID = containerEntry.containerUID
+          ..parentUID = widget.parentContainerUID;
         containerRelatiopnships.add(containerRelationship);
+
+        log(containerRelationship.toString());
       }
     }
 
