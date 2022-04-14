@@ -19,6 +19,7 @@ class ObjectDetectorCameraView extends StatefulWidget {
       required this.customPaint,
       required this.onImage,
       required this.color,
+      required this.containerUID,
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
 
@@ -27,6 +28,7 @@ class ObjectDetectorCameraView extends StatefulWidget {
   final Function(InputImage inputImage) onImage;
   final CameraLensDirection initialDirection;
   final Color color;
+  final String containerUID;
 
   @override
   _ObjectDetectorCameraViewState createState() =>
@@ -111,6 +113,7 @@ class _ObjectDetectorCameraViewState extends State<ObjectDetectorCameraView> {
                         builder: (context) => ObjectDetectorProcessingView(
                           imagePath: image.path,
                           customColor: widget.color,
+                          containerUID: widget.containerUID,
                         ),
                       ),
                     );

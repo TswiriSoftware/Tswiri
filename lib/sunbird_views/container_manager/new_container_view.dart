@@ -42,6 +42,7 @@ class NewContainerView extends StatefulWidget {
 class _NewContainerViewState extends State<NewContainerView> {
   //1. Parent container if Provided. (Optional)
   ContainerEntry? parentContainer;
+  String? containerUID;
 
   //2. Select container Type (Required)
   late List<ContainerType> containerTypes;
@@ -61,7 +62,7 @@ class _NewContainerViewState extends State<NewContainerView> {
   String? description;
 
   //5. A list of photos added to this container.
-  List<PhotoData> newPhotoData = [];
+  List<ContainerPhoto> containerPhotos = [];
 
   //6. Is this containers barcode considered a marker to its children ?
   Marker? marker;
@@ -191,6 +192,19 @@ class _NewContainerViewState extends State<NewContainerView> {
       onTap: () {
         setState(() {
           selectedContainerType = containerType;
+
+          //Create ContainerUID.
+          if (containerUID?.split('_').first !=
+              selectedContainerType!.containerType) {
+            containerUID = selectedContainerType!.containerType +
+                '_' +
+                DateTime.now().millisecondsSinceEpoch.toString();
+          } else {
+            containerUID = selectedContainerType!.containerType +
+                '_' +
+                DateTime.now().millisecondsSinceEpoch.toString();
+          }
+
           containerColor =
               Color(int.parse(containerType.containerColor)).withOpacity(1);
         });
@@ -517,6 +531,8 @@ class _NewContainerViewState extends State<NewContainerView> {
   Widget _photoBuilder() {
     //TODO: if user exits screen ensure that photos have been deleted.
     return Builder(builder: (context) {
+      updatePhotos();
+      log(containerPhotos.toString());
       if (selectedContainerType != null && barcodeUID != null) {
         return LightContainer(
           margin: 2.5,
@@ -552,14 +568,13 @@ class _NewContainerViewState extends State<NewContainerView> {
                       ),
                       const Divider(),
                       Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        alignment: WrapAlignment.spaceEvenly,
-                        spacing: 5,
-                        runSpacing: 10,
-                        children: newPhotoData
-                            .map((e) => photoDisplayWidget(e))
-                            .toList(),
-                      )
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          alignment: WrapAlignment.spaceEvenly,
+                          spacing: 5,
+                          runSpacing: 10,
+                          children: containerPhotos
+                              .map((e) => photoDisplayWidget(e))
+                              .toList())
                     ],
                   ),
                 )
@@ -573,7 +588,7 @@ class _NewContainerViewState extends State<NewContainerView> {
     });
   }
 
-  Widget photoDisplayWidget(PhotoData photoData) {
+  Widget photoDisplayWidget(ContainerPhoto photoData) {
     return Stack(
       children: [
         SizedBox(
@@ -588,15 +603,25 @@ class _NewContainerViewState extends State<NewContainerView> {
         ),
         IconButton(
           onPressed: () {
+            ContainerPhotoThumbnail containerPhotoThumbnail = isarDatabase!
+                .containerPhotoThumbnails
+                .filter()
+                .photoPathMatches(photoData.photoPath)
+                .findFirstSync()!;
+
+            isarDatabase!.writeTxnSync((isar) {
+              isar.containerPhotos.deleteSync(photoData.id);
+              isar.containerPhotoThumbnails
+                  .deleteSync(containerPhotoThumbnail.id);
+            });
+
             //Delete Photo.
             File(photoData.photoPath).delete();
 
-            //Delete Photo Thumbnail.
-            File(photoData.thumbnailPhotoPath).delete();
+            // //Delete Photo Thumbnail.
+            File(containerPhotoThumbnail.thumbnailPhotoPath).delete();
 
-            newPhotoData.removeWhere(
-                (element) => element.photoPath == photoData.photoPath);
-
+            updatePhotos();
             setState(() {});
           },
           icon: const Icon(Icons.delete),
@@ -609,20 +634,17 @@ class _NewContainerViewState extends State<NewContainerView> {
   Widget _photoAddButton() {
     return InkWell(
       onTap: () async {
-        PhotoData? result = await Navigator.push(
+        await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ObjectDetectorView(
               customColor: containerColor,
+              containerUID: containerUID!,
             ),
           ),
         );
-        if (result != null) {
-          setState(() {
-            newPhotoData.add(result);
-          });
-          log(newPhotoData.toString());
-        }
+
+        setState(() {});
       },
       child: CustomOutlineContainer(
           margin: 2.5,
@@ -643,6 +665,14 @@ class _NewContainerViewState extends State<NewContainerView> {
           ),
           outlineColor: containerColor!),
     );
+  }
+
+  void updatePhotos() {
+    containerPhotos = [];
+    containerPhotos.addAll(isarDatabase!.containerPhotos
+        .filter()
+        .containerUIDMatches(containerUID ?? '')
+        .findAllSync());
   }
 
   ///CREATE///
@@ -676,15 +706,10 @@ class _NewContainerViewState extends State<NewContainerView> {
   void createContainer() {
     //Create ContainerEntry.
     if (selectedContainerType != null && barcodeUID != null) {
-      //Create ContainerUID.
-      String containerUID = selectedContainerType!.containerType +
-          '_' +
-          DateTime.now().millisecondsSinceEpoch.toString();
-
       //Create ContainerEntry.
       ContainerEntry newContainerEntry = ContainerEntry()
         ..containerType = selectedContainerType!.containerType
-        ..containerUID = containerUID
+        ..containerUID = containerUID!
         ..barcodeUID = barcodeUID
         ..name = name
         ..description = description;
@@ -692,11 +717,6 @@ class _NewContainerViewState extends State<NewContainerView> {
       //Write ContainerEntry.
       isarDatabase!.writeTxnSync(
           (isar) => isar.containerEntrys.putSync(newContainerEntry));
-
-      //Create PhotoEntries.
-      if (newPhotoData.isNotEmpty) {
-        createPhotoEntries(newContainerEntry);
-      }
 
       if (parentContainer != null) {
         //Create ContainerRelationship.
@@ -728,82 +748,6 @@ class _NewContainerViewState extends State<NewContainerView> {
                     )));
       }
     }
-  }
-
-  void createPhotoEntries(ContainerEntry newContainerEntry) {
-    List<ContainerPhoto> newPhotos = [];
-    List<ContainerPhotoThumbnail> newPhotosThumbnails = [];
-    List<PhotoTag> newPhotoTags = [];
-
-    for (PhotoData photo in newPhotoData) {
-      //Create Container photo.
-      ContainerPhoto containerPhoto = ContainerPhoto()
-        ..containerUID = newContainerEntry.containerUID
-        ..photoPath = photo.photoPath;
-
-      //Add photo to list.
-      newPhotos.add(containerPhoto);
-
-      //Create Container thumbnail.
-      ContainerPhotoThumbnail newThumbnail = ContainerPhotoThumbnail()
-        ..photoPath = photo.photoPath
-        ..thumbnailPhotoPath = photo.thumbnailPhotoPath;
-
-      //Add to thumbnail List.
-      newPhotosThumbnails.add(newThumbnail);
-
-      for (DetectedObject detectedObject in photo.photoObjects) {
-        List<Label> labels = detectedObject.getLabels();
-
-        for (Label label in labels) {
-          int mlTagID = isarDatabase!.mlTags
-              .filter()
-              .tagMatches(label.getText().toLowerCase())
-              .findFirstSync()!
-              .id;
-
-          List<double> boundingBox = [
-            detectedObject.getBoundinBox().left,
-            detectedObject.getBoundinBox().top,
-            detectedObject.getBoundinBox().right,
-            detectedObject.getBoundinBox().bottom
-          ];
-
-          //Create PhotoTag.
-          PhotoTag newPhotoTag = PhotoTag()
-            ..photoPath = photo.photoPath
-            ..tagUID = mlTagID
-            ..boundingBox = boundingBox
-            ..confidence = label.getConfidence();
-
-          newPhotoTags.add(newPhotoTag);
-        }
-      }
-
-      for (ImageLabel imageLabel in photo.photoLabels) {
-        int mlTagID = isarDatabase!.mlTags
-            .filter()
-            .tagMatches(imageLabel.label.toLowerCase())
-            .findFirstSync()!
-            .id;
-
-        //Create PhotoTag.
-        PhotoTag newPhotoTag = PhotoTag()
-          ..photoPath = photo.photoPath
-          ..tagUID = mlTagID
-          ..boundingBox = null
-          ..confidence = imageLabel.confidence;
-
-        newPhotoTags.add(newPhotoTag);
-      }
-    }
-
-    //Write newPhotos, newPhotosThumbnails, newPhotoTags.
-    isarDatabase!.writeTxnSync((isar) {
-      isar.containerPhotos.putAllSync(newPhotos);
-      isar.containerPhotoThumbnails.putAllSync(newPhotosThumbnails);
-      isar.photoTags.putAllSync(newPhotoTags);
-    });
   }
 
   ///MISC///

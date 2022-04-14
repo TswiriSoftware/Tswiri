@@ -7,9 +7,11 @@ class ObjectDetectorView extends StatefulWidget {
   const ObjectDetectorView({
     Key? key,
     this.customColor,
+    required this.containerUID,
   }) : super(key: key);
 
   final Color? customColor;
+  final String containerUID;
 
   @override
   _ObjectDetectorView createState() => _ObjectDetectorView();
@@ -37,6 +39,7 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
       customPaint: customPaint,
       onImage: (inputImage) {},
       initialDirection: CameraLensDirection.back,
+      containerUID: widget.containerUID,
     );
   }
 }

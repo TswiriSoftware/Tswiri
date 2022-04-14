@@ -1,28 +1,29 @@
-import 'dart:developer';
 import 'dart:io';
+import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
 import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/objects/photo_data.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
+import '../../isar_database/container_photo/container_photo.dart';
+import '../../isar_database/container_photo_thumbnail/container_photo_thumbnail.dart';
 import '../../objects/image_data.dart';
 import 'painter/object_detector_painter.dart';
-import 'package:string_similarity/string_similarity.dart';
 
 ///Displays the Photo and objects detected
 class ObjectDetectorProcessingView extends StatefulWidget {
-  const ObjectDetectorProcessingView({
-    Key? key,
-    required this.imagePath,
-    this.customColor,
-    //required this.barcodeID,
-  }) : super(key: key);
+  const ObjectDetectorProcessingView(
+      {Key? key,
+      required this.imagePath,
+      this.customColor,
+      required this.containerUID})
+      : super(key: key);
   final String imagePath;
   final Color? customColor;
+  final String containerUID;
 
   //final String barcodeID;
   @override
@@ -41,21 +42,22 @@ class _ObjectDetectorProcessingView
   //Text Detector.
   TextDetector textDetector = GoogleMlKit.vision.textDetector();
 
-  late String imagePath;
+  //late String imagePath;
 
-  List<String> photoTags = [];
-  PhotoData? photoData;
+  List<PhotoTag> photoTags = [];
+  List<MlTag> newMlTags = [];
 
   bool isDone = false;
 
   String? photoPath;
   String? photoThumbnailPath;
 
+  late Future<ImageData> _future;
+
   @override
   void initState() {
     //Image Path.
-    imagePath = widget.imagePath;
-
+    _future = processImage(widget.imagePath);
     super.initState();
   }
 
@@ -78,7 +80,7 @@ class _ObjectDetectorProcessingView
               backgroundColor: widget.customColor ?? Colors.orange,
               heroTag: null,
               onPressed: () {
-                Navigator.pop(context, photoData);
+                Navigator.pop(context);
               },
               child: const Icon(Icons.check_circle_outline_rounded),
             );
@@ -99,11 +101,11 @@ class _ObjectDetectorProcessingView
           fit: StackFit.expand,
           children: [
             Image.file(
-              File(imagePath),
+              File(widget.imagePath),
               alignment: Alignment.topCenter,
             ),
             FutureBuilder<ImageData>(
-                future: processImage(imagePath),
+                future: _future,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState != ConnectionState.done) {
                     return const Center(child: CircularProgressIndicator());
@@ -151,58 +153,192 @@ class _ObjectDetectorProcessingView
     List<DetectedObject> detectedObjects = [];
     List<ImageLabel> imageLabels = [];
 
-    //Label image if it is enabled.
+    //Label image if it is enabled with GoogleMLKitImageLabeling.
     if (googleImageLabeling) {
       imageLabels.addAll(await getImageLabels(
           inputImage, googleImageLabelingConfidenceThreshold / 100));
     }
 
-    // //Google vision products if enabled
-    // if (googleVisionProducts) {
-    //   detectedObjects.addAll(await getObjectsOnImage(googleVisionProductsModel,
-    //       googleVisionProductsConfidenceThreshold / 100, inputImage));
-    // }
-
-    //InceptionV4 products if enabled
+    //InceptionV4 products if enabled.
     if (inceptionV4) {
       detectedObjects.addAll(await getObjectsOnImage(inceptionV4Model,
           inceptionV4PreferenceConfidenceThreshold / 100, inputImage));
     }
 
-    //Image Processing:
+    //Processing
+    photoTags = [];
 
     //Objects
     for (DetectedObject object in detectedObjects) {
       List<Label> objectLabels = object.getLabels();
+
+      List<double> boundingBox = [
+        object.getBoundinBox().left,
+        object.getBoundinBox().top,
+        object.getBoundinBox().right,
+        object.getBoundinBox().bottom
+      ];
+
       for (Label objectLabel in objectLabels) {
-        photoTags.add(objectLabel.getText());
+        //Tag Text.
+        String tag = objectLabel.getText().toLowerCase();
+
+        //Check if it exists
+        MlTag? existingMlTag = isarDatabase!.mlTags
+            .where()
+            .filter()
+            .tagMatches(tag)
+            .and()
+            .tagTypeEqualTo(mlTagType.objectLabel)
+            .findFirstSync();
+
+        if (existingMlTag != null) {
+          PhotoTag photoTag = PhotoTag()
+            ..photoPath = photoFilePath
+            ..confidence = objectLabel.getConfidence()
+            ..boundingBox = boundingBox
+            ..tagUID = existingMlTag.id;
+
+          photoTags.add(photoTag);
+        } else {
+          //Create new mlTag.
+          MlTag mlTag = MlTag()
+            ..tag = tag
+            ..tagType = mlTagType.objectLabel;
+
+          isarDatabase!.writeTxnSync((isar) => isar.mlTags.putSync(mlTag));
+
+          PhotoTag photoTag = PhotoTag()
+            ..photoPath = photoFilePath
+            ..confidence = objectLabel.getConfidence()
+            ..boundingBox = boundingBox
+            ..tagUID = isarDatabase!.mlTags
+                .filter()
+                .tagMatches(mlTag.tag)
+                .findFirstSync()!
+                .id;
+
+          photoTags.add(photoTag);
+        }
       }
     }
 
     //Image Labels
     for (ImageLabel label in imageLabels) {
-      log('Image Label: ' + label.label);
-      photoTags.add(label.label);
+      //Tag Text.
+      String tag = label.label.toLowerCase();
+
+      //Check if it exists
+      MlTag? existingMlTag = isarDatabase!.mlTags
+          .where()
+          .filter()
+          .tagMatches(tag)
+          .and()
+          .tagTypeEqualTo(mlTagType.imageLabel)
+          .findFirstSync();
+
+      if (existingMlTag != null) {
+        PhotoTag photoTag = PhotoTag()
+          ..photoPath = photoFilePath
+          ..confidence = label.confidence
+          ..boundingBox = null
+          ..tagUID = existingMlTag.id;
+
+        photoTags.add(photoTag);
+      } else {
+        //Create new mlTag.
+        MlTag mlTag = MlTag()
+          ..tag = tag
+          ..tagType = mlTagType.imageLabel;
+
+        isarDatabase!.writeTxnSync((isar) => isar.mlTags.putSync(mlTag));
+
+        PhotoTag photoTag = PhotoTag()
+          ..photoPath = photoFilePath
+          ..confidence = label.confidence
+          ..boundingBox = null
+          ..tagUID = isarDatabase!.mlTags
+              .filter()
+              .tagMatches(mlTag.tag)
+              .and()
+              .tagTypeEqualTo(mlTagType.imageLabel)
+              .findFirstSync()!
+              .id;
+
+        photoTags.add(photoTag);
+      }
     }
 
     //Text
     final RecognisedText recognisedText =
         await textDetector.processImage(inputImage);
+
     for (TextBlock block in recognisedText.blocks) {
       for (TextLine line in block.lines) {
-        if (line.text.length >= 3) {
-          //photoTags.add(line.text.toLowerCase());
+        for (String word in line.text.split(' ').toList()) {
+          //Tag Text.
+          String tag = word.toLowerCase();
+
+          //Check if it exists
+          MlTag? existingMlTag = isarDatabase!.mlTags
+              .where()
+              .filter()
+              .tagMatches(tag)
+              .and()
+              .tagTypeEqualTo(mlTagType.text)
+              .findFirstSync();
+
+          if (existingMlTag != null) {
+            PhotoTag photoTag = PhotoTag()
+              ..photoPath = photoFilePath
+              ..confidence = 1.0
+              ..boundingBox = null
+              ..tagUID = existingMlTag.id;
+
+            photoTags.add(photoTag);
+          } else {
+            //Create new mlTag.
+            MlTag mlTag = MlTag()
+              ..tag = tag
+              ..tagType = mlTagType.text;
+
+            isarDatabase!.writeTxnSync((isar) => isar.mlTags.putSync(mlTag));
+
+            PhotoTag photoTag = PhotoTag()
+              ..photoPath = photoFilePath
+              ..confidence = 1.0
+              ..boundingBox = null
+              ..tagUID = isarDatabase!.mlTags
+                  .filter()
+                  .tagMatches(mlTag.tag)
+                  .and()
+                  .tagTypeEqualTo(mlTagType.text)
+                  .findFirstSync()!
+                  .id;
+
+            photoTags.add(photoTag);
+          }
         }
       }
     }
 
-    photoData = PhotoData(
-      thumbnailPhotoPath: thumbnailPhotoPath,
-      photoPath: photoFilePath,
-      photoObjects: detectedObjects,
-      photoLabels: imageLabels,
-      recognisedTexts: recognisedText,
-    );
+    //Create containerPhoto.
+    ContainerPhoto newContainerPhoto = ContainerPhoto()
+      ..containerUID = widget.containerUID
+      ..photoPath = photoFilePath;
+
+    //Create containerPhotoThumbnail.
+    ContainerPhotoThumbnail newContainerPhotoThumbnail =
+        ContainerPhotoThumbnail()
+          ..photoPath = photoFilePath
+          ..thumbnailPhotoPath = thumbnailPhotoPath;
+
+    //Write to database.
+    isarDatabase!.writeTxnSync((isar) {
+      isar.containerPhotos.putSync(newContainerPhoto);
+      isar.containerPhotoThumbnails.putSync(newContainerPhotoThumbnail);
+      isar.photoTags.putAllSync(photoTags);
+    });
 
     //Decode Image for properties
     var decodedImage = await decodeImageFromList(imageFile.readAsBytesSync());
@@ -219,104 +355,12 @@ class _ObjectDetectorProcessingView
         imageRotation: InputImageRotation.Rotation_90deg,
         size: imageSize);
 
-    //If new mlTags are found they will be added to the database.
-    createNewMlTags(detectedObjects, imageLabels, recognisedText);
-
-    return processedResult;
-  }
-
-  void createNewMlTags(List<DetectedObject> detectedObjects,
-      List<ImageLabel> imageLabels, RecognisedText recognisedTexts) {
-    List<MlTag> newMlTags = [];
-
-    for (DetectedObject detectedObject in detectedObjects) {
-      for (Label label in detectedObject.getLabels()) {
-        MlTag mlTag = MlTag()
-          ..tag = label.getText().toLowerCase()
-          ..tagType = mlTagType.objectLabel;
-
-        if (isarDatabase!.mlTags
-                .where()
-                .filter()
-                .tagMatches(mlTag.tag)
-                .and()
-                .tagTypeEqualTo(mlTagType.objectLabel)
-                .findFirstSync() ==
-            null) {
-          newMlTags.add(mlTag);
-        }
-      }
-    }
-
-    for (ImageLabel imageLabel in imageLabels) {
-      MlTag mlTag = MlTag()
-        ..tag = imageLabel.label.toLowerCase()
-        ..tagType = mlTagType.imageLabel;
-
-      if (isarDatabase!.mlTags
-              .where()
-              .filter()
-              .tagMatches(mlTag.tag)
-              .and()
-              .tagTypeEqualTo(mlTagType.imageLabel)
-              .findFirstSync() ==
-          null) {
-        newMlTags.add(mlTag);
-      }
-    }
-
-    List<String> existingTags = isarDatabase!.mlTags
-        .where()
-        .findAllSync()
-        .where((element) => element.tagType == mlTagType.text)
-        .map((e) => e.tag)
-        .toList();
-
-    log(existingTags.toString());
-
-    for (TextBlock recognisedText in recognisedTexts.blocks) {
-      MlTag mlTag = MlTag()
-        ..tag = recognisedText.text.toLowerCase().trim()
-        ..tagType = mlTagType.text;
-
-      String similarTag = '';
-      double similarity = 0;
-
-      for (String existingTag in existingTags) {
-        double currentSimilarity = mlTag.tag.similarityTo(existingTag);
-        if (currentSimilarity > similarity) {
-          similarTag = existingTag;
-          similarity = currentSimilarity;
-        }
-      }
-
-      if (similarity < 0.95) {
-        if (isarDatabase!.mlTags
-                .where()
-                .filter()
-                .tagMatches(mlTag.tag)
-                .and()
-                .tagTypeEqualTo(mlTagType.text)
-                .findFirstSync() ==
-            null) {
-          newMlTags.add(mlTag);
-        }
-      }
-    }
-
-    //Write new ml tags.
-    isarDatabase!.writeTxnSync(
-      (isar) => isar.mlTags.putAllSync(newMlTags),
-    );
-
-    for (var item in newMlTags) {
-      log(item.tag);
-    }
-
     if (isDone == false) {
       isDone = true;
       setState(() {});
     }
+
+    return processedResult;
   }
 
   Future<List<DetectedObject>> getObjectsOnImage(LocalModel localModel,

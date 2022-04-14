@@ -10,6 +10,8 @@ class RealInterBarcodeVectorEntry {
 
   late String endBarcodeUID;
 
+  //TODO: implement timestamp.
+
   //X vector.
   late double x; //Make nullale ?
   //Y vector.

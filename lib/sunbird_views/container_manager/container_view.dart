@@ -1099,18 +1099,17 @@ class _ContainerViewState extends State<ContainerView> {
   Widget _photoAddButton() {
     return InkWell(
       onTap: () async {
-        PhotoData? photoData = await Navigator.push(
+        await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ObjectDetectorView(
               customColor: containerColor,
+              containerUID: containerEntry.containerUID,
             ),
           ),
         );
-        if (photoData != null) {
-          addNewPhoto(photoData);
-          setState(() {});
-        }
+
+        setState(() {});
       },
       child: CustomOutlineContainer(
           backgroundColor: Colors.white10,
@@ -1159,120 +1158,6 @@ class _ContainerViewState extends State<ContainerView> {
           .filter()
           .photoPathMatches(containerPhoto.photoPath)
           .deleteAllSync();
-    });
-  }
-
-  void addNewPhoto(PhotoData photoData) {
-    ContainerPhoto newContainerPhoto = ContainerPhoto()
-      ..containerUID = containerEntry.containerUID
-      ..photoPath = photoData.photoPath;
-
-    ContainerPhotoThumbnail newThumbnail = ContainerPhotoThumbnail()
-      ..photoPath = photoData.photoPath
-      ..thumbnailPhotoPath = photoData.thumbnailPhotoPath;
-
-    List<PhotoTag> newPhotoTags = [];
-
-    for (DetectedObject detectedObject in photoData.photoObjects) {
-      List<Label> labels = detectedObject.getLabels();
-
-      for (Label label in labels) {
-        int mlTagID = isarDatabase!.mlTags
-            .filter()
-            .tagMatches(label.getText().toLowerCase())
-            .and()
-            .tagTypeEqualTo(mlTagType.objectLabel)
-            .findFirstSync()!
-            .id;
-
-        List<double> boundingBox = [
-          detectedObject.getBoundinBox().left,
-          detectedObject.getBoundinBox().top,
-          detectedObject.getBoundinBox().right,
-          detectedObject.getBoundinBox().bottom
-        ];
-
-        PhotoTag newPhotoTag = PhotoTag()
-          ..photoPath = photoData.photoPath
-          ..tagUID = mlTagID
-          ..boundingBox = boundingBox
-          ..confidence = label.getConfidence();
-
-        newPhotoTags.add(newPhotoTag);
-      }
-    }
-
-    for (ImageLabel imageLabel in photoData.photoLabels) {
-      int mlTagID = isarDatabase!.mlTags
-          .filter()
-          .tagMatches(imageLabel.label.toLowerCase())
-          .and()
-          .tagTypeEqualTo(mlTagType.imageLabel)
-          .findFirstSync()!
-          .id;
-
-      PhotoTag newPhotoTag = PhotoTag()
-        ..photoPath = photoData.photoPath
-        ..tagUID = mlTagID
-        ..boundingBox = null
-        ..confidence = imageLabel.confidence;
-
-      newPhotoTags.add(newPhotoTag);
-    }
-
-    List<String> existingTags = isarDatabase!.mlTags
-        .where()
-        .findAllSync()
-        .where((element) => element.tagType == mlTagType.text)
-        .map((e) => e.tag)
-        .toList();
-
-    for (TextBlock textBlock in photoData.recognisedTexts.blocks) {
-      if (textBlock.text.length >= 3) {
-        String similarTag = '';
-        double similarity = 0;
-
-        for (String existingTag in existingTags) {
-          double currentSimilarity =
-              textBlock.text.toLowerCase().similarityTo(existingTag);
-          if (currentSimilarity > similarity) {
-            similarTag = existingTag;
-            similarity = currentSimilarity;
-          }
-        }
-        int mlTagID;
-        if (similarity > 0.92) {
-          mlTagID = isarDatabase!.mlTags
-              .filter()
-              .tagMatches(similarTag.toLowerCase())
-              .and()
-              .tagTypeEqualTo(mlTagType.text)
-              .findFirstSync()!
-              .id;
-        } else {
-          mlTagID = isarDatabase!.mlTags
-              .filter()
-              .tagMatches(textBlock.text.toLowerCase())
-              .and()
-              .tagTypeEqualTo(mlTagType.text)
-              .findFirstSync()!
-              .id;
-        }
-
-        PhotoTag newPhotoTag = PhotoTag()
-          ..photoPath = photoData.photoPath
-          ..tagUID = mlTagID
-          ..boundingBox = null
-          ..confidence = 1;
-
-        newPhotoTags.add(newPhotoTag);
-      }
-    }
-
-    isarDatabase!.writeTxnSync((isar) {
-      isar.containerPhotos.putSync(newContainerPhoto);
-      isar.containerPhotoThumbnails.putSync(newThumbnail);
-      isar.photoTags.putAllSync(newPhotoTags);
     });
   }
 

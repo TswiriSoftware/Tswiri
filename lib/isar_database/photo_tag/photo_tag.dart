@@ -16,7 +16,7 @@ class PhotoTag {
 
   @override
   String toString() {
-    return 'photoPath: $photoPath, tagUID: $tagUID';
+    return '\nphotoPath: $photoPath, tagUID: $tagUID, confidence: $confidence, boundingBox: $boundingBox';
   }
 
   Map toJson() => {
