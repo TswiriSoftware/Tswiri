@@ -17,11 +17,11 @@ extension GetContainerPhotoCollection on Isar {
 final ContainerPhotoSchema = CollectionSchema(
   name: 'ContainerPhoto',
   schema:
-      '{"name":"ContainerPhoto","idName":"id","properties":[{"name":"containerUID","type":"String"},{"name":"photoPath","type":"String"}],"indexes":[],"links":[]}',
+      '{"name":"ContainerPhoto","idName":"id","properties":[{"name":"containerUID","type":"String"},{"name":"photoPath","type":"String"},{"name":"photoThumbnailPath","type":"String"}],"indexes":[],"links":[]}',
   nativeAdapter: const _ContainerPhotoNativeAdapter(),
   webAdapter: const _ContainerPhotoWebAdapter(),
   idName: 'id',
-  propertyIds: {'containerUID': 0, 'photoPath': 1},
+  propertyIds: {'containerUID': 0, 'photoPath': 1, 'photoThumbnailPath': 2},
   listProperties: {},
   indexIds: {},
   indexTypes: {},
@@ -50,6 +50,8 @@ class _ContainerPhotoWebAdapter extends IsarWebTypeAdapter<ContainerPhoto> {
     IsarNative.jsObjectSet(jsObj, 'containerUID', object.containerUID);
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
     IsarNative.jsObjectSet(jsObj, 'photoPath', object.photoPath);
+    IsarNative.jsObjectSet(
+        jsObj, 'photoThumbnailPath', object.photoThumbnailPath);
     return jsObj;
   }
 
@@ -60,6 +62,8 @@ class _ContainerPhotoWebAdapter extends IsarWebTypeAdapter<ContainerPhoto> {
     object.containerUID = IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '';
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
     object.photoPath = IsarNative.jsObjectGet(jsObj, 'photoPath') ?? '';
+    object.photoThumbnailPath =
+        IsarNative.jsObjectGet(jsObj, 'photoThumbnailPath') ?? '';
     return object;
   }
 
@@ -73,6 +77,8 @@ class _ContainerPhotoWebAdapter extends IsarWebTypeAdapter<ContainerPhoto> {
             as P;
       case 'photoPath':
         return (IsarNative.jsObjectGet(jsObj, 'photoPath') ?? '') as P;
+      case 'photoThumbnailPath':
+        return (IsarNative.jsObjectGet(jsObj, 'photoThumbnailPath') ?? '') as P;
       default:
         throw 'Illegal propertyName';
     }
@@ -101,6 +107,9 @@ class _ContainerPhotoNativeAdapter
     final value1 = object.photoPath;
     final _photoPath = IsarBinaryWriter.utf8Encoder.convert(value1);
     dynamicSize += (_photoPath.length) as int;
+    final value2 = object.photoThumbnailPath;
+    final _photoThumbnailPath = IsarBinaryWriter.utf8Encoder.convert(value2);
+    dynamicSize += (_photoThumbnailPath.length) as int;
     final size = staticSize + dynamicSize;
 
     rawObj.buffer = alloc(size);
@@ -109,6 +118,7 @@ class _ContainerPhotoNativeAdapter
     final writer = IsarBinaryWriter(buffer, staticSize);
     writer.writeBytes(offsets[0], _containerUID);
     writer.writeBytes(offsets[1], _photoPath);
+    writer.writeBytes(offsets[2], _photoThumbnailPath);
   }
 
   @override
@@ -118,6 +128,7 @@ class _ContainerPhotoNativeAdapter
     object.containerUID = reader.readString(offsets[0]);
     object.id = id;
     object.photoPath = reader.readString(offsets[1]);
+    object.photoThumbnailPath = reader.readString(offsets[2]);
     return object;
   }
 
@@ -130,6 +141,8 @@ class _ContainerPhotoNativeAdapter
       case 0:
         return (reader.readString(offset)) as P;
       case 1:
+        return (reader.readString(offset)) as P;
+      case 2:
         return (reader.readString(offset)) as P;
       default:
         throw 'Illegal propertyIndex';
@@ -488,6 +501,113 @@ extension ContainerPhotoQueryFilter
       caseSensitive: caseSensitive,
     ));
   }
+
+  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
+      photoThumbnailPathEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'photoThumbnailPath',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
+      photoThumbnailPathGreaterThan(
+    String value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'photoThumbnailPath',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
+      photoThumbnailPathLessThan(
+    String value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'photoThumbnailPath',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
+      photoThumbnailPathBetween(
+    String lower,
+    String upper, {
+    bool caseSensitive = true,
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'photoThumbnailPath',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
+      photoThumbnailPathStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'photoThumbnailPath',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
+      photoThumbnailPathEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'photoThumbnailPath',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
+      photoThumbnailPathContains(String value, {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'photoThumbnailPath',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
+      photoThumbnailPathMatches(String pattern, {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'photoThumbnailPath',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
+  }
 }
 
 extension ContainerPhotoQueryLinks
@@ -521,6 +641,16 @@ extension ContainerPhotoQueryWhereSortBy
       sortByPhotoPathDesc() {
     return addSortByInternal('photoPath', Sort.desc);
   }
+
+  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy>
+      sortByPhotoThumbnailPath() {
+    return addSortByInternal('photoThumbnailPath', Sort.asc);
+  }
+
+  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy>
+      sortByPhotoThumbnailPathDesc() {
+    return addSortByInternal('photoThumbnailPath', Sort.desc);
+  }
 }
 
 extension ContainerPhotoQueryWhereSortThenBy
@@ -551,6 +681,16 @@ extension ContainerPhotoQueryWhereSortThenBy
       thenByPhotoPathDesc() {
     return addSortByInternal('photoPath', Sort.desc);
   }
+
+  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy>
+      thenByPhotoThumbnailPath() {
+    return addSortByInternal('photoThumbnailPath', Sort.asc);
+  }
+
+  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy>
+      thenByPhotoThumbnailPathDesc() {
+    return addSortByInternal('photoThumbnailPath', Sort.desc);
+  }
 }
 
 extension ContainerPhotoQueryWhereDistinct
@@ -568,6 +708,12 @@ extension ContainerPhotoQueryWhereDistinct
       {bool caseSensitive = true}) {
     return addDistinctByInternal('photoPath', caseSensitive: caseSensitive);
   }
+
+  QueryBuilder<ContainerPhoto, ContainerPhoto, QDistinct>
+      distinctByPhotoThumbnailPath({bool caseSensitive = true}) {
+    return addDistinctByInternal('photoThumbnailPath',
+        caseSensitive: caseSensitive);
+  }
 }
 
 extension ContainerPhotoQueryProperty
@@ -583,5 +729,10 @@ extension ContainerPhotoQueryProperty
 
   QueryBuilder<ContainerPhoto, String, QQueryOperations> photoPathProperty() {
     return addPropertyNameInternal('photoPath');
+  }
+
+  QueryBuilder<ContainerPhoto, String, QQueryOperations>
+      photoThumbnailPathProperty() {
+    return addPropertyNameInternal('photoThumbnailPath');
   }
 }

@@ -603,23 +603,15 @@ class _NewContainerViewState extends State<NewContainerView> {
         ),
         IconButton(
           onPressed: () {
-            ContainerPhotoThumbnail containerPhotoThumbnail = isarDatabase!
-                .containerPhotoThumbnails
-                .filter()
-                .photoPathMatches(photoData.photoPath)
-                .findFirstSync()!;
-
             isarDatabase!.writeTxnSync((isar) {
               isar.containerPhotos.deleteSync(photoData.id);
-              isar.containerPhotoThumbnails
-                  .deleteSync(containerPhotoThumbnail.id);
             });
 
             //Delete Photo.
             File(photoData.photoPath).delete();
 
             // //Delete Photo Thumbnail.
-            File(containerPhotoThumbnail.thumbnailPhotoPath).delete();
+            File(photoData.photoThumbnailPath).delete();
 
             updatePhotos();
             setState(() {});

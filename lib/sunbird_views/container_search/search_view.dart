@@ -2,9 +2,9 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_photo/container_photo.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_photo_thumbnail/container_photo_thumbnail.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
@@ -12,10 +12,6 @@ import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/navigator_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_search/objects/container_search_builder.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:isar/isar.dart';
 
 class SearchView extends StatefulWidget {
@@ -26,670 +22,670 @@ class SearchView extends StatefulWidget {
 }
 
 class _SearchViewState extends State<SearchView> {
+  //Text Controller.
   TextEditingController searchController = TextEditingController();
 
-  bool showFilterOptions = false;
-  bool mlTagSearch = true;
-  bool tagSearch = true;
-  bool normalSearch = true;
-  bool showContainerDescriptions = true;
-  bool showContainerPhotos = true;
+  //Search FocusNode.
+  final FocusNode _focusNode = FocusNode();
+  bool isFocused = false;
 
-  List<ContainerSearchBuilder> searchResults = [];
+  Map<String, String> filterTypes = {
+    'Tags': 'Search by container Tags',
+    'AI Tags': 'Search by AI Tags',
+    'Photos': 'Search by Photos',
+    'Name': 'Search by container Name',
+    'Description': 'Search by container Description',
+  };
+
+  List<String> filters = ['Tags', 'AI Tags', 'Photos'];
+  List<SearchObject> searchResults = [];
 
   @override
   void initState() {
-    searchFunction();
+    searchFunction('');
+
+    _focusNode.addListener(() {
+      setState(() {
+        isFocused = _focusNode.hasFocus;
+      });
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Search', style: Theme.of(context).textTheme.titleMedium),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: floatingSearchBar(),
-      body: Column(
-        children: [
-          //SearchBar with filters
-
-          _numberOfResults(),
-          _containerListView(),
-          //_searchBar(),
-        ],
-      ),
-    );
-  }
-
-  Widget floatingSearchBar() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          margin: const EdgeInsets.symmetric(horizontal: 2.5, vertical: 5),
-          decoration: BoxDecoration(
-              border: Border.all(color: Colors.deepOrange, width: 1),
-              borderRadius: const BorderRadius.all(
-                Radius.circular(30),
-              ),
-              color: const Color(0xFF232323)),
-          child: Column(
-            children: [
-              _searchOptions(),
-              const Divider(
-                height: 10,
-                thickness: 1,
-              ),
-              _searchField(),
-            ],
-          ),
+        resizeToAvoidBottomInset: true,
+        appBar: AppBar(
+          title: _textField(),
+          shadowColor: Colors.black54,
         ),
-      ],
-    );
-  }
-
-  Widget _numberOfResults() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Number Of Results: ' + searchResults.length.toString(),
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _searchField() {
-    return Row(
-      children: [
-        Expanded(
-          child: TextField(
-            controller: searchController,
-            onChanged: (enteredKeyword) {
-              searchFunction(enteredKeyword: enteredKeyword);
-              setState(() {});
-            },
-            autofocus: true,
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
-              suffixIcon: Icon(Icons.search),
-              labelText: 'Search',
-              labelStyle: TextStyle(fontSize: 18),
-              border: InputBorder.none,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _searchOptions() {
-    return Builder(
-      builder: (context) {
-        if (showFilterOptions) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Search Options: ',
-                style: Theme.of(context).textTheme.labelSmall,
-              ),
-              _optionDividerLight(),
-
-              //1. Normal Search.
-              optionWidget(
-                label: 'Normal search: ',
-                checkbox: Checkbox(
-                  value: normalSearch,
-                  onChanged: (value) {
-                    normalSearch = !normalSearch;
-                    setState(() {});
-                  },
-                ),
-              ),
-              _optionDividerLight(),
-
-              //2. Tag Search.
-              optionWidget(
-                label: 'Tag search: ',
-                checkbox: Checkbox(
-                  value: tagSearch,
-                  onChanged: (value) {
-                    tagSearch = !tagSearch;
-                    setState(() {});
-                  },
-                ),
-              ),
-              _optionDividerLight(),
-
-              //3. Ml Tag Search.
-              optionWidget(
-                label: 'Photo search:',
-                checkbox: Checkbox(
-                  value: mlTagSearch,
-                  onChanged: (value) {
-                    mlTagSearch = !mlTagSearch;
-                    setState(() {});
-                  },
-                ),
-              ),
-              _optionDividerHeavy(),
-              Text(
-                'Display Options: ',
-                style: Theme.of(context).textTheme.labelSmall,
-              ),
-              _optionDividerLight(),
-
-              //4. Show Container Descriptions.
-              optionWidget(
-                label: 'Show container descriptions: ',
-                checkbox: Checkbox(
-                  value: showContainerDescriptions,
-                  onChanged: (value) {
-                    showContainerDescriptions = !showContainerDescriptions;
-                    setState(() {});
-                  },
-                ),
-              ),
-              _optionDividerLight(),
-
-              //4. Show Container photos.
-              optionWidget(
-                label: 'Show container photos: ',
-                checkbox: Checkbox(
-                  value: showContainerPhotos,
-                  onChanged: (value) {
-                    showContainerPhotos = !showContainerPhotos;
-                    setState(() {});
-                  },
-                ),
-              ),
-
-              _optionDividerHeavy(),
-              //Option button
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Options',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      showFilterOptions = false;
-                      setState(() {});
-                    },
-                    child: const OrangeOutlineContainer(
-                      padding: 0,
-                      margin: 0,
-                      child: Icon(
-                        Icons.arrow_drop_down_rounded,
-                        size: 25,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          );
-        } else {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Options',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              GestureDetector(
-                onTap: () {
-                  showFilterOptions = true;
-                  setState(() {});
-                },
-                child: const OrangeOutlineContainer(
-                  margin: 0,
-                  padding: 0,
-                  child: Icon(
-                    Icons.arrow_drop_up_rounded,
-                    size: 25,
-                  ),
-                ),
-              ),
-            ],
-          );
-        }
-      },
-    );
-  }
-
-  Widget optionWidget({required String label, required Widget checkbox}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            SizedBox(height: 30, child: checkbox),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _optionDividerLight() {
-    return const Divider(
-      height: 10,
-      thickness: 1,
-    );
-  }
-
-  Widget _optionDividerHeavy() {
-    return const Divider(
-      height: 15,
-      thickness: 2,
-      color: Colors.white54,
-    );
-  }
-
-  void searchFunction({String? enteredKeyword}) {
-    searchResults = [];
-
-    //Empty search.
-    if (enteredKeyword == null || enteredKeyword.isEmpty) {
-      searchResults = isarDatabase!.containerEntrys
-          .where()
-          .findAllSync()
-          .map((e) => ContainerSearchBuilder(containerEntry: e))
-          .toList();
-    }
-
-    if (enteredKeyword != null) {
-      //Normal Search.
-      if (enteredKeyword.isNotEmpty && normalSearch) {
-        List<ContainerSearchBuilder> containerSearchBuilders = isarDatabase!
-            .containerEntrys
-            .filter()
-            .group((q) => q
-                .nameContains(enteredKeyword, caseSensitive: false)
-                .or()
-                .descriptionContains(enteredKeyword, caseSensitive: false)
-                .or()
-                .containerUIDContains(
-                  enteredKeyword,
-                ))
-            .findAllSync()
-            .map((e) => ContainerSearchBuilder(containerEntry: e))
-            .toList();
-
-        searchResults.addAll(containerSearchBuilders);
-      }
-
-      //Ml Tag Search.
-      if (mlTagSearch) {
-        List<MlTag> mlTags = isarDatabase!.mlTags
-            .filter()
-            .tagContains(enteredKeyword, caseSensitive: false)
-            .findAllSync();
-
-        if (mlTags.isNotEmpty) {
-          List<PhotoTag> photoTags = [];
-          photoTags.addAll(isarDatabase!.photoTags
-              .filter()
-              .repeat(mlTags, (q, MlTag element) => q.tagUIDEqualTo(element.id))
-              .sortByConfidence()
-              .findAllSync());
-
-          List<ContainerPhoto> containerPhotos = [];
-          containerPhotos.addAll(isarDatabase!.containerPhotos
-              .filter()
-              .repeat(
-                  photoTags,
-                  (q, PhotoTag element) =>
-                      q.photoPathMatches(element.photoPath))
-              .findAllSync());
-
-          List<ContainerEntry> containerEntries = [];
-          containerEntries.addAll(isarDatabase!.containerEntrys
-              .filter()
-              .repeat(
-                  containerPhotos,
-                  (q, ContainerPhoto element) =>
-                      q.containerUIDMatches(element.containerUID))
-              .findAllSync());
-
-          if (containerEntries.isNotEmpty) {
-            List<ContainerSearchBuilder> containerSearchBuilders = [];
-
-            for (ContainerEntry containerEntry in containerEntries) {
-              List<ContainerPhoto> currentContainerPhoto = containerPhotos
-                  .where((element) =>
-                      element.containerUID == containerEntry.containerUID)
-                  .toList();
-              List<ContainerPhotoThumbnail> thumbnails = [];
-
-              thumbnails.addAll(isarDatabase!.containerPhotoThumbnails
-                  .filter()
-                  .repeat(
-                      currentContainerPhoto,
-                      (q, ContainerPhoto element) =>
-                          q.photoPathMatches(element.photoPath))
-                  .findAllSync());
-
-              containerSearchBuilders.add(ContainerSearchBuilder(
-                  containerEntry: containerEntry,
-                  containerThumbnails: thumbnails));
-            }
-
-            searchResults.addAll(containerSearchBuilders);
-          }
-        }
-      }
-
-      //Tag Search.
-      if (tagSearch) {
-        //Here we have an option of tagContains or tagStartsWith
-        List<Tag> tags = isarDatabase!.tags
-            .filter()
-            .tagContains(enteredKeyword.toLowerCase(), caseSensitive: false)
-            .findAllSync();
-
-        log(tags.toString());
-
-        List<ContainerTag> containerTags = [];
-        log(isarDatabase!.containerTags.where().findAllSync().toString());
-        containerTags.addAll(isarDatabase!.containerTags
-            .filter()
-            .repeat(tags, (q, Tag element) => q.tagIDEqualTo(element.id))
-            .findAllSync());
-
-        log(containerTags.toString());
-
-        //Not sure why but need to check if its empty ?
-        if (containerTags.isNotEmpty) {
-          List<ContainerSearchBuilder> containerSearchBuilders = isarDatabase!
-              .containerEntrys
-              .filter()
-              .repeat(
-                  containerTags,
-                  (q, ContainerTag element) =>
-                      q.containerUIDMatches(element.containerUID))
-              .findAllSync()
-              .map((e) => ContainerSearchBuilder(containerEntry: e))
-              .toList();
-
-          searchResults.addAll(containerSearchBuilders);
-        }
-      }
-    }
-
-    //Remove any duplicates from List.
-    searchResults.unique(((element) => element.containerEntry.containerUID));
-  }
-
-  Widget _containerListView() {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: searchResults.length,
-        itemBuilder: (context, index) {
-          ContainerSearchBuilder containerEntry =
-              searchResults.elementAt(index);
-          return containerListViewTile(containerEntry);
-        },
-      ),
-    );
-  }
-
-  Widget containerListViewTile(ContainerSearchBuilder element) {
-    return Builder(
-      builder: (context) {
-        Color containerColor =
-            getContainerColor(containerUID: element.containerEntry.containerUID)
-                .withOpacity(0.9);
-
-        return LightContainer(
-            margin: 2.5,
-            padding: 1,
-            borderRadius: 12,
-            borderWidth: 0.8,
-            borderColor: Colors.white,
-            child: CustomOutlineContainer(
-              padding: 5,
-              margin: 1,
-              borderRadius: 10,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  //Name / UID
-                  containerName(element: element),
-
-                  //Description
-                  containerDescription(
-                      description: element.containerEntry.description),
-
-                  //Photos
-                  containerPhotos(element: element),
-
-                  //Actions
-                  containerActions(
-                      element: element, containerColor: containerColor),
-                ],
-              ),
-              outlineColor: containerColor,
-            ));
-      },
-    );
-  }
-
-  Widget containerName({required ContainerSearchBuilder element}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Builder(
-          builder: (context) {
-            if (element.containerEntry.name != null) {
-              return Text(
-                'Name',
-                style: Theme.of(context).textTheme.bodySmall,
-              );
-            } else {
-              return Text(
-                'UID',
-                style: Theme.of(context).textTheme.bodySmall,
-              );
-            }
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        floatingActionButton: _focusNode.hasFocus ? null : _searchButton(),
+        body: GestureDetector(
+          onTap: () {
+            setState(() {
+              _focusNode.unfocus();
+            });
           },
-        ),
-        Text(
-          element.containerEntry.name ?? element.containerEntry.containerUID,
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-        const Divider(
-          height: 5,
-        ),
-      ],
-    );
+          child: Stack(
+            children: [
+              _containers(),
+              _filters(),
+            ],
+          ),
+        ));
   }
 
-  Widget containerDescription({required String? description}) {
-    return Builder(
-      builder: (context) {
-        if (showContainerDescriptions) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Description',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              Text(
-                description ?? '-',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              const Divider(
-                height: 5,
-              ),
-            ],
-          );
-        } else {}
-        return Container();
+  ///SEARCH///
+
+  Widget _textField() {
+    return TextField(
+      focusNode: _focusNode,
+      controller: searchController,
+      onChanged: (value) {
+        setState(() {
+          searchFunction(value);
+        });
       },
-    );
-  }
-
-  Widget containerPhotos({required ContainerSearchBuilder element}) {
-    return Builder(
-      builder: (context) {
-        if (showContainerPhotos &&
-            element.containerThumbnails != null &&
-            element.containerThumbnails!.isNotEmpty) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Wrap(
-                children: element.containerThumbnails!
-                    .map((e) => photoWidget(e))
-                    .toList(),
-              ),
-              const Divider(
-                height: 5,
-              ),
-            ],
-          );
-        } else if (showContainerPhotos) {
-          //BUG HERE :D:D:D:D:D:D: fix it @049er
-          List<ContainerPhoto> containerPhotos = [];
-
-          if (isarDatabase!.containerPhotos
-              .filter()
-              .containerUIDMatches(element.containerEntry.containerUID)
-              .findAllSync()
-              .isNotEmpty) {
-            containerPhotos.addAll(isarDatabase!.containerPhotos
-                .filter()
-                .containerUIDMatches(element.containerEntry.containerUID)
-                .findAllSync());
-          }
-
-          List<ContainerPhotoThumbnail> thumbnails = [];
-          if (containerPhotos.isNotEmpty) {
-            thumbnails = isarDatabase!.containerPhotoThumbnails
-                .filter()
-                .repeat(
-                    containerPhotos,
-                    (q, ContainerPhoto element) =>
-                        q.photoPathMatches(element.photoPath))
-                .findAllSync();
-          }
-
-          //log(containerPhotos.toString());
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Wrap(
-                children: thumbnails.map((e) => photoWidget(e)).toList(),
-              ),
-              const Divider(
-                height: 5,
-              ),
-            ],
-          );
-        } else {
-          return Container();
-        }
-      },
-    );
-  }
-
-  Widget photoWidget(ContainerPhotoThumbnail containerPhotoThumbnail) {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.2,
-      child: OrangeOutlineContainer(
-        padding: 2,
-        child: Image.file(
-          File(containerPhotoThumbnail.thumbnailPhotoPath),
-        ),
+      cursorColor: Colors.white,
+      style: Theme.of(context).textTheme.labelLarge,
+      decoration: InputDecoration(
+        suffixIcon: isFocused ? null : _searchIcon(),
+        hintText: 'Search',
+        hintStyle: const TextStyle(fontSize: 18),
       ),
     );
   }
 
-  Widget containerActions(
-      {required ContainerSearchBuilder element,
-      required Color containerColor}) {
+  Widget _searchButton() {
+    return Visibility(
+      visible: !isFocused,
+      child: FloatingActionButton(
+        elevation: 10,
+        onPressed: () {
+          setState(() {
+            _focusNode.requestFocus();
+          });
+        },
+        child: _searchIcon(),
+      ),
+    );
+  }
+
+  Widget _searchIcon() {
+    return const Icon(
+      Icons.search,
+      color: Colors.white,
+    );
+  }
+
+  ///FILTER///
+
+  Widget _filters() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      scrollDirection: Axis.horizontal,
+      child: Wrap(
+        spacing: 5,
+        children: filterTypes.entries
+            .map((e) => fliterChip(filter: e.key, tooltip: e.value))
+            .toList(),
+      ),
+    );
+  }
+
+  FilterChip fliterChip({required String filter, required String tooltip}) {
+    return FilterChip(
+      label: Text(
+        filter,
+        style: Theme.of(context).textTheme.bodyLarge,
+      ),
+      onSelected: (selected) {
+        _onSelected(selected, filter);
+      },
+      selected: filters.contains(filter),
+      selectedColor: sunbirdOrange,
+      tooltip: tooltip,
+      elevation: 5,
+      shadowColor: Colors.black54,
+    );
+  }
+
+  void _onSelected(bool selected, String filter) {
+    if (filters.contains(filter)) {
+      setState(() {
+        filters.removeWhere((element) => element == filter);
+      });
+    } else {
+      setState(() {
+        filters.add(filter);
+      });
+    }
+  }
+
+  ///CONTAINERS///
+
+  Widget _containers() {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 50),
+      itemCount: searchResults.length,
+      itemBuilder: (context, index) {
+        SearchObject containerEntry = searchResults.elementAt(index);
+        return containerCard(containerEntry);
+      },
+    );
+  }
+
+  Widget containerCard(SearchObject searchObject) {
+    return Builder(
+      builder: (context) {
+        Color containerColor = getContainerColor(
+            containerUID: searchObject.containerEntry.containerUID);
+
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          color: Colors.white12,
+          elevation: 5,
+          shadowColor: Colors.black26,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: containerColor, width: 2),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ///NAME///
+                Text(
+                  'Name',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                Text(
+                  searchObject.containerEntry.name ??
+                      searchObject.containerEntry.containerUID,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const Divider(
+                  height: 5,
+                  indent: 2,
+                ),
+
+                ///DESCRIPTION///
+                Text(
+                  'Description',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                Text(
+                  searchObject.containerEntry.description ?? '-',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+
+                ///TAGS///
+
+                Builder(
+                  builder: (context) {
+                    if (searchObject.tags.isNotEmpty &&
+                        filters.contains('Tags')) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Divider(
+                            height: 5,
+                            indent: 2,
+                          ),
+                          Text(
+                            'Tags',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          userTags(searchObject.tags, containerColor),
+                        ],
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
+
+                ///PHOTO(S)///
+                Builder(
+                  builder: (context) {
+                    if (searchObject.containerPhotos.isNotEmpty &&
+                        filters.contains('Photos')) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Divider(
+                            height: 5,
+                            indent: 2,
+                          ),
+                          Text(
+                            'Photos',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          photoCard(searchObject.containerPhotos.first,
+                              containerColor),
+                        ],
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
+
+                Builder(
+                  builder: (context) {
+                    if (searchObject.photoTags.isNotEmpty &&
+                        filters.contains('AI Tags')) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Divider(
+                            height: 5,
+                            indent: 2,
+                          ),
+                          Text(
+                            'Photo Tags',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          photoTags(searchObject.photoTags, containerColor),
+                        ],
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
+
+                const Divider(
+                  height: 5,
+                  indent: 2,
+                ),
+
+                containerActions(searchObject.containerEntry, containerColor)
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget containerActions(ContainerEntry containerEntry, Color containerColor) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        InkWell(
-          onTap: () {
+        ElevatedButton(
+          style: TextButton.styleFrom(backgroundColor: containerColor),
+          onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => ContainerView(
-                  containerEntry: element.containerEntry,
+                  containerEntry: containerEntry,
                 ),
               ),
             );
           },
-          child: CustomOutlineContainer(
-            padding: 5,
-            margin: 5,
-            width: 75,
-            child: Center(
-              child: Text(
-                'Edit',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
-            outlineColor: containerColor,
-          ),
+          child: const Text('Edit'),
         ),
-        InkWell(
-          onTap: () {
+        ElevatedButton(
+          style: TextButton.styleFrom(backgroundColor: containerColor),
+          onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) =>
-                    NavigatorView(containerEntry: element.containerEntry),
+                    NavigatorView(containerEntry: containerEntry),
               ),
             );
           },
-          child: CustomOutlineContainer(
-            padding: 5,
-            margin: 5,
-            width: 75,
-            child: Center(
-              child: Text(
-                'Find',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
-            outlineColor: containerColor,
-          ),
-        )
+          child: const Text('Find'),
+        ),
       ],
     );
   }
+
+  ///TAGS///
+
+  Widget userTags(List<ContainerTag> tags, Color containerColor) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      scrollDirection: Axis.horizontal,
+      child: Wrap(
+        spacing: 5,
+        children: tags.map((e) => tagChip(e, containerColor)).toList(),
+      ),
+    );
+  }
+
+  Widget tagChip(ContainerTag containerTag, Color containerColor) {
+    return Builder(builder: (context) {
+      String tag = isarDatabase!.tags
+          .filter()
+          .idEqualTo(containerTag.tagID)
+          .findFirstSync()!
+          .tag;
+      return Chip(
+        label: Text(
+          tag,
+        ),
+        backgroundColor: containerColor,
+      );
+    });
+  }
+
+  ///PHOTO TAGS///
+
+  Widget photoTags(List<PhotoTag> photoTags, Color containerColor) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      scrollDirection: Axis.horizontal,
+      child: Wrap(
+        spacing: 5,
+        children: photoTags
+            .map((e) => photoTagChip(e.tagUID, containerColor))
+            .toList(),
+      ),
+    );
+  }
+
+  Widget photoTagChip(int tagUID, Color containerColor) {
+    return Builder(builder: (context) {
+      String tag =
+          isarDatabase!.mlTags.filter().idEqualTo(tagUID).findFirstSync()!.tag;
+      return Chip(
+        label: Text(
+          tag,
+        ),
+        backgroundColor: containerColor,
+      );
+    });
+  }
+
+  Widget photoCard(ContainerPhoto containerPhoto, Color borderColor) {
+    return Card(
+      elevation: 2,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: borderColor, width: 1),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(5),
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5),
+          child: Image.file(
+            File(containerPhoto.photoThumbnailPath),
+            fit: BoxFit.fill,
+            width: MediaQuery.of(context).size.width * 0.22,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget image(ContainerPhoto containerPhoto) {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.15,
+      child: Image.file(
+        File(containerPhoto.photoThumbnailPath),
+      ),
+    );
+  }
+
+  void searchFunction(String enteredKeyword) {
+    //Convert to lowercase.
+    enteredKeyword = enteredKeyword.toLowerCase();
+    searchResults = [];
+
+    if (filters.contains('Name')) {
+      //containerEntries.
+      List<SearchObject> searchObjects = [];
+
+      //Add found containerEntries.
+      searchObjects.addAll(
+        isarDatabase!.containerEntrys
+            .filter()
+            .nameContains(enteredKeyword.toLowerCase(), caseSensitive: false)
+            .findAllSync()
+            .map(
+              (e) => SearchObject(
+                  containerEntry: e,
+                  tags: [],
+                  photoTags: [],
+                  containerPhotos: [],
+                  score: 1),
+            ),
+      );
+
+      for (SearchObject searchObject in searchObjects) {
+        if (searchResults.contains(searchObject)) {
+          //Not used in this case.
+          //searchResults.where((element) => element == searchObject).first.
+        } else {
+          searchResults.add(searchObject);
+        }
+      }
+    }
+
+    if (filters.contains('AI Tags') && enteredKeyword.isNotEmpty) {
+      //MlTags.
+      List<MlTag> mlTags = [];
+      //Found MlTags.
+      mlTags.addAll(isarDatabase!.mlTags
+          .filter()
+          .tagContains(enteredKeyword, caseSensitive: false)
+          .findAllSync());
+
+      //PhotoTags.
+      List<PhotoTag> photoTags = [];
+      //Found PhotoTags.
+      photoTags.addAll(isarDatabase!.photoTags
+          .filter()
+          .repeat(mlTags, (q, MlTag element) => q.tagUIDEqualTo(element.id))
+          .sortByConfidence()
+          .findAllSync());
+
+      //ContainerPhotos.
+      List<ContainerPhoto> containerPhotos = [];
+      //Found ContainerPhotos.
+      containerPhotos.addAll(isarDatabase!.containerPhotos
+          .filter()
+          .repeat(photoTags,
+              (q, PhotoTag element) => q.photoPathMatches(element.photoPath))
+          .findAllSync());
+
+      //ContainerEntries.
+      List<ContainerEntry> containerEntries = [];
+
+      //Found ContainerEntries.
+      containerEntries.addAll(isarDatabase!.containerEntrys
+          .filter()
+          .repeat(
+              containerPhotos,
+              (q, ContainerPhoto element) =>
+                  q.containerUIDMatches(element.containerUID))
+          .findAllSync());
+
+      for (ContainerEntry containerEntry in containerEntries) {
+        List<ContainerPhoto> currentContainerPhotos = containerPhotos
+            .where((element) =>
+                element.containerUID == containerEntry.containerUID)
+            .toList();
+
+        List<PhotoTag> currentPhotoTags = [];
+        for (ContainerPhoto currentContainerPhoto in currentContainerPhotos) {
+          currentPhotoTags.addAll(photoTags
+              .where((element) =>
+                  element.photoPath == currentContainerPhoto.photoPath)
+              .toList());
+        }
+
+        //Search Object
+        SearchObject searchObject = SearchObject(
+            containerEntry: containerEntry,
+            tags: [],
+            photoTags: [],
+            containerPhotos: [],
+            score: 0);
+
+        if (searchResults.contains(searchObject)) {
+          //Get search object.
+          SearchObject currentSearchObject =
+              searchResults.where((element) => element == searchObject).first;
+          //Remove it.
+          searchResults.removeWhere((element) =>
+              element.containerEntry.containerUID ==
+              currentSearchObject.containerEntry.containerUID);
+          //Update it.
+          currentSearchObject.containerPhotos.addAll(currentContainerPhotos);
+          currentSearchObject.photoTags.addAll(currentPhotoTags);
+          currentSearchObject.score = currentSearchObject.score + 1;
+
+          searchResults.add(currentSearchObject);
+        } else {
+          SearchObject searchObject = SearchObject(
+              containerEntry: containerEntry,
+              tags: [],
+              photoTags: currentPhotoTags,
+              containerPhotos: currentContainerPhotos,
+              score: 1);
+
+          searchResults.add(searchObject);
+        }
+      }
+    }
+
+    if (filters.contains('Tags') && enteredKeyword.isNotEmpty) {
+      //Tags.
+      List<Tag> tags = [];
+      //Found Tags.
+      tags.addAll(isarDatabase!.tags
+          .filter()
+          .tagContains(enteredKeyword, caseSensitive: false)
+          .findAllSync());
+
+      List<ContainerTag> containerTags = [];
+
+      containerTags.addAll(isarDatabase!.containerTags
+          .filter()
+          .repeat(tags, (q, Tag element) => q.tagIDEqualTo(element.id))
+          .findAllSync());
+
+      //log(containerTags.toString());
+
+      //ContainerEntries.
+      List<ContainerEntry> containerEntries = [];
+
+      //Found ContainerEntries.
+      containerEntries.addAll(isarDatabase!.containerEntrys
+          .filter()
+          .repeat(
+              containerTags,
+              (q, ContainerTag element) =>
+                  q.containerUIDMatches(element.containerUID))
+          .findAllSync());
+
+      for (ContainerEntry containerEntry in containerEntries) {
+        List<ContainerTag> currentContainerTags = containerTags
+            .where((element) =>
+                element.containerUID == containerEntry.containerUID)
+            .toList();
+
+        //Search Object
+        SearchObject searchObject = SearchObject(
+            containerEntry: containerEntry,
+            tags: [],
+            photoTags: [],
+            containerPhotos: [],
+            score: 0);
+
+        if (searchResults.contains(searchObject)) {
+          //Get search object.
+          SearchObject currentSearchObject =
+              searchResults.where((element) => element == searchObject).first;
+          //Remove it.
+          searchResults.removeWhere((element) =>
+              element.containerEntry.containerUID ==
+              currentSearchObject.containerEntry.containerUID);
+
+          //Update it.
+          currentSearchObject.tags.addAll(currentContainerTags);
+          currentSearchObject.score = currentSearchObject.score + 1;
+
+          searchResults.add(currentSearchObject);
+        } else {
+          SearchObject searchObject = SearchObject(
+              containerEntry: containerEntry,
+              tags: currentContainerTags,
+              photoTags: [],
+              containerPhotos: [],
+              score: 1);
+
+          searchResults.add(searchObject);
+        }
+      }
+    }
+
+    //Take the top 30
+    if (searchResults.isEmpty) {
+      //Posible sorting functionality ?
+      searchResults.addAll(isarDatabase!.containerEntrys
+          .where()
+          .findAllSync()
+          .take(30)
+          .map((e) => SearchObject(
+              containerEntry: e,
+              tags: [],
+              photoTags: [],
+              containerPhotos: [],
+              score: 0))
+          .toList());
+    }
+
+    setState(() {
+      searchResults.sort(((a, b) => b.score.compareTo(a.score)));
+    });
+
+    log(searchResults.toString());
+  }
 }
 
-//List extension for removing duplicates
-extension Unique<E, Id> on List<E> {
-  List<E> unique([Id Function(E element)? id, bool inplace = true]) {
-    final ids = <dynamic>{};
-    var list = inplace ? this : List<E>.from(this);
-    list.retainWhere((x) => ids.add(id != null ? id(x) : x as Id));
-    return list;
+class SearchObject {
+  SearchObject(
+      {required this.containerEntry,
+      required this.tags,
+      required this.photoTags,
+      required this.containerPhotos,
+      required this.score});
+
+  final ContainerEntry containerEntry;
+  final List<ContainerTag> tags;
+  final List<PhotoTag> photoTags;
+  final List<ContainerPhoto> containerPhotos;
+  int score;
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return '\nuid: ${containerEntry.containerUID}, tags: $tags, score: $score';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is SearchObject && other.runtimeType == runtimeType) {
+      if (other.containerEntry.containerUID == containerEntry.containerUID) {
+        return true;
+      }
+    }
+    return false;
   }
 }

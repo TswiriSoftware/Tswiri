@@ -2,12 +2,14 @@ import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/firebase_options.dart';
+import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/global_values/routes.dart';
 
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_generator/barcode_generator_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_manager/barcode_manager_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/camera_calibration_tools_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/containers_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/containers_view.dart';
 
 import 'package:flutter_google_ml_kit/sunbird_views/container_search/search_view.dart';
@@ -74,39 +76,43 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         brightness: Brightness.dark,
-        backgroundColor: Colors.black12,
-        primaryColor: Colors.deepOrange[500],
+        backgroundColor: Colors.black,
+        primaryColor: sunbirdOrange,
         colorScheme: ColorScheme.fromSwatch(
-            primarySwatch: Colors.deepOrange, brightness: Brightness.dark),
-        appBarTheme: AppBarTheme(
-          backgroundColor: Colors.deepOrange[500],
+            primarySwatch: Colors.deepOrange,
+            brightness: Brightness.dark,
+            backgroundColor: Colors.black),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: sunbirdOrange,
         ),
+        scaffoldBackgroundColor: backgroundColor,
         buttonTheme: const ButtonThemeData(
-          buttonColor: Colors.deepOrangeAccent,
+          buttonColor: sunbirdOrange,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: TextButton.styleFrom(
-            backgroundColor: Colors.deepOrange[500],
-          ),
+              backgroundColor: sunbirdOrange,
+              textStyle: Theme.of(context).textTheme.bodyLarge),
         ),
         checkboxTheme: CheckboxThemeData(
           checkColor: MaterialStateProperty.all(Colors.white),
-          fillColor: MaterialStateProperty.all(Colors.deepOrange),
+          fillColor: MaterialStateProperty.all(sunbirdOrange),
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
           foregroundColor: Colors.white,
-          backgroundColor: Colors.deepOrange,
+          backgroundColor: sunbirdOrange,
         ),
         textSelectionTheme:
-            const TextSelectionThemeData(cursorColor: Colors.deepOrange),
+            const TextSelectionThemeData(cursorColor: sunbirdOrange),
         textTheme: const TextTheme(
-            labelLarge: TextStyle(fontSize: 20),
-            labelMedium: TextStyle(fontSize: 17),
-            labelSmall: TextStyle(fontSize: 15),
-            titleLarge: TextStyle(fontSize: 25),
-            titleMedium: TextStyle(fontSize: 18),
-            titleSmall: TextStyle(fontSize: 16),
-            bodyLarge: TextStyle(fontSize: 15)),
+          labelLarge: TextStyle(fontSize: 20),
+          labelMedium: TextStyle(fontSize: 17),
+          labelSmall: TextStyle(fontSize: 15),
+          titleLarge: TextStyle(fontSize: 25),
+          titleMedium: TextStyle(fontSize: 18),
+          titleSmall: TextStyle(fontSize: 16),
+          bodyLarge: TextStyle(fontSize: 16),
+        ),
         inputDecorationTheme: const InputDecorationTheme(
           focusedBorder:
               UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
@@ -155,49 +161,49 @@ class HomeView extends StatelessWidget {
               SearchView(),
               Icons.search,
               featureCompleted: true,
-              tileColor: Colors.deepOrange,
+              tileColor: sunbirdOrange,
             ),
             CustomCard(
               'Containers',
-              ContainerManagerView(),
+              ContainersView(),
               Icons.add_box_outlined,
               featureCompleted: true,
-              tileColor: Colors.deepOrange,
+              tileColor: sunbirdOrange,
             ),
             CustomCard(
               'Barcodes',
               BarcodeManagerView(),
               Icons.list,
               featureCompleted: true,
-              tileColor: Colors.deepOrange,
+              tileColor: sunbirdOrange,
             ),
             CustomCard(
               'Tags',
               TagManagerView(),
               Icons.tag,
               featureCompleted: true,
-              tileColor: Colors.deepOrange,
+              tileColor: sunbirdOrange,
             ),
             CustomCard(
               'Generate Barcodes',
               BarcodeGeneratorView(),
               Icons.qr_code_2_rounded,
               featureCompleted: true,
-              tileColor: Colors.deepOrange,
+              tileColor: sunbirdOrange,
             ),
             CustomCard(
               'Camera Calibraion',
               CameraCalibrationToolsView(),
               Icons.camera,
               featureCompleted: true,
-              tileColor: Colors.deepOrange,
+              tileColor: sunbirdOrange,
             ),
             CustomCard(
               'Container Types',
               ContainerTypeView(),
               Icons.code,
               featureCompleted: true,
-              tileColor: Colors.deepOrange,
+              tileColor: sunbirdOrange,
             ),
           ],
         ),

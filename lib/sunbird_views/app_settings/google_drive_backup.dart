@@ -219,7 +219,6 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
       'realInterBarcodeVectorEntry.json',
       'tags.json',
       'containerRelationships.json',
-      'containerPhotoThumbnails.json',
       'containerPhotos.json',
       'barcodeSizeDistanceEntrys.json',
       'barcodePropertys.json',
@@ -310,14 +309,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
                 .map((e) => e.toJson())
                 .toList());
             break;
-          case 'containerPhotoThumbnails.json':
-            backupFileContent = jsonEncode(isarDatabase!
-                .containerPhotoThumbnails
-                .where()
-                .findAllSync()
-                .map((e) => e.toJson())
-                .toList());
-            break;
+
           case 'containerPhotos.json':
             backupFileContent = jsonEncode(isarDatabase!.containerPhotos
                 .where()

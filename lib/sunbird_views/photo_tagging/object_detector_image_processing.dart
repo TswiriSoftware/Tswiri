@@ -325,18 +325,13 @@ class _ObjectDetectorProcessingView
     //Create containerPhoto.
     ContainerPhoto newContainerPhoto = ContainerPhoto()
       ..containerUID = widget.containerUID
-      ..photoPath = photoFilePath;
-
-    //Create containerPhotoThumbnail.
-    ContainerPhotoThumbnail newContainerPhotoThumbnail =
-        ContainerPhotoThumbnail()
-          ..photoPath = photoFilePath
-          ..thumbnailPhotoPath = thumbnailPhotoPath;
+      ..photoPath = photoFilePath
+      ..photoThumbnailPath = thumbnailPhotoPath;
 
     //Write to database.
     isarDatabase!.writeTxnSync((isar) {
       isar.containerPhotos.putSync(newContainerPhoto);
-      isar.containerPhotoThumbnails.putSync(newContainerPhotoThumbnail);
+
       isar.photoTags.putAllSync(photoTags);
     });
 

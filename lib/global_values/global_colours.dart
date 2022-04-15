@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
-const Color sunbirdOrange = Color(0xFFf80f04);
+//1f2329 GOOD
+
+const Color backgroundColor = Color.fromARGB(255, 30, 34, 39);
+
+const Color blueBlack = Color(0xFF1f2329);
+const Color sunbirdOrange = Color(0xFFfd3e1c);
 const Color petalOrange = Color(0xFFF98866);
 const Color poppyOrange = Color(0xFFff420e);
 const Color springGreen = Color(0xFF89da59);

@@ -814,6 +814,11 @@ class _ContainerViewState extends State<ContainerView> {
                     (isar) => isar.tags.putSync(newTag),
                   );
 
+                  isarDatabase!.writeTxnSync(
+                      (isar) => isar.containerTags.putSync(ContainerTag()
+                        ..containerUID = containerEntry.containerUID
+                        ..tagID = newTag.id));
+
                   //tagController.text = '';
                   assignedTags.add(newTag.id);
                   updateTags();
@@ -1137,12 +1142,7 @@ class _ContainerViewState extends State<ContainerView> {
     File(containerPhoto.photoPath).delete();
 
     //Delete Photo Thumbnail.
-    File(isarDatabase!.containerPhotoThumbnails
-            .filter()
-            .photoPathMatches(containerPhoto.photoPath)
-            .findFirstSync()!
-            .thumbnailPhotoPath)
-        .delete();
+    File(containerPhoto.photoThumbnailPath).delete();
 
     //Delete References from database.
     isarDatabase!.writeTxnSync((isar) {
@@ -1150,10 +1150,7 @@ class _ContainerViewState extends State<ContainerView> {
           .filter()
           .photoPathMatches(containerPhoto.photoPath)
           .deleteFirstSync();
-      isar.containerPhotoThumbnails
-          .filter()
-          .photoPathMatches(containerPhoto.photoPath)
-          .deleteFirstSync();
+
       isar.photoTags
           .filter()
           .photoPathMatches(containerPhoto.photoPath)

@@ -9,6 +9,8 @@ class ContainerPhoto {
 
   late String photoPath;
 
+  late String photoThumbnailPath;
+
   @override
   String toString() {
     return 'UID: $containerUID: Tag: $photoPath';
@@ -18,12 +20,14 @@ class ContainerPhoto {
         'id': id,
         'containerUID': containerUID,
         'photoPath': photoPath,
+        'photoThumbnailPath': photoThumbnailPath,
       };
 
   ContainerPhoto fromJson(Map<String, dynamic> json) {
     return ContainerPhoto()
       ..id = json['id']
       ..containerUID = json['containerUID']
-      ..photoPath = json['photoPath'];
+      ..photoPath = json['photoPath']
+      ..photoThumbnailPath = json['photoThumbnailPath'];
   }
 }
