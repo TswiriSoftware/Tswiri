@@ -1,10 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_photo/container_photo.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
+import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
+import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view_2.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/new_container_view.dart';
 import 'package:isar/isar.dart';
 
@@ -24,6 +30,8 @@ class _ContainersViewState extends State<ContainersView> {
   bool isFocused = false;
 
   List<ContainerEntry> containers = [];
+  List<String> selectedContainers = [];
+  bool showCheckBoxes = false;
 
   @override
   void initState() {
@@ -47,7 +55,13 @@ class _ContainersViewState extends State<ContainersView> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: _textField(),
+        title: Builder(builder: (context) {
+          if (showCheckBoxes) {
+            return deleteButton();
+          } else {
+            return _textField();
+          }
+        }),
         shadowColor: Colors.black54,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -104,32 +118,39 @@ class _ContainersViewState extends State<ContainersView> {
         Color containerColor =
             getContainerColor(containerUID: containerEntry.containerUID);
 
-        return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          color: Colors.white12,
-          elevation: 5,
-          shadowColor: Colors.black26,
-          shape: RoundedRectangleBorder(
-            side: BorderSide(color: containerColor, width: 1.5),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ///NAME///
-                name(containerEntry),
+        return InkWell(
+          onLongPress: () {
+            showCheckBoxes = true;
+            selectedContainers.add(containerEntry.containerUID);
+            setState(() {});
+          },
+          child: Card(
+            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            color: Colors.white12,
+            elevation: 5,
+            shadowColor: Colors.black26,
+            shape: RoundedRectangleBorder(
+              side: BorderSide(color: containerColor, width: 1.5),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ///NAME///
+                  name(containerEntry),
 
-                ///DESCRIPTION///
-                description(containerEntry),
+                  ///DESCRIPTION///
+                  description(containerEntry),
 
-                ///TAGS///
-                userTags(containerEntry, containerColor),
+                  ///TAGS///
+                  userTags(containerEntry, containerColor),
 
-                ///ACTIONS///
-                actions(containerEntry, containerColor),
-              ],
+                  ///ACTIONS///
+                  actions(containerEntry, containerColor),
+                ],
+              ),
             ),
           ),
         );
@@ -235,42 +256,36 @@ class _ContainersViewState extends State<ContainersView> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        ElevatedButton(
-          style: TextButton.styleFrom(backgroundColor: containerColor),
-          onPressed: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ContainerView(
-                  containerEntry: containerEntry,
-                ),
+        Builder(builder: (context) {
+          if (showCheckBoxes) {
+            return Checkbox(
+                value: selectedContainers.contains(containerEntry.containerUID),
+                fillColor: MaterialStateProperty.all(containerColor),
+                onChanged: (value) {
+                  _onSelectedFilter(value!, containerEntry.containerUID);
+                  setState(() {});
+                });
+          } else {
+            return ElevatedButton(
+              style: TextButton.styleFrom(backgroundColor: containerColor),
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ContainerView(
+                      containerEntry: containerEntry,
+                    ),
+                  ),
+                );
+                search('');
+                setState(() {});
+              },
+              child: const Text(
+                'Edit',
               ),
             );
-            search('');
-            setState(() {});
-          },
-          child: const Text(
-            'Edit',
-          ),
-        ),
-        ElevatedButton(
-          style: TextButton.styleFrom(backgroundColor: containerColor),
-          onPressed: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ContainerView2(
-                  containerEntry: containerEntry,
-                ),
-              ),
-            );
-            search('');
-            setState(() {});
-          },
-          child: const Text(
-            'Edit',
-          ),
-        )
+          }
+        }),
       ],
     );
   }
@@ -315,5 +330,172 @@ class _ContainersViewState extends State<ContainersView> {
     } else {
       containers = isarDatabase!.containerEntrys.where().findAllSync();
     }
+  }
+
+  void _onSelectedFilter(bool selected, String dataName) {
+    if (selected == true) {
+      setState(() {
+        selectedContainers.add(dataName);
+      });
+    } else {
+      setState(() {
+        selectedContainers.remove(dataName);
+      });
+    }
+  }
+
+  Widget deleteButton() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        IconButton(
+          onPressed: () {
+            List<Marker> markers = [];
+            List<RealInterBarcodeVectorEntry> interBarcodeData = [];
+            List<ContainerRelationship> containerRelationships = [];
+            List<ContainerTag> containerTags = [];
+
+            List<ContainerPhoto> containerPhotos = [];
+            List<PhotoTag> photoTags = [];
+            List<ContainerEntry> containerEntries = [];
+
+            if (selectedContainers.isNotEmpty) {
+              List<ContainerEntry> containersToDelete = isarDatabase!
+                  .containerEntrys
+                  .filter()
+                  .repeat(selectedContainers,
+                      (q, String element) => q.containerUIDMatches(element))
+                  .findAllSync();
+
+              containerEntries.addAll(containersToDelete);
+
+              for (ContainerEntry container in containersToDelete) {
+                //Markers
+                markers.addAll(isarDatabase!.markers
+                    .filter()
+                    .parentContainerUIDMatches(container.containerUID)
+                    .findAllSync());
+
+                //InterBarcodeData
+                if (container.barcodeUID != null) {
+                  interBarcodeData.addAll(isarDatabase!
+                      .realInterBarcodeVectorEntrys
+                      .filter()
+                      .endBarcodeUIDMatches(container.barcodeUID!)
+                      .or()
+                      .startBarcodeUIDMatches(container.barcodeUID!)
+                      .findAllSync());
+                }
+
+                //Relationships
+                containerRelationships.addAll(isarDatabase!
+                    .containerRelationships
+                    .filter()
+                    .containerUIDMatches(container.containerUID)
+                    .findAllSync());
+
+                //Container Tags
+                containerTags.addAll(isarDatabase!.containerTags
+                    .filter()
+                    .containerUIDMatches(container.containerUID)
+                    .findAllSync());
+
+                //Container Photos
+                containerPhotos.addAll(isarDatabase!.containerPhotos
+                    .filter()
+                    .containerUIDMatches(container.containerUID)
+                    .findAllSync());
+
+                //Photo Tags
+                photoTags.addAll(isarDatabase!.photoTags
+                    .filter()
+                    .repeat(
+                        containerPhotos,
+                        (q, ContainerPhoto element) =>
+                            q.photoPathMatches(element.photoPath))
+                    .findAllSync());
+              }
+            }
+
+            //log(photoThumbnails.toString());
+
+            //Delete marker. *
+            //Delete realInterBarcodeData.*
+            //Container Relationships.*
+            //Delete Container Tags. *
+            //Delete photo tags. *
+            //Delete Container Photos and Photo.* - delete physical photo
+            //Delete Container Entry.
+
+            //Delete on device Photos
+            for (ContainerPhoto containerPhoto in containerPhotos) {
+              if (File(containerPhoto.photoPath).existsSync()) {
+                File(containerPhoto.photoPath).deleteSync();
+                File(containerPhoto.photoThumbnailPath).deleteSync();
+              }
+            }
+
+            isarDatabase!.writeTxnSync((isar) {
+              isar.markers
+                  .filter()
+                  .repeat(
+                      markers,
+                      (q, Marker element) =>
+                          q.barcodeUIDMatches(element.barcodeUID))
+                  .deleteFirstSync();
+              isar.realInterBarcodeVectorEntrys
+                  .filter()
+                  .repeat(
+                      markers,
+                      (q, Marker element) => q.group((q) => q
+                          .endBarcodeUIDMatches(element.barcodeUID)
+                          .or()
+                          .startBarcodeUIDMatches(element.barcodeUID)))
+                  .deleteAllSync();
+              isar.containerRelationships
+                  .filter()
+                  .repeat(
+                      containerRelationships,
+                      (q, ContainerRelationship element) =>
+                          q.containerUIDMatches(element.containerUID))
+                  .deleteAllSync();
+              isar.containerTags
+                  .filter()
+                  .repeat(
+                      containerTags,
+                      (q, ContainerTag element) =>
+                          q.containerUIDMatches(element.containerUID))
+                  .deleteAllSync();
+              isar.containerPhotos
+                  .filter()
+                  .repeat(
+                      containerPhotos,
+                      (q, ContainerPhoto element) =>
+                          q.photoPathMatches(element.photoPath))
+                  .deleteAllSync();
+
+              isar.photoTags
+                  .filter()
+                  .repeat(
+                      photoTags,
+                      (q, PhotoTag element) =>
+                          q.photoPathMatches(element.photoPath))
+                  .deleteAllSync();
+              isar.containerEntrys
+                  .filter()
+                  .repeat(
+                      containerEntries,
+                      (q, ContainerEntry element) =>
+                          q.containerUIDMatches(element.containerUID))
+                  .deleteAllSync();
+            });
+            showCheckBoxes = false;
+            search('');
+            setState(() {});
+          },
+          icon: const Icon(Icons.delete),
+        ),
+      ],
+    );
   }
 }

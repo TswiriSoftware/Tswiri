@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_photo/container_photo.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_photo_thumbnail/container_photo_thumbnail.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
@@ -12,22 +11,14 @@ import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/container_grid_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/photo_tags_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/new_container_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/photo_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_view.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:string_similarity/string_similarity.dart';
-
-import 'new_container_view.dart';
-import 'objects/photo_data.dart';
 
 class ContainerView extends StatefulWidget {
   const ContainerView({Key? key, required this.containerEntry})
       : super(key: key);
-
   final ContainerEntry containerEntry;
 
   @override
@@ -35,234 +26,224 @@ class ContainerView extends StatefulWidget {
 }
 
 class _ContainerViewState extends State<ContainerView> {
-  //Scroll controller
-  final ItemScrollController itemScrollController = ItemScrollController();
-  final ItemPositionsListener itemPositionsListener =
-      ItemPositionsListener.create();
+  late final ContainerEntry _containerEntry = widget.containerEntry;
+  late final Color _containerColor =
+      getContainerColor(containerUID: _containerEntry.containerUID);
 
-  //Container.
-  late ContainerEntry containerEntry;
-  late Color containerColor;
+  //Scroll View
+  final ScrollController _scrollController = PageController();
 
-  //Container Name.
+  //Name.
   TextEditingController nameController = TextEditingController();
 
-  //Container Description.
+  final _nameNode = FocusNode();
+  bool nameIsFocused = false;
+
+  //Description.
   TextEditingController descriptionController = TextEditingController();
+  final _descriptionNode = FocusNode();
+  bool descriptionIsFocused = false;
 
   //Tags
-  TextEditingController tagController = TextEditingController();
-
-  bool editting = false;
-  bool showChildren = false;
+  TextEditingController tagsController = TextEditingController();
+  final _tagsNode = FocusNode();
   bool showTagEditor = false;
-  bool showTagSave = false;
-
-  bool showTagSearch = false;
-  FocusNode myFocusNode = FocusNode();
+  late GlobalObjectKey tagsKey =
+      GlobalObjectKey('${widget.containerEntry.containerUID}_tags');
 
   List<int> assignedTags = [];
   List<int> allTags = [];
 
-  //Styling
-  late Color outlineColor;
-
   @override
   void initState() {
-    //Set containerEntry.
-    containerEntry = widget.containerEntry;
+    nameController.text = _containerEntry.name ?? '';
+    descriptionController.text = _containerEntry.description ?? '';
 
-    //Set containerColor.
-    containerColor =
-        getContainerColor(containerUID: containerEntry.containerUID);
+    updateTags();
 
-    //Set outlineColor.
-    outlineColor = containerColor.withOpacity(0.6);
-
-    //Set textControllers initial value.
-    nameController.text = containerEntry.name ?? containerEntry.containerUID;
-    descriptionController.text = containerEntry.description ?? '';
-
-    assignedTags = isarDatabase!.containerTags
-        .filter()
-        .containerUIDMatches(containerEntry.containerUID)
-        .tagIDProperty()
-        .findAllSync();
-
-    //Get all tags.
-    allTags =
-        isarDatabase!.tags.where().findAllSync().map((e) => e.id).toList();
+    addListeners();
 
     super.initState();
   }
 
   @override
   void dispose() {
+    closeListeners();
     super.dispose();
   }
-
-  //TODO: implement ScrollablePositionedList.
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: containerColor,
-        title: Text(
-          containerEntry.name ?? containerEntry.containerUID,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Builder(builder: (context) {
-        if (showTagSearch) {
-          //Navigate to bottom
-
-          return _floatingTagSearch();
-        } else {
-          return Row();
-        }
-      }),
-      resizeToAvoidBottomInset: true,
-      body: Builder(builder: (context) {
-        List<Widget> body = [
-          _infoTile(),
-          _bodyDivider(),
-          _childrenTile(),
-          _bodyDivider(),
-          _tagsTile(),
-          _bodyDivider(),
-          _photosTile(),
-          _bodyDivider(),
-          _photoTagsTile(),
-          SizedBox(
-            height: MediaQuery.of(context).size.height / 4,
-          ),
-        ];
-        return ScrollablePositionedList.builder(
-          itemCount: body.length,
-          itemBuilder: (context, index) => body[index],
-          itemScrollController: itemScrollController,
-          itemPositionsListener: itemPositionsListener,
-        );
-      }),
+      appBar: _appBar(),
+      body: _body(),
+      bottomSheet: _bottomSheet(),
     );
   }
 
-  ///INFO TILE///
+  ///APP BAR///
 
-  Widget _infoTile() {
-    return LightContainer(
-      margin: 2.5,
-      padding: 0,
-      backgroundColor: Colors.transparent, //COLORS URG
-      child: CustomOutlineContainer(
-        outlineColor: outlineColor,
-        // backgroundColor: Colors.transparent,
-        margin: 2.5,
-        padding: 5,
+  AppBar _appBar() {
+    return AppBar(
+      elevation: 25,
+      centerTitle: true,
+      title: _title(),
+      shadowColor: Colors.black54,
+    );
+  }
+
+  Text _title() {
+    return Text(
+      _containerEntry.name ?? _containerEntry.containerUID,
+      style: Theme.of(context).textTheme.titleMedium,
+    );
+  }
+
+  ///BODY///
+  Widget _body() {
+    return GestureDetector(
+      onTap: () {
+        _nameNode.unfocus();
+        _descriptionNode.unfocus();
+        _tagsNode.unfocus();
+      },
+      child: ListView(
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.25),
+        controller: _scrollController,
+        children: [
+          //Container info.
+          _info(),
+
+          //Container children.
+          _children(),
+
+          //Tags
+          _tags(),
+
+          //Photos
+          _photos(),
+
+          //Photo Tags
+          _photoTags(),
+        ],
+      ),
+    );
+  }
+
+  ///CONTAINER INFO///
+  Widget _info() {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      color: Colors.white12,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: _containerColor, width: 1.5),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Container Info',
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                  _modifyInfoButton(),
-                ],
-              ),
-            ),
-            _dividerHeavy(),
-            _infoBuilder(),
+            _infoHeading(),
+            _dividerHeading(),
+            _name(),
+            _divider(),
+            _description(),
+            _divider(),
+            _infoToolTip(),
           ],
         ),
       ),
     );
   }
 
-  Widget _infoBuilder() {
-    return Builder(builder: (context) {
-      if (editting) {
-        return Column(
-          children: [
-            _nameTextField(),
-            _descriptionTextField(),
-          ],
-        );
-      } else {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _name(),
-            _dividerLight(),
-            _description(),
-          ],
-        );
-      }
-    });
+  Widget _infoHeading() {
+    return Text('Info', style: Theme.of(context).textTheme.headlineSmall);
   }
 
   Widget _name() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Name',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          Text(
-            nameController.text,
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-        ],
-      ),
+    return InkWell(
+      onTap: () {
+        setState(() {
+          nameIsFocused = !nameIsFocused;
+          if (nameIsFocused) {
+            _nameNode.requestFocus();
+          }
+        });
+      },
+      child: Builder(builder: (context) {
+        if (nameIsFocused) {
+          return _nameEdit();
+        } else {
+          return Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Name',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  Text(
+                    _containerEntry.name ?? _containerEntry.containerUID,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ],
+          );
+        }
+      }),
     );
   }
 
   Widget _description() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Description',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          Text(
-            descriptionController.text,
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-        ],
-      ),
+    return InkWell(
+      onTap: () {
+        setState(() {
+          descriptionIsFocused = !descriptionIsFocused;
+          if (descriptionIsFocused) {
+            _descriptionNode.requestFocus();
+          }
+        });
+      },
+      child: Builder(builder: (context) {
+        if (descriptionIsFocused) {
+          return _descriptionEdit();
+        } else {
+          return Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Description',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  Text(
+                    _containerEntry.description ?? '-',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ],
+          );
+        }
+      }),
     );
   }
 
-  Widget _nameTextField() {
+  Widget _nameEdit() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+      padding: const EdgeInsets.symmetric(vertical: 5),
       child: TextField(
         controller: nameController,
-        onChanged: (value) {
-          if (value.isNotEmpty) {
-            setState(() {
-              // name = value;
-            });
-          } else {
-            setState(() {
-              // name = null;
-            });
-          }
+        focusNode: _nameNode,
+        onSubmitted: (value) {
+          saveName(value);
         },
         style: const TextStyle(fontSize: 18),
         textCapitalization: TextCapitalization.words,
@@ -272,868 +253,660 @@ class _ContainerViewState extends State<ContainerView> {
           contentPadding: const EdgeInsets.symmetric(horizontal: 10),
           labelText: 'Name',
           labelStyle: const TextStyle(fontSize: 15, color: Colors.white),
-          border:
-              OutlineInputBorder(borderSide: BorderSide(color: containerColor)),
-          focusedBorder:
-              OutlineInputBorder(borderSide: BorderSide(color: containerColor)),
+          suffixIcon: IconButton(
+            onPressed: () {
+              saveName(nameController.text);
+            },
+            icon: const Icon(Icons.save),
+          ),
+          border: OutlineInputBorder(
+              borderSide: BorderSide(color: _containerColor)),
+          focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: _containerColor)),
         ),
       ),
     );
   }
 
-  Widget _descriptionTextField() {
+  Widget _descriptionEdit() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+      padding: const EdgeInsets.symmetric(vertical: 5),
       child: TextField(
         controller: descriptionController,
-        onChanged: (value) {
-          if (value.isNotEmpty) {
-            setState(() {
-              //description = value;
-            });
-          } else {
-            setState(() {
-              //description = null;
-            });
-          }
+        focusNode: _descriptionNode,
+        onSubmitted: (value) {
+          saveDescription(value);
         },
         style: const TextStyle(fontSize: 18),
-        textCapitalization: TextCapitalization.words,
+        textCapitalization: TextCapitalization.sentences,
         decoration: InputDecoration(
           filled: true,
           fillColor: Colors.white10,
           contentPadding: const EdgeInsets.symmetric(horizontal: 10),
           labelText: 'Description',
           labelStyle: const TextStyle(fontSize: 15, color: Colors.white),
-          border:
-              OutlineInputBorder(borderSide: BorderSide(color: containerColor)),
-          focusedBorder:
-              OutlineInputBorder(borderSide: BorderSide(color: containerColor)),
+          suffixIcon: IconButton(
+            onPressed: () {
+              saveDescription(nameController.text);
+            },
+            icon: const Icon(Icons.save),
+          ),
+          border: OutlineInputBorder(
+              borderSide: BorderSide(color: _containerColor)),
+          focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: _containerColor)),
         ),
       ),
     );
   }
 
-  Widget _modifyInfoButton() {
-    return InkWell(
-      onTap: () {
-        //Change is editting.
-        editting = !editting;
-
-        //Check nameController.text and modify ContainerEntry.
-        if (nameController.text.isNotEmpty) {
-          containerEntry.name = nameController.text;
-        } else {
-          containerEntry.name = null;
-        }
-
-        //Check descriptionController.text and modify ContainerEntry.
-        if (descriptionController.text.isNotEmpty) {
-          containerEntry.description = descriptionController.text;
-        } else {
-          containerEntry.description = null;
-        }
-
-        //Write ContainerEntry.
-        isarDatabase!.writeTxnSync(
-            (isar) => isar.containerEntrys.putSync(containerEntry));
-
-        //Update Widget.
-        setState(() {});
-      },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          CustomOutlineContainer(
-            width: 80,
-            height: 35,
-            backgroundColor: containerColor,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-              child: Builder(builder: (context) {
-                if (editting) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'save',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      const Icon(
-                        Icons.save,
-                        size: 20,
-                      ),
-                    ],
-                  );
-                } else {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'edit',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      const Icon(
-                        Icons.edit,
-                        size: 20,
-                      ),
-                    ],
-                  );
-                }
-              }),
-            ),
-            outlineColor: containerColor,
-          ),
-        ],
-      ),
+  Widget _infoToolTip() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text('tap to edit', style: Theme.of(context).textTheme.bodySmall)
+      ],
     );
   }
 
-  ///CHILDREN TILE///
+  void saveName(String value) {
+    if (value.isNotEmpty) {
+      _nameNode.unfocus();
+      _containerEntry.name = value;
+    } else {
+      nameController.text =
+          _containerEntry.name ?? _containerEntry.containerUID;
+    }
+    isarDatabase!
+        .writeTxnSync((isar) => isar.containerEntrys.putSync(_containerEntry));
+  }
 
-  Widget _childrenTile() {
-    return LightContainer(
-      margin: 2.5,
-      padding: 0,
-      backgroundColor: Colors.transparent,
-      child: CustomOutlineContainer(
-        outlineColor: outlineColor,
-        margin: 2.5,
-        padding: 5,
+  void saveDescription(String value) {
+    if (value.isNotEmpty) {
+      _descriptionNode.unfocus();
+      _containerEntry.description = value;
+    } else {
+      descriptionController.text = _containerEntry.description ?? '';
+    }
+    isarDatabase!
+        .writeTxnSync((isar) => isar.containerEntrys.putSync(_containerEntry));
+  }
+
+  ///CHILDREN///
+
+  Widget _children() {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      color: Colors.white12,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: _containerColor, width: 1.5),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    //TODO: Come up with a more apropriate name.
-                    'Children ***',
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                  _showChildrenButton(),
-                ],
-              ),
-            ),
-            _dividerHeavy(),
-            _childrenBuilder(),
-            _dividerLight(),
-            _childrenActionBar(),
+            _childrenHeading(),
+            _dividerHeading(),
+            _childrenListView(),
+            _divider(),
+            _childrenActions(),
           ],
         ),
       ),
     );
   }
 
-  Widget _childrenBuilder() {
-    return Builder(builder: (context) {
-      List<ContainerRelationship> numberOfChildren = [];
-      numberOfChildren.addAll(isarDatabase!.containerRelationships
-          .filter()
-          .parentUIDMatches(containerEntry.containerUID)
-          .findAllSync());
-      //log(numberOfChildren.toString());
-      return LightContainer(
-        backgroundColor: Colors.white10.withOpacity(0.05),
-        child: Column(
-          children:
-              numberOfChildren.map((e) => childContainerWidget(e)).toList(),
+  Widget _childrenHeading() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text('Contains', style: Theme.of(context).textTheme.headlineSmall),
+        ElevatedButton(
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ContainerGridView(
+                      containerEntry: _containerEntry,
+                      containerTypeColor: _containerColor),
+                ),
+              );
+              setState(() {});
+            },
+            child: _gridButton()),
+      ],
+    );
+  }
+
+  Widget _gridButton() {
+    return Row(
+      children: [
+        Text('Grid ', style: Theme.of(context).textTheme.bodyMedium),
+        const Icon(
+          Icons.grid_4x4,
+          size: 20,
         ),
-      );
+      ],
+    );
+  }
+
+  Widget _childrenListView() {
+    return Builder(builder: (context) {
+      List<ContainerRelationship> relationships = [];
+      relationships.addAll(isarDatabase!.containerRelationships
+          .filter()
+          .parentUIDMatches(_containerEntry.containerUID)
+          .findAllSync());
+
+      if (relationships.isNotEmpty) {
+        return ListView.builder(
+          shrinkWrap: true,
+          itemCount: relationships.length,
+          itemBuilder: (context, index) {
+            return _childCard(relationships[index]);
+          },
+        );
+      } else {
+        return const Text('-');
+      }
     });
   }
 
-  Widget childContainerWidget(ContainerRelationship containerRelationship) {
+  Widget _childCard(ContainerRelationship containerRelationship) {
     return Builder(builder: (context) {
-      ContainerEntry childContainerEntry = isarDatabase!.containerEntrys
-          .filter()
-          .containerUIDMatches(containerRelationship.containerUID)
-          .findFirstSync()!;
+      ContainerEntry containerEntry =
+          getContainerEntry(containerUID: containerRelationship.containerUID);
+      Color containerColor =
+          getContainerColor(containerUID: containerRelationship.containerUID);
 
-      Color childColor =
-          getContainerColor(containerUID: childContainerEntry.containerUID);
-
-      return CustomOutlineContainer(
-        backgroundColor: Colors.white10.withOpacity(0.05),
-        margin: 2.5,
-        padding: 5,
-        outlineColor: childColor,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      return Card(
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: containerColor, width: 1),
+            borderRadius: const BorderRadius.all(
+              Radius.circular(5),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Name/UID',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                Text(
-                  childContainerEntry.name ?? childContainerEntry.containerUID,
+                  containerEntry.name ?? containerRelationship.containerUID,
                   style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                IconButton(
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ContainerView(
+                                containerEntry: containerEntry,
+                              )),
+                    );
+                    setState(() {});
+                  },
+                  icon: const Icon(Icons.edit),
                 ),
               ],
             ),
-            InkWell(
-              onTap: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ContainerView(
-                            containerEntry: childContainerEntry,
-                          )),
-                );
-                setState(() {});
-              },
-              child: CustomOutlineContainer(
-                  backgroundColor: childColor.withOpacity(0.5),
-                  margin: 5,
-                  padding: 2.5,
-                  outlineColor: childColor,
-                  child: const Icon(
-                    Icons.edit,
-                    size: 30,
-                  )),
-            ),
-          ],
+          ),
         ),
       );
     });
   }
 
-  Widget _showChildrenButton() {
-    return InkWell(
-      onTap: () async {
-        //Navigate to grid
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ContainerGridView(
-                containerEntry: containerEntry,
-                containerTypeColor: containerColor),
-          ),
-        );
-        setState(() {});
-      },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          CustomOutlineContainer(
-            width: 80,
-            height: 35,
-            backgroundColor: containerColor,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-              child: Builder(builder: (context) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Grid',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Icon(
-                      Icons.grid_4x4_outlined,
-                      size: 20,
-                    ),
-                  ],
-                );
-              }),
-            ),
-            outlineColor: containerColor,
-          ),
-        ],
-      ),
+  Widget _childrenActions() {
+    return Row(
+      children: [
+        _multipleContainers(),
+        _newContainer(),
+      ],
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
     );
   }
 
-  Widget _childrenActionBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _addMultipleChildren(),
-          _addSingleChild(),
-        ],
-      ),
-    );
-  }
-
-  Widget _addSingleChild() {
-    return InkWell(
-      onTap: () async {
-        //ACTION add Single.
+  ElevatedButton _newContainer() {
+    return ElevatedButton(
+      onPressed: () async {
         await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => NewContainerView(
-              parentContainer: containerEntry,
+              parentContainer: _containerEntry,
             ),
           ),
         );
         setState(() {});
       },
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          CustomOutlineContainer(
-            width: 100,
-            height: 35,
-            backgroundColor: containerColor,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'new',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  const Icon(
-                    Icons.add,
-                    size: 20,
-                  ),
-                ],
-              ),
-            ),
-            outlineColor: containerColor,
+          Text(
+            'New',
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
+          const Icon(Icons.add),
         ],
       ),
     );
   }
 
-  Widget _addMultipleChildren() {
-    return InkWell(
-      onTap: () async {},
+  ElevatedButton _multipleContainers() {
+    return ElevatedButton(
+      onPressed: () async {
+        //TODO: implement multiple scan.
+      },
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          CustomOutlineContainer(
-            width: 100,
-            height: 35,
-            backgroundColor: containerColor,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'scan',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  const Icon(
-                    Icons.qr_code_scanner,
-                    size: 20,
-                  ),
-                ],
-              ),
-            ),
-            outlineColor: containerColor,
+          Text(
+            'Scan',
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
+          const Icon(Icons.add),
         ],
       ),
     );
   }
 
-  ///TAGS UPDATED///
+  ///TAGS///
 
-  Widget _tagsTile() {
-    return LightContainer(
-      key: const Key('tagsTile'),
-      margin: 2.5,
-      padding: 0,
-      backgroundColor: Colors.transparent,
-      child: CustomOutlineContainer(
-        outlineColor: containerColor.withOpacity(0.8),
-        margin: 2.5,
-        padding: 5,
+  Widget _tags() {
+    return Card(
+      key: tagsKey,
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      color: Colors.white12,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: _containerColor, width: 1.5),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Tags',
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                ],
-              ),
-            ),
-            _dividerHeavy(),
-            _assignedTagsBuilder(),
+            _tagsHeading(),
+            _dividerHeading(),
+            _tagsWrap(),
           ],
         ),
       ),
     );
   }
 
-  Widget _floatingTagSearch() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      margin: const EdgeInsets.symmetric(horizontal: 10),
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.deepOrange, width: 1),
+  Widget _tagsHeading() {
+    return Text('Tags', style: Theme.of(context).textTheme.headlineSmall);
+  }
+
+  Widget _tagsWrap() {
+    return Builder(builder: (context) {
+      List<Widget> tags = [
+        addTag(),
+      ];
+
+      tags.addAll(assignedTags.map((e) => tag(e)).toList());
+
+      return Wrap(
+        runSpacing: 2.5,
+        spacing: 2.5,
+        children: tags,
+      );
+    });
+  }
+
+  Widget addTag() {
+    return Visibility(
+      visible: !showTagEditor,
+      child: InputChip(
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: _containerColor, width: 1),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        onPressed: () {
+          setState(() {
+            Scrollable.ensureVisible(tagsKey.currentContext!);
+            _tagsNode.requestFocus();
+            showTagEditor = !showTagEditor;
+          });
+        },
+        label: Text('+'),
+      ),
+    );
+  }
+
+  Widget _bottomSheet() {
+    return Visibility(
+      visible: showTagEditor,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: _containerColor, width: 1),
           borderRadius: const BorderRadius.all(
-            Radius.circular(30),
+            Radius.circular(5),
           ),
-          color: const Color(0xFF232323)),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          //closeTagSearch(),
-          _closeTagSearch(),
-          _unassignedTagsBuilder(),
-          _dividerHeavy(),
-          _tagSearchField(),
-        ],
+        ),
+        padding: const EdgeInsets.only(top: 5),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Tags',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            _tagSelector(),
+            _divider(),
+            _tagTextField(),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _unassignedTagsBuilder() {
-    return Builder(builder: (context) {
-      List<int> displayTags = [];
-      if (tagController.text.isNotEmpty) {
-        displayTags.addAll(isarDatabase!.tags
-            .filter()
-            .tagContains(tagController.text.toLowerCase(), caseSensitive: false)
-            .findAllSync()
-            .map((e) => e.id)
-            .where((element) => !assignedTags.contains(element)));
-      } else {
-        displayTags.addAll(isarDatabase!.tags
-            .filter()
-            .tagContains(tagController.text.toLowerCase(), caseSensitive: false)
-            .findAllSync()
-            .map((e) => e.id)
-            .where((element) => !assignedTags.contains(element))
-            .take(3));
-      }
-
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _dividerLight(),
-            Text('Unassigned Tags',
-                style: Theme.of(context).textTheme.bodySmall),
-            const SizedBox(
-              height: 5,
-            ),
-            Wrap(
-              runSpacing: 5,
-              spacing: 5,
-              children: displayTags.map((e) => tag(tagID: e)).toList(),
-            ),
-          ],
-        ),
-      );
-    });
-  }
-
-  Widget _assignedTagsBuilder() {
-    return Builder(builder: (context) {
-      List<Widget> tags = assignedTags.map((e) => tag(tagID: e)).toList();
-      tags.add(tag(add: '+'));
-      //log(tags.length.toString());
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Assigned Tags', style: Theme.of(context).textTheme.bodySmall),
-            const SizedBox(
-              height: 5,
-            ),
-            Wrap(
-              runSpacing: 5,
-              spacing: 5,
-              children: tags,
-            ),
-          ],
-        ),
-      );
-    });
-  }
-
-  Widget _tagSearchField() {
-    return Row(
-      children: [
-        Expanded(
-          child: TextField(
-            controller: tagController,
-            onChanged: (value) {
-              setState(() {});
-            },
-            focusNode: myFocusNode,
-            onSubmitted: (value) {
-              if (value.isEmpty) {
-                setState(() {
-                  showTagSearch = false;
-                });
-              } else {
-                //Check if tag exists
-                Tag? exists = isarDatabase!.tags
-                    .filter()
-                    .tagMatches(tagController.text.trim(), caseSensitive: false)
-                    .findFirstSync();
-
-                String inputValue = tagController.text;
-
-                if (exists == null && inputValue.isNotEmpty) {
-                  //Remove white spaces
-                  inputValue.trim();
-
-                  Tag newTag = Tag()..tag = inputValue;
-                  isarDatabase!.writeTxnSync(
-                    (isar) => isar.tags.putSync(newTag),
-                  );
-
-                  isarDatabase!.writeTxnSync(
-                      (isar) => isar.containerTags.putSync(ContainerTag()
-                        ..containerUID = containerEntry.containerUID
-                        ..tagID = newTag.id));
-
-                  //tagController.text = '';
-                  assignedTags.add(newTag.id);
-                  updateTags();
-                  tagController.clear();
-                  myFocusNode.requestFocus();
-
-                  setState(() {});
-                }
-              }
-            },
-            autofocus: true,
-            decoration: InputDecoration(
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Icon(Icons.search),
-                ],
-              ),
-              labelText: 'Enter tag name',
-              labelStyle: const TextStyle(fontSize: 18),
-              border: InputBorder.none,
-            ),
-          ),
-        ),
-      ],
+  Widget _tagSelector() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      scrollDirection: Axis.horizontal,
+      child: Builder(builder: (context) {
+        List<int> displayTags = [];
+        if (tagsController.text.isNotEmpty) {
+          displayTags.addAll(isarDatabase!.tags
+              .filter()
+              .tagContains(tagsController.text.toLowerCase(),
+                  caseSensitive: false)
+              .findAllSync()
+              .map((e) => e.id)
+              .where((element) => !assignedTags.contains(element)));
+        } else {
+          displayTags.addAll(isarDatabase!.tags
+              .filter()
+              .tagContains(tagsController.text.toLowerCase(),
+                  caseSensitive: false)
+              .findAllSync()
+              .map((e) => e.id)
+              .where((element) => !assignedTags.contains(element))
+              .take(10));
+        }
+        return Wrap(
+          spacing: 5,
+          children: displayTags.map((e) => tag(e)).toList(),
+        );
+      }),
     );
   }
 
-  Widget _closeTagSearch() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        InkWell(
-          onTap: () {
-            setState(() {
-              showTagSearch = false;
-            });
-          },
-          child: CustomOutlineContainer(
-            padding: 2.5,
-            margin: 0,
-            outlineColor: containerColor,
-            child: const Center(
-              child: Icon(
-                Icons.close,
-                size: 20,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  Widget _tagTextField() {
+    return TextField(
+      controller: tagsController,
+      focusNode: _tagsNode,
+      onChanged: (value) {
+        setState(() {});
+      },
+      onSubmitted: (value) {
+        if (tagsController.text.isEmpty) {
+          tagsController.clear();
+          _tagsNode.unfocus();
+        } else {
+          Tag? tag = isarDatabase!.tags
+              .filter()
+              .tagMatches(tagsController.text.trim(), caseSensitive: false)
+              .findFirstSync();
 
-  Widget tag({int? tagID, String? add}) {
-    if (tagID != null) {
-      return InkWell(
-        onTap: () {
-          if (assignedTags.contains(tagID)) {
-            setState(() {
-              assignedTags.removeWhere((element) => element == tagID);
-              isarDatabase!.writeTxnSync((isar) => isar.containerTags
-                  .filter()
-                  .tagIDEqualTo(tagID)
-                  .deleteFirstSync());
-            });
-          } else if (!assignedTags.contains(tagID)) {
-            setState(() {
-              assignedTags.add(tagID);
-              isarDatabase!.writeTxnSync(
-                  (isar) => isar.containerTags.putSync(ContainerTag()
-                    ..containerUID = containerEntry.containerUID
-                    ..tagID = tagID));
-            });
+          if (tag != null) {
+            //Add Existing Tag.
+            isarDatabase!.writeTxnSync(
+                (isar) => isar.containerTags.putSync(ContainerTag()
+                  ..containerUID = _containerEntry.containerUID
+                  ..tagID = tag.id));
           } else {
-            //Throw exception to let user know they need to enter edit mode
+            //New Tag.
+            Tag newTag = Tag()..tag = tagsController.text.toLowerCase().trim();
+            isarDatabase!.writeTxnSync(
+              (isar) => isar.tags.putSync(newTag),
+            );
+            //New Container Tag.
+            isarDatabase!.writeTxnSync(
+                (isar) => isar.containerTags.putSync(ContainerTag()
+                  ..containerUID = _containerEntry.containerUID
+                  ..tagID = newTag.id));
+          }
+          updateTags();
+          setState(() {});
+          tagsController.clear();
+          _tagsNode.requestFocus();
+        }
+      },
+      style: const TextStyle(fontSize: 18),
+      textCapitalization: TextCapitalization.words,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white10,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+        labelText: 'Tag',
+        labelStyle: const TextStyle(fontSize: 15, color: Colors.white),
+        suffixIcon: IconButton(
+          onPressed: () {
+            tagsController.clear();
+            _tagsNode.requestFocus();
+          },
+          icon: const Icon(Icons.add),
+        ),
+        border:
+            OutlineInputBorder(borderSide: BorderSide(color: _containerColor)),
+        focusedBorder:
+            OutlineInputBorder(borderSide: BorderSide(color: _containerColor)),
+      ),
+    );
+  }
+
+  Widget tag(int tagID) {
+    return Builder(builder: (context) {
+      Tag tag = isarDatabase!.tags.getSync(tagID)!;
+      return ActionChip(
+        backgroundColor: _containerColor,
+        label: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              tag.tag + ' ',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            Icon(
+              assignedTags.contains(tagID) ? Icons.close : Icons.add,
+              size: 12.5,
+            ),
+          ],
+        ),
+        onPressed: () {
+          if (assignedTags.contains(tagID)) {
+            isarDatabase!.writeTxnSync((isar) => isar.containerTags
+                .filter()
+                .tagIDEqualTo(tagID)
+                .deleteFirstSync());
+            updateTags();
+            setState(() {});
+          } else {
+            isarDatabase!.writeTxnSync(
+                (isar) => isar.containerTags.putSync(ContainerTag()
+                  ..containerUID = _containerEntry.containerUID
+                  ..tagID = tagID));
+            updateTags();
+            setState(() {});
           }
         },
-        child: Container(
-          child: Builder(builder: (context) {
-            String tag = isarDatabase!.tags.getSync(tagID)!.tag;
-            return Text(
-              tag,
-              maxLines: 1,
-            );
-          }),
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-          decoration: BoxDecoration(
-              border: Border.all(color: containerColor, width: 1),
-              borderRadius: const BorderRadius.all(
-                Radius.circular(30),
-              ),
-              color: Colors.white10),
-        ),
       );
-    } else {
-      if (!showTagSearch) {
-        return InkWell(
-          onTap: () {
-            itemScrollController.scrollTo(
-                index: 4,
-                duration: const Duration(seconds: 1),
-                curve: Curves.easeInOutCubic);
-            setState(() {
-              showTagSearch = true;
-            });
-          },
-          child: Container(
-            child: Builder(builder: (context) {
-              String tag = '+';
-              return Text(
-                tag,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              );
-            }),
-            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 15),
-            decoration: BoxDecoration(
-                border: Border.all(color: containerColor, width: 1),
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(20),
-                ),
-                color: containerColor),
-          ),
-        );
-      } else {
-        return Container();
-      }
-    }
-  }
-
-  void saveTags() {
-    //Find existing container Tags.
-    List<ContainerTag> containerTags = [];
-    containerTags.addAll(isarDatabase!.containerTags
-        .filter()
-        .containerUIDMatches(containerEntry.containerUID)
-        .findAllSync());
-
-    //Remove existing container Tags.
-    isarDatabase!.writeTxnSync((isar) => isar.containerTags
-        .filter()
-        .containerUIDMatches(containerEntry.containerUID)
-        .deleteAllSync());
-
-    List<ContainerTag> newContainerTags = assignedTags
-        .map((tagID) => ContainerTag()
-          ..containerUID = containerEntry.containerUID
-          ..tagID = tagID)
-        .toList();
-
-    isarDatabase!.writeTxnSync(
-        (isar) => isar.containerTags.putAllSync(newContainerTags));
-
-    //log(newContainerTags.toString());
+    });
   }
 
   void updateTags() {
+    assignedTags = [];
+
+    assignedTags.addAll(isarDatabase!.containerTags
+        .filter()
+        .containerUIDMatches(_containerEntry.containerUID)
+        .tagIDProperty()
+        .findAllSync());
+
     allTags =
         isarDatabase!.tags.where().findAllSync().map((e) => e.id).toList();
   }
 
   ///PHOTOS///
 
-  Widget _photosTile() {
-    return LightContainer(
-      margin: 2.5,
-      padding: 0,
-      backgroundColor: Colors.transparent,
-      child: CustomOutlineContainer(
-        outlineColor: containerColor.withOpacity(0.8),
-        // backgroundColor: Colors.transparent,
-        margin: 2.5,
-        padding: 5,
+  Widget _photos() {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      color: Colors.white12,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: _containerColor, width: 1.5),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Photo(s)',
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                ],
-              ),
-            ),
-            _dividerHeavy(),
-            _photoBuilder(),
+            Text('Photos', style: Theme.of(context).textTheme.headlineSmall),
+            _dividerHeading(),
+            _photosBuilder(),
           ],
         ),
       ),
     );
   }
 
-  Widget _photoBuilder() {
+  Widget _photosBuilder() {
     return Builder(builder: (context) {
       List<ContainerPhoto> containerPhotos = [];
       containerPhotos.addAll(isarDatabase!.containerPhotos
           .filter()
-          .containerUIDMatches(containerEntry.containerUID)
+          .containerUIDMatches(_containerEntry.containerUID)
           .findAllSync());
 
-      List<Widget> photoWidgets = [_photoAddButton()];
+      List<Widget> photoWidgets = [
+        _photoAddCard(),
+      ];
 
-      photoWidgets
-          .addAll(containerPhotos.map((e) => photoDisplayWidget(e)).toList());
-
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-        child: Wrap(
-          runAlignment: WrapAlignment.center,
-          alignment: WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          runSpacing: 5,
-          spacing: 8,
-          children: photoWidgets,
-        ),
+      photoWidgets.addAll(containerPhotos.map((e) => photoCard(e)).toList());
+      return Wrap(
+        spacing: 1,
+        runSpacing: 1,
+        alignment: WrapAlignment.center,
+        runAlignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: photoWidgets,
       );
     });
   }
 
-  Widget photoDisplayWidget(ContainerPhoto containerPhoto) {
-    return InkWell(
-      onTap: () async {
-        //await photoDialog(containerPhoto);
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PhotoTagsView(
-              containerPhoto: containerPhoto,
-              containerColor: containerColor,
-            ),
-          ),
-        );
-      },
-      child: Stack(
-        alignment: AlignmentDirectional.topStart,
-        children: [
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.29,
-            child: CustomOutlineContainer(
-              outlineColor: containerColor,
-              padding: 2,
-              child: Image.file(
-                File(containerPhoto.photoPath),
+  Widget photoCard(ContainerPhoto containerPhoto) {
+    return Card(
+      child: InkWell(
+        onTap: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PhotoView(
+                containerPhoto: containerPhoto,
+                containerColor: _containerColor,
               ),
             ),
-          ),
-          Container(
-            width: 35,
-            height: 35,
-            margin: const EdgeInsets.all(5),
-            padding: const EdgeInsets.all(0),
-            child: Center(
-              child: IconButton(
-                iconSize: 15,
-                onPressed: () {
-                  deletePhoto(containerPhoto);
-                  setState(() {});
-                },
-                icon: const Icon(Icons.delete),
-                color: Colors.white,
-              ),
-            ),
-            decoration: BoxDecoration(
-                border: Border.all(color: containerColor, width: 1),
+          );
+          setState(() {});
+        },
+        child: Stack(
+          alignment: AlignmentDirectional.topStart,
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width * 0.27,
+              height: MediaQuery.of(context).size.width * 0.4,
+              decoration: BoxDecoration(
+                border: Border.all(color: _containerColor, width: 1),
                 borderRadius: const BorderRadius.all(
                   Radius.circular(5),
                 ),
-                color: containerColor.withOpacity(0.5)),
-          ),
-        ],
+              ),
+              padding: const EdgeInsets.all(2.5),
+              child: Image.file(
+                File(containerPhoto.photoPath),
+                fit: BoxFit.cover,
+              ),
+            ),
+            photoDeleteButton(containerPhoto),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _photoAddButton() {
+  Widget photoDeleteButton(ContainerPhoto containerPhoto) {
+    return Container(
+      width: 35,
+      height: 35,
+      margin: const EdgeInsets.all(2.5),
+      padding: const EdgeInsets.all(0),
+      child: Center(
+        child: IconButton(
+          padding: const EdgeInsets.all(1),
+          iconSize: 15,
+          onPressed: () {
+            deletePhoto(containerPhoto);
+            setState(() {});
+          },
+          icon: const Icon(Icons.delete),
+          color: Colors.white,
+        ),
+      ),
+      decoration: BoxDecoration(
+          border: Border.all(color: _containerColor, width: 1),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(5),
+          ),
+          color: _containerColor.withOpacity(0.5)),
+    );
+  }
+
+  Widget _photoAddCard() {
     return InkWell(
       onTap: () async {
         await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ObjectDetectorView(
-              customColor: containerColor,
-              containerUID: containerEntry.containerUID,
+              customColor: _containerColor,
+              containerUID: _containerEntry.containerUID,
             ),
           ),
         );
 
         setState(() {});
       },
-      child: CustomOutlineContainer(
-          backgroundColor: Colors.white10,
-          margin: 0,
-          width: MediaQuery.of(context).size.width * 0.29,
-          height: MediaQuery.of(context).size.width * 0.5,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Icon(
-                  Icons.add_a_photo,
-                  size: 20,
-                ),
-              ],
+      child: Card(
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.27,
+          height: MediaQuery.of(context).size.width * 0.4,
+          padding: const EdgeInsets.all(2.5),
+          decoration: BoxDecoration(
+            border: Border.all(color: _containerColor, width: 1),
+            borderRadius: const BorderRadius.all(
+              Radius.circular(5),
             ),
           ),
-          outlineColor: containerColor),
+          child: Center(
+            child: Text(
+              '+',
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -1160,28 +933,23 @@ class _ContainerViewState extends State<ContainerView> {
 
   ///PHOTO TAGS///
 
-  Widget _photoTagsTile() {
-    return LightContainer(
-      margin: 2.5,
-      padding: 0,
-      backgroundColor: Colors.transparent,
-      child: CustomOutlineContainer(
-        outlineColor: containerColor.withOpacity(0.8),
-        // backgroundColor: Colors.transparent,
-        margin: 2.5,
-        padding: 5,
+  Widget _photoTags() {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      color: Colors.white12,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: _containerColor, width: 1.5),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: Text(
-                'Photo Tags',
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
-            ),
-            _dividerHeavy(),
+            Text('AI Tags', style: Theme.of(context).textTheme.headlineSmall),
+            _dividerHeading(),
             _photoTagsBuilder(),
           ],
         ),
@@ -1196,7 +964,7 @@ class _ContainerViewState extends State<ContainerView> {
 
       List<ContainerPhoto> containerPhotos = isarDatabase!.containerPhotos
           .filter()
-          .containerUIDMatches(containerEntry.containerUID)
+          .containerUIDMatches(_containerEntry.containerUID)
           .findAllSync();
 
       if (containerPhotos.isNotEmpty) {
@@ -1218,8 +986,8 @@ class _ContainerViewState extends State<ContainerView> {
       }
       if (mlTags.isNotEmpty) {
         return Wrap(
-          runSpacing: 5,
-          spacing: 5,
+          runSpacing: 2.5,
+          spacing: 2.5,
           children: mlTags.map((e) => mlTag(e)).toList(),
         );
       } else {
@@ -1233,53 +1001,82 @@ class _ContainerViewState extends State<ContainerView> {
     });
   }
 
-  Widget mlTag(MlTag mlTag) {
-    return Container(
-        child: Text(
-          mlTag.tag,
-          maxLines: 1,
-          textAlign: TextAlign.center,
+  Widget mlTag(MlTag mltag) {
+    return Builder(builder: (context) {
+      return Chip(
+        avatar: Builder(builder: (context) {
+          switch (mltag.tagType) {
+            case mlTagType.text:
+              return const Icon(
+                Icons.format_size,
+                size: 15,
+              );
+
+            case mlTagType.objectLabel:
+              return const Icon(
+                Icons.emoji_objects,
+                size: 15,
+              );
+
+            case mlTagType.imageLabel:
+              return const Icon(
+                Icons.photo,
+                size: 15,
+              );
+          }
+        }),
+        backgroundColor: _containerColor,
+        label: Text(
+          mltag.tag,
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
-        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-        decoration: BoxDecoration(
-          border: Border.all(color: containerColor, width: 1),
-          borderRadius: const BorderRadius.all(
-            Radius.circular(30),
-          ),
-          color: Colors.white10,
-        ));
+      );
+    });
   }
 
   ///MISC///
 
-  Widget spacingContainer(ContainerEntry containerEntry) {
-    return Container(
-      height: 2.5,
-      width: 25,
-      color: getContainerColor(containerUID: containerEntry.containerUID),
+  Divider _divider() {
+    return const Divider(
+      height: 8,
+      indent: 2,
+      color: Colors.white30,
     );
   }
 
-  Widget _dividerLight() {
+  Divider _dividerHeading() {
     return const Divider(
-      height: 10,
-      thickness: .5,
-      color: Colors.white54,
-    );
-  }
-
-  Widget _dividerHeavy() {
-    return const Divider(
-      height: 10,
+      height: 8,
       thickness: 1,
       color: Colors.white,
     );
   }
 
-  Widget _bodyDivider() {
-    return const Divider(
-      thickness: 0.5,
-      height: 5,
-    );
+  ///LISTENERS///
+
+  void addListeners() {
+    _nameNode.addListener(() {
+      setState(() {
+        nameIsFocused = _nameNode.hasFocus;
+      });
+    });
+
+    _descriptionNode.addListener(() {
+      setState(() {
+        descriptionIsFocused = _descriptionNode.hasFocus;
+      });
+    });
+
+    _tagsNode.addListener(() {
+      setState(() {
+        showTagEditor = _tagsNode.hasFocus;
+      });
+    });
+  }
+
+  void closeListeners() {
+    _nameNode.dispose();
+    _descriptionNode.dispose();
+    _tagsNode.dispose();
   }
 }

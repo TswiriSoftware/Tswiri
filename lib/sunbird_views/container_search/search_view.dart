@@ -399,11 +399,32 @@ class _SearchViewState extends State<SearchView> {
 
   Widget photoTagChip(int tagUID, Color containerColor) {
     return Builder(builder: (context) {
-      String tag =
-          isarDatabase!.mlTags.filter().idEqualTo(tagUID).findFirstSync()!.tag;
+      MlTag mlTag =
+          isarDatabase!.mlTags.filter().idEqualTo(tagUID).findFirstSync()!;
       return Chip(
+        avatar: Builder(builder: (context) {
+          switch (mlTag.tagType) {
+            case mlTagType.text:
+              return const Icon(
+                Icons.format_size,
+                size: 15,
+              );
+
+            case mlTagType.objectLabel:
+              return const Icon(
+                Icons.emoji_objects,
+                size: 15,
+              );
+
+            case mlTagType.imageLabel:
+              return const Icon(
+                Icons.photo,
+                size: 15,
+              );
+          }
+        }),
         label: Text(
-          tag,
+          mlTag.tag,
         ),
         backgroundColor: containerColor,
       );
