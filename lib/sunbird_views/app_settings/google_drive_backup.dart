@@ -402,11 +402,15 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
   }
 
   Future createJsonFile(String backupPath, String filename) async {
-    if (!await File('$backupPath/sunbird/backup/$filename').exists()) {
-      await File('$backupPath/sunbird/backup/$filename').create();
-      log('created: ' + filename);
+    if (await File('$backupPath/sunbird/backup/').exists()) {
+      if (!await File('$backupPath/sunbird/backup/$filename').exists()) {
+        await File('$backupPath/sunbird/backup/$filename').create();
+        log('created: ' + filename);
+      } else {
+        log('exists: ' + filename);
+      }
     } else {
-      log('exists: ' + filename);
+      await File('$backupPath/sunbird/backup/').create();
     }
   }
 

@@ -14,7 +14,7 @@ class ContainerRelationship {
 
   @override
   String toString() {
-    return 'containerUID: $containerUID,\nparentUID: $parentUID';
+    return '\ncontainerUID: $containerUID, parentUID: $parentUID';
   }
 
   Map toJson() => {

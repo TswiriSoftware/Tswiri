@@ -4,6 +4,7 @@ import 'package:flutter_google_ml_kit/isar_database/container_tag/container_tag.
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view_2.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/new_container_view.dart';
 import 'package:isar/isar.dart';
 
@@ -58,7 +59,7 @@ class _ContainersViewState extends State<ContainersView> {
           });
         },
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: Column(
             children: containers.map((e) => containerCard(e)).toList(),
           ),
@@ -118,70 +119,16 @@ class _ContainersViewState extends State<ContainersView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ///NAME///
-                Text(
-                  'Name',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                Text(
-                  containerEntry.name ?? containerEntry.containerUID,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const Divider(
-                  height: 5,
-                  indent: 2,
-                ),
+                name(containerEntry),
 
                 ///DESCRIPTION///
-                Text(
-                  'Description',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                Text(
-                  containerEntry.description ?? '-',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
+                description(containerEntry),
 
                 ///TAGS///
+                userTags(containerEntry, containerColor),
 
-                Builder(builder: (context) {
-                  List<ContainerTag> tags = [];
-                  tags.addAll(isarDatabase!.containerTags
-                      .filter()
-                      .containerUIDContains(containerEntry.containerUID)
-                      .findAllSync());
-                  return userTags(tags, containerColor);
-                }),
-
-                ///EDIT///
-                const Divider(
-                  height: 5,
-                  indent: 2,
-                ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ElevatedButton(
-                      style:
-                          TextButton.styleFrom(backgroundColor: containerColor),
-                      onPressed: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ContainerView(
-                              containerEntry: containerEntry,
-                            ),
-                          ),
-                        );
-                        search('');
-                        setState(() {});
-                      },
-                      child: const Text(
-                        'Edit',
-                      ),
-                    )
-                  ],
-                )
+                ///ACTIONS///
+                actions(containerEntry, containerColor),
               ],
             ),
           ),
@@ -190,14 +137,80 @@ class _ContainersViewState extends State<ContainersView> {
     );
   }
 
-  Widget userTags(List<ContainerTag> tags, Color containerColor) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      scrollDirection: Axis.horizontal,
-      child: Wrap(
-        spacing: 5,
-        children: tags.map((e) => tagChip(e, containerColor)).toList(),
-      ),
+  Widget name(ContainerEntry containerEntry) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ///NAME///
+        Text(
+          'Name',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        Text(
+          containerEntry.name ?? containerEntry.containerUID,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        const Divider(
+          height: 5,
+          indent: 2,
+        ),
+      ],
+    );
+  }
+
+  Widget description(ContainerEntry containerEntry) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ///DESCRIPTION///
+        Text(
+          'Description',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        Text(
+          containerEntry.description ?? '-',
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        const Divider(
+          height: 5,
+          indent: 2,
+        ),
+      ],
+    );
+  }
+
+  Widget userTags(ContainerEntry containerEntry, Color containerColor) {
+    return Builder(
+      builder: (context) {
+        List<ContainerTag> tags = [];
+        tags.addAll(isarDatabase!.containerTags
+            .filter()
+            .containerUIDContains(containerEntry.containerUID)
+            .findAllSync());
+
+        if (tags.isNotEmpty) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Tags',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                scrollDirection: Axis.horizontal,
+                child: Wrap(
+                  spacing: 5,
+                  children:
+                      tags.map((e) => tagChip(e, containerColor)).toList(),
+                ),
+              ),
+            ],
+          );
+        } else {
+          return Row();
+        }
+      },
     );
   }
 
@@ -211,10 +224,55 @@ class _ContainersViewState extends State<ContainersView> {
       return Chip(
         label: Text(
           tag,
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
         backgroundColor: containerColor,
       );
     });
+  }
+
+  Widget actions(ContainerEntry containerEntry, Color containerColor) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        ElevatedButton(
+          style: TextButton.styleFrom(backgroundColor: containerColor),
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ContainerView(
+                  containerEntry: containerEntry,
+                ),
+              ),
+            );
+            search('');
+            setState(() {});
+          },
+          child: const Text(
+            'Edit',
+          ),
+        ),
+        ElevatedButton(
+          style: TextButton.styleFrom(backgroundColor: containerColor),
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ContainerView2(
+                  containerEntry: containerEntry,
+                ),
+              ),
+            );
+            search('');
+            setState(() {});
+          },
+          child: const Text(
+            'Edit',
+          ),
+        )
+      ],
+    );
   }
 
   ///NEW CONTAINER///
