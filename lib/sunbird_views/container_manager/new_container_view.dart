@@ -9,18 +9,13 @@ import 'package:flutter_google_ml_kit/isar_database/container_relationship/conta
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
-import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
-import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
+
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/single_barcode_scanner/single_barcode_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_view.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
 import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
-
-import '../../isar_database/container_photo_thumbnail/container_photo_thumbnail.dart';
-import 'objects/photo_data.dart';
 
 class NewContainerView extends StatefulWidget {
   const NewContainerView({

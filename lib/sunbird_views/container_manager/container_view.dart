@@ -85,6 +85,7 @@ class _ContainerViewState extends State<ContainerView> {
 
   AppBar _appBar() {
     return AppBar(
+      backgroundColor: _containerColor,
       elevation: 25,
       centerTitle: true,
       title: _title(),
@@ -365,32 +366,35 @@ class _ContainerViewState extends State<ContainerView> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text('Contains', style: Theme.of(context).textTheme.headlineSmall),
-        ElevatedButton(
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ContainerGridView(
-                      containerEntry: _containerEntry,
-                      containerTypeColor: _containerColor),
-                ),
-              );
-              setState(() {});
-            },
-            child: _gridButton()),
+        _gridButton()
       ],
     );
   }
 
   Widget _gridButton() {
-    return Row(
-      children: [
-        Text('Grid ', style: Theme.of(context).textTheme.bodyMedium),
-        const Icon(
-          Icons.grid_4x4,
-          size: 20,
-        ),
-      ],
+    return ElevatedButton(
+      style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(_containerColor)),
+      onPressed: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ContainerGridView(
+                containerEntry: _containerEntry,
+                containerTypeColor: _containerColor),
+          ),
+        );
+        setState(() {});
+      },
+      child: Row(
+        children: [
+          Text('Grid ', style: Theme.of(context).textTheme.bodyMedium),
+          const Icon(
+            Icons.grid_4x4,
+            size: 20,
+          ),
+        ],
+      ),
     );
   }
 
@@ -473,6 +477,8 @@ class _ContainerViewState extends State<ContainerView> {
 
   ElevatedButton _newContainer() {
     return ElevatedButton(
+      style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(_containerColor)),
       onPressed: () async {
         await Navigator.push(
           context,
@@ -498,6 +504,8 @@ class _ContainerViewState extends State<ContainerView> {
 
   ElevatedButton _multipleContainers() {
     return ElevatedButton(
+      style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(_containerColor)),
       onPressed: () async {
         //TODO: implement multiple scan.
       },

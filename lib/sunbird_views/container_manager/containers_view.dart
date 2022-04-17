@@ -263,6 +263,9 @@ class _ContainersViewState extends State<ContainersView> {
                 fillColor: MaterialStateProperty.all(containerColor),
                 onChanged: (value) {
                   _onSelectedFilter(value!, containerEntry.containerUID);
+                  if (selectedContainers.isEmpty) {
+                    showCheckBoxes = false;
+                  }
                   setState(() {});
                 });
           } else {
