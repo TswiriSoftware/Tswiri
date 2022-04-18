@@ -153,7 +153,6 @@ class _ContainerGridViewState extends State<ContainerGridView> {
         );
 
         updateGrid();
-
         setState(() {});
       },
       child: Row(

@@ -84,6 +84,7 @@ class _BarcodePositionScannerCameraViewState
   Widget? _floatingActionButton() {
     if (cameras.length == 1) return null;
     return FloatingActionButton(
+      backgroundColor: widget.color,
       heroTag: 'flash',
       child: Icon(
         Platform.isIOS

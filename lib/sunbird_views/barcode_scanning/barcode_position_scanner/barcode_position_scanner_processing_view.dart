@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
@@ -38,10 +40,14 @@ class _BarcodePositionScannerProcessingViewState
     extends State<BarcodePositionScannerProcessingView> {
   int shelfUID = 1;
   List<String> relevantBarcodes = [];
+
+  late Future<List<RealInterBarcodeOffset>> _future;
+
   @override
   void initState() {
     relevantBarcodes.addAll(widget.barcodesToScan);
     relevantBarcodes.addAll(widget.gridMarkers);
+
     super.initState();
   }
 
@@ -65,11 +71,11 @@ class _BarcodePositionScannerProcessingViewState
       ),
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Center(
-            child: Text(
+        title: Text(
           'Processing Data',
-          style: Theme.of(context).textTheme.titleLarge,
-        )),
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        centerTitle: true,
       ),
       body: Center(
         child: FutureBuilder<List<RealInterBarcodeOffset>>(
@@ -211,14 +217,12 @@ class _BarcodePositionScannerProcessingViewState
     List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData =
         buildAllOnImageInterBarcodeData(allRawOnImageBarcodeData);
 
-    // //3. Remove any non-relevant barcodes.
-    // List<RawOnImageInterBarcodeData> allRelevantOnImageInterBarcodeData = [];
+    // List<String> scannedBarcodes = [];
     // for (RawOnImageInterBarcodeData item in allOnImageInterBarcodeData) {
-    //   if (relevantBarcodes.contains(item.startBarcode.displayValue) &&
-    //       relevantBarcodes.contains(item.endBarcode.displayValue)) {
-    //     allRelevantOnImageInterBarcodeData.add(item);
-    //   }
+    //   scannedBarcodes.add(item.startBarcode.displayValue!);
+    //   scannedBarcodes.add(item.endBarcode.displayValue!);
     // }
+    // log(allOnImageInterBarcodeData.toString());
 
     //4.1 Calculates all real interBarcodeOffsets.
     //Get the camera's focal length
@@ -258,13 +262,28 @@ class _BarcodePositionScannerProcessingViewState
         ..endBarcodeUID = interBarcodeOffset.uidEnd
         ..x = interBarcodeOffset.offset.dx
         ..y = interBarcodeOffset.offset.dy
-        ..z = interBarcodeOffset.zOffset;
+        ..z = interBarcodeOffset.zOffset
+        ..timestamp = interBarcodeOffset.timestamp;
 
       scannedBarcodes.add(interBarcodeOffset.uidStart);
       scannedBarcodes.add(interBarcodeOffset.uidEnd);
       interbarcodeOffsetEntries.add(vectorEntry);
     }
     scannedBarcodes = scannedBarcodes.toSet().toList();
+
+    for (String barcode in scannedBarcodes) {
+      isarDatabase!.writeTxnSync((isar) => isar.realInterBarcodeVectorEntrys
+          .filter()
+          .startBarcodeUIDMatches(barcode)
+          .or()
+          .endBarcodeUIDMatches(barcode)
+          .deleteAllSync());
+    }
+
+    log(isarDatabase!.realInterBarcodeVectorEntrys
+        .where()
+        .findAllSync()
+        .toString());
 
     List<ContainerEntry> containerEntries = isarDatabase!.containerEntrys
         .filter()
@@ -273,72 +292,24 @@ class _BarcodePositionScannerProcessingViewState
         .findAllSync();
 
     List<ContainerRelationship> containerRelatiopnships = [];
-    //TODO: delete existing Container RelationShips?
+    //TODO: delete existing Container RelationShips ?
+    //Update them ?
+    //What to do ?
 
-    ContainerRelationship? relationship = isarDatabase!.containerRelationships
-        .filter()
-        .containerUIDMatches(widget.parentContainerUID)
-        .findFirstSync();
-
-    // //TODO: Sort this mess out @049er.
-
-    // for (ContainerEntry containerEntry in containerEntries) {
-    //   if (relationship != null &&
-    //       containerEntry.containerUID != widget.parentContainerUID &&
-    //       widget.parentContainerUID != relationship.containerUID) {
-    //     if (isarDatabase!.containerRelationships
-    //             .filter()
-    //             .containerUIDMatches(containerEntry.containerUID)
-    //             .and()
-    //             .parentUIDMatches(widget.parentContainerUID)
-    //             .findFirstSync() ==
-    //         null) {
-    //       if (isarDatabase!.containerRelationships
-    //               .filter()
-    //               .containerUIDMatches(containerEntry.containerUID)
-    //               .findFirstSync() ==
-    //           null) {
-    //         ContainerRelationship containerRelationship =
-    //             ContainerRelationship()
-    //               ..containerUID = containerEntry.containerUID
-    //               ..parentUID = widget.parentContainerUID;
-
-    //         containerRelatiopnships.add(containerRelationship);
-    //         log(containerRelationship.toString());
-    //       }
-    //     }
-    //   } else if (relationship == null &&
-    //       containerEntry.containerUID != widget.parentContainerUID) {
-    //     if (isarDatabase!.containerRelationships
-    //             .filter()
-    //             .containerUIDMatches(containerEntry.containerUID)
-    //             .and()
-    //             .parentUIDMatches(widget.parentContainerUID)
-    //             .findFirstSync() ==
-    //         null) {
-    //       if (isarDatabase!.containerRelationships
-    //               .filter()
-    //               .containerUIDMatches(containerEntry.containerUID)
-    //               .findFirstSync() ==
-    //           null) {
-    //         ContainerRelationship containerRelationship =
-    //             ContainerRelationship()
-    //               ..containerUID = containerEntry.containerUID
-    //               ..parentUID = widget.parentContainerUID;
-    //         containerRelatiopnships.add(containerRelationship);
-
-    //         log(containerRelationship.toString());
-    //       }
-    //     }
-    //   }
-    // }
-
-    //log(interbarcodeOffsetEntries.toString());
+    // ContainerRelationship? relationship = isarDatabase!.containerRelationships
+    //     .filter()
+    //     .containerUIDMatches(widget.parentContainerUID)
+    //     .findFirstSync();
 
     isarDatabase!.writeTxnSync((isar) {
       isar.realInterBarcodeVectorEntrys.putAllSync(interbarcodeOffsetEntries);
       isar.containerRelationships.putAllSync(containerRelatiopnships);
     });
+
+    log(isarDatabase!.realInterBarcodeVectorEntrys
+        .where()
+        .findAllSync()
+        .toString());
 
     return finalRealInterBarcodeOffsets;
   }
