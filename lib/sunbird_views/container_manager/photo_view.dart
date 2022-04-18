@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -55,6 +54,7 @@ class _PhotoViewState extends State<PhotoView> {
 
   AppBar _appBar() {
     return AppBar(
+      backgroundColor: widget.containerColor,
       elevation: 25,
       centerTitle: true,
       title: _title(),

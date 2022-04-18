@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -479,6 +478,17 @@ class _ContainerViewState extends State<ContainerView> {
     return ElevatedButton(
       style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(_containerColor)),
+      onLongPress: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NewContainerView(
+              parentContainer: _containerEntry,
+            ),
+          ),
+        );
+        setState(() {});
+      },
       onPressed: () async {
         await Navigator.push(
           context,
@@ -583,7 +593,7 @@ class _ContainerViewState extends State<ContainerView> {
             showTagEditor = !showTagEditor;
           });
         },
-        label: Text('+'),
+        label: const Text('+'),
       ),
     );
   }
@@ -791,27 +801,29 @@ class _ContainerViewState extends State<ContainerView> {
   }
 
   Widget _photosBuilder() {
-    return Builder(builder: (context) {
-      List<ContainerPhoto> containerPhotos = [];
-      containerPhotos.addAll(isarDatabase!.containerPhotos
-          .filter()
-          .containerUIDMatches(_containerEntry.containerUID)
-          .findAllSync());
+    return Builder(
+      builder: (context) {
+        List<ContainerPhoto> containerPhotos = [];
+        containerPhotos.addAll(isarDatabase!.containerPhotos
+            .filter()
+            .containerUIDMatches(_containerEntry.containerUID)
+            .findAllSync());
 
-      List<Widget> photoWidgets = [
-        _photoAddCard(),
-      ];
+        List<Widget> photoWidgets = [
+          _photoAddCard(),
+        ];
 
-      photoWidgets.addAll(containerPhotos.map((e) => photoCard(e)).toList());
-      return Wrap(
-        spacing: 1,
-        runSpacing: 1,
-        alignment: WrapAlignment.center,
-        runAlignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: photoWidgets,
-      );
-    });
+        photoWidgets.addAll(containerPhotos.map((e) => photoCard(e)).toList());
+        return Wrap(
+          spacing: 1,
+          runSpacing: 1,
+          alignment: WrapAlignment.center,
+          runAlignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: photoWidgets,
+        );
+      },
+    );
   }
 
   Widget photoCard(ContainerPhoto containerPhoto) {
