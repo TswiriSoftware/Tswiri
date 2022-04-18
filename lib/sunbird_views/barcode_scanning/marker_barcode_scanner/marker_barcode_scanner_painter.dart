@@ -1,9 +1,11 @@
+import 'dart:developer';
 import 'dart:ui';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/barcode_calculations/calculate_barcode_positional_data.dart';
 import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
+import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
 
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
@@ -15,13 +17,13 @@ class MarkerBarcodeScannerPainter extends CustomPainter {
     required this.barcodes,
     required this.absoluteImageSize,
     required this.rotation,
-    //required this.allBarcodes,
+    required this.selectedBarcodeUIDs,
     this.barcodeID,
   });
   final List<Barcode> barcodes;
   final Size absoluteImageSize;
   final InputImageRotation rotation;
-  // List<BarcodeDataEntry> allBarcodes;
+  final List<String> selectedBarcodeUIDs;
   final String? barcodeID;
 
   @override
@@ -73,24 +75,26 @@ class MarkerBarcodeScannerPainter extends CustomPainter {
           centerPoint,
         );
 
-        canvas.drawPoints(PointMode.polygon, offsetPoints, paint);
         if (barcodeID == barcode.value.displayValue) {
           canvas.drawPoints(PointMode.polygon, offsetPoints,
-              paintSimple(Colors.blueAccent, 3));
+              paintSimple(barcodeFocusColor, 3));
+        } else if (selectedBarcodeUIDs.contains(barcode.value.displayValue)) {
+          canvas.drawPoints(PointMode.polygon, offsetPoints,
+              paintSimple(barcodeMarkerColor, 3));
         } else {
-          canvas.drawPoints(
-              PointMode.polygon, offsetPoints, paintSimple(springGreen, 3));
+          canvas.drawPoints(PointMode.polygon, offsetPoints,
+              paintSimple(barcodeDefaultColor, 3));
         }
       }
     }
   }
 
   TextPainter text(String text) {
-    TextSpan span =
-        TextSpan(style: const TextStyle(color: Colors.red), text: text);
+    TextSpan span = TextSpan(
+        style: const TextStyle(color: Colors.red, fontSize: 10), text: text);
     TextPainter tp = TextPainter(
         text: span,
-        textAlign: TextAlign.left,
+        textAlign: TextAlign.right,
         textDirection: TextDirection.ltr);
     return tp;
   }

@@ -56,17 +56,7 @@ class _MarkerBarcodeScannerCameraViewState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        backgroundColor: widget.color,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.info_outline_rounded),
-          ),
-        ],
-      ),
-      body: _body(),
+      body: _liveFeedBody(),
       floatingActionButton: _floatingActionButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
@@ -78,6 +68,7 @@ class _MarkerBarcodeScannerCameraViewState
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         FloatingActionButton(
+          backgroundColor: widget.color,
           heroTag: 'flash',
           child: Icon(
             Platform.isIOS
@@ -96,14 +87,6 @@ class _MarkerBarcodeScannerCameraViewState
         ),
       ],
     );
-  }
-
-  Widget _body() {
-    Widget body;
-
-    body = _liveFeedBody();
-
-    return body;
   }
 
   Widget _liveFeedBody() {

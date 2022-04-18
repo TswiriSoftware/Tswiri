@@ -155,25 +155,28 @@ class GridVisualizerPainter extends CustomPainter {
     double bY = 0;
 
     for (var i = 0; i < realBarcodePositions.length; i++) {
-      RealBarcodePosition data = realBarcodePositions.elementAt(i);
-      if (data.offset != null) {
-        double xDistance = data.offset!.dx;
-        double yDistance = data.offset!.dy;
-        if (xDistance < sX) {
-          sX = xDistance;
+      RealBarcodePosition realBarcodePosition =
+          realBarcodePositions.elementAt(i);
+      if (realBarcodePosition.offset != null) {
+        if (realBarcodePosition.offset != null) {
+          double xDistance = realBarcodePosition.offset!.dx;
+          double yDistance = realBarcodePosition.offset!.dy;
+          if (xDistance < sX) {
+            sX = xDistance;
+          }
+          if (xDistance > bX) {
+            bX = xDistance;
+          }
+          if (yDistance < sY) {
+            sY = yDistance;
+          }
+          if (yDistance > bY) {
+            bY = yDistance;
+          }
+        } else {
+          log('[0,0]');
+          return [0, 0];
         }
-        if (xDistance > bX) {
-          bX = xDistance;
-        }
-        if (yDistance < sY) {
-          sY = yDistance;
-        }
-        if (yDistance > bY) {
-          bY = yDistance;
-        }
-      } else {
-        log('[0,0]');
-        return [0, 0];
       }
     }
 
