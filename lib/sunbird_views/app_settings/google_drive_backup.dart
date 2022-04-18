@@ -7,7 +7,6 @@ import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_pro
 import 'package:flutter_google_ml_kit/isar_database/barcode_size_distance_entry/barcode_size_distance_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_photo/container_photo.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_photo_thumbnail/container_photo_thumbnail.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
@@ -246,7 +245,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
 
         //Ensure files exists
         await createJsonFile(backupPath, fileName);
-        var backupFileContent;
+        String? backupFileContent;
 
         //TODO: finish this up will take a while :D;
 
@@ -402,15 +401,12 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
   }
 
   Future createJsonFile(String backupPath, String filename) async {
-    if (await File('$backupPath/sunbird/backup/').exists()) {
-      if (!await File('$backupPath/sunbird/backup/$filename').exists()) {
-        await File('$backupPath/sunbird/backup/$filename').create();
-        log('created: ' + filename);
-      } else {
-        log('exists: ' + filename);
-      }
+    if (!await File('$backupPath/sunbird/backup/$filename').exists()) {
+      await File('$backupPath/sunbird/backup/$filename')
+          .create(recursive: true);
+      log('created: ' + filename);
     } else {
-      await File('$backupPath/sunbird/backup/').create();
+      log('exists: ' + filename);
     }
   }
 
@@ -435,7 +431,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
       final files = found.files;
 
       if (files == null) {
-        print("Sign-in first Error");
+        log("Sign-in first Error");
         return null;
       }
 
@@ -477,6 +473,7 @@ class GoogleAuthClient extends http.BaseClient {
 
   GoogleAuthClient(this._headers);
 
+  @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
     return _client.send(request..headers.addAll(_headers));
   }

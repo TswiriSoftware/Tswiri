@@ -83,6 +83,7 @@ class _SingleBarcodeScannerCameraViewState
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         FloatingActionButton(
+          backgroundColor: widget.color,
           heroTag: 'flash',
           child: Icon(
             Platform.isIOS
