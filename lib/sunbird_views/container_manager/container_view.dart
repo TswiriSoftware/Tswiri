@@ -287,7 +287,7 @@ class _ContainerViewState extends State<ContainerView> {
           labelStyle: const TextStyle(fontSize: 15, color: Colors.white),
           suffixIcon: IconButton(
             onPressed: () {
-              saveDescription(nameController.text);
+              saveDescription(descriptionController.text);
             },
             icon: const Icon(Icons.save),
           ),
@@ -327,6 +327,7 @@ class _ContainerViewState extends State<ContainerView> {
       _containerEntry.description = value;
     } else {
       descriptionController.text = _containerEntry.description ?? '';
+      _containerEntry.description = value;
     }
     isarDatabase!
         .writeTxnSync((isar) => isar.containerEntrys.putSync(_containerEntry));

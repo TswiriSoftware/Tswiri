@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/camera_calibration_view.dart';
 import '../../widgets/card_widgets/custom_card_widget.dart';
 
@@ -48,14 +49,14 @@ class _CameraCalibrationToolsViewState
               CameraCalibrationView(),
               Icons.camera,
               featureCompleted: true,
-              tileColor: Colors.deepOrange,
+              tileColor: sunbirdOrange,
             ),
             CustomCard(
               'Processed Data Visualizer',
               CalibrationDataVisualizerView(),
               Icons.calculate,
               featureCompleted: true,
-              tileColor: Colors.deepOrange,
+              tileColor: sunbirdOrange,
             ),
           ],
         ),

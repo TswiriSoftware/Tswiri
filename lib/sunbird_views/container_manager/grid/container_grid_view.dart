@@ -5,17 +5,9 @@ import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
-
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/container_new_markers.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/grid_visualizer_painter.dart';
-
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:isar/isar.dart';
-
 import '../../../isar_database/container_relationship/container_relationship.dart';
 
 class ContainerGridView extends StatefulWidget {
@@ -113,7 +105,7 @@ class _ContainerGridViewState extends State<ContainerGridView> {
         child: CustomPaint(
           size: Size.infinite,
           painter: GridVisualizerPainter(
-              parentContainerUID: containerEntry.containerUID,
+              containerUID: containerEntry.containerUID,
               markersToDraw: markersToScan,
               barcodesToDraw: barcodesToScan),
         ),
@@ -310,9 +302,7 @@ class _ContainerGridViewState extends State<ContainerGridView> {
           ),
         ) ??
         [];
-    if (newMarkers.isNotEmpty &&
-            newMarkers.first != containerEntry.barcodeUID ||
-        newMarkers.length >= 2) {
+    if (newMarkers.isNotEmpty) {
       List<String>? newSelectedMarkers = await Navigator.push(
             context,
             MaterialPageRoute(

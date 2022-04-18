@@ -166,6 +166,9 @@ class _ContainersViewState extends State<ContainersView> {
 
                   ///TAGS///
                   userTags(containerEntry, containerColor),
+
+                  ///INFO///
+                  _info()
                 ],
               ),
             ),
@@ -257,6 +260,18 @@ class _ContainersViewState extends State<ContainersView> {
           return Row();
         }
       },
+    );
+  }
+
+  Widget _info() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'tap to edit',
+          style: Theme.of(context).textTheme.bodySmall,
+        )
+      ],
     );
   }
 
