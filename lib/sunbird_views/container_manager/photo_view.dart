@@ -221,45 +221,7 @@ class _PhotoViewState extends State<PhotoView> {
         setState(() {});
       },
       onSubmitted: (value) {
-        if (tagsController.text.isEmpty) {
-          _tagsNode.unfocus();
-        } else {
-          //Should this be text only ?
-          MlTag? mltag = isarDatabase!.mlTags
-              .filter()
-              .tagMatches(tagsController.text.toLowerCase().trim(),
-                  caseSensitive: false)
-              .and()
-              .tagTypeEqualTo(mlTagType.text)
-              .findFirstSync();
-
-          if (mltag != null) {
-            isarDatabase!
-                .writeTxnSync((isar) => isar.photoTags.putSync(PhotoTag()
-                  ..photoPath = _containerPhoto.photoPath
-                  ..tagUID = mltag.id
-                  ..confidence = 1.0
-                  ..boundingBox = null));
-          } else {
-            MlTag newMlTag = MlTag()
-              ..tag = tagsController.text.toLowerCase().trim()
-              ..tagType = mlTagType.text;
-
-            isarDatabase!.writeTxnSync((isar) => isar.mlTags.putSync(newMlTag));
-
-            isarDatabase!
-                .writeTxnSync((isar) => isar.photoTags.putSync(PhotoTag()
-                  ..photoPath = _containerPhoto.photoPath
-                  ..tagUID = newMlTag.id
-                  ..confidence = 1.0
-                  ..boundingBox = null));
-          }
-
-          tagsController.clear();
-          _tagsNode.requestFocus();
-          updateTags();
-          setState(() {});
-        }
+        addTag();
       },
       style: const TextStyle(fontSize: 18),
       textCapitalization: TextCapitalization.words,
@@ -271,8 +233,7 @@ class _PhotoViewState extends State<PhotoView> {
         labelStyle: const TextStyle(fontSize: 15, color: Colors.white),
         suffixIcon: IconButton(
           onPressed: () {
-            tagsController.clear();
-            _tagsNode.requestFocus();
+            addTag();
           },
           icon: const Icon(Icons.add),
         ),
@@ -395,6 +356,46 @@ class _PhotoViewState extends State<PhotoView> {
 
     assignedTagIDs = [];
     assignedTagIDs.addAll(photoTags.map((e) => e.tagUID));
+  }
+
+  void addTag() {
+    if (tagsController.text.isEmpty) {
+      _tagsNode.unfocus();
+    } else {
+      //Should this be text only ?
+      MlTag? mltag = isarDatabase!.mlTags
+          .filter()
+          .tagMatches(tagsController.text.toLowerCase().trim(),
+              caseSensitive: false)
+          .and()
+          .tagTypeEqualTo(mlTagType.text)
+          .findFirstSync();
+
+      if (mltag != null) {
+        isarDatabase!.writeTxnSync((isar) => isar.photoTags.putSync(PhotoTag()
+          ..photoPath = _containerPhoto.photoPath
+          ..tagUID = mltag.id
+          ..confidence = 1.0
+          ..boundingBox = null));
+      } else {
+        MlTag newMlTag = MlTag()
+          ..tag = tagsController.text.toLowerCase().trim()
+          ..tagType = mlTagType.text;
+
+        isarDatabase!.writeTxnSync((isar) => isar.mlTags.putSync(newMlTag));
+
+        isarDatabase!.writeTxnSync((isar) => isar.photoTags.putSync(PhotoTag()
+          ..photoPath = _containerPhoto.photoPath
+          ..tagUID = newMlTag.id
+          ..confidence = 1.0
+          ..boundingBox = null));
+      }
+
+      tagsController.clear();
+      _tagsNode.requestFocus();
+      updateTags();
+      setState(() {});
+    }
   }
 
   void addListeners() {

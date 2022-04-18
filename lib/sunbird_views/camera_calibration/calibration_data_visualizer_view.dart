@@ -32,7 +32,10 @@ class _CalibrationDataVisualizerViewState
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Calibration Data Visualizer'),
+          title: Text(
+            'Calibration Data Visualizer',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           centerTitle: true,
           elevation: 0,
         ),

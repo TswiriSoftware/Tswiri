@@ -64,8 +64,9 @@ class _BarcodePositionScannerCameraViewState
       appBar: AppBar(
         title: Text(
           widget.title,
-          style: Theme.of(context).textTheme.titleLarge,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
+        centerTitle: true,
         backgroundColor: widget.color,
         actions: [
           IconButton(

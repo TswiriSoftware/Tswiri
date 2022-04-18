@@ -14,6 +14,8 @@ import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/navigator_view.dart';
 import 'package:isar/isar.dart';
 
+List<String> filters = ['Tags', 'AI Tags', 'Photos'];
+
 class SearchView extends StatefulWidget {
   const SearchView({Key? key}) : super(key: key);
 
@@ -37,7 +39,6 @@ class _SearchViewState extends State<SearchView> {
     'Description': 'Search by container Description',
   };
 
-  List<String> filters = ['Tags', 'AI Tags', 'Photos'];
   List<SearchObject> searchResults = [];
 
   @override
