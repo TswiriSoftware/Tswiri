@@ -65,11 +65,7 @@ class _CameraViewCameraCalibrationState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.title,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        centerTitle: true,
+        title: Text(widget.title),
       ),
       body: _body(),
     );
