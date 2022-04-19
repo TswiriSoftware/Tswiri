@@ -47,7 +47,6 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
     descriptionController.text = containerType.containerDescription;
 
     pickerColor = containerColor;
-    currentColor = containerColor;
 
     //Other types
     containerTypes = isarDatabase!.containerTypes.where().findAllSync();
@@ -86,14 +85,13 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
           child: Column(
             children: [
               //Info
-              //_infoTile(),
-              _info(),
+              _infoTile(),
               //CanContain.
-              _canContain(),
+              _canContainTile(),
               //Options.
-              _options(),
+              _optionsTile(),
               //Color.
-              _color(),
+              _colorTile(),
               //Bottom Space
               _bottomSpace(),
             ],
@@ -104,24 +102,15 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
   }
 
   ///INFO///
-  Widget _info() {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-      color: Colors.white12,
-      elevation: 5,
-      shadowColor: Colors.black26,
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-            color:
-                Color(int.parse(containerType.containerColor)).withOpacity(0.8),
-            width: 1.5),
-        borderRadius: BorderRadius.circular(10),
-      ),
+  Widget _infoTile() {
+    return LightContainer(
+      margin: 2.5,
+      backgroundColor: Colors.transparent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
             child: Text(
               'Type Info',
               style: Theme.of(context).textTheme.labelMedium,
@@ -137,7 +126,7 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
 
   Widget _nameTextField() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
       child: TextField(
         controller: nameController,
         onChanged: (value) {
@@ -166,7 +155,7 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
 
   Widget _descriptionTextField() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
       child: TextField(
         controller: descriptionController,
         onChanged: (value) {
@@ -197,27 +186,25 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
 
   ///CAN CONTAIN///
 
-  Widget _canContain() {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-      color: Colors.white12,
-      elevation: 5,
-      shadowColor: Colors.black26,
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-            color:
-                Color(int.parse(containerType.containerColor)).withOpacity(0.8),
-            width: 1.5),
-        borderRadius: BorderRadius.circular(10),
-      ),
+  Widget _canContainTile() {
+    return LightContainer(
+      margin: 2.5,
+      padding: 5,
+      backgroundColor: Colors.transparent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            child: Text(
-              'Can Contain',
-              style: Theme.of(context).textTheme.labelMedium,
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Can Contain',
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+                _canContainButtonBuilder(),
+              ],
             ),
           ),
           _dividerHeavy(),
@@ -228,27 +215,78 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
   }
 
   Widget _canContainListBuilder() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Column(
-        children: containerTypes.map((e) => canContainCard(e)).toList(),
-      ),
-    );
+    return Builder(builder: (context) {
+      if (showCanContain) {
+        return Column(
+          children:
+              containerTypes.map((e) => canContainCheckBoxTile(e)).toList(),
+        );
+      } else {
+        return LightContainer(
+          margin: 2.5,
+          padding: 5,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                'Number of containers: ' + canContainTypes.length.toString(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ],
+          ),
+        );
+      }
+    });
   }
 
-  Widget canContainCard(ContainerType canContainType) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-      color: Colors.white12,
-      elevation: 5,
-      shadowColor: Colors.black26,
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-            color: Color(int.parse(canContainType.containerColor)), width: 1.5),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+  Widget _canContainButtonBuilder() {
+    return Builder(builder: (context) {
+      return InkWell(
+        onTap: () {
+          showCanContain = !showCanContain;
+          setState(() {});
+        },
+        child: CustomOutlineContainer(
+          height: 30,
+          width: 80,
+          child: Builder(builder: (context) {
+            if (showCanContain) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'hide',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const Icon(Icons.arrow_drop_up)
+                ],
+              );
+            } else {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'show',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const Icon(Icons.arrow_drop_down)
+                ],
+              );
+            }
+          }),
+          outlineColor: containerColor,
+        ),
+      );
+    });
+  }
+
+  Widget canContainCheckBoxTile(ContainerType canContainType) {
+    return LightContainer(
+      margin: 2.5,
+      padding: 0,
+      child: CustomOutlineContainer(
+        margin: 2.5,
+        padding: 5,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -271,190 +309,142 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
             ),
           ],
         ),
+        outlineColor:
+            Color(int.parse(canContainType.containerColor)).withOpacity(1),
       ),
     );
   }
 
   ///OPTIONS///
-  Widget _options() {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-      color: Colors.white12,
-      elevation: 5,
-      shadowColor: Colors.black26,
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-            color:
-                Color(int.parse(containerType.containerColor)).withOpacity(0.8),
-            width: 1.5),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              child: Text(
-                'Options',
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
+
+  Widget _optionsTile() {
+    return LightContainer(
+      margin: 2.5,
+      backgroundColor: Colors.transparent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+            child: Text(
+              'Options',
+              style: Theme.of(context).textTheme.labelMedium,
             ),
-            _dividerHeavy(),
-            _moveable(),
-            _isMarker(),
-          ],
-        ),
+          ),
+          _dividerHeavy(),
+          _moveableOption(),
+          _isMarkerToChildrenOption(),
+        ],
       ),
     );
   }
 
-  Widget _moveable() {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-      color: Colors.white12,
-      elevation: 5,
-      shadowColor: Colors.black26,
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-            color:
-                Color(int.parse(containerType.containerColor)).withOpacity(0.8),
-            width: 1.5),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Movable',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            Checkbox(
-              value: moveable,
-              fillColor: MaterialStateProperty.all(containerColor),
-              onChanged: (value) {
-                moveable = value!;
+  Widget _moveableOption() {
+    return LightContainer(
+      margin: 2.5,
+      padding: 5,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Movable',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          Checkbox(
+            value: moveable,
+            fillColor: MaterialStateProperty.all(containerColor),
+            onChanged: (value) {
+              moveable = value!;
 
-                setState(() {});
-              },
-            ),
-          ],
-        ),
+              setState(() {});
+            },
+          ),
+        ],
       ),
     );
   }
 
-  Widget _isMarker() {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-      color: Colors.white12,
-      elevation: 5,
-      shadowColor: Colors.black26,
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-            color:
-                Color(int.parse(containerType.containerColor)).withOpacity(0.8),
-            width: 1.5),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Marker to Children',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            Checkbox(
-              value: markerToChildren,
-              fillColor: MaterialStateProperty.all(containerColor),
-              onChanged: (value) {
-                markerToChildren = value!;
+  Widget _isMarkerToChildrenOption() {
+    return LightContainer(
+      margin: 2.5,
+      padding: 5,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Marker to Children',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          Checkbox(
+            value: markerToChildren,
+            fillColor: MaterialStateProperty.all(containerColor),
+            onChanged: (value) {
+              markerToChildren = value!;
 
-                setState(() {});
-              },
-            ),
-          ],
-        ),
+              setState(() {});
+            },
+          ),
+        ],
       ),
     );
   }
 
   ///COLOR///
 
-  Widget _color() {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-      color: Colors.white12,
-      elevation: 5,
-      shadowColor: Colors.black26,
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-            color:
-                Color(int.parse(containerType.containerColor)).withOpacity(0.8),
-            width: 1.5),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-              child: Text(
-                'Color',
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
+  Widget _colorTile() {
+    return LightContainer(
+      margin: 2.5,
+      backgroundColor: Colors.transparent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+            child: Text(
+              'Color',
+              style: Theme.of(context).textTheme.labelMedium,
             ),
-            _dividerHeavy(),
-            _changeColorButton(),
-          ],
-        ),
+          ),
+          _dividerHeavy(),
+          _changeColorButton(),
+        ],
       ),
     );
   }
 
   Widget _changeColorButton() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: InkWell(
-        onTap: () async {
-          Color? newColor = await showColorDialog();
-          if (newColor != null) {
-            containerColor = newColor;
-            log(containerColor.toString());
-            setState(() {});
-          }
-        },
-        child: CustomOutlineContainer(
-          height: 50,
-          outlineColor: containerColor,
-          backgroundColor: containerColor,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CustomOutlineContainer(
-                height: 35,
-                width: 80,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Change',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const Icon(Icons.color_lens)
-                  ],
-                ),
-                outlineColor: containerColor,
+    return InkWell(
+      onTap: () async {
+        Color? newColor = await showColorDialog();
+        if (newColor != null) {
+          containerColor = newColor;
+          log(containerColor.toString());
+          setState(() {});
+        }
+      },
+      child: CustomOutlineContainer(
+        height: 50,
+        outlineColor: containerColor,
+        backgroundColor: containerColor,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CustomOutlineContainer(
+              height: 35,
+              width: 80,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Change',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const Icon(Icons.color_lens)
+                ],
               ),
-            ],
-          ),
+              outlineColor: containerColor,
+            ),
+          ],
         ),
       ),
     );
@@ -507,7 +497,6 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
     return Divider(
       color: containerColor,
       thickness: 1,
-      indent: 5,
       height: 10,
     );
   }

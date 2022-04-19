@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
@@ -88,18 +87,7 @@ class _ContainerGridViewState extends State<ContainerGridView> {
   }
 
   Widget _gridHeading() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text('Grid', style: Theme.of(context).textTheme.headlineSmall),
-        IconButton(
-          onPressed: () {
-            showAlertDialog(context);
-          },
-          icon: const Icon(Icons.info),
-        ),
-      ],
-    );
+    return Text('Grid', style: Theme.of(context).textTheme.headlineSmall);
   }
 
   Widget _viewer() {
@@ -144,11 +132,9 @@ class _ContainerGridViewState extends State<ContainerGridView> {
           context,
           MaterialPageRoute(
             builder: (context) => BarcodePositionScannerView(
-              barcodesToScan: barcodesToScan,
-              gridMarkers: markersToScan,
-              parentContainerUID: containerEntry.containerUID,
-              customColor: containerTypeColor,
-            ),
+                barcodesToScan: barcodesToScan,
+                gridMarkers: markersToScan,
+                parentContainerUID: containerEntry.containerUID),
           ),
         );
 
@@ -384,62 +370,6 @@ class _ContainerGridViewState extends State<ContainerGridView> {
       height: 8,
       thickness: 1,
       color: Colors.white,
-    );
-  }
-
-  showAlertDialog(BuildContext context) {
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            "Container Colors",
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              colorInfo('Current container:', barcodeFocusColor),
-              _divider(),
-              colorInfo('Marker :', barcodeMarkerColor),
-              _divider(),
-              colorInfo('Container:', barcodeDefaultColor),
-              _divider(),
-              colorInfo('Parent:', barcodeParentColor),
-              _divider(),
-              colorInfo('Child:', barcodeChildren),
-              _divider(),
-              colorInfo('Unkown:', barcodeUnkownColor),
-              _divider(),
-            ],
-          ),
-          actions: [
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('Ok'))
-          ],
-        );
-      },
-    );
-  }
-
-  Widget colorInfo(String name, Color color) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          name,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        Container(
-          width: 25,
-          height: 25,
-          color: color,
-        ),
-      ],
     );
   }
 }

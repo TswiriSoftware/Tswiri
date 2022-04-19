@@ -30,9 +30,9 @@ class _CameraCalibrationToolsViewState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Camera Calibration Tools',
-          style: Theme.of(context).textTheme.titleMedium,
+          style: TextStyle(fontSize: 25),
         ),
         centerTitle: true,
         elevation: 0,

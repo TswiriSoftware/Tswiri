@@ -327,7 +327,7 @@ class _ContainerViewState extends State<ContainerView> {
       _containerEntry.description = value;
     } else {
       descriptionController.text = _containerEntry.description ?? '';
-      _containerEntry.description = null;
+      _containerEntry.description = value;
     }
     isarDatabase!
         .writeTxnSync((isar) => isar.containerEntrys.putSync(_containerEntry));
