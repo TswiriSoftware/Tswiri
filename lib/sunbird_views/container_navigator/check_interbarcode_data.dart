@@ -145,55 +145,11 @@ class _CheckInterBarcodeDataState extends State<CheckInterBarcodeData> {
       if (matching != null) {
         bool hasMoved = check(realInterBarcodeOffset, matching);
         if (hasMoved) {
-          isarDatabase!.writeTxnSync((isar) => isar.realInterBarcodeVectorEntrys
-              .filter()
-              .startBarcodeUIDMatches(matching.startBarcodeUID)
-              .or()
-              .endBarcodeUIDMatches(matching.endBarcodeUID)
-              .or()
-              .startBarcodeUIDMatches(matching.endBarcodeUID)
-              .or()
-              .endBarcodeUIDMatches(matching.startBarcodeUID)
-              .deleteAllSync());
-
-          matching.x = realInterBarcodeOffset.x;
-          matching.y = realInterBarcodeOffset.y;
-          matching.z = realInterBarcodeOffset.z;
-          matching.timestamp = realInterBarcodeOffset.timestamp;
-
-          isarDatabase!.writeTxnSync((isar) => isar.realInterBarcodeVectorEntrys
-              .putSync(matching, replaceOnConflict: true));
+          log('Old:' + matching.toString());
+          log('New:' + realInterBarcodeOffset.toString());
           changedPositions.add(matching);
         }
       }
-      // else {
-      //   matching = isarDatabase!.realInterBarcodeVectorEntrys
-      //       .filter()
-      //       .group((q) => q
-      //           .startBarcodeUIDMatches(realInterBarcodeOffset.endBarcodeUID)
-      //           .and()
-      //           .endBarcodeUIDMatches(realInterBarcodeOffset.startBarcodeUID))
-      //       .findFirstSync();
-
-      //   if (matching != null) {
-      //     bool hasMoved = check(realInterBarcodeOffset, matching);
-      //     if (hasMoved) {
-      //       log('has Moved');
-      //       isarDatabase!.writeTxnSync((isar) =>
-      //           isar.realInterBarcodeVectorEntrys.deleteSync(matching!.id));
-
-      //       matching.x = -realInterBarcodeOffset.x;
-      //       matching.y = -realInterBarcodeOffset.y;
-      //       matching.z = realInterBarcodeOffset.z;
-      //       matching.timestamp = realInterBarcodeOffset.timestamp;
-
-      //       isarDatabase!.writeTxnSync((isar) => isar
-      //           .realInterBarcodeVectorEntrys
-      //           .putSync(matching!, replaceOnConflict: true));
-      //       changedPositions.add(matching);
-      //     }
-      //   }
-      // }
     }
 
     return changedPositions;
