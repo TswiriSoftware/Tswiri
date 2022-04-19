@@ -115,7 +115,7 @@ class _CheckInterBarcodeDataState extends State<CheckInterBarcodeData> {
             listOfRealInterBarcodeOffsets: allRealInterBarcodeOffsets);
 
     List<RealInterBarcodeVectorEntry> interbarcodeOffsetEntries = [];
-
+    int creation = DateTime.now().millisecondsSinceEpoch;
     for (RealInterBarcodeOffset interBarcodeOffset
         in finalRealInterBarcodeOffsets) {
       RealInterBarcodeVectorEntry vectorEntry = RealInterBarcodeVectorEntry()
@@ -124,7 +124,8 @@ class _CheckInterBarcodeDataState extends State<CheckInterBarcodeData> {
         ..x = interBarcodeOffset.offset.dx
         ..y = interBarcodeOffset.offset.dy
         ..z = interBarcodeOffset.zOffset
-        ..timestamp = interBarcodeOffset.timestamp;
+        ..timestamp = interBarcodeOffset.timestamp
+        ..creationTimestamp = creation;
       interbarcodeOffsetEntries.add(vectorEntry);
     }
 

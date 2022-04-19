@@ -164,6 +164,9 @@ class _ContainersViewState extends State<ContainersView> {
                   ///DESCRIPTION///
                   description(containerEntry),
 
+                  ///BARCODE///
+                  barcode(containerEntry, containerColor),
+
                   ///TAGS///
                   userTags(containerEntry, containerColor),
 
@@ -260,6 +263,27 @@ class _ContainersViewState extends State<ContainersView> {
           return Row();
         }
       },
+    );
+  }
+
+  Widget barcode(ContainerEntry containerEntry, Color containerColor) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ///NAME///
+        Text(
+          'BarcodeUID',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        Text(
+          containerEntry.barcodeUID!,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        const Divider(
+          height: 5,
+          indent: 2,
+        ),
+      ],
     );
   }
 
@@ -385,6 +409,7 @@ class _ContainersViewState extends State<ContainersView> {
         IconButton(
           onPressed: () {
             showCheckBoxes = false;
+            selectedContainers = [];
             setState(() {});
           },
           icon: const Icon(Icons.close),

@@ -254,7 +254,7 @@ class _BarcodePositionScannerProcessingViewState
     //Write to Isar.
     List<RealInterBarcodeVectorEntry> interbarcodeOffsetEntries = [];
     List<String> scannedBarcodes = [];
-
+    int creation = DateTime.now().millisecondsSinceEpoch;
     for (RealInterBarcodeOffset interBarcodeOffset
         in finalRealInterBarcodeOffsets) {
       RealInterBarcodeVectorEntry vectorEntry = RealInterBarcodeVectorEntry()
@@ -263,7 +263,8 @@ class _BarcodePositionScannerProcessingViewState
         ..x = interBarcodeOffset.offset.dx
         ..y = interBarcodeOffset.offset.dy
         ..z = interBarcodeOffset.zOffset
-        ..timestamp = interBarcodeOffset.timestamp;
+        ..timestamp = interBarcodeOffset.timestamp
+        ..creationTimestamp = creation;
 
       scannedBarcodes.add(interBarcodeOffset.uidStart);
       scannedBarcodes.add(interBarcodeOffset.uidEnd);

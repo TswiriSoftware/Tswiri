@@ -13,6 +13,9 @@ class RealInterBarcodeVectorEntry {
   //Timestamp.
   late int timestamp;
 
+  //Creation Timestamp
+  late int creationTimestamp;
+
   //X vector.
   late double x; //Make nullale ?
   //Y vector.
@@ -33,6 +36,7 @@ class RealInterBarcodeVectorEntry {
         'y': y,
         'z': z,
         'timestamp': timestamp,
+        'creationTimestamp': creationTimestamp,
       };
 
   RealInterBarcodeVectorEntry fromJson(Map<String, dynamic> json) {
@@ -43,6 +47,7 @@ class RealInterBarcodeVectorEntry {
       ..x = json['z'] as double
       ..y = json['y'] as double
       ..z = json['z'] as double
-      ..timestamp = json['timestamp'] as int;
+      ..timestamp = json['timestamp'] as int
+      ..creationTimestamp = json['creationTimestamp'] as int;
   }
 }
