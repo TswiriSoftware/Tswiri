@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:developer';
+import 'dart:isolate';
 
 import 'package:flutter_google_ml_kit/objects/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
@@ -9,6 +11,8 @@ import 'package:vector_math/vector_math.dart' as vm;
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'package:flutter_isolate/flutter_isolate.dart';
+
 
 class BarcodePositionScannerView extends StatefulWidget {
   const BarcodePositionScannerView({
@@ -44,6 +48,9 @@ class _BarcodePositionScannerViewState
   vm.Vector3 accelerometerEvent = vm.Vector3(0, 0, 0);
   vm.Vector3 userAccelerometerEvent = vm.Vector3(0, 0, 0);
 
+  ReceivePort mainPort = ReceivePort();
+  SendPort? isolatePort;
+
   @override
   void initState() {
     //Listen to accelerometer events.
@@ -59,12 +66,25 @@ class _BarcodePositionScannerViewState
 
     log('barcodesToScan: ' + barcodesToScan.toString());
     log('gridMarkers: ' + gridMarkers.toString());
+
+    mainPort.listen((msg) {
+    if (msg is SendPort) {
+    isolatePort = msg;
+    }
+    print("Received message from isolate $msg");
+    isolatePort!.send("Major Tom to ground control");
+    });
+
+    FlutterIsolate.spawn(imageProcessorIsolate, mainPort.sendPort);
+
+    //FlutterIsolate isolate = FlutterIsolate.spawn(imageProcessorIsolate, port.sendPort);
     super.initState();
   }
 
   @override
   void dispose() {
     barcodeScanner.close();
+    FlutterIsolate.killAll();
     super.dispose();
   }
 
@@ -94,7 +114,7 @@ class _BarcodePositionScannerViewState
           color: widget.customColor ?? Colors.deepOrange,
           title: 'Position Scanner',
           customPaint: customPaint,
-          onImage: (inputImage) {
+          onImage: (inputImage) async {
             processImage(inputImage);
           },
         ));
@@ -104,12 +124,16 @@ class _BarcodePositionScannerViewState
     if (isBusy) return;
     isBusy = true;
 
-    final List<Barcode> barcodes =
-        await barcodeScanner.processImage(inputImage);
+    isolatePort!.send(inputImage);
 
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
       //Dont bother if we haven't detected more than one barcode on a image.
+
+      
+
+      final List<Barcode> barcodes =
+      await barcodeScanner.processImage(inputImage);
 
       if (barcodes.length >= 2) {
         ///Captures a list of barcodes and accelerometerData for a a single image frame.
@@ -147,4 +171,23 @@ class _BarcodePositionScannerViewState
         accelerometerEvent: accelerometerEvent,
         userAccelerometerEvent: userAccelerometerEvent);
   }
+}
+
+void imageProcessorIsolate(SendPort sendPort) {
+  ReceivePort receivePort = ReceivePort();
+  sendPort.send(receivePort.sendPort);
+    receivePort.listen((message) {
+
+    if (message is InputImage) {
+         print("input image received:");
+         print("size:" + message.inputImageData!.size.height.toString());
+    }
+    else {
+        print(message);
+    }
+    
+  });
+    Timer.periodic(
+      Duration(seconds: 1), (timer) => sendPort.send("hello" + DateTime.now().toString()));
+    
 }
