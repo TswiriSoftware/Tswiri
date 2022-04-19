@@ -98,7 +98,7 @@ List<RealBarcodePosition> calculateRealBarcodePositions(
         uidEnd: data.endBarcodeUID,
         offset: Offset(data.x, data.y),
         zOffset: data.z,
-        timestamp: data.timestamp,
+        timestamp: 0,
       ),
     );
     //Add unique barcodes to barcodes.

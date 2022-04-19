@@ -19,15 +19,15 @@ class ContainerPhoto {
   Map toJson() => {
         'id': id,
         'containerUID': containerUID,
-        'photoPath': photoPath.split('/').last,
-        'photoThumbnailPath': photoThumbnailPath.split('/').last,
+        'photoPath': photoPath,
+        'photoThumbnailPath': photoThumbnailPath,
       };
 
-  ContainerPhoto fromJson(Map<String, dynamic> json, String storagepath) {
+  ContainerPhoto fromJson(Map<String, dynamic> json) {
     return ContainerPhoto()
       ..id = json['id']
       ..containerUID = json['containerUID']
-      ..photoPath = storagepath + json['photoPath']
-      ..photoThumbnailPath = storagepath + json['photoThumbnailPath'];
+      ..photoPath = json['photoPath']
+      ..photoThumbnailPath = json['photoThumbnailPath'];
   }
 }

@@ -84,6 +84,6 @@ class RawOnImageInterBarcodeData {
 
   @override
   String toString() {
-    return '\n${startBarcode.displayValue} => ${endBarcode.displayValue}, $timestamp';
+    return '${startBarcode.displayValue}_${endBarcode.displayValue}, $timestamp';
   }
 }
