@@ -5,10 +5,6 @@ import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dar
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_camera_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_painter.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/single_barcode_scanner/single_barcode_scanner_painter.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/dark_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
 
