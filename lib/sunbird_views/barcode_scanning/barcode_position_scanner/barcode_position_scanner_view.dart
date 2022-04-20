@@ -82,7 +82,7 @@ class _BarcodePositionScannerViewState
     //FlutterIsolate isolate = FlutterIsolate.spawn(imageProcessorIsolate, port.sendPort);
     super.initState();
   }
-
+//
   @override
   void dispose() {
     barcodeScanner.close();
@@ -121,26 +121,7 @@ class _BarcodePositionScannerViewState
           },
         ));
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //changes
-
+//
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;
     isBusy = true;
@@ -168,7 +149,39 @@ class _BarcodePositionScannerViewState
           ),
         );
       }
+      //some material ui changes
 
+
+
+
+
+
+
+//
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+
+
+
+
+
+
+
+
+
+//
       //Paint different colors around barcodes depending on their type, Normal, Marker, non-relevant.
       final painter = BarcodePositionPainter(
         barcodes: barcodes,

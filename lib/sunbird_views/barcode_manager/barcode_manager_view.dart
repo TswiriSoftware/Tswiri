@@ -1,21 +1,14 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcode_manager/objects/barcode_manager_object.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/new_container_view.dart';
 
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/dark_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
 import 'package:isar/isar.dart';
-
-import '../../functions/keyboard_functions/hide_keyboard.dart';
 
 class BarcodeManagerView extends StatefulWidget {
   const BarcodeManagerView({Key? key}) : super(key: key);

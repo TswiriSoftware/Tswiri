@@ -65,6 +65,9 @@ class _NavigatorViewState extends State<NavigatorView> {
       containingGrid =
           calculateRealBarcodePositions(parentUID: parentContainer);
       log(containingGrid.toString());
+    } else {
+      containingGrid = calculateRealBarcodePositions(
+          parentUID: widget.containerEntry.containerUID);
     }
 
     super.initState();
@@ -82,13 +85,15 @@ class _NavigatorViewState extends State<NavigatorView> {
         onPressed: () async {
           barcodeScanner.close();
 
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CheckInterBarcodeData(
-                  allRawOnImageBarcodeData: allRawOnImageBarcodeData),
-            ),
-          );
+          // await Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => CheckInterBarcodeData(
+          //       allRawOnImageBarcodeData: allRawOnImageBarcodeData,
+          //       containerEntry: widget.containerEntry,
+          //     ),
+          //   ),
+          // );
 
           Navigator.pop(context);
 
