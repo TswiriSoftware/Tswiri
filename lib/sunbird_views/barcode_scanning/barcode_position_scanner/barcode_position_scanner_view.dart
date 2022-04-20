@@ -77,6 +77,8 @@ class _BarcodePositionScannerViewState
 
     FlutterIsolate.spawn(imageProcessorIsolate, mainPort.sendPort);
 
+    //extra note
+
     //FlutterIsolate isolate = FlutterIsolate.spawn(imageProcessorIsolate, port.sendPort);
     super.initState();
   }
