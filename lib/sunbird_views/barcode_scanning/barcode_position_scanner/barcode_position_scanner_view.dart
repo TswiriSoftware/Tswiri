@@ -122,6 +122,25 @@ class _BarcodePositionScannerViewState
         ));
   }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //changes
+
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;
     isBusy = true;
