@@ -48,8 +48,8 @@ class _BarcodePositionScannerViewState
   vm.Vector3 accelerometerEvent = vm.Vector3(0, 0, 0);
   vm.Vector3 userAccelerometerEvent = vm.Vector3(0, 0, 0);
 
-  ReceivePort mainPort = ReceivePort();
-  SendPort? isolatePort;
+  ReceivePort mainPort = ReceivePort(); // send stuff to ui thread
+  SendPort? isolatePort; //send stuff to isolate 
 
   @override
   void initState() {
@@ -67,12 +67,12 @@ class _BarcodePositionScannerViewState
     log('barcodesToScan: ' + barcodesToScan.toString());
     log('gridMarkers: ' + gridMarkers.toString());
 
-    mainPort.listen((msg) {
+    mainPort.listen((msg) { //is listining on any massages that come to the main ui 
     if (msg is SendPort) {
     isolatePort = msg;
     }
     print("Received message from isolate $msg");
-    isolatePort!.send("Major Tom to ground control");
+    
     });
 
     FlutterIsolate.spawn(imageProcessorIsolate, mainPort.sendPort);
@@ -135,6 +135,8 @@ class _BarcodePositionScannerViewState
       final List<Barcode> barcodes =
       await barcodeScanner.processImage(inputImage);
 
+      //TODO: create asset/on device image with scannable barcode , get it working here. 
+
       if (barcodes.length >= 2) {
         ///Captures a list of barcodes and accelerometerData for a a single image frame.
         allRawOnImageBarcodeData.add(
@@ -176,8 +178,10 @@ class _BarcodePositionScannerViewState
 void imageProcessorIsolate(SendPort sendPort) {
   ReceivePort receivePort = ReceivePort();
   sendPort.send(receivePort.sendPort);
-    receivePort.listen((message) {
 
+   //TODO: create asset image , test ml kit here.
+
+    receivePort.listen((message) { //is listening for all messages coming to isolate 
     if (message is InputImage) {
          print("input image received:");
          print("size:" + message.inputImageData!.size.height.toString());
