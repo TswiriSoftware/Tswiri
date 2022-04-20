@@ -25,7 +25,7 @@ class RealInterBarcodeVectorEntry {
 
   @override
   String toString() {
-    return '\nstartBarcodeUID: $startBarcodeUID,\nendBarcodeUID: $endBarcodeUID,\nX: $x, Y: $y, Z: $z, time: $timestamp, creation: $creationTimestamp';
+    return '\nstartBarcodeUID: $startBarcodeUID, endBarcodeUID: $endBarcodeUID,X: $x, Y: $y, Z: $z, time: $timestamp, creation: $creationTimestamp';
   }
 
   Map toJson() => {

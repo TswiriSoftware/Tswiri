@@ -47,7 +47,8 @@ class _BarcodePositionScannerProcessingViewState
   void initState() {
     relevantBarcodes.addAll(widget.barcodesToScan);
     relevantBarcodes.addAll(widget.gridMarkers);
-
+    _future =
+        processData(allRawOnImageBarcodeData: widget.allRawOnImageBarcodeData);
     super.initState();
   }
 
@@ -79,8 +80,9 @@ class _BarcodePositionScannerProcessingViewState
       ),
       body: Center(
         child: FutureBuilder<List<RealInterBarcodeOffset>>(
-          future: processData(
-              allRawOnImageBarcodeData: widget.allRawOnImageBarcodeData),
+          future: _future,
+          // processData(
+          //     allRawOnImageBarcodeData: widget.allRawOnImageBarcodeData),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               //Return the listView.

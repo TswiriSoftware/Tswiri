@@ -4,16 +4,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/firebase_options.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/global_values/routes.dart';
-
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_generator/barcode_generator_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_manager/barcode_manager_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/camera_calibration_tools_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/containers_view.dart';
-
 import 'package:flutter_google_ml_kit/sunbird_views/container_search/search_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_types/container_types_view.dart';
-
 import 'package:flutter_google_ml_kit/sunbird_views/tag_manager/tag_manager_view.dart';
 import 'package:flutter_google_ml_kit/widgets/card_widgets/custom_card_widget.dart';
 import 'package:path_provider/path_provider.dart';
