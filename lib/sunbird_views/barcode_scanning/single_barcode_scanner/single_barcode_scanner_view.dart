@@ -6,7 +6,9 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 
 ///Will return a String? BarcodeUID
 class SingleBarcodeScannerView extends StatefulWidget {
-  const SingleBarcodeScannerView({Key? key}) : super(key: key);
+  const SingleBarcodeScannerView({Key? key, this.color}) : super(key: key);
+
+  final Color? color;
 
   @override
   _SingleBarcodeScannerViewState createState() =>
@@ -42,6 +44,7 @@ class _SingleBarcodeScannerViewState extends State<SingleBarcodeScannerView> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             FloatingActionButton(
+              backgroundColor: widget.color,
               heroTag: null,
               onPressed: () {
                 Navigator.pop(context, barcodeID);
@@ -51,7 +54,7 @@ class _SingleBarcodeScannerViewState extends State<SingleBarcodeScannerView> {
           ],
         ),
         body: SingleBarcodeScannerCameraView(
-          color: brightOrange,
+          color: widget.color ?? sunbirdOrange,
           title: 'Barcode Scanner',
           customPaint: customPaint,
           onImage: (inputImage) {

@@ -73,7 +73,10 @@ List<RealBarcodePosition> calculateRealBarcodePositions(
       .containerUIDMatches(parentUID)
       .findFirstSync()!;
 
-  if (parentContainer.barcodeUID != null) {
+  if (parentContainer.barcodeUID != null &&
+      markers
+          .where((element) => element.barcodeUID == parentContainer.barcodeUID)
+          .isNotEmpty) {
     origin = markers
         .where((element) => element.barcodeUID == parentContainer.barcodeUID)
         .first;
@@ -95,7 +98,7 @@ List<RealBarcodePosition> calculateRealBarcodePositions(
         uidEnd: data.endBarcodeUID,
         offset: Offset(data.x, data.y),
         zOffset: data.z,
-        timestamp: 0,
+        timestamp: data.timestamp,
       ),
     );
     //Add unique barcodes to barcodes.

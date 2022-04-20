@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.dart';
+import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
@@ -21,340 +24,277 @@ class BarcodeManagerView extends StatefulWidget {
   State<BarcodeManagerView> createState() => _BarcodeManagerViewState();
 }
 
+List<String> barcodeFilters = ['Assigned', 'Unassigned'];
+
 class _BarcodeManagerViewState extends State<BarcodeManagerView> {
-  String? enteredKeyword = '';
-  bool showFilter = false;
-  bool showUnlinked = false;
+  List<BarcodeProperty> allBarcodes = [];
+
+  Map<String, String> barcodeFilterTypes = {
+    'Assigned': 'Assigned Barcodes',
+    'Unassigned': 'Unassigned Barcodes',
+  };
+
+  String enteredKeyword = '';
+
+  //Text Controller.
+  TextEditingController searchController = TextEditingController();
+
+  //Search FocusNode.
+  final FocusNode _focusNode = FocusNode();
+  bool isFocused = false;
+
+  @override
+  void initState() {
+    search(enteredKeyword);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Barcodes',
-          style: Theme.of(context).textTheme.titleMedium,
+      appBar: _appBar(),
+      body: GestureDetector(
+        onTap: () {
+          setState(() {
+            _focusNode.unfocus();
+          });
+        },
+        child: Stack(
+          alignment: AlignmentDirectional.topCenter,
+          children: [
+            _barcodes(),
+            _filters(),
+          ],
         ),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          ///Search Bar.
-          _searchBar(),
-          const SizedBox(height: 10),
-          _optionsText(),
-          const SizedBox(height: 5),
-          Builder(
-            builder: (context) {
-              List<BarcodeProperty> allBarcodes = isarDatabase!.barcodePropertys
-                  .filter()
-                  .barcodeUIDContains(enteredKeyword!)
-                  .findAllSync();
-
-              List<BarcodeManagerObject> barcodeManagerObejects = [];
-
-              for (BarcodeProperty barcodeProperty in allBarcodes) {
-                ContainerEntry? linkedContainerEntry = isarDatabase!
-                    .containerEntrys
-                    .filter()
-                    .barcodeUIDMatches(barcodeProperty.barcodeUID)
-                    .findFirstSync();
-
-                BarcodeManagerObject barcodeManagerObject =
-                    BarcodeManagerObject(
-                        barcodeProperty: barcodeProperty,
-                        containerEntry: linkedContainerEntry);
-
-                barcodeManagerObejects.add(barcodeManagerObject);
-              }
-
-              barcodeManagerObejects.sort(
-                ((a, b) {
-                  return int.parse(a.barcodeProperty.barcodeUID
-                          .toString()
-                          .split('_')
-                          .first)
-                      .compareTo(int.parse(b.barcodeProperty.barcodeUID
-                          .toString()
-                          .split('_')
-                          .first));
-                }),
-              );
-
-              if (showUnlinked == false) {
-                barcodeManagerObejects
-                    .removeWhere((element) => element.containerEntry == null);
-              } else {
-                barcodeManagerObejects
-                    .removeWhere((element) => element.containerEntry != null);
-              }
-
-              return Expanded(
-                child: ListView.builder(
-                  itemCount: barcodeManagerObejects.length,
-                  itemBuilder: ((context, index) {
-                    BarcodeManagerObject barcodeManagerObeject =
-                        barcodeManagerObejects[index];
-
-                    return barcodeTile(
-                        barcodeProperty: barcodeManagerObeject.barcodeProperty,
-                        linkedContainer: barcodeManagerObeject.containerEntry);
-                  }),
-                ),
-              );
-            },
-          ),
-        ],
       ),
     );
   }
 
-  Widget viewContainer(ContainerEntry containerEntry) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        InkWell(
-          onTap: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ContainerView(
-                  containerEntry: containerEntry,
-                ),
-              ),
-            );
-            setState(() {});
-          },
-          child: CustomOutlineContainer(
-            padding: 5,
-            child: Text(
-              'View container',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            outlineColor: Colors.deepOrange,
-          ),
-        ),
-      ],
+  ///APP BAR///
+
+  AppBar _appBar() {
+    return AppBar(
+      title: _textField(),
+      centerTitle: true,
+      elevation: 0,
     );
   }
 
-  Widget linkContainer(String barcodeUID) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        InkWell(
-          onTap: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => NewContainerView(
-                        barcodeUID: barcodeUID,
-                      )),
-            );
-            setState(() {});
-          },
-          child: CustomOutlineContainer(
-            padding: 5,
-            child: Text(
-              'Link to container',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            outlineColor: Colors.deepOrange,
-          ),
-        ),
-      ],
-    );
-  }
+  ///SEARCH///
 
-  Widget _searchBar() {
-    return CustomOutlineContainer(
-      outlineColor: Colors.deepOrange,
-      backgroundColor: Colors.black12,
-      borderWidth: 1,
-      margin: 0,
-      padding: 5,
-      child: Builder(
-        builder: ((context) {
-          if (showFilter) {
-            return searchFilter();
-          } else {
-            return searchInput();
-          }
-        }),
+  Widget _textField() {
+    return TextField(
+      focusNode: _focusNode,
+      controller: searchController,
+      onChanged: (value) {
+        search(value);
+        setState(() {});
+      },
+      cursorColor: Colors.white,
+      style: Theme.of(context).textTheme.labelLarge,
+      decoration: InputDecoration(
+        suffixIcon: isFocused ? null : _searchIcon(),
+        hintText: 'Search',
+        hintStyle: const TextStyle(fontSize: 18),
       ),
     );
   }
 
-  Widget searchFilter() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Expanded(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10),
-                    child: Text(
-                      'Filter: ',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      showFilter = !showFilter;
-                      setState(() {});
-                    },
-                    icon: const Icon(Icons.filter_alt_outlined),
-                  ),
-                ],
-              ),
-              LightContainer(
-                margin: 2.5,
-                padding: 0,
-                child: DarkContainer(
-                  margin: 2.5,
-                  padding: 5,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Show unlinked containers?',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                      Checkbox(
-                        value: showUnlinked,
-                        onChanged: (value) {
-                          showUnlinked = !showUnlinked;
-                          setState(() {});
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+  Widget _searchIcon() {
+    return const Icon(
+      Icons.search,
+      color: Colors.white,
     );
   }
 
-  Widget searchInput() {
-    return Row(
-      children: [
-        Expanded(
-          child: TextField(
-            style: const TextStyle(fontSize: 18),
-            onEditingComplete: (() => hideKeyboard(context)),
-            onChanged: (value) {
-              enteredKeyword = value;
-              setState(() {});
-            },
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
-              icon: Icon(Icons.search),
-              labelText: 'search',
-              labelStyle: TextStyle(fontSize: 18),
-            ),
-          ),
-        ),
-        IconButton(
-            onPressed: () {
-              showFilter = !showFilter;
-              setState(() {});
-            },
-            icon: const Icon(Icons.filter_alt_outlined))
-      ],
+  ///FILTER///
+
+  Widget _filters() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      scrollDirection: Axis.horizontal,
+      child: Wrap(
+        spacing: 5,
+        children: barcodeFilterTypes.entries
+            .map((e) => fliterChip(filter: e.key, tooltip: e.value))
+            .toList(),
+      ),
     );
   }
 
-  Widget barcodeTile(
-      {required BarcodeProperty barcodeProperty,
-      ContainerEntry? linkedContainer}) {
-    return LightContainer(
-      margin: 2.5,
-      padding: 0,
-      child: Builder(builder: (context) {
-        Color color = Colors.white54;
-        if (linkedContainer != null) {
-          color = getContainerColor(containerUID: linkedContainer.containerUID);
-          //color = Colors.deepOrange;
-        }
-        return CustomOutlineContainer(
-          outlineColor: color,
-          margin: 5,
-          padding: 5,
+  FilterChip fliterChip({required String filter, required String tooltip}) {
+    return FilterChip(
+      label: Text(
+        filter,
+        style: Theme.of(context).textTheme.bodyLarge,
+      ),
+      onSelected: (selected) {
+        _onSelected(selected, filter);
+        setState(() {
+          search(enteredKeyword);
+        });
+      },
+      selected: barcodeFilters.contains(filter),
+      selectedColor: sunbirdOrange,
+      tooltip: tooltip,
+      elevation: 5,
+      shadowColor: Colors.black54,
+    );
+  }
+
+  void _onSelected(bool selected, String filter) {
+    if (barcodeFilters.contains(filter)) {
+      setState(() {
+        barcodeFilters.removeWhere((element) => element == filter);
+      });
+    } else {
+      setState(() {
+        barcodeFilters.add(filter);
+      });
+    }
+  }
+
+  ///BARCODES///
+
+  Widget _barcodes() {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 50),
+      itemCount: allBarcodes.length,
+      itemBuilder: (context, index) {
+        return barcodeBuilder(allBarcodes[index]);
+      },
+    );
+  }
+
+  Widget barcodeBuilder(BarcodeProperty barcodeProperty) {
+    return Builder(builder: (context) {
+      ContainerEntry? containerEntry = isarDatabase!.containerEntrys
+          .filter()
+          .barcodeUIDMatches(barcodeProperty.barcodeUID)
+          .findFirstSync();
+      Color containerColor = Colors.grey;
+      if (containerEntry != null) {
+        containerColor =
+            getContainerColor(containerUID: containerEntry.containerUID);
+      }
+
+      return Card(
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        color: Colors.white12,
+        elevation: 5,
+        shadowColor: Colors.black26,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: containerColor, width: 2),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'BarcodeUID',
+                'UID',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               Text(
                 barcodeProperty.barcodeUID,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              const Divider(
-                height: 5,
-              ),
+              const Divider(),
               Text(
-                'Barcode Size',
+                'Container',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               Text(
-                roundDouble(barcodeProperty.size, 2).toString() + 'mm',
+                containerEntry?.name ??
+                    containerEntry?.containerUID ??
+                    'un-linked',
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              const Divider(
-                height: 5,
-              ),
-              Builder(
-                builder: (context) {
-                  if (linkedContainer != null) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'ContainerUID',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        Text(
-                          linkedContainer.containerUID,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ],
-                    );
-                  }
-                  return Container();
-                },
-              ),
-              Builder(
-                builder: (context) {
-                  if (linkedContainer != null) {
-                    return viewContainer(linkedContainer);
-                  } else {
-                    return linkContainer(barcodeProperty.barcodeUID);
-                  }
-                },
-              ),
+              const Divider(),
+              barcodeActions(containerEntry, containerColor, barcodeProperty),
             ],
           ),
-        );
-      }),
+        ),
+      );
+    });
+  }
+
+  Widget barcodeActions(ContainerEntry? containerEntry, Color? color,
+      BarcodeProperty barcodeProperty) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Builder(builder: (context) {
+          if (containerEntry != null) {
+            return ElevatedButton(
+              style: TextButton.styleFrom(backgroundColor: color),
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ContainerView(
+                      containerEntry: containerEntry,
+                    ),
+                  ),
+                );
+                search(enteredKeyword);
+                setState(() {});
+              },
+              child: const Text('Edit'),
+            );
+          } else {
+            return ElevatedButton(
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NewContainerView(
+                            barcodeUID: barcodeProperty.barcodeUID,
+                          )),
+                );
+              },
+              child: const Text('Link'),
+            );
+          }
+        })
+      ],
     );
   }
 
-  Widget _optionsText() {
-    return const Text(
-      'Swipe for more options',
-      style: TextStyle(fontSize: 12),
-    );
+  ///SEARCH///
+  void search(String enteredKeyword) {
+    allBarcodes = [];
+    List<BarcodeProperty> barcodes = isarDatabase!.barcodePropertys
+        .filter()
+        .barcodeUIDContains(enteredKeyword)
+        .findAllSync();
+
+    if (barcodeFilters.contains('Assigned')) {
+      for (BarcodeProperty item in barcodes) {
+        ContainerEntry? containerEntry = isarDatabase!.containerEntrys
+            .filter()
+            .barcodeUIDMatches(item.barcodeUID)
+            .findFirstSync();
+        if (containerEntry != null) {
+          allBarcodes.add(item);
+        }
+      }
+    }
+
+    if (barcodeFilters.contains('Unassigned')) {
+      for (BarcodeProperty item in barcodes) {
+        ContainerEntry? containerEntry = isarDatabase!.containerEntrys
+            .filter()
+            .barcodeUIDMatches(item.barcodeUID)
+            .findFirstSync();
+        if (containerEntry == null) {
+          allBarcodes.add(item);
+        }
+      }
+    }
+    setState(() {});
+
+    log(allBarcodes.toString());
   }
 }

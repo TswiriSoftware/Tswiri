@@ -17,7 +17,7 @@ class ContainerEntry {
 
   @override
   String toString() {
-    return 'UID: $containerUID,\nType: $containerType,\nName: $name,\nDescription: $description,\nBarcodeUID $barcodeUID\n';
+    return '\nUID: $containerUID, Type: $containerType, Name: $name, Description: $description, BarcodeUID $barcodeUID';
   }
 
   Map toJson() => {

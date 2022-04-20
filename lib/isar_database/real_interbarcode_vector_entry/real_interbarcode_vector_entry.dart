@@ -10,7 +10,11 @@ class RealInterBarcodeVectorEntry {
 
   late String endBarcodeUID;
 
-  //TODO: implement timestamp.
+  //Timestamp.
+  late int timestamp;
+
+  //Creation Timestamp
+  late int creationTimestamp;
 
   //X vector.
   late double x; //Make nullale ?
@@ -21,7 +25,7 @@ class RealInterBarcodeVectorEntry {
 
   @override
   String toString() {
-    return '\nstartBarcodeUID: $startBarcodeUID,\nendBarcodeUID: $endBarcodeUID,\nX: $x, Y: $y, Z: $z';
+    return '\nstartBarcodeUID: $startBarcodeUID,\nendBarcodeUID: $endBarcodeUID,\nX: $x, Y: $y, Z: $z, time: $timestamp, creation: $creationTimestamp';
   }
 
   Map toJson() => {
@@ -31,6 +35,8 @@ class RealInterBarcodeVectorEntry {
         'x': x,
         'y': y,
         'z': z,
+        'timestamp': timestamp,
+        'creationTimestamp': creationTimestamp,
       };
 
   RealInterBarcodeVectorEntry fromJson(Map<String, dynamic> json) {
@@ -40,6 +46,8 @@ class RealInterBarcodeVectorEntry {
       ..endBarcodeUID = json['endBarcodeUID']
       ..x = json['z'] as double
       ..y = json['y'] as double
-      ..z = json['z'] as double;
+      ..z = json['z'] as double
+      ..timestamp = json['timestamp'] as int
+      ..creationTimestamp = json['creationTimestamp'] as int;
   }
 }

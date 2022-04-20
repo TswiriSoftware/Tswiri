@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_generation_entry/barcode_generation_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
@@ -29,7 +30,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
   int rangeEnd = 1;
 
   BarcodeGenerationEntry? lastBarcodeGenerationEntry;
-  List<BarcodeGenerationEntry>? barcodeGenerationHistory;
+  List<BarcodeGenerationEntry> barcodeGenerationHistory = [];
 
   List<String> generatedBarcodeUIDs = [];
   List<BarcodeProperty> generatedBarcodeProperties = [];
@@ -64,101 +65,115 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
         child: Column(
           children: [
             //RangeSelector
-            rangeSelector(),
+            _rangeSelector(),
             //GenerateBarcodes.
-            generateBarcodesButton(),
-            //Debugging delete all.
-            deleteAllButton(),
+            _generateBarcodes(),
             //Add pre generated barcodes.
-            addPreGeneratedBarcodes(),
+            _addPreviousBarcodes(),
+            //Debugging delete all.
+            _deleteAll(),
             //Generatiom history.
-            barcodeGenerationHistoryWidget(),
+            _barcodeHistory(),
+            // barcodeGenerationHistoryWidget(),
           ],
         ),
       ),
     );
   }
 
-  Widget rangeSelector() {
-    return LightDarkContainer(
-      child: Column(
-        children: [
-          Text(
-            'Select range to generate',
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          const Divider(
-            color: Colors.deepOrange,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text(
-                'Range: ',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              //RangeStart
-              OrangeOutlineContainer(
-                padding: 0,
-                margin: 5,
-                child: NumberPicker(
-                  haptics: true,
-                  selectedTextStyle:
-                      TextStyle(color: Colors.deepOrange[300], fontSize: 22),
-                  itemHeight: 50,
-                  itemWidth: 60,
-                  minValue: minValue,
-                  maxValue: maxValue,
-                  value: rangeStart,
-                  onChanged: (value) {
-                    setState(() {
+  Widget _rangeSelector() {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      color: Colors.white12,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: sunbirdOrange, width: 2),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Text(
+              'Select range to generate',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const Divider(
+              color: Colors.deepOrange,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(
+                  'Range: ',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                //RangeStart
+                OrangeOutlineContainer(
+                  padding: 0,
+                  margin: 5,
+                  child: NumberPicker(
+                    haptics: true,
+                    selectedTextStyle:
+                        TextStyle(color: Colors.deepOrange[300], fontSize: 22),
+                    itemHeight: 50,
+                    itemWidth: 60,
+                    minValue: minValue,
+                    maxValue: maxValue,
+                    value: rangeStart,
+                    onChanged: (value) {
                       if (value >= rangeEnd) {
                         rangeEnd = value;
                       }
                       rangeStart = value;
-                    });
-                  },
+                      setState(() {});
+                    },
+                  ),
                 ),
-              ),
-              Text(
-                'to',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              //RangeEnd
-              OrangeOutlineContainer(
-                padding: 0,
-                margin: 5,
-                child: NumberPicker(
-                  haptics: true,
-                  selectedTextStyle:
-                      TextStyle(color: Colors.deepOrange[300], fontSize: 22),
-                  itemHeight: 50,
-                  itemWidth: 60,
-                  minValue: minValue,
-                  maxValue: maxValue,
-                  value: rangeEnd,
-                  onChanged: (value) {
-                    setState(() {
+                Text(
+                  'to',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                //RangeEnd
+                OrangeOutlineContainer(
+                  padding: 0,
+                  margin: 5,
+                  child: NumberPicker(
+                    haptics: true,
+                    selectedTextStyle:
+                        TextStyle(color: Colors.deepOrange[300], fontSize: 22),
+                    itemHeight: 50,
+                    itemWidth: 60,
+                    minValue: minValue,
+                    maxValue: maxValue,
+                    value: rangeEnd,
+                    onChanged: (value) {
                       if (value <= rangeStart) {
                         rangeStart = value;
                       }
                       rangeEnd = value;
-                    });
-                  },
+                      //log(rangeEnd.toString());
+                      setState(() {});
+                    },
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget generateBarcodesButton() {
-    return InkWell(
-      onTap: () async {
-        generateBarcodes(rangeStart, rangeEnd, null);
-        writeToDatabase();
+  Widget _generateBarcodes() {
+    return ElevatedButton(
+      onPressed: () async {
+        int time = DateTime.now().millisecondsSinceEpoch;
+
+        generateBarcodes(rangeStart, rangeEnd, time);
+
+        writeToDatabase(time);
         await Navigator.push(
           context,
           MaterialPageRoute(
@@ -168,41 +183,50 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
           ),
         );
         getHistory();
+        setState(() {});
       },
-      child: OrangeOutlineContainer(
-        width: 200,
-        height: 50,
-        child: Center(
-          child: Text(
-            'Generate Barcodes',
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Generate Barcodes',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const Icon(Icons.add)
+          ],
         ),
       ),
     );
   }
 
-  Widget deleteAllButton() {
-    return InkWell(
-      onTap: () {
+  Widget _deleteAll() {
+    return ElevatedButton(
+      onPressed: () {
         isarDatabase!.writeTxnSync((isar) {
           isar.barcodeGenerationEntrys.where().deleteAllSync();
           isar.barcodePropertys.where().deleteAllSync();
           getHistory();
+          setState(() {});
         });
       },
-      child: const OrangeOutlineContainer(
-        width: 100,
-        child: Icon(
-          Icons.delete_forever,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Delete All',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const Icon(Icons.delete)
+        ],
       ),
     );
   }
 
-  Widget addPreGeneratedBarcodes() {
-    return InkWell(
-      onTap: () async {
+  Widget _addPreviousBarcodes() {
+    return ElevatedButton(
+      onPressed: () async {
         Set<String>? scannedBarcodes = await Navigator.push(
           context,
           MaterialPageRoute(
@@ -212,14 +236,97 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
           createBarcodes(scannedBarcodes);
         }
       },
-      child: OrangeOutlineContainer(
-        width: 200,
-        height: 30,
-        child: Center(
-          child: Text(
-            'Add other Barcodes',
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Add Other',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
+          const Icon(Icons.add)
+        ],
+      ),
+    );
+  }
+
+  Widget _barcodeHistory() {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      color: Colors.white12,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: sunbirdOrange, width: 2),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Builder(builder: (context) {
+          List<Widget> widgets = [
+            Text(
+              'History',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const Divider(),
+          ];
+          widgets.addAll(
+              barcodeGenerationHistory.map((e) => historyWidget(e)).toList());
+          return Column(
+            children: widgets,
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget historyWidget(BarcodeGenerationEntry e) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      color: Colors.white12,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: sunbirdOrange, width: 2),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Text(
+              DateFormat('yyyy-MM-dd, hh:mm a')
+                  .format(DateTime.fromMillisecondsSinceEpoch(e.timestamp))
+                  .toString(),
+            ),
+            Text(
+              'Barcode Range: ' +
+                  e.rangeStart.toString() +
+                  ' to ' +
+                  e.rangeEnd.toString(),
+            ),
+            const Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                    onPressed: () {
+                      generateBarcodes(e.rangeStart, e.rangeEnd, e.timestamp);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BarcodeGenerationView(
+                            barcodeUIDs: generatedBarcodeUIDs,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Reprint',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ))
+              ],
+            )
+          ],
         ),
       ),
     );
@@ -238,79 +345,75 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
           ),
           Column(
             children: barcodeGenerationHistory
-                    ?.map((e) => LightContainer(
-                          margin: 2.5,
-                          padding: 0,
-                          child: OrangeOutlineContainer(
-                            padding: 10,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                .map((e) => LightContainer(
+                      margin: 2.5,
+                      padding: 0,
+                      child: OrangeOutlineContainer(
+                        padding: 10,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              DateFormat('yyyy-MM-dd, hh:mm a')
+                                  .format(DateTime.fromMillisecondsSinceEpoch(
+                                      e.timestamp))
+                                  .toString(),
+                            ),
+                            Text(
+                              'Barcode Range: ' +
+                                  e.rangeStart.toString() +
+                                  ' to ' +
+                                  e.rangeEnd.toString(),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Text(
-                                  DateFormat('yyyy-MM-dd, hh:mm a')
-                                      .format(
-                                          DateTime.fromMillisecondsSinceEpoch(
-                                              e.timestamp))
-                                      .toString(),
-                                ),
-                                Text(
-                                  'Barcode Range: ' +
-                                      e.rangeStart.toString() +
-                                      ' to ' +
-                                      e.rangeEnd.toString(),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        generateBarcodes(e.rangeStart,
-                                            e.rangeEnd, e.timestamp);
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                BarcodeGenerationView(
-                                              barcodeUIDs: generatedBarcodeUIDs,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: OrangeOutlineContainer(
-                                          child: Text(
-                                        'Reprint',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium,
-                                      )),
-                                    )
-                                  ],
+                                InkWell(
+                                  onTap: () {
+                                    generateBarcodes(
+                                        e.rangeStart, e.rangeEnd, e.timestamp);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            BarcodeGenerationView(
+                                          barcodeUIDs: generatedBarcodeUIDs,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: OrangeOutlineContainer(
+                                      child: Text(
+                                    'Reprint',
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  )),
                                 )
                               ],
-                            ),
-                          ),
-                        ))
-                    .toList() ??
-                [],
+                            )
+                          ],
+                        ),
+                      ),
+                    ))
+                .toList(),
           ),
         ],
       ),
     );
   }
 
-  void generateBarcodes(int rangeStart, int rangeEnd, int? timestamp) {
-    timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
-    //int numberOfBarcodes = (rangeEnd - rangeStart + 1);
+  void generateBarcodes(int rangeStart1, int rangeEnd1, int timestamp) {
     generatedBarcodeUIDs = [];
+    //log(rangeStart1.toString() + '       ' + rangeEnd1.toString());
 
-    for (var i = rangeStart; i < rangeEnd; i++) {
+    for (var i = rangeStart1; i < rangeEnd1; i++) {
       String barcodeUID = '${i + 1}_' + timestamp.toString();
       generatedBarcodeUIDs.add(barcodeUID);
       generatedBarcodeProperties.add(BarcodeProperty()
         ..barcodeUID = barcodeUID
         ..size = defaultBarcodeDiagonalLength!);
     }
-    log('generatedBarcodes: ' + generatedBarcodeUIDs.length.toString());
+    // log('generatedBarcodes: ' + generatedBarcodeUIDs.length.toString());
     setState(() {});
   }
 
@@ -328,11 +431,11 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
         .writeTxnSync((isar) => isar.barcodePropertys.putAllSync(scannedList));
   }
 
-  void writeToDatabase() {
+  void writeToDatabase(int time) {
     isarDatabase!.writeTxnSync((isar) {
       //Create a barcodeGenerationEntry.
       isar.barcodeGenerationEntrys.putSync(BarcodeGenerationEntry()
-        ..timestamp = timestamp
+        ..timestamp = time
         ..rangeStart = rangeStart
         ..rangeEnd = rangeEnd);
 
@@ -347,6 +450,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
         .where()
         .sortByTimestampDesc()
         .findFirstSync();
+
     if (lastBarcodeGenerationEntry != null) {
       rangeStart = lastBarcodeGenerationEntry!.rangeEnd + 1;
       rangeEnd = rangeStart;
@@ -357,7 +461,5 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
         .where()
         .sortByTimestampDesc()
         .findAllSync();
-
-    setState(() {});
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
@@ -15,8 +16,14 @@ class TagManagerView extends StatefulWidget {
 class _TagManagerViewState extends State<TagManagerView> {
   TextEditingController tagController = TextEditingController();
   List<Tag> tags = [];
+  final _tagsNode = FocusNode();
 
   bool showFilter = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    _tagsNode.requestFocus();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,39 +34,38 @@ class _TagManagerViewState extends State<TagManagerView> {
         centerTitle: true,
         elevation: 0,
       ),
-      body: Column(
-        children: [
-          Text('hold to delete', style: Theme.of(context).textTheme.bodySmall),
-          Builder(builder: (context) {
-            tags = isarDatabase!.tags
-                .filter()
-                .tagContains(tagController.text)
-                .findAllSync();
-
-            return tagWrapView();
-          }),
-          tagTextField(),
-        ],
-      ),
+      body: tagWrapView(),
+      bottomSheet: _bottomSheet(),
     );
   }
 
   Widget tagWrapView() {
-    return Expanded(
-      child: SingleChildScrollView(
+    return Builder(builder: (context) {
+      tags = isarDatabase!.tags
+          .filter()
+          .tagContains(tagController.text)
+          .findAllSync();
+      return SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-          child: Wrap(
-            children: tags.map((e) => tagWidget(e)).toList(),
+          child: Center(
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              runAlignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 5,
+              runSpacing: 5,
+              children: tags.map((e) => tagChip(e)).toList(),
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
-  Widget tagWidget(Tag tag) {
-    return InkWell(
-      onLongPress: (() {
+  Widget tagChip(Tag tag) {
+    return ActionChip(
+      onPressed: () {
         isarDatabase!.writeTxnSync(
           (isar) {
             isar.tags.deleteSync(tag.id);
@@ -67,20 +73,56 @@ class _TagManagerViewState extends State<TagManagerView> {
           },
         );
         setState(() {});
-      }),
-      child: Container(
-          padding: const EdgeInsets.all(8),
-          margin: const EdgeInsets.all(5),
-          decoration: BoxDecoration(
-              border: Border.all(color: Colors.deepOrange, width: 1),
-              borderRadius: const BorderRadius.all(
-                Radius.circular(30),
-              ),
-              color: Colors.black26),
-          child: Text(
+      },
+      backgroundColor: sunbirdOrange,
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
             tag.tag,
-            style: Theme.of(context).textTheme.bodyLarge,
-          )),
+          ),
+          const Icon(
+            Icons.delete,
+            size: 15,
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _bottomSheet() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        TextField(
+          controller: tagController,
+          focusNode: _tagsNode,
+          onChanged: (value) {
+            setState(() {});
+          },
+          onSubmitted: (value) {
+            addTag();
+          },
+          style: const TextStyle(fontSize: 18),
+          textCapitalization: TextCapitalization.words,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white10,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+            suffixIcon: IconButton(
+              onPressed: () {
+                addTag();
+              },
+              icon: const Icon(Icons.add),
+            ),
+            border: const OutlineInputBorder(
+                borderSide: BorderSide(color: sunbirdOrange)),
+            focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: sunbirdOrange)),
+          ),
+        ),
+      ],
     );
   }
 
@@ -110,26 +152,7 @@ class _TagManagerViewState extends State<TagManagerView> {
           ),
           Builder(builder: (context) {
             return InkWell(
-              onTap: () {
-                Tag? exists = isarDatabase!.tags
-                    .filter()
-                    .tagMatches(tagController.text.trim(), caseSensitive: false)
-                    .findFirstSync();
-
-                String inputValue = tagController.text;
-
-                if (exists == null && inputValue.isNotEmpty) {
-                  //Remove white spaces
-                  inputValue.trim();
-
-                  Tag newTag = Tag()..tag = inputValue;
-                  isarDatabase!.writeTxnSync(
-                    (isar) => isar.tags.putSync(newTag),
-                  );
-                  tagController.text = '';
-                  setState(() {});
-                }
-              },
+              onTap: () {},
               child: OrangeOutlineContainer(
                 child: Text(
                   'Add',
@@ -141,5 +164,27 @@ class _TagManagerViewState extends State<TagManagerView> {
         ],
       ),
     );
+  }
+
+  void addTag() {
+    Tag? exists = isarDatabase!.tags
+        .filter()
+        .tagMatches(tagController.text.trim(), caseSensitive: false)
+        .findFirstSync();
+
+    String inputValue = tagController.text;
+
+    if (exists == null && inputValue.isNotEmpty) {
+      //Remove white spaces
+      inputValue.trim();
+
+      Tag newTag = Tag()..tag = inputValue;
+      isarDatabase!.writeTxnSync(
+        (isar) => isar.tags.putSync(newTag),
+      );
+      tagController.text = '';
+      _tagsNode.requestFocus();
+      setState(() {});
+    }
   }
 }

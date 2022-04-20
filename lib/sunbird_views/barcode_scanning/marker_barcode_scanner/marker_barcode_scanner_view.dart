@@ -1,16 +1,20 @@
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/single_barcode_scanner/single_barcode_scanner_camera_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/single_barcode_scanner/single_barcode_scanner_painter.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/dark_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_camera_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:isar/isar.dart';
 
 ///Will return a String? BarcodeUID
 class MarkerBarcodeScannerView extends StatefulWidget {
-  const MarkerBarcodeScannerView({Key? key}) : super(key: key);
-
+  const MarkerBarcodeScannerView(
+      {Key? key, required this.parentContainer, this.color})
+      : super(key: key);
+  final ContainerEntry parentContainer;
+  final Color? color;
   @override
   _MarkerBarcodeScannerViewState createState() =>
       _MarkerBarcodeScannerViewState();
@@ -23,12 +27,18 @@ class _MarkerBarcodeScannerViewState extends State<MarkerBarcodeScannerView> {
   bool isBusy = false;
   CustomPaint? customPaint;
   String? currentBarcodeUID;
-  List<String> barcodeUIDs = [];
+  List<String> selectedBarcodeUIDs = [];
   bool showList = false;
 
   @override
   void initState() {
     WidgetsFlutterBinding.ensureInitialized();
+
+    selectedBarcodeUIDs.addAll(isarDatabase!.markers
+        .filter()
+        .parentContainerUIDMatches(widget.parentContainer.containerUID)
+        .barcodeUIDProperty()
+        .findAllSync());
 
     super.initState();
   }
@@ -42,118 +52,74 @@ class _MarkerBarcodeScannerViewState extends State<MarkerBarcodeScannerView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        floatingActionButton: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            //Done Scanning
-            FloatingActionButton(
-              heroTag: null,
-              onPressed: () {
-                Navigator.pop(context, barcodeUIDs);
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: _addBarcode(),
+      appBar: _appBar(),
+      body: Column(
+        children: [
+          Expanded(
+            child: MarkerBarcodeScannerCameraView(
+              color: widget.color ?? sunbirdOrange,
+              title: 'Barcode Scanner',
+              customPaint: customPaint,
+              onImage: (inputImage) {
+                processImage(inputImage);
               },
-              child: const Icon(Icons.done_all, color: Colors.white),
             ),
-            const SizedBox(
-              height: 20,
+          ),
+        ],
+      ),
+    );
+  }
+
+  AppBar _appBar() {
+    return AppBar(
+      backgroundColor: widget.color,
+      centerTitle: true,
+      title: Text(
+        'Scan Markers',
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+      actions: [
+        Visibility(
+          visible: selectedBarcodeUIDs.isNotEmpty,
+          child: TextButton(
+            onPressed: () {
+              Navigator.pop(context, selectedBarcodeUIDs);
+            },
+            child: Column(
+              children: [
+                Text(
+                  'Continue',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Text(
+                  'Scanned barcodes: ' + selectedBarcodeUIDs.length.toString(),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
             ),
-            //BarcodeListDisplay
-            Builder(builder: (context) {
-              if (showList == true) {
-                return SizedBox(
-                  //height: MediaQuery.of(context).size.height * 0.5,
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  child: LightContainer(
-                    margin: 2.5,
-                    padding: 2.5,
-                    child: DarkContainer(
-                      padding: 5,
-                      margin: 0,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Hold barcode to delete',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          const Divider(
-                            color: Colors.white54,
-                          ),
-                          Wrap(
-                            children: barcodeUIDs
-                                .map((e) => InkWell(
-                                    onLongPress: () {
-                                      barcodeUIDs.remove(e);
-                                    },
-                                    child:
-                                        OrangeOutlineContainer(child: Text(e))))
-                                .toList(),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              IconButton(
-                                  onPressed: () {
-                                    showList = !showList;
-                                    setState(() {});
-                                  },
-                                  icon: const Icon(Icons.close))
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              } else {
-                return FloatingActionButton(
-                  heroTag: null,
-                  onPressed: () {
-                    showList = !showList;
-                    setState(() {});
-                  },
-                  child: const Icon(
-                    Icons.list,
-                    color: Colors.white,
-                  ),
-                );
-              }
-            }),
-            const SizedBox(
-              height: 20,
-            ),
-            //Add BarcodeUID
-            FloatingActionButton(
-              heroTag: null,
-              onPressed: () {
-                if (barcodeUIDs.contains(currentBarcodeUID)) {
-                  barcodeUIDs.remove(currentBarcodeUID);
-                } else {
-                  if (currentBarcodeUID != null) {
-                    barcodeUIDs.add(currentBarcodeUID!);
-                  }
-                }
-              },
-              child: const Icon(Icons.add, color: Colors.white),
-            ),
-          ],
+          ),
         ),
-        body: Column(
-          children: [
-            Expanded(
-              child: SingleBarcodeScannerCameraView(
-                color: brightOrange,
-                title: 'Barcode Scanner',
-                customPaint: customPaint,
-                onImage: (inputImage) {
-                  processImage(inputImage);
-                },
-              ),
-            ),
-          ],
-        ));
+      ],
+    );
+  }
+
+  Widget _addBarcode() {
+    return FloatingActionButton(
+      backgroundColor: widget.color,
+      heroTag: null,
+      onPressed: () {
+        if (selectedBarcodeUIDs.contains(currentBarcodeUID)) {
+          selectedBarcodeUIDs.remove(currentBarcodeUID);
+        } else {
+          if (currentBarcodeUID != null) {
+            selectedBarcodeUIDs.add(currentBarcodeUID!);
+          }
+        }
+      },
+      child: const Icon(Icons.add),
+    );
   }
 
   Future<void> processImage(InputImage inputImage) async {
@@ -196,11 +162,12 @@ class _MarkerBarcodeScannerViewState extends State<MarkerBarcodeScannerView> {
         }
       }
 
-      final painter = SingleBarcodeScannerPainter(
+      final painter = MarkerBarcodeScannerPainter(
           barcodes: barcodes,
           absoluteImageSize: inputImage.inputImageData!.size,
           rotation: inputImage.inputImageData!.imageRotation,
-          barcodeID: currentBarcodeUID);
+          barcodeID: currentBarcodeUID,
+          selectedBarcodeUIDs: selectedBarcodeUIDs);
 
       customPaint = CustomPaint(painter: painter);
     } else {

@@ -29,7 +29,7 @@ class ContainerNewMarkersView extends StatefulWidget {
 class _ContainerNewMarkersViewState extends State<ContainerNewMarkersView> {
   late String containerUID;
   late Color color;
-  List<String> newSelectedMarkers = [];
+  late List<String> newSelectedMarkers = widget.newMarkers;
 
   @override
   void initState() {

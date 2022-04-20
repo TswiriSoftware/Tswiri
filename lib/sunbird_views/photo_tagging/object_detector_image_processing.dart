@@ -9,7 +9,6 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../isar_database/container_photo/container_photo.dart';
-import '../../isar_database/container_photo_thumbnail/container_photo_thumbnail.dart';
 import '../../objects/image_data.dart';
 import 'painter/object_detector_painter.dart';
 

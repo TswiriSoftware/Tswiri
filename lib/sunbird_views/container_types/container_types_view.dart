@@ -4,8 +4,6 @@ import 'package:flutter_google_ml_kit/isar_database/container_type/container_typ
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_types/container_type_edit_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_types/new_container_type_view.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
 import 'package:isar/isar.dart';
 
 class ContainerTypeView extends StatefulWidget {
@@ -88,110 +86,114 @@ class _ContainerTypeViewState extends State<ContainerTypeView> {
 
   Widget _typeListBuilder() {
     return Column(
-      children: containerTypes.map((e) => typeListTile(e)).toList(),
+      children: containerTypes.map((e) => containerType(e)).toList(),
     );
   }
 
-  Widget typeListTile(ContainerType containerType) {
-    return LightContainer(
-      margin: 2.5,
-      padding: 0,
-      child: GestureDetector(
-        onLongPress: () {
-          setState(() {
-            showCheckBox = true;
-            selectedContainers.add(containerType);
-          });
-        },
-        child: CustomOutlineContainer(
-          margin: 2.5,
-          padding: 5,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      containerType.containerType.toString().capitalize(),
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                    Builder(builder: (context) {
-                      if (showCheckBox) {
-                        return Checkbox(
-                          value: selectedContainers.contains(containerType),
-                          onChanged: (value) {
-                            _onSelectedContainer(value!, containerType);
-                          },
-                          fillColor: MaterialStateProperty.all(
-                            Color(int.parse(containerType.containerColor))
-                                .withOpacity(1),
-                          ),
-                        );
-                      } else {
-                        return Container();
-                      }
-                    }),
-                  ],
-                ),
-                _dividerHeavy(),
-                Text(
-                  'Description',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                Text(
-                  containerType.containerDescription,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                _dividerLight(),
-                Text(
-                  'Can Contain',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                Text(
-                  containerType.canContain.toString(),
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                _dividerLight(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Options',
-                          style: Theme.of(context).textTheme.bodySmall,
+  Widget containerType(ContainerType containerType) {
+    return InkWell(
+      onLongPress: () {
+        showCheckBox = true;
+        selectedContainers.add(containerType);
+        setState(() {});
+      },
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        color: Colors.white12,
+        elevation: 5,
+        shadowColor: Colors.black26,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+              color: Color(int.parse(containerType.containerColor)),
+              width: 1.5),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    containerType.containerType.toString().capitalize(),
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  Builder(builder: (context) {
+                    if (showCheckBox) {
+                      return Checkbox(
+                        value: selectedContainers.contains(containerType),
+                        onChanged: (value) {
+                          _onSelectedContainer(value!, containerType);
+                        },
+                        fillColor: MaterialStateProperty.all(
+                          Color(int.parse(containerType.containerColor))
+                              .withOpacity(1),
                         ),
-                        Text(
-                          'Movable: ' + containerType.moveable.toString(),
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        Text(
-                          'Marker to Children: ' +
-                              containerType.markerToChilren.toString(),
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ],
-                    ),
-                    typeEditButton(containerType),
-                  ],
-                ),
-              ],
-            ),
+                      );
+                    } else {
+                      return Container();
+                    }
+                  }),
+                ],
+              ),
+              _dividerHeavy(),
+              Text(
+                'Description',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              Text(
+                containerType.containerDescription,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              _dividerLight(),
+              Text(
+                'Can Contain',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              Text(
+                containerType.canContain.toString(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              _dividerLight(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Options',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      Text(
+                        'Movable: ' + containerType.moveable.toString(),
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      Text(
+                        'Marker to Children: ' +
+                            containerType.markerToChilren.toString(),
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    ],
+                  ),
+                  editButton(containerType),
+                ],
+              ),
+            ],
           ),
-          outlineColor:
-              Color(int.parse(containerType.containerColor)).withOpacity(1),
         ),
       ),
     );
   }
 
-  Widget typeEditButton(ContainerType containerType) {
-    return InkWell(
-      onTap: () async {
+  Widget editButton(ContainerType containerType) {
+    return ElevatedButton(
+      style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(
+              Color(int.parse(containerType.containerColor)))),
+      onPressed: () async {
         await Navigator.push(
           context,
           MaterialPageRoute(
@@ -203,21 +205,15 @@ class _ContainerTypeViewState extends State<ContainerTypeView> {
           containerTypes = isarDatabase!.containerTypes.where().findAllSync();
         });
       },
-      child: CustomOutlineContainer(
-        width: 80,
-        height: 35,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'edit',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const Icon(Icons.edit),
-          ],
-        ),
-        outlineColor:
-            Color(int.parse(containerType.containerColor)).withOpacity(1),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'edit',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const Icon(Icons.edit),
+        ],
       ),
     );
   }

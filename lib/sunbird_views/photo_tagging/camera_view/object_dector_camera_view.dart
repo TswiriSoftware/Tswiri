@@ -77,6 +77,7 @@ class _ObjectDetectorCameraViewState extends State<ObjectDetectorCameraView> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             // If the Future is complete, display the preview.
+            _controller.setFlashMode(FlashMode.off);
             return Stack(
               fit: StackFit.expand,
               children: [CameraPreview(_controller)],

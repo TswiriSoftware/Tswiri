@@ -1,33 +1,24 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/extentions/capitalize_first_character.dart';
+import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_photo/container_photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
-import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/single_barcode_scanner/single_barcode_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/photo_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_view.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
 
-import '../../isar_database/container_photo_thumbnail/container_photo_thumbnail.dart';
-import 'objects/photo_data.dart';
-
 class NewContainerView extends StatefulWidget {
-  const NewContainerView({
-    Key? key,
-    this.parentContainer,
-    this.barcodeUID,
-  }) : super(key: key);
+  const NewContainerView({Key? key, this.parentContainer, this.barcodeUID})
+      : super(key: key);
 
   //This is passed in if this screen is called from another container.
   final ContainerEntry? parentContainer;
@@ -40,17 +31,17 @@ class NewContainerView extends StatefulWidget {
 }
 
 class _NewContainerViewState extends State<NewContainerView> {
-  //1. Parent container if Provided. (Optional)
-  ContainerEntry? parentContainer;
+  //Setup
+  late ContainerEntry? parentContainer = widget.parentContainer;
   String? containerUID;
 
-  //2. Select container Type (Required)
+  //1. Container Type (required)
   late List<ContainerType> containerTypes;
   ContainerType? selectedContainerType;
-  Color? containerColor;
+  Color? _containerColor;
 
-  //3. Scanned BarcodeUID (Required)
-  String? barcodeUID;
+  //2. Scanned BarcodeUID (Required)
+  late String? barcodeUID = widget.barcodeUID;
 
   //4. Container Name and Description.
   //-Name (Optional)
@@ -67,10 +58,12 @@ class _NewContainerViewState extends State<NewContainerView> {
   //6. Is this containers barcode considered a marker to its children ?
   Marker? marker;
 
+  //7. Created ?
+  bool hasCreated = false;
+
   @override
   void initState() {
-    if (widget.parentContainer != null) {
-      parentContainer = widget.parentContainer;
+    if (parentContainer != null) {
       List<String> canContain = isarDatabase!.containerTypes
           .filter()
           .containerTypeMatches(widget.parentContainer!.containerType)
@@ -89,319 +82,311 @@ class _NewContainerViewState extends State<NewContainerView> {
     if (widget.barcodeUID != null) {
       barcodeUID = widget.barcodeUID;
     }
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    if (!hasCreated) {
+      for (ContainerPhoto photo in containerPhotos) {
+        File(photo.photoPath).deleteSync();
+        File(photo.photoThumbnailPath).deleteSync();
+        isarDatabase!
+            .writeTxnSync((isar) => isar.containerPhotos.deleteSync(photo.id));
+      }
+    }
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: containerColor,
-        title: Builder(builder: (context) {
-          if (selectedContainerType == null) {
-            return Text(
-              'New Container',
-              style: Theme.of(context).textTheme.titleMedium,
-            );
-          } else {
-            return Text(
-              'New ' + selectedContainerType!.containerType.capitalize(),
-              style: Theme.of(context).textTheme.titleMedium,
-            );
-          }
-        }),
-        centerTitle: true,
-        elevation: 0,
+      appBar: _appBar(),
+      body: _body(),
+      floatingActionButton: _createButton(),
+    );
+  }
+
+  AppBar _appBar() {
+    return AppBar(
+      backgroundColor: _containerColor,
+      title: Builder(builder: (context) {
+        if (selectedContainerType == null) {
+          return Text(
+            'New Container',
+            style: Theme.of(context).textTheme.titleMedium,
+          );
+        } else {
+          return Text(
+            'New ' + selectedContainerType!.containerType.capitalize(),
+            style: Theme.of(context).textTheme.titleMedium,
+          );
+        }
+      }),
+      centerTitle: true,
+      elevation: 0,
+    );
+  }
+
+  Widget _body() {
+    return ListView(
+      children: [
+        //Container Type.
+        _type(),
+        //Barcode
+        _barcode(),
+        //Info
+        _info(),
+        //Photos
+        _photos(),
+      ],
+    );
+  }
+
+  ///CONTAINER TYPE///
+
+  Widget _type() {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      color: Colors.white12,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: _containerColor ?? sunbirdOrange, width: 1.5),
+        borderRadius: BorderRadius.circular(10),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: _createButtonBuilder(),
-      body: SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _typeBuilder(),
-            const Divider(),
-            _barcodeBuilder(),
-            const Divider(),
-            _infoBuilder(),
-            const Divider(),
-            _photoBuilder(),
-            const Divider(),
-            SizedBox(
-              height: MediaQuery.of(context).size.height / 5,
-            )
+            _typeHeading(),
+            _dividerHeading(),
+            _types(),
           ],
         ),
       ),
     );
   }
 
-  Widget _typeBuilder() {
-    return LightContainer(
-      margin: 2.5,
-      padding: 0,
-      backgroundColor: Colors.transparent,
-      child: Builder(builder: (context) {
-        //Set ContainerType Border Color.
-        return CustomOutlineContainer(
-          outlineColor: containerColor?.withOpacity(0.8) ??
-              Colors.deepOrange.withOpacity(0.8),
-          // backgroundColor: Colors.transparent,
-          margin: 2.5,
-          padding: 5,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Text(
-                  'Container Type',
-                  style: Theme.of(context).textTheme.labelMedium,
-                ),
-              ),
-              _dividerHeavy(),
-              Builder(builder: (context) {
-                if (selectedContainerType != null) {
-                  return typeWidget(selectedContainerType!);
-                } else {
-                  return Column(
-                    children: [
-                      Text('please select one',
-                          style: Theme.of(context).textTheme.bodySmall),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children:
-                            containerTypes.map((e) => typeWidget(e)).toList(),
-                      ),
-                    ],
-                  );
-                }
-              })
-            ],
-          ),
+  Widget _typeHeading() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text('Container Type',
+            style: Theme.of(context).textTheme.headlineSmall),
+      ],
+    );
+  }
+
+  Widget _types() {
+    return Builder(builder: (context) {
+      if (selectedContainerType == null) {
+        return Column(
+          children: containerTypes.map((e) => containerType(e)).toList(),
         );
-      }),
-    );
+      } else {
+        return containerType(selectedContainerType!);
+      }
+    });
   }
 
-  ///TYPE///
-
-  Widget typeWidget(ContainerType containerType) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          selectedContainerType = containerType;
-
-          //Create ContainerUID.
-          if (containerUID?.split('_').first !=
-              selectedContainerType!.containerType) {
-            containerUID = selectedContainerType!.containerType +
-                '_' +
-                DateTime.now().millisecondsSinceEpoch.toString();
-          } else {
-            containerUID = selectedContainerType!.containerType +
-                '_' +
-                DateTime.now().millisecondsSinceEpoch.toString();
-          }
-
-          containerColor =
-              Color(int.parse(containerType.containerColor)).withOpacity(1);
-        });
-      },
-      child: LightContainer(
-        margin: 2.5,
-        padding: 0,
-        backgroundColor: Colors.transparent,
-        child: CustomOutlineContainer(
-          backgroundColor: Colors.white10,
-          margin: 2.5,
-          padding: 5,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    containerType.containerType.capitalize(),
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                  _undoTypeButtonBuilder(),
-                ],
-              ),
-              _dividerLight(),
-              Text(
-                containerType.containerDescription,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ],
-          ),
-          outlineColor:
-              Color(int.parse(containerType.containerColor)).withOpacity(1),
-        ),
-      ),
-    );
-  }
-
-  Widget _undoTypeButtonBuilder() {
+  Widget containerType(ContainerType containerType) {
     return Builder(
       builder: (context) {
-        if (selectedContainerType != null) {
-          return InkWell(
-            onTap: () {
-              setState(() {
-                selectedContainerType = null;
-              });
-            },
-            child: CustomOutlineContainer(
-                margin: 2.5,
-                padding: 5,
-                child: Row(
-                  children: [
-                    Text(
-                      'undo',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Icon(
-                      Icons.undo,
-                    ),
-                  ],
-                ),
-                outlineColor: containerColor!),
-          );
-        } else {
-          return Container();
-        }
+        Color typeColor =
+            Color(int.parse(containerType.containerColor)).withOpacity(1);
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+          color: Colors.white12,
+          elevation: 5,
+          shadowColor: Colors.black26,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: typeColor, width: 1.5),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                typeInfo(containerType),
+                _divider(),
+                _typeActionBuilder(containerType, typeColor),
+              ],
+            ),
+          ),
+        );
       },
+    );
+  }
+
+  Widget typeInfo(ContainerType containerType) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              containerType.containerType.capitalize(),
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+            //_undoTypeButtonBuilder(),
+          ],
+        ),
+        _divider(),
+        Text(
+          containerType.containerDescription,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ],
+    );
+  }
+
+  Widget _typeActionBuilder(ContainerType containerType, Color typeColor) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Builder(builder: (context) {
+          if (selectedContainerType == null) {
+            return ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(typeColor)),
+                onPressed: () {
+                  selectedContainerType = containerType;
+                  _containerColor = typeColor;
+
+                  if (containerUID?.split('_').first !=
+                      selectedContainerType!.containerType) {
+                    containerUID = selectedContainerType!.containerType +
+                        '_' +
+                        DateTime.now().millisecondsSinceEpoch.toString();
+                  } else {
+                    containerUID = selectedContainerType!.containerType +
+                        '_' +
+                        DateTime.now().millisecondsSinceEpoch.toString();
+                  }
+
+                  setState(() {});
+                },
+                child: Text(
+                  'select',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ));
+          } else {
+            return ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(typeColor)),
+                onPressed: () {
+                  selectedContainerType = null;
+                  setState(() {});
+                },
+                child: Text(
+                  'change',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ));
+          }
+        })
+      ],
     );
   }
 
   ///BARCODE///
 
-  Widget _barcodeBuilder() {
-    return Builder(
-      builder: (context) {
-        if (selectedContainerType != null) {
-          return LightContainer(
-            margin: 2.5,
-            padding: 0,
-            backgroundColor: Colors.transparent,
-            child: CustomOutlineContainer(
-              margin: 2.5,
-              padding: 5,
-              outlineColor: containerColor!.withOpacity(0.8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Text(
-                      'Linked Barcode',
-                      style: Theme.of(context).textTheme.labelMedium,
-                    ),
-                  ),
-                  _dividerHeavy(),
-                  _scannedBarcodeBuilder(),
-                ],
-              ),
-            ),
-          );
-        } else {
-          return Container();
-        }
-      },
-    );
-  }
-
-  Widget _scannedBarcodeBuilder() {
-    return CustomOutlineContainer(
-      outlineColor: containerColor!,
-      backgroundColor: Colors.white10,
-      padding: 5,
-      margin: 2.5,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'BarcodeUID',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                Text(
-                  barcodeUID ?? 'Please scan a barcode',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ],
-            ),
+  Widget _barcode() {
+    return Visibility(
+      visible: selectedContainerType != null,
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        color: Colors.white12,
+        elevation: 5,
+        shadowColor: Colors.black26,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: _containerColor ?? sunbirdOrange, width: 1.5),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _barcodeHeading(),
+              _dividerHeading(),
+              _barcodeBuilder(),
+            ],
           ),
-          InkWell(
-            onTap: () async {
-              await barcodeScannerProcess();
-            },
-            child: _barcodeScannerButtonBuilder(),
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _barcodeScannerButtonBuilder() {
-    return Builder(builder: (context) {
-      if (barcodeUID != null) {
-        return CustomOutlineContainer(
-            margin: 2.5,
-            padding: 5,
-            child: Row(
-              children: [
-                Text(
-                  'change',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                const Icon(
-                  Icons.change_circle,
-                ),
-              ],
-            ),
-            outlineColor: containerColor!);
-      } else {
-        return CustomOutlineContainer(
-            margin: 2.5,
-            padding: 5,
-            child: Row(
-              children: [
-                Text(
-                  'scan',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                const Icon(
-                  Icons.qr_code_scanner,
-                ),
-              ],
-            ),
-            outlineColor: containerColor!);
-      }
-    });
+  Widget _barcodeHeading() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text('Barcode', style: Theme.of(context).textTheme.headlineSmall),
+      ],
+    );
+  }
+
+  Widget _barcodeBuilder() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Text(
+              //   'BarcodeUID',
+              //   style: Theme.of(context).textTheme.bodySmall,
+              // ),
+              Text(
+                barcodeUID ?? 'Please scan a barcode',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ],
+          ),
+        ),
+        InkWell(
+          onTap: () async {
+            await barcodeScannerProcess();
+          },
+          child: _scanBarcode(),
+        ),
+      ],
+    );
+  }
+
+  Widget _scanBarcode() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        ElevatedButton(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(_containerColor)),
+          onPressed: () async {
+            await barcodeScannerProcess();
+          },
+          child: Text(
+            'Scan',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+      ],
+    );
   }
 
   Future<void> barcodeScannerProcess() async {
     String? scannedBarcodeUID = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const SingleBarcodeScannerView(),
+        builder: (context) => SingleBarcodeScannerView(
+          color: _containerColor,
+        ),
       ),
     );
 
@@ -424,43 +409,46 @@ class _NewContainerViewState extends State<NewContainerView> {
     }
   }
 
-  ///INFO///
+  ///INFO HEADING///
 
-  Widget _infoBuilder() {
-    return Builder(builder: (context) {
-      if (selectedContainerType != null && barcodeUID != null) {
-        return LightContainer(
-          margin: 2.5,
-          padding: 0,
-          backgroundColor: Colors.transparent,
-          child: CustomOutlineContainer(
-            margin: 2.5,
-            padding: 5,
-            outlineColor: containerColor!.withOpacity(0.8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Text(
-                    'Name and Description',
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                ),
-                _dividerHeavy(),
-                _nameTextField(),
-                _descriptionTextField(),
-              ],
-            ),
+  Widget _info() {
+    return Visibility(
+      visible: selectedContainerType != null && barcodeUID != null,
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        color: Colors.white12,
+        elevation: 5,
+        shadowColor: Colors.black26,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: _containerColor ?? sunbirdOrange, width: 1.5),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _infoHeading(),
+              _dividerHeading(),
+              _name(),
+              _description(),
+            ],
           ),
-        );
-      } else {
-        return Row();
-      }
-    });
+        ),
+      ),
+    );
   }
 
-  Widget _nameTextField() {
+  Widget _infoHeading() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text('Info', style: Theme.of(context).textTheme.headlineSmall),
+      ],
+    );
+  }
+
+  Widget _name() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
       child: TextField(
@@ -485,15 +473,15 @@ class _NewContainerViewState extends State<NewContainerView> {
           labelText: 'Name',
           labelStyle: const TextStyle(fontSize: 15, color: Colors.white),
           border: OutlineInputBorder(
-              borderSide: BorderSide(color: containerColor!)),
+              borderSide: BorderSide(color: _containerColor ?? sunbirdOrange)),
           focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: containerColor!)),
+              borderSide: BorderSide(color: _containerColor ?? sunbirdOrange)),
         ),
       ),
     );
   }
 
-  Widget _descriptionTextField() {
+  Widget _description() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
       child: TextField(
@@ -518,9 +506,9 @@ class _NewContainerViewState extends State<NewContainerView> {
           labelText: 'Description',
           labelStyle: const TextStyle(fontSize: 15, color: Colors.white),
           border: OutlineInputBorder(
-              borderSide: BorderSide(color: containerColor!)),
+              borderSide: BorderSide(color: _containerColor ?? sunbirdOrange)),
           focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: containerColor!)),
+              borderSide: BorderSide(color: _containerColor ?? sunbirdOrange)),
         ),
       ),
     );
@@ -528,109 +516,144 @@ class _NewContainerViewState extends State<NewContainerView> {
 
   ///PHOTOS///
 
-  Widget _photoBuilder() {
-    //TODO: if user exits screen ensure that photos have been deleted.
-    return Builder(builder: (context) {
-      updatePhotos();
-      log(containerPhotos.toString());
-      if (selectedContainerType != null && barcodeUID != null) {
-        return LightContainer(
-          margin: 2.5,
-          padding: 0,
-          backgroundColor: Colors.transparent,
-          child: CustomOutlineContainer(
-            margin: 2.5,
-            padding: 5,
-            outlineColor: containerColor!.withOpacity(0.8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Text(
-                    'Photo(s)',
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                ),
-                _dividerHeavy(),
-                CustomOutlineContainer(
-                  backgroundColor: Colors.white10,
-                  outlineColor: Colors.white54,
-                  padding: 5,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          _photoAddButton(),
-                        ],
-                      ),
-                      const Divider(),
-                      Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          alignment: WrapAlignment.spaceEvenly,
-                          spacing: 5,
-                          runSpacing: 10,
-                          children: containerPhotos
-                              .map((e) => photoDisplayWidget(e))
-                              .toList())
-                    ],
-                  ),
-                )
-              ],
-            ),
+  Widget _photos() {
+    return Visibility(
+      visible: selectedContainerType != null && barcodeUID != null,
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        color: Colors.white12,
+        elevation: 5,
+        shadowColor: Colors.black26,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: _containerColor ?? sunbirdOrange, width: 1.5),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _photosHeading(),
+              _dividerHeading(),
+              _photosBuilder(),
+            ],
           ),
-        );
-      } else {
-        return Row();
-      }
-    });
+        ),
+      ),
+    );
   }
 
-  Widget photoDisplayWidget(ContainerPhoto photoData) {
-    return Stack(
+  Widget _photosHeading() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.29,
-          child: CustomOutlineContainer(
-            outlineColor: containerColor!,
-            padding: 2,
-            child: Image.file(
-              File(photoData.photoPath),
-            ),
-          ),
-        ),
-        IconButton(
-          onPressed: () {
-            isarDatabase!.writeTxnSync((isar) {
-              isar.containerPhotos.deleteSync(photoData.id);
-            });
-
-            //Delete Photo.
-            File(photoData.photoPath).delete();
-
-            // //Delete Photo Thumbnail.
-            File(photoData.photoThumbnailPath).delete();
-
-            updatePhotos();
-            setState(() {});
-          },
-          icon: const Icon(Icons.delete),
-          color: containerColor,
-        ),
+        Text('Photos', style: Theme.of(context).textTheme.headlineSmall),
       ],
     );
   }
 
-  Widget _photoAddButton() {
+  Widget _photosBuilder() {
+    return Builder(
+      builder: (context) {
+        containerPhotos = [];
+        containerPhotos.addAll(isarDatabase!.containerPhotos
+            .filter()
+            .containerUIDMatches(containerUID ?? '')
+            .findAllSync());
+
+        List<Widget> photoWidgets = [
+          _photoAddCard(),
+        ];
+
+        photoWidgets.addAll(containerPhotos.map((e) => photoCard(e)).toList());
+        return Wrap(
+          spacing: 1,
+          runSpacing: 1,
+          alignment: WrapAlignment.center,
+          runAlignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: photoWidgets,
+        );
+      },
+    );
+  }
+
+  Widget photoCard(ContainerPhoto containerPhoto) {
+    return Card(
+      child: InkWell(
+        onTap: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PhotoView(
+                containerPhoto: containerPhoto,
+                containerColor: _containerColor ?? sunbirdOrange,
+              ),
+            ),
+          );
+          setState(() {});
+        },
+        child: Stack(
+          alignment: AlignmentDirectional.topStart,
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width * 0.27,
+              height: MediaQuery.of(context).size.width * 0.4,
+              decoration: BoxDecoration(
+                border: Border.all(
+                    color: _containerColor ?? sunbirdOrange, width: 1),
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(5),
+                ),
+              ),
+              padding: const EdgeInsets.all(2.5),
+              child: Image.file(
+                File(containerPhoto.photoPath),
+                fit: BoxFit.cover,
+              ),
+            ),
+            photoDeleteButton(containerPhoto),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget photoDeleteButton(ContainerPhoto containerPhoto) {
+    return Container(
+      width: 35,
+      height: 35,
+      margin: const EdgeInsets.all(2.5),
+      padding: const EdgeInsets.all(0),
+      child: Center(
+        child: IconButton(
+          padding: const EdgeInsets.all(1),
+          iconSize: 15,
+          onPressed: () {
+            deletePhoto(containerPhoto);
+            setState(() {});
+          },
+          icon: const Icon(Icons.delete),
+          color: Colors.white,
+        ),
+      ),
+      decoration: BoxDecoration(
+          border: Border.all(color: _containerColor ?? sunbirdOrange, width: 1),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(5),
+          ),
+          color: _containerColor),
+    );
+  }
+
+  Widget _photoAddCard() {
     return InkWell(
       onTap: () async {
         await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ObjectDetectorView(
-              customColor: containerColor,
+              customColor: _containerColor,
               containerUID: containerUID!,
             ),
           ),
@@ -638,61 +661,75 @@ class _NewContainerViewState extends State<NewContainerView> {
 
         setState(() {});
       },
-      child: CustomOutlineContainer(
-          margin: 2.5,
-          padding: 5,
-          width: 80,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'add',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(
-                width: 5,
-              ),
-              const Icon(Icons.camera),
-            ],
+      child: Card(
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.27,
+          height: MediaQuery.of(context).size.width * 0.4,
+          padding: const EdgeInsets.all(2.5),
+          decoration: BoxDecoration(
+            border:
+                Border.all(color: _containerColor ?? sunbirdOrange, width: 1),
+            borderRadius: const BorderRadius.all(
+              Radius.circular(5),
+            ),
           ),
-          outlineColor: containerColor!),
+          child: Center(
+            child: Text(
+              '+',
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
-  void updatePhotos() {
-    containerPhotos = [];
-    containerPhotos.addAll(isarDatabase!.containerPhotos
-        .filter()
-        .containerUIDMatches(containerUID ?? '')
-        .findAllSync());
+  void deletePhoto(ContainerPhoto containerPhoto) {
+    //Delete Photo.
+    File(containerPhoto.photoPath).delete();
+
+    //Delete Photo Thumbnail.
+    File(containerPhoto.photoThumbnailPath).delete();
+
+    //Delete References from database.
+    isarDatabase!.writeTxnSync((isar) {
+      isar.containerPhotos
+          .filter()
+          .photoPathMatches(containerPhoto.photoPath)
+          .deleteFirstSync();
+
+      isar.photoTags
+          .filter()
+          .photoPathMatches(containerPhoto.photoPath)
+          .deleteAllSync();
+    });
   }
 
   ///CREATE///
-
-  Widget _createButtonBuilder() {
-    return Builder(builder: (context) {
-      if (selectedContainerType != null && barcodeUID != null) {
-        return FloatingActionButton.extended(
-            backgroundColor: containerColor,
-            onPressed: () {
-              createContainer();
-            },
-            label: Row(
-              children: [
-                const Icon(
-                  Icons.create,
-                  color: Colors.white,
-                ),
-                Text(
-                  'Create',
-                  style: Theme.of(context).textTheme.labelMedium,
-                ),
-              ],
-            ));
-      } else {
-        return Row();
-      }
-    });
+  Widget _createButton() {
+    return Visibility(
+      visible: selectedContainerType != null && barcodeUID != null,
+      child: FloatingActionButton.extended(
+        backgroundColor: _containerColor,
+        onPressed: () {
+          hasCreated = true;
+          setState(() {});
+          createContainer();
+        },
+        label: Row(
+          children: [
+            const Icon(
+              Icons.create,
+              color: Colors.white,
+            ),
+            Text(
+              'Create',
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void createContainer() {
@@ -744,17 +781,17 @@ class _NewContainerViewState extends State<NewContainerView> {
 
   ///MISC///
 
-  Widget _dividerLight() {
+  Divider _divider() {
     return const Divider(
-      height: 10,
-      thickness: .5,
-      color: Colors.white54,
+      height: 8,
+      indent: 2,
+      color: Colors.white30,
     );
   }
 
-  Widget _dividerHeavy() {
+  Divider _dividerHeading() {
     return const Divider(
-      height: 10,
+      height: 8,
       thickness: 1,
       color: Colors.white,
     );
