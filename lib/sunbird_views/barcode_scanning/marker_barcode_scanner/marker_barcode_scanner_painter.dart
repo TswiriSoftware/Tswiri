@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:ui';
 import 'dart:ui' as ui;
 
@@ -7,7 +6,6 @@ import 'package:flutter_google_ml_kit/functions/barcode_calculations/calculate_b
 import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
 import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
 
-import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 import '../../../VisionDetectorViews/painters/coordinates_translator.dart';

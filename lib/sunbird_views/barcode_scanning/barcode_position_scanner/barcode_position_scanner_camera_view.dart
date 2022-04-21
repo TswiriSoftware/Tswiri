@@ -1,5 +1,6 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:camera/camera.dart';

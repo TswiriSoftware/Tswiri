@@ -8,7 +8,6 @@ import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dar
 import 'package:isar/isar.dart';
 
 import '../../widgets/basic_outline_containers/custom_outline_container.dart';
-import '../../widgets/basic_outline_containers/light_container.dart';
 
 class NewContainerTypeView extends StatefulWidget {
   const NewContainerTypeView({Key? key}) : super(key: key);

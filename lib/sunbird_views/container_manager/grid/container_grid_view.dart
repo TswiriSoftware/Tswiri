@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
@@ -8,6 +10,8 @@ import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_pos
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/container_new_markers.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/grid_visualizer_painter.dart';
+import 'package:flutter_isolate/flutter_isolate.dart';
+import 'package:googleapis/storage/v1.dart';
 import 'package:isar/isar.dart';
 import '../../../isar_database/container_relationship/container_relationship.dart';
 
@@ -130,6 +134,7 @@ class _ContainerGridViewState extends State<ContainerGridView> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _deleteButton(),
+        _killIsolates(),
         _scanButton(),
       ],
     );
@@ -159,6 +164,25 @@ class _ContainerGridViewState extends State<ContainerGridView> {
         children: [
           Text(
             'Scan ',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const Icon(Icons.scatter_plot)
+        ],
+      ),
+    );
+  }
+
+  Widget _killIsolates() {
+    return ElevatedButton(
+      style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(containerTypeColor)),
+      onPressed: () async {
+        await FlutterIsolate.killAll();
+      },
+      child: Row(
+        children: [
+          Text(
+            'Kill ',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const Icon(Icons.scatter_plot)
@@ -418,7 +442,7 @@ class _ContainerGridViewState extends State<ContainerGridView> {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('Ok'))
+                child: const Text('Ok'))
           ],
         );
       },
