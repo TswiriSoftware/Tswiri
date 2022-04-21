@@ -196,7 +196,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
   Widget uploadFilesButton(GoogleSignInAccount user) {
     return Builder(builder: (context) {
       if (isBusyDownloading || isBusyUploading) {
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
       } else {
         return ElevatedButton(
             onPressed: () async {
@@ -217,7 +217,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
       children: [
         Builder(builder: (context) {
           if (!isBusyUploading) {
-            return SizedBox.shrink();
+            return const SizedBox.shrink();
           } else {
             return Card(
               margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -318,7 +318,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
   Widget downloadFilesButton(GoogleSignInAccount user) {
     return Builder(builder: (context) {
       if (isBusyDownloading || isBusyUploading) {
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
       } else {
         return ElevatedButton(
           onPressed: () async {
@@ -351,9 +351,6 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
           downloadProgess = downloadProgess + stepValue;
         });
 
-        drive.Media file = await driveApi.files.get(fileList.files!.first.id!,
-            downloadOptions: drive.DownloadOptions.fullMedia) as drive.Media;
-
         String backupPath =
             (await getApplicationSupportDirectory()).path + '/download/';
 
@@ -364,8 +361,6 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
         } else {
           log('exists: ' + filename);
         }
-
-        File saveFile = File('$backupPath/filename.json');
       }
     }
 

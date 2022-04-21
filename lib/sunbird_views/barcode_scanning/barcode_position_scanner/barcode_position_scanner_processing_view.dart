@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
@@ -292,11 +290,11 @@ class _BarcodePositionScannerProcessingViewState
     //     .findAllSync()
     //     .toString());
 
-    List<ContainerEntry> containerEntries = isarDatabase!.containerEntrys
-        .filter()
-        .repeat(scannedBarcodes,
-            (q, String element) => q.barcodeUIDMatches(element))
-        .findAllSync();
+    // List<ContainerEntry> containerEntries = isarDatabase!.containerEntrys
+    //     .filter()
+    //     .repeat(scannedBarcodes,
+    //         (q, String element) => q.barcodeUIDMatches(element))
+    //     .findAllSync();
 
     List<ContainerRelationship> containerRelatiopnships = [];
     //TODO: delete existing Container RelationShips ?
