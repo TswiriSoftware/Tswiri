@@ -229,8 +229,6 @@ void imageProcessorIsolate(SendPort sendPort) {
     }
   }
 
-  //TODO: create asset image , test ml kit here.
-
   receivePort.listen(
     (message) {
       if (message is Uint8List) {

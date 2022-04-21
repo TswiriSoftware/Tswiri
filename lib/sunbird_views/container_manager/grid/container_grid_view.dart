@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
@@ -11,7 +9,6 @@ import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/marker_barc
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/container_new_markers.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/grid_visualizer_painter.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
-import 'package:googleapis/storage/v1.dart';
 import 'package:isar/isar.dart';
 import '../../../isar_database/container_relationship/container_relationship.dart';
 
