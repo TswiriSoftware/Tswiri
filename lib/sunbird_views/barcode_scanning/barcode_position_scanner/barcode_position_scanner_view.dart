@@ -57,8 +57,8 @@ class _BarcodePositionScannerViewState
     barcodesToScan = widget.barcodesToScan;
     gridMarkers = widget.gridMarkers;
 
-    log('barcodesToScan: ' + barcodesToScan.toString());
-    log('gridMarkers: ' + gridMarkers.toString());
+    //log('barcodesToScan: ' + barcodesToScan.toString());
+    // log('gridMarkers: ' + gridMarkers.toString());
     super.initState();
   }
 

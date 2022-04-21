@@ -170,7 +170,7 @@ class _CheckInterBarcodeDataState extends State<CheckInterBarcodeData> {
         movedBarcodes.add(newPosition.uid);
       }
     }
-    log(movedBarcodes.toString());
+    // log(movedBarcodes.toString());
 
     return newData;
   }
@@ -234,7 +234,7 @@ List<RealBarcodePosition> generateGridFromPoint(
   List<Marker> markers = isarDatabase!.markers.where().findAllSync();
 
   if (markers.isEmpty) {
-    log('No Markers');
+    //log('No Markers');
     return [];
   }
 

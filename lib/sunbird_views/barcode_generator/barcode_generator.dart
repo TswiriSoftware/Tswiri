@@ -12,13 +12,13 @@ Future<Uint8List> barcodePdfGenerator({required List<String> barcodeUIDs}) {
   int numberOfPages = (barcodeUIDs.length ~/ 6);
   int remainder = barcodeUIDs.length % 6;
 
-  log('number of barcodes: ' + barcodeUIDs.length.toString());
-  log('remainder: ' + remainder.toString());
-  log('number of pages: ' + numberOfPages.toString());
+  //log('number of barcodes: ' + barcodeUIDs.length.toString());
+  //log('remainder: ' + remainder.toString());
+  //log('number of pages: ' + numberOfPages.toString());
 
   for (var i = 0; i <= numberOfPages; i++) {
     if (i < numberOfPages) {
-      log('page_' + i.toString());
+      //log('page_' + i.toString());
       document.addPage(
         pw.Page(
           pageFormat: PdfPageFormat.a4,
@@ -33,7 +33,7 @@ Future<Uint8List> barcodePdfGenerator({required List<String> barcodeUIDs}) {
         ),
       );
     } else if (remainder > 0) {
-      log('page_' + (i + 1).toString());
+      //log('page_' + (i + 1).toString());
       document.addPage(
         pw.Page(
           pageFormat: PdfPageFormat.a4,

@@ -677,7 +677,7 @@ class _SearchViewState extends State<SearchView> {
       searchResults.sort(((a, b) => b.score.compareTo(a.score)));
     });
 
-    log(searchResults.toString());
+    //log(searchResults.toString());
   }
 }
 

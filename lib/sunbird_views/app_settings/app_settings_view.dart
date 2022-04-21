@@ -2,10 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/google_drive_backup.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app_settings_functions.dart';
@@ -286,66 +286,82 @@ class _SettingsViewState extends State<SettingsView> {
   }
 
   Widget googleVisionImageLabelingSettings(Settings snapshot) {
-    return OrangeOutlineContainer(
-      margin: 2.5,
-      padding: 5,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Google Vision: ',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              Checkbox(
-                checkColor: Colors.white,
-                fillColor: MaterialStateProperty.resolveWith(getColor),
-                value: snapshot.googleImageLabeling,
-                onChanged: (bool? value) async {
-                  final prefs = await SharedPreferences.getInstance();
-                  setState(() {
-                    googleImageLabeling = value!;
-                    prefs.setBool(
-                        googleImageLabelingPreference, googleImageLabeling);
-                  });
-                },
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Google Vision Confidnce: ',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.15,
-                child: TextFormField(
-                  controller: googleImageLabelingConfidenceThresholdController,
-                  onFieldSubmitted: (value) async {
-                    final prefs = await SharedPreferences.getInstance();
-                    googleImageLabelingConfidenceThreshold = int.parse(value);
-                    prefs.setInt(
-                        googleImageLabelingConfidenceThresholdPreference,
-                        googleImageLabelingConfidenceThreshold);
-                  },
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: const InputDecoration(
-                    prefix: Text('0.'),
-                    border: UnderlineInputBorder(),
-                  ),
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      color: Colors.black38,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: sunbirdOrange, width: 1.5),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Google Vision: ',
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-              )
-            ],
-          ),
-        ],
+                Checkbox(
+                  checkColor: Colors.white,
+                  fillColor: MaterialStateProperty.resolveWith(getColor),
+                  value: snapshot.googleImageLabeling,
+                  onChanged: (bool? value) async {
+                    final prefs = await SharedPreferences.getInstance();
+                    setState(() {
+                      googleImageLabeling = value!;
+                      prefs.setBool(
+                          googleImageLabelingPreference, googleImageLabeling);
+                    });
+                  },
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Google Vision Confidnce: ',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.15,
+                  child: TextFormField(
+                    controller:
+                        googleImageLabelingConfidenceThresholdController,
+                    onFieldSubmitted: (value) async {
+                      final prefs = await SharedPreferences.getInstance();
+                      googleImageLabelingConfidenceThreshold = int.parse(value);
+                      prefs.setInt(
+                          googleImageLabelingConfidenceThresholdPreference,
+                          googleImageLabelingConfidenceThreshold);
+                    },
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration: const InputDecoration(
+                      prefix: Text('0.'),
+                      border: UnderlineInputBorder(),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
       ),
     );
+
+    // OrangeOutlineContainer(
+    //   margin: 2.5,
+    //   padding: 5,
+    //   child:
+    // );
   }
 
   // Widget googleVisionProductsSettings(Settings snapshot) {
@@ -412,88 +428,95 @@ class _SettingsViewState extends State<SettingsView> {
   // }
 
   Widget inceptionV4Settings(Settings snapshot) {
-    return OrangeOutlineContainer(
-      margin: 2.5,
-      padding: 5,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'InceptionV4 ',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              Checkbox(
-                checkColor: Colors.white,
-                fillColor: MaterialStateProperty.resolveWith(getColor),
-                value: snapshot.inceptionV4,
-                onChanged: (bool? value) async {
-                  final prefs = await SharedPreferences.getInstance();
-                  setState(() {
-                    inceptionV4 = value!;
-                    prefs.setBool(inceptionV4Preference, inceptionV4);
-                  });
-                },
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Google Vision Products Confidnce: ',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.15,
-                child: TextFormField(
-                  controller:
-                      inceptionV4PreferenceConfidenceThresholdController,
-                  onFieldSubmitted: (value) async {
-                    final prefs = await SharedPreferences.getInstance();
-                    inceptionV4PreferenceConfidenceThreshold = int.parse(value);
-                    prefs.setInt(
-                        inceptionV4PreferenceConfidenceThresholdPreference,
-                        inceptionV4PreferenceConfidenceThreshold);
-                  },
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: const InputDecoration(
-                    prefix: Text('0.'),
-                    border: UnderlineInputBorder(),
-                  ),
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      color: Colors.black38,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: sunbirdOrange, width: 1.5),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'InceptionV4 ',
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-              )
-            ],
-          ),
-        ],
+                Checkbox(
+                  checkColor: Colors.white,
+                  fillColor: MaterialStateProperty.resolveWith(getColor),
+                  value: snapshot.inceptionV4,
+                  onChanged: (bool? value) async {
+                    final prefs = await SharedPreferences.getInstance();
+                    setState(() {
+                      inceptionV4 = value!;
+                      prefs.setBool(inceptionV4Preference, inceptionV4);
+                    });
+                  },
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Google Vision Products Confidnce: ',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.15,
+                  child: TextFormField(
+                    controller:
+                        inceptionV4PreferenceConfidenceThresholdController,
+                    onFieldSubmitted: (value) async {
+                      final prefs = await SharedPreferences.getInstance();
+                      inceptionV4PreferenceConfidenceThreshold =
+                          int.parse(value);
+                      prefs.setInt(
+                          inceptionV4PreferenceConfidenceThresholdPreference,
+                          inceptionV4PreferenceConfidenceThreshold);
+                    },
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration: const InputDecoration(
+                      prefix: Text('0.'),
+                      border: UnderlineInputBorder(),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget googleAccount() {
-    return InkWell(
-      onTap: (() {
+    return ElevatedButton(
+      onPressed: () {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const GoogleDriveBackup()),
         );
-      }),
-      child: OrangeOutlineContainer(
-          margin: 2.5,
-          padding: 10,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Manage Google Account',
-                style: Theme.of(context).textTheme.bodyLarge,
-              )
-            ],
-          )),
+      },
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Manage Google Account',
+            style: Theme.of(context).textTheme.bodyLarge,
+          )
+        ],
+      ),
     );
   }
 }

@@ -39,7 +39,7 @@ class GridVisualizerPainter extends CustomPainter {
         .filter()
         .containerUIDMatches(containerUID)
         .findFirstSync()!;
-    log(currentContainer.toString());
+    //log(currentContainer.toString());
 
     ContainerEntry? parentContainerEntry;
     ContainerRelationship? relationship;
@@ -81,7 +81,7 @@ class GridVisualizerPainter extends CustomPainter {
     barcodesToDraw = [];
     barcodesToDraw.addAll(children.map((e) => e.barcodeUID!));
 
-    log('Children: ' + children.toString());
+    //log('Children: ' + children.toString());
     for (DisplayPoint point in myPoints) {
       if (barcodesToDraw.contains(point.barcodeID)) {
         boxes.add(point.barcodePosition);

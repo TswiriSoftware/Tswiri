@@ -20,7 +20,6 @@ import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:async';
 
@@ -40,12 +39,30 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
     with TickerProviderStateMixin {
   final GoogleSignInAccount? user = _currentUser;
 
-  bool isBusy = false;
+  bool isBusyUploading = false;
+  bool isBusyDownloading = false;
   String state = '';
-  double progress = 0;
+  double uploadProgress = 0;
+  double downloadProgess = 0;
   double stepValue = 1;
 
   List<ContainerPhoto> allPhotos = [];
+
+  List<String> filesToUpload = [
+    'containerTypes.json',
+    'containerEntries.json',
+    'markers.json',
+    'mlTags.json',
+    'photoTags.json',
+    'realInterBarcodeVectorEntry.json',
+    'tags.json',
+    'containerRelationships.json',
+    'containerPhotos.json',
+    'barcodeSizeDistanceEntrys.json',
+    'barcodePropertys.json',
+    'barcodeGenerationEntrys.json',
+    'containerTags.json'
+  ];
 
   @override
   void initState() {
@@ -77,7 +94,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
         centerTitle: true,
         elevation: 0,
         leading: Builder(builder: (context) {
-          if (isBusy) {
+          if (isBusyUploading) {
             return Container();
           } else {
             return IconButton(
@@ -98,7 +115,10 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
             return Column(
               children: [
                 _userLoggedIn(user),
-                backupWidget(user),
+                uploadFilesButton(user),
+                uploadWidget(user),
+                downloadFilesButton(user),
+                _downloadWidget(),
               ],
             );
           } else {
@@ -110,24 +130,36 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
   }
 
   Widget _loginWidget() {
-    return Column(
-      children: [
-        OrangeOutlineContainer(
-          child: ListTile(
-            title: Text(
-              'Please login',
-              style: Theme.of(context).textTheme.labelSmall,
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      color: Colors.white12,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: sunbirdOrange, width: 1.5),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            ListTile(
+              title: Text(
+                'Please login',
+                style: Theme.of(context).textTheme.labelSmall,
+              ),
+              trailing: IconButton(
+                onPressed: () {
+                  _handleSignIn();
+                },
+                icon: const Icon(Icons.login),
+              ),
             ),
-            trailing: IconButton(
-              onPressed: () {
-                _handleSignIn();
-              },
-              icon: const Icon(Icons.login),
-            ),
-          ),
+            const Divider(),
+            const Text('You are not currently signed in.'),
+          ],
         ),
-        const Text('You are not currently signed in.'),
-      ],
+      ),
     );
   }
 
@@ -161,21 +193,31 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
     );
   }
 
-  Widget backupWidget(GoogleSignInAccount user) {
+  Widget uploadFilesButton(GoogleSignInAccount user) {
+    return Builder(builder: (context) {
+      if (isBusyDownloading || isBusyUploading) {
+        return SizedBox.shrink();
+      } else {
+        return ElevatedButton(
+            onPressed: () async {
+              setState(() {
+                isBusyUploading = true;
+              });
+
+              await uploadFiles(user);
+            },
+            child:
+                Text('Backup', style: Theme.of(context).textTheme.bodyLarge));
+      }
+    });
+  }
+
+  Widget uploadWidget(GoogleSignInAccount user) {
     return Column(
       children: [
         Builder(builder: (context) {
-          if (isBusy == false) {
-            return ElevatedButton(
-                onPressed: () async {
-                  setState(() {
-                    isBusy = true;
-                  });
-
-                  await uploadFiles(user);
-                },
-                child: Text('Backup',
-                    style: Theme.of(context).textTheme.bodyLarge));
+          if (!isBusyUploading) {
+            return SizedBox.shrink();
           } else {
             return Card(
               margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -211,7 +253,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: LinearProgressIndicator(
-                        value: progress,
+                        value: uploadProgress,
                       ),
                     ),
                   ],
@@ -224,23 +266,127 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
     );
   }
 
+  Widget _downloadWidget() {
+    return Builder(builder: (context) {
+      if (isBusyDownloading) {
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          color: Colors.white12,
+          elevation: 5,
+          shadowColor: Colors.black26,
+          shape: RoundedRectangleBorder(
+            side: const BorderSide(color: sunbirdOrange, width: 1.5),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Column(
+                      children: [
+                        Text(
+                          'Downloading',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        Text(
+                          state,
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: LinearProgressIndicator(
+                    value: downloadProgess,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      } else {
+        return Row();
+      }
+    });
+  }
+
+  Widget downloadFilesButton(GoogleSignInAccount user) {
+    return Builder(builder: (context) {
+      if (isBusyDownloading || isBusyUploading) {
+        return SizedBox.shrink();
+      } else {
+        return ElevatedButton(
+          onPressed: () async {
+            downloadGoogleDriveFiles(user);
+            setState(() {
+              isBusyDownloading = true;
+            });
+          },
+          child: Text(
+            'Donwload Backup',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        );
+      }
+    });
+  }
+
+  Future<void> downloadGoogleDriveFiles(user) async {
+    final authHeaders = await user.authHeaders;
+    final authenticateClient = GoogleAuthClient(authHeaders);
+    final driveApi = drive.DriveApi(authenticateClient);
+
+    for (var filename in filesToUpload) {
+      drive.FileList fileList = await driveApi.files.list(
+        q: "name = '$filename' and trashed = false ",
+      );
+      if (fileList.files!.isNotEmpty) {
+        setState(() {
+          state = filename.split('.').first;
+          downloadProgess = downloadProgess + stepValue;
+        });
+
+        drive.Media file = await driveApi.files.get(fileList.files!.first.id!,
+            downloadOptions: drive.DownloadOptions.fullMedia) as drive.Media;
+
+        String backupPath =
+            (await getApplicationSupportDirectory()).path + '/download/';
+
+        if (!await File('$backupPath/sunbird/download/$filename').exists()) {
+          await File('$backupPath/sunbird/download/$filename')
+              .create(recursive: true);
+          log('created: ' + filename);
+        } else {
+          log('exists: ' + filename);
+        }
+
+        File saveFile = File('$backupPath/filename.json');
+      }
+    }
+
+    // String folderName = "photos";
+
+    // final found = await driveApi.files.list(
+    //   q: "'$folderName' in parents",
+    // );
+
+    // final files = found.files;
+
+    // log(files.toString());
+
+    setState(() {
+      isBusyDownloading = false;
+      downloadProgess = 0;
+    });
+  }
+
   Future uploadFiles(GoogleSignInAccount user) async {
-    progress = 0;
-    List<String> filesToUpload = [
-      'containerTypes.json',
-      'containerEntries.json',
-      'markers.json',
-      'mlTags.json',
-      'photoTags.json',
-      'realInterBarcodeVectorEntry.json',
-      'tags.json',
-      'containerRelationships.json',
-      'containerPhotos.json',
-      'barcodeSizeDistanceEntrys.json',
-      'barcodePropertys.json',
-      'barcodeGenerationEntrys.json',
-      'containerTags.json'
-    ];
+    uploadProgress = 0;
 
     final authHeaders = await user.authHeaders;
     final authenticateClient = GoogleAuthClient(authHeaders);
@@ -258,7 +404,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
         //Inform user of progress
         setState(() {
           state = fileName.split('.').first;
-          progress = progress + stepValue;
+          uploadProgress = uploadProgress + stepValue;
         });
 
         //Ensure files exists
@@ -388,14 +534,15 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
               File(item.photoPath), photoFolderID);
           setState(() {
             state = 'photos';
-            progress = progress + stepValue;
+            uploadProgress = uploadProgress + stepValue;
           });
         }
       }
     }
 
     setState(() {
-      isBusy = false;
+      isBusyUploading = false;
+      uploadProgress = 0;
     });
   }
 

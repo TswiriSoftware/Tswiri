@@ -3,7 +3,6 @@ import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:isar/isar.dart';
 
 class TagManagerView extends StatefulWidget {
@@ -109,6 +108,7 @@ class _TagManagerViewState extends State<TagManagerView> {
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.white10,
+            label: const Text('New Tag'),
             contentPadding: const EdgeInsets.symmetric(horizontal: 10),
             suffixIcon: IconButton(
               onPressed: () {
@@ -123,46 +123,6 @@ class _TagManagerViewState extends State<TagManagerView> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget tagTextField() {
-    return OrangeOutlineContainer(
-      margin: 5,
-      padding: 8,
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: tagController,
-              onChanged: (value) {
-                setState(() {});
-              },
-              style: const TextStyle(fontSize: 18),
-              textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.only(left: 10),
-                labelText: 'Tag',
-                labelStyle: TextStyle(fontSize: 15),
-                border: OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white)),
-              ),
-            ),
-          ),
-          Builder(builder: (context) {
-            return InkWell(
-              onTap: () {},
-              child: OrangeOutlineContainer(
-                child: Text(
-                  'Add',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ),
-            );
-          })
-        ],
-      ),
     );
   }
 

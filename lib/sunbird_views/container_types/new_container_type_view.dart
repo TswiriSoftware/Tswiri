@@ -7,9 +7,6 @@ import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dar
 
 import 'package:isar/isar.dart';
 
-import '../../widgets/basic_outline_containers/custom_outline_container.dart';
-import '../../widgets/basic_outline_containers/light_container.dart';
-
 class NewContainerTypeView extends StatefulWidget {
   const NewContainerTypeView({Key? key}) : super(key: key);
 
@@ -413,28 +410,22 @@ class _NewContainerTypeViewState extends State<NewContainerTypeView> {
             setState(() {});
           }
         },
-        child: CustomOutlineContainer(
-          height: 50,
-          outlineColor: newContainerColor ?? Colors.deepOrange,
-          backgroundColor: newContainerColor ?? Colors.deepOrange,
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+              border: Border.all(color: currentColor, width: 1),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(5),
+              ),
+              color: currentColor),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomOutlineContainer(
-                height: 35,
-                width: 80,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Change',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const Icon(Icons.color_lens)
-                  ],
-                ),
-                outlineColor: newContainerColor ?? Colors.deepOrange,
+              Text(
+                'Change',
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
+              const Icon(Icons.color_lens)
             ],
           ),
         ),
@@ -455,28 +446,20 @@ class _NewContainerTypeViewState extends State<NewContainerTypeView> {
             ),
           ),
           actions: [
-            InkWell(
-              onTap: () {
-                // setState(() => currentColor = pickerColor);
+            ElevatedButton(
+              onPressed: () {
                 Navigator.pop(context, currentColor);
               },
-              child: CustomOutlineContainer(
-                  margin: 2.5,
-                  padding: 5,
-                  height: 35,
-                  width: 80,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'change',
-                        style: Theme.of(context).textTheme.labelMedium,
-                      ),
-                    ],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Change',
+                    style: Theme.of(context).textTheme.labelMedium,
                   ),
-                  backgroundColor: newContainerColor ?? Colors.deepOrange,
-                  outlineColor: newContainerColor ?? Colors.deepOrange),
-            ),
+                ],
+              ),
+            )
           ],
         );
       },

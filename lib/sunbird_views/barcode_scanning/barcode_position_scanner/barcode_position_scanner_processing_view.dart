@@ -12,8 +12,7 @@ import 'package:flutter_google_ml_kit/objects/raw_on_image_inter_barcode_data.da
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/functions/build_real_inter_barcode_offsets.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/functions/functions.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/dark_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
+
 import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -108,12 +107,17 @@ class _BarcodePositionScannerProcessingViewState
         itemCount: data.length,
         itemBuilder: (context, index) {
           RealInterBarcodeOffset realInterBarcodeOffset = data[index];
-          return LightContainer(
-            margin: 2.5,
-            padding: 0,
-            child: DarkContainer(
-              margin: 2.5,
-              padding: 5,
+          return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            color: Colors.white12,
+            elevation: 5,
+            shadowColor: Colors.black26,
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(color: sunbirdOrange, width: 1.5),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -283,10 +287,10 @@ class _BarcodePositionScannerProcessingViewState
           .deleteAllSync());
     }
 
-    log(isarDatabase!.realInterBarcodeVectorEntrys
-        .where()
-        .findAllSync()
-        .toString());
+    // log(isarDatabase!.realInterBarcodeVectorEntrys
+    //     .where()
+    //     .findAllSync()
+    //     .toString());
 
     List<ContainerEntry> containerEntries = isarDatabase!.containerEntrys
         .filter()
@@ -309,10 +313,10 @@ class _BarcodePositionScannerProcessingViewState
       isar.containerRelationships.putAllSync(containerRelatiopnships);
     });
 
-    log(isarDatabase!.realInterBarcodeVectorEntrys
-        .where()
-        .findAllSync()
-        .toString());
+    // log(isarDatabase!.realInterBarcodeVectorEntrys
+    //     .where()
+    //     .findAllSync()
+    //     .toString());
 
     return finalRealInterBarcodeOffsets;
   }

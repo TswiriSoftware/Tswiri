@@ -13,6 +13,7 @@ import 'package:flutter_google_ml_kit/sunbird_views/container_search/search_view
 import 'package:flutter_google_ml_kit/sunbird_views/container_types/container_types_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/tag_manager/tag_manager_view.dart';
 import 'package:flutter_google_ml_kit/widgets/card_widgets/custom_card_widget.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
@@ -22,8 +23,8 @@ import 'sunbird_views/app_settings/app_settings_view.dart';
 List<CameraDescription> cameras = [];
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
@@ -62,6 +63,7 @@ Future<void> main() async {
   isarDatabase = openIsar();
 
   createBasicContainerTypes();
+  FlutterNativeSplash.remove();
 }
 
 class MyApp extends StatelessWidget {

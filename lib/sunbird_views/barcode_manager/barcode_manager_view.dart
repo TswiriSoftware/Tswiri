@@ -288,6 +288,6 @@ class _BarcodeManagerViewState extends State<BarcodeManagerView> {
     }
     setState(() {});
 
-    log(allBarcodes.toString());
+    //log(allBarcodes.toString());
   }
 }

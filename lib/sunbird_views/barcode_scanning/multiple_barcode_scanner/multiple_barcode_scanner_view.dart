@@ -2,9 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/multiple_barcode_scanner/multiple_barcode_scanner_camera_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/multiple_barcode_scanner/multiple_barcode_scanner_detector_painter.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/dark_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 class MultipleBarcodeScannerView extends StatefulWidget {
@@ -42,61 +39,6 @@ class _MultipleBarcodeScannerViewState
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Builder(
-                builder: (context) {
-                  if (showList) {
-                    return LightContainer(
-                      margin: 50,
-                      padding: 0,
-                      child: DarkContainer(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              'hold to delete',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            const Divider(
-                              color: Colors.white54,
-                            ),
-                            Wrap(
-                                children: scannedBarcodes
-                                    .map(
-                                      (e) => InkWell(
-                                        onLongPress: () {
-                                          scannedBarcodes.remove(e);
-                                        },
-                                        child: OrangeOutlineContainer(
-                                            child: Text(e)),
-                                      ),
-                                    )
-                                    .toList()),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    showList = !showList;
-                                  },
-                                  icon: const Icon(Icons.close),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  } else {
-                    return FloatingActionButton(
-                      heroTag: null,
-                      onPressed: () {
-                        showList = !showList;
-                      },
-                      child: const Icon(Icons.list),
-                    );
-                  }
-                },
-              ),
               const SizedBox(
                 height: 20,
               ),

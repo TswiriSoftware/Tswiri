@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/orange_outline_container.dart';
+import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/user_accelerometer_z_axis_data_objects.dart';
@@ -9,11 +8,11 @@ import 'package:flutter_google_ml_kit/objects/calibration/barcode_size_objects.d
 import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/data_processing/camera_calibration_data_processing_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/camera_view/camera_calibration_camera_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/painters/barcode_calibration_painter.dart';
-import 'package:flutter_google_ml_kit/widgets/button_widgets/orange_text_button_widget.dart';
+
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 import 'package:sensors_plus/sensors_plus.dart';
-import 'package:vector_math/vector_math.dart';
+import 'package:vector_math/vector_math.dart' as vm;
 
 import 'functions/check_if_camera_feed_is_black.dart';
 
@@ -60,8 +59,8 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
   late StreamSubscription<UserAccelerometerEvent> userAccelerometerEventsSub;
   late StreamSubscription<GyroscopeEvent> gyroscopeEventsSub;
 
-  Vector3? initialPhoneOrientation;
-  Vector3? gyroScopeOrientation;
+  vm.Vector3? initialPhoneOrientation;
+  vm.Vector3? gyroScopeOrientation;
 
   @override
   void initState() {
@@ -82,9 +81,9 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Builder(builder: (context) {
         if (hasStartedCalibration == false && initializeCalibration == false) {
-          return instructionWidget();
+          return Center(child: _instructionWidget());
         } else if (hasPhoneDiverted) {
-          return restartCalibrationWidget();
+          return Center(child: _restartWidget());
         }
         return const Center();
       }),
@@ -127,7 +126,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
           initializeCalibration = true;
 
           //Initialize gyroscope tracking :D Big brother is watching dont be naughty.
-          gyroScopeOrientation = Vector3(0, 0, 0);
+          gyroScopeOrientation = vm.Vector3(0, 0, 0);
 
           //Display a snackbar message.
           SnackBar snackBar = const SnackBar(
@@ -196,88 +195,102 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
         maxDiversion < gyroScopeOrientation!.z;
   }
 
-  Widget instructionWidget() {
-    return Center(
-      child: LightContainer(
-          height: MediaQuery.of(context).size.height / 4,
-          child: OrangeOutlineContainer(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Calibrate the Camera',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const Divider(),
-                Text(
-                  '1.Place the camera directly on the barcode, so that the feed goes black.',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                Text(
-                  '2.Then slowly move thephone backwards until it no longer detects the barcode.',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    OrangeTextButton(
-                      text: 'cancel',
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                    )
-                  ],
-                )
-              ],
+  Card _instructionWidget() {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      color: Colors.black87,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: sunbirdOrange, width: 1.5),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Calibrate the Camera',
+              style: Theme.of(context).textTheme.titleSmall,
             ),
-          )),
+            const Divider(),
+            Text(
+              '1.Place the camera directly on the barcode, so that the feed goes black.',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            Text(
+              '2.Then slowly move thephone backwards until it no longer detects the barcode.',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('cancel'),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
     );
   }
 
-  Widget restartCalibrationWidget() {
-    return Center(
-      child: LightContainer(
-          height: MediaQuery.of(context).size.height / 4,
-          child: OrangeOutlineContainer(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Restart Camera Calibration',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const Divider(),
-                Text(
-                  'You have changed your phones direction too much you need to restart the calibraton process D:',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    OrangeTextButton(
-                      text: 'restart',
-                      onTap: () {
-                        rawAccelerometerData = [];
-                        rawBarcodesData = [];
-                        hasStartedCalibration = false;
-                        initializeCalibration = false;
-                        hasPhoneDiverted = false;
-                        gyroScopeOrientation = null;
-                      },
-                    )
-                  ],
-                )
-              ],
+  Card _restartWidget() {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      color: Colors.black87,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: sunbirdOrange, width: 1.5),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Restart Camera Calibration',
+              style: Theme.of(context).textTheme.titleSmall,
             ),
-          )),
+            const Divider(),
+            Text(
+              'You have changed your phones direction too much you need to restart the calibraton process D:',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    rawAccelerometerData = [];
+                    rawBarcodesData = [];
+                    hasStartedCalibration = false;
+                    initializeCalibration = false;
+                    hasPhoneDiverted = false;
+                    gyroScopeOrientation = null;
+                  },
+                  child: const Text('restart'),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
     );
   }
 
@@ -306,7 +319,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
     gyroscopeEventsSub = gyroscopeEvents.listen((GyroscopeEvent event) {
       if (gyroScopeOrientation != null) {
         gyroScopeOrientation =
-            gyroScopeOrientation! + Vector3(event.x, event.y, event.z);
+            gyroScopeOrientation! + vm.Vector3(event.x, event.y, event.z);
       }
     });
   }
@@ -366,11 +379,11 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
             ],
           ),
           actions: [
-            OrangeTextButton(
-              text: 'cancel',
-              onTap: () {
+            ElevatedButton(
+              onPressed: () async {
                 onCancel(initialDialogContext);
               },
+              child: const Text('cancel'),
             ),
           ],
         );

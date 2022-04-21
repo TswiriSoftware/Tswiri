@@ -5,8 +5,7 @@ import 'package:flutter_google_ml_kit/extentions/capitalize_first_character.dart
 import 'package:flutter_google_ml_kit/functions/keyboard_functions/hide_keyboard.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/custom_outline_container.dart';
-import 'package:flutter_google_ml_kit/widgets/basic_outline_containers/light_container.dart';
+
 import 'package:isar/isar.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
@@ -53,7 +52,7 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
     containerTypes = isarDatabase!.containerTypes.where().findAllSync();
     canContainTypes = containerType.canContain;
 
-    log(canContainTypes.toString());
+    //log(canContainTypes.toString());
     super.initState();
   }
 
@@ -427,32 +426,26 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
           Color? newColor = await showColorDialog();
           if (newColor != null) {
             containerColor = newColor;
-            log(containerColor.toString());
+            //log(containerColor.toString());
             setState(() {});
           }
         },
-        child: CustomOutlineContainer(
-          height: 50,
-          outlineColor: containerColor,
-          backgroundColor: containerColor,
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+              border: Border.all(color: currentColor, width: 1),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(5),
+              ),
+              color: currentColor),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomOutlineContainer(
-                height: 35,
-                width: 80,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Change',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const Icon(Icons.color_lens)
-                  ],
-                ),
-                outlineColor: containerColor,
+              Text(
+                'Change',
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
+              const Icon(Icons.color_lens)
             ],
           ),
         ),
@@ -473,27 +466,14 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
             ),
           ),
           actions: [
-            InkWell(
-              onTap: () {
-                // setState(() => currentColor = pickerColor);
+            ElevatedButton(
+              onPressed: () {
                 Navigator.pop(context, currentColor);
               },
-              child: CustomOutlineContainer(
-                  margin: 2.5,
-                  padding: 5,
-                  height: 35,
-                  width: 80,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'change',
-                        style: Theme.of(context).textTheme.labelMedium,
-                      ),
-                    ],
-                  ),
-                  backgroundColor: containerColor,
-                  outlineColor: containerColor),
+              child: Text(
+                'change',
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
             ),
           ],
         );
@@ -531,7 +511,7 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
       descriptionController.text = containerType.containerDescription;
     }
 
-    log(containerColor.toString());
+    // log(containerColor.toString());
     isarDatabase!.writeTxnSync((isar) => isar.containerTypes.putSync(
         ContainerType()
           ..id = containerType.id
@@ -543,7 +523,7 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
           ..markerToChilren = markerToChildren,
         replaceOnConflict: true));
 
-    log(containerType.toString());
+    // log(containerType.toString());
     Navigator.pop(context);
   }
 
