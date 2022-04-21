@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
@@ -287,12 +286,6 @@ class _BarcodePositionScannerProcessingViewState
         .where()
         .findAllSync()
         .toString());
-
-    List<ContainerEntry> containerEntries = isarDatabase!.containerEntrys
-        .filter()
-        .repeat(scannedBarcodes,
-            (q, String element) => q.barcodeUIDMatches(element))
-        .findAllSync();
 
     List<ContainerRelationship> containerRelatiopnships = [];
     //TODO: delete existing Container RelationShips ?

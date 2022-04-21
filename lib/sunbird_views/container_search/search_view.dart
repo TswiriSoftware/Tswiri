@@ -697,11 +697,11 @@ class SearchObject {
 
   @override
   String toString() {
-    // TODO: implement toString
     return '\nuid: ${containerEntry.containerUID}, tags: $tags, score: $score';
   }
 
   @override
+  // ignore: hash_and_equals
   bool operator ==(Object other) {
     if (other is SearchObject && other.runtimeType == runtimeType) {
       if (other.containerEntry.containerUID == containerEntry.containerUID) {
@@ -710,12 +710,4 @@ class SearchObject {
     }
     return false;
   }
-
-  @override
-  // TODO: implement hashCode
-  int get hashCode => super.hashCode;
-
-
-
-
 }

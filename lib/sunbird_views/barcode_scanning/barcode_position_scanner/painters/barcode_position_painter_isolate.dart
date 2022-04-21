@@ -14,8 +14,6 @@ class BarcodePositionPainterIsolate extends CustomPainter {
       ..strokeWidth = 3.0
       ..color = Colors.lightGreenAccent;
 
-    final Paint background = Paint()..color = const Color(0x99000000);
-
     for (int i = 0; i < message.length; i++) {
       List<Offset> offsetPoints = <Offset>[
         Offset(message[i][1][0], message[i][1][1]),
