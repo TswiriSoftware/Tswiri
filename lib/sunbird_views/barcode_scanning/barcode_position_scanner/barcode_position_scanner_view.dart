@@ -61,7 +61,7 @@ class _BarcodePositionScannerViewState
     // log('gridMarkers: ' + gridMarkers.toString());
     super.initState();
   }
-
+//
   @override
   void dispose() {
     barcodeScanner.close();
@@ -99,7 +99,7 @@ class _BarcodePositionScannerViewState
           },
         ));
   }
-
+//
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;
     isBusy = true;
@@ -121,7 +121,39 @@ class _BarcodePositionScannerViewState
           ),
         );
       }
+      //some material ui changes
 
+
+
+
+
+
+
+//
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+
+
+
+
+
+
+
+
+
+//
       //Paint different colors around barcodes depending on their type, Normal, Marker, non-relevant.
       final painter = BarcodePositionPainter(
         barcodes: barcodes,
