@@ -51,6 +51,8 @@ class _BarcodePositionScannerViewState
   SendPort? isolatePort; //send stuff to isolate
   bool hasSentConfig = false;
 
+  //TODO: multiple Isolates ?
+
   @override
   void initState() {
     //Listen to accelerometer events.
