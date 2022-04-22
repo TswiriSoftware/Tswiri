@@ -8,7 +8,7 @@ import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-import '../../../VisionDetectorViews/painters/coordinates_translator.dart';
+import '../../../functions/coordinate_translator/coordinates_translator.dart';
 
 class SingleBarcodeScannerPainter extends CustomPainter {
   SingleBarcodeScannerPainter({

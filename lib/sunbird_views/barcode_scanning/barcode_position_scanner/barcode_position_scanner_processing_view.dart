@@ -4,7 +4,7 @@ import 'package:flutter_google_ml_kit/objects/reworked/on_image_inter_barcode_da
 import 'package:flutter_google_ml_kit/objects/reworked/real_inter_barcode_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
-import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:isar/isar.dart';
 

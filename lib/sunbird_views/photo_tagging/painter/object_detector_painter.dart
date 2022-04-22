@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-import '../../../VisionDetectorViews/painters/coordinates_translator.dart';
+import '../../../functions/coordinate_translator/coordinates_translator.dart';
 import '../../../objects/image_data.dart';
 
 class ObjectDetectorPainter extends CustomPainter {

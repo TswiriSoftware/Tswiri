@@ -13,7 +13,7 @@ import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
 import 'package:isar/isar.dart';
-import '../container_entry/container_entry.dart';
+import '../../isar_database/container_entry/container_entry.dart';
 
 ///Isar dir
 Directory? isarDirectory;
