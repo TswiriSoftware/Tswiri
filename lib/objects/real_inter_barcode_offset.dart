@@ -15,6 +15,10 @@ import 'dart:ui';
 ///6. phone orientation  : radians
 ///
 ///7. timestamp          : millisSinceEpoch
+///
+///
+
+//TODO: Depricate.
 class RealInterBarcodeOffset {
   RealInterBarcodeOffset(
       {required this.uid,

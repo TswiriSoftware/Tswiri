@@ -1,6 +1,8 @@
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-import 'accelerometer_data.dart';
+import 'reworked/accelerometer_data.dart';
+
+//TODO: Depricate.
 
 ///Contains all barcodes scanned at an istant.
 class RawOnImageBarcodeData {

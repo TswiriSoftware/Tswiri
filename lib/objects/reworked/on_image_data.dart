@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:flutter_google_ml_kit/objects/accelerometer_data.dart';
+import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 
 class OnImageBarcodeData {

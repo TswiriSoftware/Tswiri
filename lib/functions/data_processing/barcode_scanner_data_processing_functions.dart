@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
+import 'package:flutter_google_ml_kit/objects/display/real_barcode_position.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
 
 ///Calculates the average interBarcodeOffset.

@@ -6,12 +6,10 @@ import 'package:flutter_google_ml_kit/functions/barcode_calculations/calculate_b
 import 'package:flutter_google_ml_kit/functions/barcode_calculations/data_capturing_functions.dart';
 import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.dart';
 import 'package:flutter_google_ml_kit/global_values/global_paints.dart';
-
-import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/objects/on_screen_barcode_data.dart';
-import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
+import 'package:flutter_google_ml_kit/objects/display/real_barcode_position.dart';
+import 'package:flutter_google_ml_kit/objects/reworked/real_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/functions/functions.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:flutter/services.dart';
 
@@ -183,7 +181,6 @@ class BarcodeDetectorPainterNavigation extends CustomPainter {
 
         //i. Calculate the mm value of 1 on image unit.
         double referenceBarcodeMMperOIU = calculateBacodeMMperOIU(
-          database: isarDatabase!,
           diagonalLength:
               calculateAverageBarcodeDiagonalLength(referenceBarcode),
           barcodeUID: referenceBarcode.displayValue!,

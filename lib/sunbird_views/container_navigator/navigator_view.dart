@@ -5,10 +5,9 @@ import 'package:flutter_google_ml_kit/functions/barcode_position_calulation/barc
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/objects/accelerometer_data.dart';
+import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
-import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
-import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
+import 'package:flutter_google_ml_kit/objects/display/real_barcode_position.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/barcode_navigation_painter.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/camera_view_barcode_navigator.dart';
@@ -343,6 +342,7 @@ class _NavigatorViewState extends State<NavigatorView> {
 //   }
 // }
 
+///Calculate the phone angle on the X-Y plane.
 double calculatePhoneAngle(vm.Vector3 gravityDirection3D) {
   //Convert to 2D plane X-Y
   vm.Vector2 gravityDirection2D =
@@ -355,46 +355,46 @@ double calculatePhoneAngle(vm.Vector3 gravityDirection3D) {
   return angleRadians;
 }
 
-///This stores the AccelerometerEvent and UserAccelerometerEvent at an instant.
-AccelerometerData getAccelerometerData(
-    vm.Vector3 accelerometerEvent, vm.Vector3 userAccelerometerEvent) {
-  return AccelerometerData(
-      accelerometerEvent: accelerometerEvent,
-      userAccelerometerEvent: userAccelerometerEvent);
-}
+// ///This stores the AccelerometerEvent and UserAccelerometerEvent at an instant.
+// AccelerometerData getAccelerometerData(
+//     vm.Vector3 accelerometerEvent, vm.Vector3 userAccelerometerEvent) {
+//   return AccelerometerData(
+//       accelerometerEvent: accelerometerEvent,
+//       userAccelerometerEvent: userAccelerometerEvent);
+// }
 
-//Check if the list contains a given string.
-bool checkIfChecksOutContains(List<String> checksOut, String barcodeID) {
-  if (checksOut.contains(barcodeID)) {
-    return true;
-  } else {
-    return false;
-  }
-}
+// //Check if the list contains a given string.
+// bool checkIfChecksOutContains(List<String> checksOut, String barcodeID) {
+//   if (checksOut.contains(barcodeID)) {
+//     return true;
+//   } else {
+//     return false;
+//   }
+// }
 
-///Checks if the interBarcodeOffset is within a margin of error from the storedInterBarcodeOffset
-bool checkIfInterbarcodeOffsetIsWithinError(
-    RealInterBarcodeOffset averagedRealInterBarcodeOffset,
-    Offset storedInterbarcodeOffset) {
-//This is to calculate the amount of positional error we allow for in mm.
-  double errorValue = 20; // max error value in mm
-  double currentX = averagedRealInterBarcodeOffset.offset.dx;
-  double currentXLowerBoundry = currentX - (errorValue);
-  double currentXUpperBoundry = currentX + (errorValue);
+// ///Checks if the interBarcodeOffset is within a margin of error from the storedInterBarcodeOffset
+// bool checkIfInterbarcodeOffsetIsWithinError(
+//     RealInterBarcodeOffset averagedRealInterBarcodeOffset,
+//     Offset storedInterbarcodeOffset) {
+// //This is to calculate the amount of positional error we allow for in mm.
+//   double errorValue = 20; // max error value in mm
+//   double currentX = averagedRealInterBarcodeOffset.offset.dx;
+//   double currentXLowerBoundry = currentX - (errorValue);
+//   double currentXUpperBoundry = currentX + (errorValue);
 
-  double currentY = averagedRealInterBarcodeOffset.offset.dy;
-  double currentYLowerBoundry = currentY - (errorValue);
-  double currentYUpperBoundry = currentY + (errorValue);
+//   double currentY = averagedRealInterBarcodeOffset.offset.dy;
+//   double currentYLowerBoundry = currentY - (errorValue);
+//   double currentYUpperBoundry = currentY + (errorValue);
 
-  double storedX = storedInterbarcodeOffset.dx;
-  double storedY = storedInterbarcodeOffset.dy;
+//   double storedX = storedInterbarcodeOffset.dx;
+//   double storedY = storedInterbarcodeOffset.dy;
 
-  if (storedX <= currentXUpperBoundry &&
-      storedX >= currentXLowerBoundry &&
-      storedY <= currentYUpperBoundry &&
-      storedY >= currentYLowerBoundry) {
-    return true;
-  } else {
-    return false;
-  }
-}
+//   if (storedX <= currentXUpperBoundry &&
+//       storedX >= currentXLowerBoundry &&
+//       storedY <= currentYUpperBoundry &&
+//       storedY >= currentYLowerBoundry) {
+//     return true;
+//   } else {
+//     return false;
+//   }
+// }

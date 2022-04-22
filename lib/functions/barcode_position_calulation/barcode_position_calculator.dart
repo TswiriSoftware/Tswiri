@@ -4,7 +4,7 @@ import 'package:flutter_google_ml_kit/functions/data_processing/barcode_scanner_
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
-import 'package:flutter_google_ml_kit/objects/real_barcode_position.dart';
+import 'package:flutter_google_ml_kit/objects/display/real_barcode_position.dart';
 import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
 import 'package:isar/isar.dart';
 
