@@ -3,8 +3,8 @@ import 'package:flutter_google_ml_kit/objects/accelerometer_data.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 ///Describes the "Offset" between two barcodes.
-class RawOnImageInterBarcodeData {
-  RawOnImageInterBarcodeData(
+class RawOnImageInterBarcodeDataOLD {
+  RawOnImageInterBarcodeDataOLD(
       {required this.startBarcode,
       required this.endBarcode,
       required this.accelerometerData,
@@ -76,7 +76,7 @@ class RawOnImageInterBarcodeData {
 
   @override
   bool operator ==(Object other) {
-    return other is RawOnImageInterBarcodeData && hashCode == other.hashCode;
+    return other is RawOnImageInterBarcodeDataOLD && hashCode == other.hashCode;
   }
 
   @override

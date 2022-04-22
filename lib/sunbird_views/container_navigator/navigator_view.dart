@@ -12,7 +12,6 @@ import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/barcode_navigation_painter.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/camera_view_barcode_navigator.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/check_interbarcode_data.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
 import 'package:sensors_plus/sensors_plus.dart';

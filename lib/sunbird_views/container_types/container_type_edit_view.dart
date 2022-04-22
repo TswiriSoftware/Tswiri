@@ -5,7 +5,6 @@ import 'package:flutter_google_ml_kit/extentions/capitalize_first_character.dart
 import 'package:flutter_google_ml_kit/functions/keyboard_functions/hide_keyboard.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
-
 import 'package:isar/isar.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 

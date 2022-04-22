@@ -1,3 +1,4 @@
+import 'package:flutter_google_ml_kit/objects/reworked/real_inter_barcode_data.dart';
 import 'package:isar/isar.dart';
 part 'real_interbarcode_vector_entry.g.dart';
 
@@ -49,5 +50,17 @@ class RealInterBarcodeVectorEntry {
       ..z = json['z'] as double
       ..timestamp = json['timestamp'] as int
       ..creationTimestamp = json['creationTimestamp'] as int;
+  }
+
+  RealInterBarcodeVectorEntry fromRealInterBarcodeData(
+      RealInterBarcodeData realInterBarcodeData, int creationTimestamp) {
+    return RealInterBarcodeVectorEntry()
+      ..startBarcodeUID = realInterBarcodeData.startBarcodeUID
+      ..endBarcodeUID = realInterBarcodeData.endBarcodeUID
+      ..x = realInterBarcodeData.vector3.x
+      ..y = realInterBarcodeData.vector3.y
+      ..z = realInterBarcodeData.vector3.z
+      ..timestamp = realInterBarcodeData.timestamp
+      ..creationTimestamp = creationTimestamp;
   }
 }

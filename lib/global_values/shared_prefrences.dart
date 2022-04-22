@@ -8,6 +8,7 @@ String defaultBarcodeSizePeference = 'defaultBarcodeSize';
 
 ///Contains the focal length of the camera. [double]
 String focalLengthPreference = 'focalLength';
+double focalLength = 1;
 
 ///Contains the camera resolution preset. [String]
 String cameraResolutionPresetPreference = 'cameraResolutionPreset';

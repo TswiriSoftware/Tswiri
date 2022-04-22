@@ -15,12 +15,12 @@ import 'package:isar/isar.dart';
 ///
 ///
 List<RealInterBarcodeOffset> buildAllRealInterBarcodeOffsets(
-    {required List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData,
+    {required List<RawOnImageInterBarcodeDataOLD> allOnImageInterBarcodeData,
     required double focalLength,
     required Isar database}) {
   List<RealInterBarcodeOffset> allRealInterBarcodeData = [];
 
-  for (RawOnImageInterBarcodeData interBarcodeDataInstance
+  for (RawOnImageInterBarcodeDataOLD interBarcodeDataInstance
       in allOnImageInterBarcodeData) {
     //1. Calculate onImageBarcodeCenters using cornerPoints.
     //StartBarcode

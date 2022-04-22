@@ -19,6 +19,8 @@ Future getCurrentAppSettings() async {
   //Get default getDefaultBarcodeDiagonalLength
   defaultBarcodeDiagonalLength = getDefaultBarcodeDiagonalLength(prefs);
 
+  focalLength = prefs.getDouble(focalLengthPreference) ?? 1;
+
   //Get activated models
   googleImageLabeling = prefs.getBool(googleImageLabelingPreference) ?? true;
   googleImageLabelingConfidenceThreshold =

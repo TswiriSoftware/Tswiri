@@ -18,10 +18,11 @@ class _TagManagerViewState extends State<TagManagerView> {
   final _tagsNode = FocusNode();
 
   bool showFilter = false;
+
   @override
   void initState() {
-    // TODO: implement initState
     _tagsNode.requestFocus();
+    super.initState();
   }
 
   @override

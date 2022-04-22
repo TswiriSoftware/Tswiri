@@ -68,14 +68,14 @@ double calculateDistanceFromCamera(
 ///This builds the objects That describes the startBarcode, EndBarcode, AccelerometerData and timestamp
 ///
 ///It builds all the objects relative to the first onImageBarcodeData.
-List<RawOnImageInterBarcodeData> buildAllOnImageInterBarcodeData(
+List<RawOnImageInterBarcodeDataOLD> buildAllOnImageInterBarcodeData(
     List<RawOnImageBarcodeData> allRawOnImageBarcodeData) {
-  List<RawOnImageInterBarcodeData> allInterBarcodeData = [];
+  List<RawOnImageInterBarcodeDataOLD> allInterBarcodeData = [];
   for (RawOnImageBarcodeData onImageBarcodeData in allRawOnImageBarcodeData) {
     for (var barcodeIndex = 1;
         barcodeIndex < onImageBarcodeData.barcodes.length;
         barcodeIndex++) {
-      allInterBarcodeData.add(RawOnImageInterBarcodeData(
+      allInterBarcodeData.add(RawOnImageInterBarcodeDataOLD(
           startBarcode: onImageBarcodeData.barcodes[0].value,
           endBarcode: onImageBarcodeData.barcodes[barcodeIndex].value,
           accelerometerData: onImageBarcodeData.accelerometerData,

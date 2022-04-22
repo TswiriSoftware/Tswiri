@@ -1,29 +1,23 @@
+import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.dart';
+import 'package:flutter_google_ml_kit/objects/reworked/on_image_data.dart';
+import 'package:flutter_google_ml_kit/objects/reworked/on_image_inter_barcode_data.dart';
+import 'package:flutter_google_ml_kit/objects/reworked/real_inter_barcode_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
-import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
-import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
-import 'package:flutter_google_ml_kit/objects/raw_on_image_inter_barcode_data.dart';
-import 'package:flutter_google_ml_kit/objects/real_inter_barcode_offset.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/functions/build_real_inter_barcode_offsets.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/functions/functions.dart';
-
 import 'package:isar/isar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class BarcodePositionScannerProcessingView extends StatefulWidget {
   const BarcodePositionScannerProcessingView({
     Key? key,
-    required this.allRawOnImageBarcodeData,
+    required this.barcodeDataBatches,
     required this.parentContainerUID,
     required this.barcodesToScan,
     required this.gridMarkers,
   }) : super(key: key);
 
-  final List<RawOnImageBarcodeData> allRawOnImageBarcodeData;
+  final List barcodeDataBatches;
 
   final String parentContainerUID;
   final List<String> barcodesToScan;
@@ -35,17 +29,11 @@ class BarcodePositionScannerProcessingView extends StatefulWidget {
 
 class _BarcodePositionScannerProcessingViewState
     extends State<BarcodePositionScannerProcessingView> {
-  int shelfUID = 1;
-  List<String> relevantBarcodes = [];
-
-  late Future<List<RealInterBarcodeOffset>> _future;
+  late Future<List<RealInterBarcodeData>> _future;
 
   @override
   void initState() {
-    relevantBarcodes.addAll(widget.barcodesToScan);
-    relevantBarcodes.addAll(widget.gridMarkers);
-    _future =
-        processData(allRawOnImageBarcodeData: widget.allRawOnImageBarcodeData);
+    _future = processData(barcodeDataBatches: widget.barcodeDataBatches);
     super.initState();
   }
 
@@ -76,22 +64,17 @@ class _BarcodePositionScannerProcessingViewState
         centerTitle: true,
       ),
       body: Center(
-        child: FutureBuilder<List<RealInterBarcodeOffset>>(
+        child: FutureBuilder<List<RealInterBarcodeData>>(
           future: _future,
-          // processData(
-          //     allRawOnImageBarcodeData: widget.allRawOnImageBarcodeData),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              //Return the listView.
-              return _listView(snapshot.data!);
+              return listView(snapshot.data!);
             } else if (snapshot.hasError) {
-              //If there is an error.
               return Text(
                 "${snapshot.error}",
                 style: const TextStyle(fontSize: 20, color: deeperOrange),
               );
             } else {
-              //If it is loading.
               return const CircularProgressIndicator();
             }
           },
@@ -100,85 +83,42 @@ class _BarcodePositionScannerProcessingViewState
     );
   }
 
-  Widget _listView(List<RealInterBarcodeOffset> data) {
+  Widget listView(List<RealInterBarcodeData> data) {
     return ListView.builder(
-        itemCount: data.length,
-        itemBuilder: (context, index) {
-          RealInterBarcodeOffset realInterBarcodeOffset = data[index];
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            color: Colors.white12,
-            elevation: 5,
-            shadowColor: Colors.black26,
-            shape: RoundedRectangleBorder(
-              side: const BorderSide(color: sunbirdOrange, width: 1.5),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _uid(realInterBarcodeOffset),
-                  _vector(realInterBarcodeOffset),
-                ],
-              ),
-            ),
-          );
-        });
-  }
-
-  Widget _uid(RealInterBarcodeOffset realInterBarcodeOffset) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'UID',
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-        Row(
-          children: [
-            Text(
-              realInterBarcodeOffset.uidStart,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            Text(
-              ' => ',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            Text(
-              realInterBarcodeOffset.uidEnd,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
-        ),
-        const Divider(color: Colors.white24),
-      ],
+      itemCount: data.length,
+      itemBuilder: (context, index) {
+        return interBarcodeDataWidget(data[index]);
+      },
     );
   }
 
-  Widget _vector(RealInterBarcodeOffset realInterBarcodeOffset) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Vector',
-          style: Theme.of(context).textTheme.bodySmall,
+  Widget interBarcodeDataWidget(RealInterBarcodeData data) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+      color: Colors.white12,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: sunbirdOrange, width: 2),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              data.startBarcodeUID + ' => ' + data.endBarcodeUID,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const Divider(),
+            Text(
+              'X: ${roundDouble(data.vector3.x, 2)}mm,  Y: ${roundDouble(data.vector3.y, 2)}mm,  Z: ${roundDouble(data.vector3.z, 2)}mm',
+              style: Theme.of(context).textTheme.bodyMedium,
+            )
+          ],
         ),
-        Text(
-          'X: ' + realInterBarcodeOffset.offset.dx.toString(),
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        Text(
-          'Y: ' + realInterBarcodeOffset.offset.dy.toString(),
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        Text(
-          'Z: ' + realInterBarcodeOffset.zOffset.toString(),
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        const Divider(color: Colors.white24),
-      ],
+      ),
     );
   }
 
@@ -192,86 +132,141 @@ class _BarcodePositionScannerProcessingViewState
     );
   }
 
-  //1. Get all initial data that will be used.
-//
-//  1.1 getMatchedCalibrationData (This is the lookupTable that allows for distance from camera calculations)
-//  1.2 getGeneratedBarcodeData (This list contains all the real life barcode sizes)
-//
-//2. Build a list of all onImageInterBarcodeData based on allRawOnImageBarcodeData.
-//
-//3. Create list containing AllRealInterBarcodeOffsets and uniqueRealInterBarcodeOffsets.
-//
-//  3.1 buildAllRealInterBarcodeOffsets.
-//    i. Takes the phones rotation into consideration
-//    ii. It calculates the real distance between barcodes.
-//    iii. It calculates the distance between the barcodes and the camera.
-//
-//  3.2 uniqueRealInterBarcodeOffsets
-//    i. Removes duplicate realInterBarcodeOffsets.
-//
-//4. processRealInterBarcodeData
-//    i. Removes data outleirs
-//    ii. Calculates averages with the remaining data.
-//
+  ///1. Generate a list of OnImageInterBarcodeData from barcodeDataBatches.
+  ///   i. Iterate through barcodeDataBatches.
+  ///   ii. Iterate through the barcodeDataBatch and generate IsolateRawOnImageBarcodeData.
+  ///   iii.Iterate through onImageBarcodeDataBatch.
+  ///   iv. Create BarcodeDataPairs.
+  ///
+  ///2. Generate list of RealInterBarcodeData.
+  ///   i. Iterate through onImageInterBarcodeData and generate IsolateRealInterBarcodeData.
+  ///
+  ///3. Remove outliers and calculate the average.
+  ///   i. Generate list of unique RealInterBarcodeData.
+  ///   ii. find similar RealInterbarcodeData.
+  ///   iii. Sort similarInterBarcodeOffsets by the length of the vector.
+  ///   iv. Remove any outliers.
+  ///   v. Caluclate the average.
+  ///   vi. Add to finalRealInterBarcodeData.
+  ///
+  ///4. Write to Isar.
+  ///   i. Create RealInterBarcodeVectorEntrys.
 
-  Future<List<RealInterBarcodeOffset>> processData({
-    required List<RawOnImageBarcodeData> allRawOnImageBarcodeData,
+  Future<List<RealInterBarcodeData>> processData({
+    required List barcodeDataBatches,
   }) async {
-    //2. This list contains all onImageInterBarcodeData.
-    List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData =
-        buildAllOnImageInterBarcodeData(allRawOnImageBarcodeData);
+    ///1. Generate a list of OnImageInterBarcodeData from barcodeDataBatches.
+    List<OnImageInterBarcodeData> onImageInterBarcodeData = [];
+    for (int i = 0; i < barcodeDataBatches.length; i++) {
+      //i. Iterate through barcodeDataBatches.
+      List barcodeDataBatch = barcodeDataBatches[i];
+      List<OnImageBarcodeData> onImageBarcodeDataBatch = [];
+      for (int x = 0; x < barcodeDataBatch.length; x++) {
+        //ii. Iterate through the barcodeDataBatch and generate IsolateRawOnImageBarcodeData.
+        onImageBarcodeDataBatch
+            .add(OnImageBarcodeData.fromMessage(barcodeDataBatch[x]));
+      }
 
-    // List<String> scannedBarcodes = [];
-    // for (RawOnImageInterBarcodeData item in allOnImageInterBarcodeData) {
-    //   scannedBarcodes.add(item.startBarcode.displayValue!);
-    //   scannedBarcodes.add(item.endBarcode.displayValue!);
-    // }
-    // log(allOnImageInterBarcodeData.toString());
+      for (OnImageBarcodeData onImageBarcodeData in onImageBarcodeDataBatch) {
+        //iii.Iterate through onImageBarcodeDataBatch.
 
-    //4.1 Calculates all real interBarcodeOffsets.
-    //Get the camera's focal length
-    final prefs = await SharedPreferences.getInstance();
-    double focalLength = prefs.getDouble(focalLengthPreference) ?? 0;
+        for (int z = 1; z < onImageBarcodeDataBatch.length; z++) {
+          //iv. Create BarcodeDataPairs.
+          if (onImageBarcodeData.barcodeUID !=
+              onImageBarcodeDataBatch[z].barcodeUID) {
+            onImageInterBarcodeData.add(
+                OnImageInterBarcodeData.fromBarcodeDataPair(
+                    onImageBarcodeData, onImageBarcodeDataBatch[z]));
+          }
+        }
+      }
+    }
 
-    //Check Function for details.
-    List<RealInterBarcodeOffset> allRealInterBarcodeOffsets =
-        buildAllRealInterBarcodeOffsets(
-      allOnImageInterBarcodeData: allOnImageInterBarcodeData,
-      database: isarDatabase!,
-      focalLength: focalLength,
-    );
+    ///2. Generate list of RealInterBarcodeData.
+    List<RealInterBarcodeData> realInterBarcodeData = [];
+    for (OnImageInterBarcodeData interBarcodeData in onImageInterBarcodeData) {
+      //i. Iterate through onImageInterBarcodeData and generate IsolateRealInterBarcodeData.
+      realInterBarcodeData
+          .add(RealInterBarcodeData.fromRawInterBarcodeData(interBarcodeData));
+    }
 
-    //4.2 This list contains only unique realInterBarcodeOffsets
-    List<RealInterBarcodeOffset> uniqueRealInterBarcodeOffsets =
-        allRealInterBarcodeOffsets.toSet().toList();
+    ///3. Remove outliers and calculate the average.
+    //i. Generate list of unique RealInterBarcodeData.
+    List<RealInterBarcodeData> uniqueRealInterBarcodeData =
+        realInterBarcodeData.toSet().toList();
 
-    //5. To build the list of final RealInterBarcodeOffsets we:
-    //  i. Remove all the outliers from allOnImageInterBarcodeData
-    //  ii. Then use the uniqueRealInterBarcodeOffsets as a reference to
-    //      calculate the average from allRealInterBarcodeOffsets.
+    List<RealInterBarcodeData> finalRealInterBarcodeData = [];
+    for (RealInterBarcodeData uniqueRealInterBarcodeData
+        in uniqueRealInterBarcodeData) {
+      //ii. find similar realInterBarcodeData.
+      List<RealInterBarcodeData> similarRealInterBarcodeData =
+          realInterBarcodeData
+              .where((element) => (element.startBarcodeUID ==
+                      uniqueRealInterBarcodeData.startBarcodeUID &&
+                  element.endBarcodeUID ==
+                      uniqueRealInterBarcodeData.endBarcodeUID))
+              .toList();
 
-    List<RealInterBarcodeOffset> finalRealInterBarcodeOffsets =
-        processRealInterBarcodeData(
-            uniqueRealInterBarcodeOffsets: uniqueRealInterBarcodeOffsets,
-            listOfRealInterBarcodeOffsets: allRealInterBarcodeOffsets);
+      //iii. Sort similarInterBarcodeOffsets by the length of the vector.
+      similarRealInterBarcodeData
+          .sort((a, b) => a.vector3.length.compareTo(b.vector3.length));
 
-    //Write to Isar.
+      //iv. Remove any outliers.
+      //Indexes (Stats).
+      int medianIndex = (similarRealInterBarcodeData.length ~/ 2);
+      int quartile1Index = ((similarRealInterBarcodeData.length / 2) ~/ 2);
+      int quartile3Index = medianIndex + quartile1Index;
+
+      //Values of indexes.
+      double median = similarRealInterBarcodeData[medianIndex].vector3.length;
+      double quartile1 = calculateQuartileValue(
+          similarRealInterBarcodeData, quartile1Index, median);
+      double quartile3 = calculateQuartileValue(
+          similarRealInterBarcodeData, quartile3Index, median);
+
+      //Boundry calculations.
+      double interQuartileRange = quartile3 - quartile1;
+      double q1Boundry = quartile1 - interQuartileRange * 1.5; //Lower boundry
+      double q3Boundry = quartile3 + interQuartileRange * 1.5; //Upper boundry
+
+      //Remove data outside the boundries.
+      similarRealInterBarcodeData.removeWhere((element) =>
+          element.vector3.length <= q1Boundry &&
+          element.vector3.length >= q3Boundry);
+
+      //v. Caluclate the average.
+      for (RealInterBarcodeData similarInterBarcodeOffset
+          in similarRealInterBarcodeData) {
+        //Average the similar interBarcodeData.
+        uniqueRealInterBarcodeData.vector3.x =
+            (uniqueRealInterBarcodeData.vector3.x +
+                    similarInterBarcodeOffset.vector3.x) /
+                2;
+        uniqueRealInterBarcodeData.vector3.y =
+            (uniqueRealInterBarcodeData.vector3.y +
+                    similarInterBarcodeOffset.vector3.y) /
+                2;
+        uniqueRealInterBarcodeData.vector3.z =
+            (uniqueRealInterBarcodeData.vector3.z +
+                    similarInterBarcodeOffset.vector3.z) /
+                2;
+      }
+      //vi. Add to finalRealInterBarcodeData.
+      finalRealInterBarcodeData.add(uniqueRealInterBarcodeData);
+    }
+
+    ///4. Write to Isar.
+    //i. Create RealInterBarcodeVectorEntrys.
     List<RealInterBarcodeVectorEntry> interbarcodeOffsetEntries = [];
     List<String> scannedBarcodes = [];
     int creation = DateTime.now().millisecondsSinceEpoch;
-    for (RealInterBarcodeOffset interBarcodeOffset
-        in finalRealInterBarcodeOffsets) {
+    for (RealInterBarcodeData realInterBarcodeData
+        in finalRealInterBarcodeData) {
       RealInterBarcodeVectorEntry vectorEntry = RealInterBarcodeVectorEntry()
-        ..startBarcodeUID = interBarcodeOffset.uidStart
-        ..endBarcodeUID = interBarcodeOffset.uidEnd
-        ..x = interBarcodeOffset.offset.dx
-        ..y = interBarcodeOffset.offset.dy
-        ..z = interBarcodeOffset.zOffset
-        ..timestamp = interBarcodeOffset.timestamp
-        ..creationTimestamp = creation;
+          .fromRealInterBarcodeData(realInterBarcodeData, creation);
 
-      scannedBarcodes.add(interBarcodeOffset.uidStart);
-      scannedBarcodes.add(interBarcodeOffset.uidEnd);
+      scannedBarcodes.add(realInterBarcodeData.startBarcodeUID);
+      scannedBarcodes.add(realInterBarcodeData.endBarcodeUID);
       interbarcodeOffsetEntries.add(vectorEntry);
     }
     scannedBarcodes = scannedBarcodes.toSet().toList();
@@ -285,37 +280,19 @@ class _BarcodePositionScannerProcessingViewState
           .deleteAllSync());
     }
 
-    // log(isarDatabase!.realInterBarcodeVectorEntrys
-    //     .where()
-    //     .findAllSync()
-    //     .toString());
-
-    // List<ContainerEntry> containerEntries = isarDatabase!.containerEntrys
-    //     .filter()
-    //     .repeat(scannedBarcodes,
-    //         (q, String element) => q.barcodeUIDMatches(element))
-    //     .findAllSync();
-
-    List<ContainerRelationship> containerRelatiopnships = [];
-    //TODO: delete existing Container RelationShips ?
-    //Update them ?
-    //What to do ?
-
-    // ContainerRelationship? relationship = isarDatabase!.containerRelationships
-    //     .filter()
-    //     .containerUIDMatches(widget.parentContainerUID)
-    //     .findFirstSync();
-
     isarDatabase!.writeTxnSync((isar) {
       isar.realInterBarcodeVectorEntrys.putAllSync(interbarcodeOffsetEntries);
-      isar.containerRelationships.putAllSync(containerRelatiopnships);
     });
 
-    // log(isarDatabase!.realInterBarcodeVectorEntrys
-    //     .where()
-    //     .findAllSync()
-    //     .toString());
-
-    return finalRealInterBarcodeOffsets;
+    return finalRealInterBarcodeData;
   }
+}
+
+//Calculates the quartile value.
+double calculateQuartileValue(
+    List<RealInterBarcodeData> similarInterBarcodeOffsets,
+    int quartile1Index,
+    double median) {
+  return (similarInterBarcodeOffsets[quartile1Index].vector3.length + median) /
+      2;
 }
