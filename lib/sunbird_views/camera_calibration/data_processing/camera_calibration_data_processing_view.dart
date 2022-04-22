@@ -233,6 +233,7 @@ class _CameraCalibrationDataProcessingViewState
       //Set the focal Length of the camera
 
       prefs.setDouble(focalLengthPreference, finalFocalLength);
+      focalLength = finalFocalLength;
       log('focal length: ' + finalFocalLength.toString());
 
       isarDatabase!.writeTxnSync((isar) => isar.barcodeSizeDistanceEntrys

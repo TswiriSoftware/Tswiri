@@ -111,6 +111,7 @@ class _CalibrationDataVisualizerViewState
                   onTap: () async {
                     final prefs = await SharedPreferences.getInstance();
                     prefs.setDouble(focalLengthPreference, 0);
+
                     isarDatabase!.writeTxnSync((isar) =>
                         isar.barcodeSizeDistanceEntrys.where().deleteAllSync());
                     Navigator.pop(context);
