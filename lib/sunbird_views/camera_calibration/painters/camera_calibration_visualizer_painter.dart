@@ -14,9 +14,9 @@ class CameraCalibrationVisualizerPainter extends CustomPainter {
   @override
   paint(Canvas canvas, Size size) {
     canvas.drawPoints(
-        PointMode.points, dataPoints[1], paintSimple(Colors.red, 3));
+        PointMode.points, dataPoints[1], paintEasy(Colors.red, 3));
     canvas.drawPoints(
-        PointMode.points, dataPoints[0], paintSimple(Colors.blue, 3));
+        PointMode.points, dataPoints[0], paintEasy(Colors.blue, 3));
   }
 
   @override

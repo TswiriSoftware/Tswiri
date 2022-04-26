@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
+import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
@@ -118,7 +121,7 @@ class _ContainerGridViewState extends State<ContainerGridView> {
         child: CustomPaint(
           size: Size.infinite,
           painter: GridVisualizerPainter(
-              containerUID: containerEntry.containerUID,
+              containerEntry: containerEntry,
               markersToDraw: markersToScan,
               barcodesToDraw: barcodesToScan),
         ),
@@ -142,13 +145,12 @@ class _ContainerGridViewState extends State<ContainerGridView> {
       style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(containerTypeColor)),
       onPressed: () async {
+        log(focalLength.toString());
         await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => BarcodePositionScannerView(
-              barcodesToScan: barcodesToScan,
-              gridMarkers: markersToScan,
-              parentContainerUID: containerEntry.containerUID,
+              parentContainer: containerEntry,
               customColor: containerTypeColor,
             ),
           ),

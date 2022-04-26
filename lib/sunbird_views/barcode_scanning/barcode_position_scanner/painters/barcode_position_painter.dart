@@ -6,7 +6,7 @@ import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
 
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-import '../../../../functions/coordinate_translator/coordinates_translator.dart';
+import '../../../../functions/translating/coordinates_translator.dart';
 
 class BarcodePositionPainter extends CustomPainter {
   BarcodePositionPainter({
@@ -81,18 +81,18 @@ class BarcodePositionPainter extends CustomPainter {
 
         //Draw red outline if barcode is not in scan list.
         canvas.drawPoints(
-            PointMode.polygon, offsetPoints, paintSimple(Colors.redAccent, 1));
+            PointMode.polygon, offsetPoints, paintEasy(Colors.redAccent, 1));
         String barcodeValue = barcode.value.displayValue ?? '';
 
         if (barcodesToScan.contains(barcodeValue) &&
             !gridMarkers.contains(barcodeValue)) {
           //Draw green line for a normal barcode.
           canvas.drawPoints(PointMode.polygon, offsetPoints,
-              paintSimple(Colors.lightGreenAccent, 2));
+              paintEasy(Colors.lightGreenAccent, 2));
         } else if (gridMarkers.contains(barcodeValue)) {
           //Draw a blue line for markers.
           canvas.drawPoints(
-              PointMode.polygon, offsetPoints, paintSimple(Colors.blue, 2));
+              PointMode.polygon, offsetPoints, paintEasy(Colors.blue, 2));
         }
       }
     }

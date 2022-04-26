@@ -78,11 +78,12 @@ class _ContainersViewState extends State<ContainersView> {
               'hold for more options',
               style: Theme.of(context).textTheme.bodySmall,
             ),
-            SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Column(
-                children: containers.map((e) => containerCard(e)).toList(),
-              ),
+            Expanded(
+              child: ListView.builder(
+                  itemCount: containers.length,
+                  itemBuilder: ((context, index) {
+                    return containerCard(containers[index]);
+                  })),
             ),
           ],
         ),

@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter_google_ml_kit/functions/coordinate_translator/coordinates_translator.dart';
-import 'package:flutter_google_ml_kit/objects/on_screen_barcode_data.dart';
+import 'package:flutter_google_ml_kit/functions/translating/coordinates_translator.dart';
+import 'package:flutter_google_ml_kit/objects/reworked/on_screen_barcode_data.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 ///This calculates the barcode screen data:

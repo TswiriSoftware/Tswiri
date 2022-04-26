@@ -8,7 +8,7 @@ import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-import '../../../functions/coordinate_translator/coordinates_translator.dart';
+import '../../../functions/translating/coordinates_translator.dart';
 
 class SingleBarcodeScannerPainter extends CustomPainter {
   SingleBarcodeScannerPainter({
@@ -75,11 +75,11 @@ class SingleBarcodeScannerPainter extends CustomPainter {
 
         canvas.drawPoints(PointMode.polygon, offsetPoints, paint);
         if (barcodeID == barcode.value.displayValue) {
-          canvas.drawPoints(PointMode.polygon, offsetPoints,
-              paintSimple(Colors.blueAccent, 3));
+          canvas.drawPoints(
+              PointMode.polygon, offsetPoints, paintEasy(Colors.blueAccent, 3));
         } else {
           canvas.drawPoints(
-              PointMode.polygon, offsetPoints, paintSimple(springGreen, 3));
+              PointMode.polygon, offsetPoints, paintEasy(springGreen, 3));
         }
       }
     }

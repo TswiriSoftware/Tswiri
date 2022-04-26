@@ -1,4 +1,10 @@
-import 'package:flutter_google_ml_kit/objects/reworked/real_inter_barcode_data.dart';
+import 'dart:ui';
+import 'package:vector_math/vector_math.dart' as vm;
+import 'package:flutter_google_ml_kit/functions/translating/distance_from_camera.dart';
+import 'package:flutter_google_ml_kit/functions/translating/offset_rotation.dart';
+import 'package:flutter_google_ml_kit/functions/translating/real_unit_calculator.dart';
+import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
+import 'package:flutter_google_ml_kit/objects/reworked/on_image_inter_barcode_data.dart';
 import 'package:isar/isar.dart';
 part 'real_interbarcode_vector_entry.g.dart';
 
@@ -6,9 +12,9 @@ part 'real_interbarcode_vector_entry.g.dart';
 class RealInterBarcodeVectorEntry {
   int id = Isar.autoIncrement;
 
-  //Related barcodeUID.
+  //Start barcodeUID.
   late String startBarcodeUID;
-
+  //End barcodeUID.
   late String endBarcodeUID;
 
   //Timestamp.
@@ -24,9 +30,27 @@ class RealInterBarcodeVectorEntry {
   //Z vector.
   late double z; //Make nullable ?
 
+  //Returns the UID of the interBarcodeVectorEntry
+  String get uid {
+    return '${startBarcodeUID}_$endBarcodeUID';
+  }
+
+  vm.Vector3 get vector3 {
+    return vm.Vector3(x, y, z);
+  }
+
+  //Comparison
+  @override
+  bool operator ==(Object other) {
+    return other is RealInterBarcodeVectorEntry && hashCode == other.hashCode;
+  }
+
+  @override
+  int get hashCode => (uid).hashCode;
+
   @override
   String toString() {
-    return '\nstartBarcodeUID: $startBarcodeUID, endBarcodeUID: $endBarcodeUID,X: $x, Y: $y, Z: $z, time: $timestamp, creation: $creationTimestamp';
+    return '\nstartBarcodeUID: $startBarcodeUID, endBarcodeUID: $endBarcodeUID,X: $x, Y: $y, Z: $z, time: $timestamp, creation: $creationTimestamp,';
   }
 
   Map toJson() => {
@@ -52,15 +76,69 @@ class RealInterBarcodeVectorEntry {
       ..creationTimestamp = json['creationTimestamp'] as int;
   }
 
-  RealInterBarcodeVectorEntry fromRealInterBarcodeData(
-      RealInterBarcodeData realInterBarcodeData, int creationTimestamp) {
+  //Create From RawInterBarcodeData.
+  RealInterBarcodeVectorEntry fromRawInterBarcodeData(
+      OnImageInterBarcodeData interBarcodeData, int creationTimestamp) {
+    ///1. Calculate RealInterBarcodeOffset
+    double phoneAngleRadians =
+        interBarcodeData.startBarcode.accelerometerData.calculatePhoneAngle();
+
+    Offset rotatedStartBarcodeCenter = rotateOffset(
+        offset: interBarcodeData.startBarcode.barcodeCenterPoint,
+        angleRadians: phoneAngleRadians);
+
+    Offset rotatedEndBarcodeCenter = rotateOffset(
+        offset: interBarcodeData.endBarcode.barcodeCenterPoint,
+        angleRadians: phoneAngleRadians);
+
+    Offset interBarcodeOffset =
+        rotatedEndBarcodeCenter - rotatedStartBarcodeCenter;
+
+    double startBarcodeMMperPX = calculateRealUnit(
+      diagonalLength: interBarcodeData.startBarcode.barcodeDiagonalLength,
+      barcodeUID: interBarcodeData.startBarcode.barcodeUID,
+    );
+
+    double endBarcodeMMperPX = calculateRealUnit(
+      diagonalLength: interBarcodeData.endBarcode.barcodeDiagonalLength,
+      barcodeUID: interBarcodeData.endBarcode.barcodeUID,
+    );
+
+    Offset realOffsetStartBarcode = interBarcodeOffset / startBarcodeMMperPX;
+    Offset realOffsetEndBarcode = interBarcodeOffset / endBarcodeMMperPX;
+
+    //Calculate the average distance of the two offsets.
+    Offset averageRealInterBarcodeOffset =
+        (realOffsetStartBarcode + realOffsetEndBarcode) / 2;
+
+    ///2. Find the distance bewteen the camera and barcodes using the camera's focal length.
+    //StartBarcode
+    double startBarcodeDistanceFromCamera = calculateDistanceFromCamera(
+      barcodeOnImageDiagonalLength:
+          interBarcodeData.startBarcode.barcodeDiagonalLength,
+      barcodeUID: interBarcodeData.startBarcode.barcodeUID,
+      focalLength: focalLength,
+    );
+
+    //EndBarcode
+    double endBarcodeDistanceFromCamera = calculateDistanceFromCamera(
+      barcodeOnImageDiagonalLength:
+          interBarcodeData.endBarcode.barcodeDiagonalLength,
+      barcodeUID: interBarcodeData.endBarcode.barcodeUID,
+      focalLength: focalLength,
+    );
+
+    //Calculate the zOffset
+    double zOffset =
+        endBarcodeDistanceFromCamera - startBarcodeDistanceFromCamera;
+
     return RealInterBarcodeVectorEntry()
-      ..startBarcodeUID = realInterBarcodeData.startBarcodeUID
-      ..endBarcodeUID = realInterBarcodeData.endBarcodeUID
-      ..x = realInterBarcodeData.vector3.x
-      ..y = realInterBarcodeData.vector3.y
-      ..z = realInterBarcodeData.vector3.z
-      ..timestamp = realInterBarcodeData.timestamp
-      ..creationTimestamp = creationTimestamp;
+      ..startBarcodeUID = interBarcodeData.startBarcode.barcodeUID
+      ..endBarcodeUID = interBarcodeData.endBarcode.barcodeUID
+      ..creationTimestamp = creationTimestamp
+      ..timestamp = interBarcodeData.startBarcode.timestamp
+      ..x = averageRealInterBarcodeOffset.dx
+      ..y = averageRealInterBarcodeOffset.dy
+      ..z = zOffset;
   }
 }

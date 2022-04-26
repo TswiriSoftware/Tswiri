@@ -27,9 +27,9 @@ class BarcodePositionVisualizerPainter extends CustomPainter {
     }
 
     canvas.drawPoints(
-        PointMode.points, boxes, paintSimple(Colors.greenAccent, 4));
+        PointMode.points, boxes, paintEasy(Colors.greenAccent, 4));
     canvas.drawPoints(
-        PointMode.points, markers, paintSimple(Colors.blueAccent, 4));
+        PointMode.points, markers, paintEasy(Colors.blueAccent, 4));
 
     for (DisplayPoint point in myPoints) {
       final textSpan = TextSpan(

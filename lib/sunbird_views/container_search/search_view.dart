@@ -342,8 +342,10 @@ class _SearchViewState extends State<SearchView> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    NavigatorView(containerEntry: containerEntry),
+                builder: (context) => NavigatorView(
+                  containerEntry: containerEntry,
+                  customColor: containerColor,
+                ),
               ),
             );
           },

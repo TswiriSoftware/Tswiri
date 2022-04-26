@@ -17,18 +17,20 @@ extension GetRealInterBarcodeVectorEntryCollection on Isar {
 final RealInterBarcodeVectorEntrySchema = CollectionSchema(
   name: 'RealInterBarcodeVectorEntry',
   schema:
-      '{"name":"RealInterBarcodeVectorEntry","idName":"id","properties":[{"name":"creationTimestamp","type":"Long"},{"name":"endBarcodeUID","type":"String"},{"name":"startBarcodeUID","type":"String"},{"name":"timestamp","type":"Long"},{"name":"x","type":"Double"},{"name":"y","type":"Double"},{"name":"z","type":"Double"}],"indexes":[],"links":[]}',
+      '{"name":"RealInterBarcodeVectorEntry","idName":"id","properties":[{"name":"creationTimestamp","type":"Long"},{"name":"endBarcodeUID","type":"String"},{"name":"hashCode","type":"Long"},{"name":"startBarcodeUID","type":"String"},{"name":"timestamp","type":"Long"},{"name":"uid","type":"String"},{"name":"x","type":"Double"},{"name":"y","type":"Double"},{"name":"z","type":"Double"}],"indexes":[],"links":[]}',
   nativeAdapter: const _RealInterBarcodeVectorEntryNativeAdapter(),
   webAdapter: const _RealInterBarcodeVectorEntryWebAdapter(),
   idName: 'id',
   propertyIds: {
     'creationTimestamp': 0,
     'endBarcodeUID': 1,
-    'startBarcodeUID': 2,
-    'timestamp': 3,
-    'x': 4,
-    'y': 5,
-    'z': 6
+    'hashCode': 2,
+    'startBarcodeUID': 3,
+    'timestamp': 4,
+    'uid': 5,
+    'x': 6,
+    'y': 7,
+    'z': 8
   },
   listProperties: {},
   indexIds: {},
@@ -59,9 +61,11 @@ class _RealInterBarcodeVectorEntryWebAdapter
     IsarNative.jsObjectSet(
         jsObj, 'creationTimestamp', object.creationTimestamp);
     IsarNative.jsObjectSet(jsObj, 'endBarcodeUID', object.endBarcodeUID);
+    IsarNative.jsObjectSet(jsObj, 'hashCode', object.hashCode);
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
     IsarNative.jsObjectSet(jsObj, 'startBarcodeUID', object.startBarcodeUID);
     IsarNative.jsObjectSet(jsObj, 'timestamp', object.timestamp);
+    IsarNative.jsObjectSet(jsObj, 'uid', object.uid);
     IsarNative.jsObjectSet(jsObj, 'x', object.x);
     IsarNative.jsObjectSet(jsObj, 'y', object.y);
     IsarNative.jsObjectSet(jsObj, 'z', object.z);
@@ -95,6 +99,9 @@ class _RealInterBarcodeVectorEntryWebAdapter
             double.negativeInfinity) as P;
       case 'endBarcodeUID':
         return (IsarNative.jsObjectGet(jsObj, 'endBarcodeUID') ?? '') as P;
+      case 'hashCode':
+        return (IsarNative.jsObjectGet(jsObj, 'hashCode') ??
+            double.negativeInfinity) as P;
       case 'id':
         return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
             as P;
@@ -103,6 +110,8 @@ class _RealInterBarcodeVectorEntryWebAdapter
       case 'timestamp':
         return (IsarNative.jsObjectGet(jsObj, 'timestamp') ??
             double.negativeInfinity) as P;
+      case 'uid':
+        return (IsarNative.jsObjectGet(jsObj, 'uid') ?? '') as P;
       case 'x':
         return (IsarNative.jsObjectGet(jsObj, 'x') ?? double.negativeInfinity)
             as P;
@@ -139,17 +148,22 @@ class _RealInterBarcodeVectorEntryNativeAdapter
     final value1 = object.endBarcodeUID;
     final _endBarcodeUID = IsarBinaryWriter.utf8Encoder.convert(value1);
     dynamicSize += (_endBarcodeUID.length) as int;
-    final value2 = object.startBarcodeUID;
-    final _startBarcodeUID = IsarBinaryWriter.utf8Encoder.convert(value2);
+    final value2 = object.hashCode;
+    final _hashCode = value2;
+    final value3 = object.startBarcodeUID;
+    final _startBarcodeUID = IsarBinaryWriter.utf8Encoder.convert(value3);
     dynamicSize += (_startBarcodeUID.length) as int;
-    final value3 = object.timestamp;
-    final _timestamp = value3;
-    final value4 = object.x;
-    final _x = value4;
-    final value5 = object.y;
-    final _y = value5;
-    final value6 = object.z;
-    final _z = value6;
+    final value4 = object.timestamp;
+    final _timestamp = value4;
+    final value5 = object.uid;
+    final _uid = IsarBinaryWriter.utf8Encoder.convert(value5);
+    dynamicSize += (_uid.length) as int;
+    final value6 = object.x;
+    final _x = value6;
+    final value7 = object.y;
+    final _y = value7;
+    final value8 = object.z;
+    final _z = value8;
     final size = staticSize + dynamicSize;
 
     rawObj.buffer = alloc(size);
@@ -158,11 +172,13 @@ class _RealInterBarcodeVectorEntryNativeAdapter
     final writer = IsarBinaryWriter(buffer, staticSize);
     writer.writeLong(offsets[0], _creationTimestamp);
     writer.writeBytes(offsets[1], _endBarcodeUID);
-    writer.writeBytes(offsets[2], _startBarcodeUID);
-    writer.writeLong(offsets[3], _timestamp);
-    writer.writeDouble(offsets[4], _x);
-    writer.writeDouble(offsets[5], _y);
-    writer.writeDouble(offsets[6], _z);
+    writer.writeLong(offsets[2], _hashCode);
+    writer.writeBytes(offsets[3], _startBarcodeUID);
+    writer.writeLong(offsets[4], _timestamp);
+    writer.writeBytes(offsets[5], _uid);
+    writer.writeDouble(offsets[6], _x);
+    writer.writeDouble(offsets[7], _y);
+    writer.writeDouble(offsets[8], _z);
   }
 
   @override
@@ -175,11 +191,11 @@ class _RealInterBarcodeVectorEntryNativeAdapter
     object.creationTimestamp = reader.readLong(offsets[0]);
     object.endBarcodeUID = reader.readString(offsets[1]);
     object.id = id;
-    object.startBarcodeUID = reader.readString(offsets[2]);
-    object.timestamp = reader.readLong(offsets[3]);
-    object.x = reader.readDouble(offsets[4]);
-    object.y = reader.readDouble(offsets[5]);
-    object.z = reader.readDouble(offsets[6]);
+    object.startBarcodeUID = reader.readString(offsets[3]);
+    object.timestamp = reader.readLong(offsets[4]);
+    object.x = reader.readDouble(offsets[6]);
+    object.y = reader.readDouble(offsets[7]);
+    object.z = reader.readDouble(offsets[8]);
     return object;
   }
 
@@ -194,14 +210,18 @@ class _RealInterBarcodeVectorEntryNativeAdapter
       case 1:
         return (reader.readString(offset)) as P;
       case 2:
-        return (reader.readString(offset)) as P;
-      case 3:
         return (reader.readLong(offset)) as P;
+      case 3:
+        return (reader.readString(offset)) as P;
       case 4:
-        return (reader.readDouble(offset)) as P;
+        return (reader.readLong(offset)) as P;
       case 5:
-        return (reader.readDouble(offset)) as P;
+        return (reader.readString(offset)) as P;
       case 6:
+        return (reader.readDouble(offset)) as P;
+      case 7:
+        return (reader.readDouble(offset)) as P;
+      case 8:
         return (reader.readDouble(offset)) as P;
       default:
         throw 'Illegal propertyIndex';
@@ -464,6 +484,57 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterFilterCondition> hashCodeEqualTo(int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterFilterCondition> hashCodeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterFilterCondition> hashCodeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterFilterCondition> hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'hashCode',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
       QAfterFilterCondition> idEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
@@ -675,6 +746,115 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterFilterCondition> uidEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'uid',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterFilterCondition> uidGreaterThan(
+    String value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'uid',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterFilterCondition> uidLessThan(
+    String value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'uid',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterFilterCondition> uidBetween(
+    String lower,
+    String upper, {
+    bool caseSensitive = true,
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'uid',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterFilterCondition> uidStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'uid',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterFilterCondition> uidEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'uid',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+          QAfterFilterCondition>
+      uidContains(String value, {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'uid',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+          QAfterFilterCondition>
+      uidMatches(String pattern, {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'uid',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
       QAfterFilterCondition> xGreaterThan(double value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
@@ -796,6 +976,16 @@ extension RealInterBarcodeVectorEntryQueryWhereSortBy on QueryBuilder<
   }
 
   QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterSortBy> sortByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterSortBy> sortByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
       QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -823,6 +1013,16 @@ extension RealInterBarcodeVectorEntryQueryWhereSortBy on QueryBuilder<
   QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
       QAfterSortBy> sortByTimestampDesc() {
     return addSortByInternal('timestamp', Sort.desc);
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterSortBy> sortByUid() {
+    return addSortByInternal('uid', Sort.asc);
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterSortBy> sortByUidDesc() {
+    return addSortByInternal('uid', Sort.desc);
   }
 
   QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
@@ -879,6 +1079,16 @@ extension RealInterBarcodeVectorEntryQueryWhereSortThenBy on QueryBuilder<
   }
 
   QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterSortBy> thenByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterSortBy> thenByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
       QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -906,6 +1116,16 @@ extension RealInterBarcodeVectorEntryQueryWhereSortThenBy on QueryBuilder<
   QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
       QAfterSortBy> thenByTimestampDesc() {
     return addSortByInternal('timestamp', Sort.desc);
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterSortBy> thenByUid() {
+    return addSortByInternal('uid', Sort.asc);
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QAfterSortBy> thenByUidDesc() {
+    return addSortByInternal('uid', Sort.desc);
   }
 
   QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
@@ -952,6 +1172,11 @@ extension RealInterBarcodeVectorEntryQueryWhereDistinct on QueryBuilder<
   }
 
   QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QDistinct> distinctByHashCode() {
+    return addDistinctByInternal('hashCode');
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
       QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
@@ -965,6 +1190,11 @@ extension RealInterBarcodeVectorEntryQueryWhereDistinct on QueryBuilder<
   QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
       QDistinct> distinctByTimestamp() {
     return addDistinctByInternal('timestamp');
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+      QDistinct> distinctByUid({bool caseSensitive = true}) {
+    return addDistinctByInternal('uid', caseSensitive: caseSensitive);
   }
 
   QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
@@ -996,6 +1226,11 @@ extension RealInterBarcodeVectorEntryQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<RealInterBarcodeVectorEntry, int, QQueryOperations>
+      hashCodeProperty() {
+    return addPropertyNameInternal('hashCode');
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, int, QQueryOperations>
       idProperty() {
     return addPropertyNameInternal('id');
   }
@@ -1008,6 +1243,11 @@ extension RealInterBarcodeVectorEntryQueryProperty on QueryBuilder<
   QueryBuilder<RealInterBarcodeVectorEntry, int, QQueryOperations>
       timestampProperty() {
     return addPropertyNameInternal('timestamp');
+  }
+
+  QueryBuilder<RealInterBarcodeVectorEntry, String, QQueryOperations>
+      uidProperty() {
+    return addPropertyNameInternal('uid');
   }
 
   QueryBuilder<RealInterBarcodeVectorEntry, double, QQueryOperations>

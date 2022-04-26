@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import 'package:google_ml_kit/google_ml_kit.dart';
-import '../../../functions/coordinate_translator/coordinates_translator.dart';
+import '../../../functions/translating/coordinates_translator.dart';
 import '../../../functions/simple_paint/simple_paint.dart';
 
 class BarcodeDetectorPainterCalibration extends CustomPainter {
@@ -58,7 +58,7 @@ class BarcodeDetectorPainterCalibration extends CustomPainter {
       ];
 
       canvas.drawPoints(
-          PointMode.points, pointsOfIntrest, paintSimple(Colors.red, 8));
+          PointMode.points, pointsOfIntrest, paintEasy(Colors.red, 8));
     }
   }
 

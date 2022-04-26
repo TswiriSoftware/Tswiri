@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/calibration_functions/calibration_functions.dart';
 
@@ -71,7 +73,8 @@ class _CalibrationDataVisualizerViewState
     List<Offset> points = listOfPoints(sizeDistanceEntry, size);
 
     final prefs = await SharedPreferences.getInstance();
-    double focalLength = prefs.getDouble(focalLengthPreference) ?? 0;
+    focalLength = prefs.getDouble(focalLengthPreference) ?? 0;
+
     List<Offset> equationPoints = [];
 
     for (var i = 50; i < 2000; i++) {

@@ -1,50 +1,64 @@
-import 'dart:developer';
-
-import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/barcode_position_calulation/barcode_position_calculator.dart';
+import 'dart:isolate';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
-import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/isolate/image_processing_isolate.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
-import 'package:flutter_google_ml_kit/objects/raw_on_image_barcode_data.dart';
-import 'package:flutter_google_ml_kit/objects/display/real_barcode_position.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/barcode_navigation_painter.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/camera_view_barcode_navigator.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:isar/isar.dart';
-import 'package:sensors_plus/sensors_plus.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/painters/barcode_position_painter_isolate.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/navigator_painter_isolate.dart';
 import 'package:vector_math/vector_math.dart' as vm;
+import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_camera_view.dart';
+import 'package:flutter/material.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:flutter_isolate/flutter_isolate.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 
 class NavigatorView extends StatefulWidget {
-  const NavigatorView({Key? key, required this.containerEntry})
-      : super(key: key);
+  const NavigatorView({
+    Key? key,
+    required this.containerEntry,
+    this.customColor,
+  }) : super(key: key);
+
+  final Color? customColor;
   final ContainerEntry containerEntry;
 
   @override
-  State<NavigatorView> createState() => _NavigatorViewState();
+  _NavigatorViewState createState() => _NavigatorViewState();
 }
 
 class _NavigatorViewState extends State<NavigatorView> {
-  late Color color;
-  late String barcodeUID;
-  CustomPaint? customPaint;
-  bool isBusy = false;
-  BarcodeScanner barcodeScanner =
-      GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
+  // BarcodeScanner barcodeScanner =
+  //     GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
 
-  //Accelerometer initial values.
+  bool isBusy = false;
+  CustomPaint? customPaint;
+
   vm.Vector3 accelerometerEvent = vm.Vector3(0, 0, 0);
   vm.Vector3 userAccelerometerEvent = vm.Vector3(0, 0, 0);
 
-  List<RealBarcodePosition> containingGrid = [];
-  bool hasParent = false;
+  ReceivePort mainPort = ReceivePort(); // send stuff to ui thread
+  ReceivePort mainPort2 = ReceivePort();
+  SendPort? isolatePort1; //send stuff to isolate
+  SendPort? isolatePort2; //send stuff to isolate
 
-  List<RawOnImageBarcodeData> allRawOnImageBarcodeData = [];
+  bool hasSentConfigIsolate1 = false;
+  bool hasSentConfigIsolate2 = false;
+
+  bool hasConfiguredIsolate1 = false;
+  bool hasConfiguredIsolate2 = false;
+
+  bool x = false;
+
+  int counter1 = 0;
+
+  List<dynamic> barcodeDataBatches = [];
+
+  //Spawn Isolate.
+
+  //TODO: multiple Isolates ?
 
   @override
   void initState() {
-    color = getContainerColor(containerUID: widget.containerEntry.containerUID);
+    //Listen to accelerometer events.
     accelerometerEvents.listen((AccelerometerEvent event) {
       accelerometerEvent = vm.Vector3(event.x, event.y, event.z);
     });
@@ -52,115 +66,154 @@ class _NavigatorViewState extends State<NavigatorView> {
       userAccelerometerEvent = vm.Vector3(event.x, event.y, event.z);
     });
 
-    String? parentContainer = isarDatabase!.containerRelationships
-        .filter()
-        .containerUIDMatches(widget.containerEntry.containerUID)
-        .findFirstSync()
-        ?.parentUID;
-
-    if (parentContainer != null) {
-      hasParent = true;
-      containingGrid =
-          calculateRealBarcodePositions(parentUID: parentContainer);
-      log(containingGrid.toString());
-    } else {
-      containingGrid = calculateRealBarcodePositions(
-          parentUID: widget.containerEntry.containerUID);
-    }
+    initIsolate();
 
     super.initState();
   }
 
+  void initIsolate() async {
+    //Spawn Isolate.
+    FlutterIsolate.spawn(imageProcessorIsolate, mainPort.sendPort);
+
+    FlutterIsolate.spawn(imageProcessorIsolate, mainPort2.sendPort);
+
+    //Port setup.
+    mainPort.listen((msg) {
+      if (msg is SendPort) {
+        isolatePort1 = msg;
+      } else if (msg == 'configured') {
+        setState(() {
+          hasConfiguredIsolate1 = true;
+        });
+      } else {
+        drawImage(msg);
+      }
+    });
+
+    //Port setup.
+    mainPort2.listen((msg) {
+      if (msg is SendPort) {
+        isolatePort2 = msg;
+      } else if (msg == 'configured') {
+        setState(() {
+          hasConfiguredIsolate2 = true;
+        });
+      } else {
+        drawImage(msg);
+      }
+    });
+  }
+
   @override
   void dispose() {
+    FlutterIsolate.killAll();
+    mainPort.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          barcodeScanner.close();
-
-          // await Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => CheckInterBarcodeData(
-          //       allRawOnImageBarcodeData: allRawOnImageBarcodeData,
-          //       containerEntry: widget.containerEntry,
-          //     ),
-          //   ),
-          // );
-
-          Navigator.pop(context);
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ContainerView(
-                containerEntry: widget.containerEntry,
-              ),
-            ),
-          );
-        },
-        child: const Icon(Icons.done),
-      ),
-      appBar: AppBar(
-        backgroundColor: color,
-        title: Text(
-          widget.containerEntry.containerUID,
-          style: Theme.of(context).textTheme.titleMedium,
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: widget.customColor,
+          heroTag: null,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Icon(Icons.check_circle_outline_rounded),
         ),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: CameraBarcodeNavigationView(
-        title: 'Barcode Finder',
-        customPaint: customPaint,
-        onImage: (inputImage) {
-          processImage(inputImage);
-        },
-      ),
-    );
+        body: BarcodePositionScannerCameraView(
+          color: widget.customColor ?? Colors.deepOrange,
+          title: 'Position Scanner',
+          customPaint: customPaint,
+          onImage: (inputImage) async {
+            //Configure the Isolate.
+            if (hasSentConfigIsolate1 == false ||
+                hasSentConfigIsolate2 == false) {
+              configureIsolate(inputImage);
+            }
+
+            //Send Image Data.
+            if (inputImage.bytes != null &&
+                hasConfiguredIsolate1 == true &&
+                hasConfiguredIsolate2 == true) {
+              List myList = [
+                'compute', // Identifier [0]
+                TransferableTypedData.fromList([inputImage.bytes!]), //Bytes [1]
+                [
+                  //Accelerometer Data [2]
+                  accelerometerEvent.x,
+                  accelerometerEvent.y,
+                  accelerometerEvent.z,
+                  userAccelerometerEvent.x,
+                  userAccelerometerEvent.y,
+                  userAccelerometerEvent.z,
+                ],
+                DateTime.now().microsecondsSinceEpoch, //Timestamp [3]
+              ];
+
+              if (counter1 == 0) {
+                isolatePort1!.send(myList);
+              } else if (counter1 == 3) {
+                isolatePort2!.send(myList);
+              }
+
+              counter1++;
+              if (mounted && counter1 == 6) {
+                setState(() {
+                  counter1 = 0;
+                });
+              }
+            }
+          },
+        ));
   }
 
-  Future<void> processImage(InputImage inputImage) async {
+  void configureIsolate(InputImage inputImage) async {
+    if (inputImage.inputImageData != null) {
+      //Calculate Canvas Size.
+      Size screenSize = Size(
+          MediaQuery.of(context).size.width,
+          MediaQuery.of(context).size.height -
+              kToolbarHeight -
+              MediaQuery.of(context).padding.top);
+
+      //Setup config List.
+      List config = [
+        inputImage.inputImageData!.size.height,
+        inputImage.inputImageData!.size.width,
+        inputImage.inputImageData!.inputImageFormat.index,
+        screenSize.width,
+        screenSize.height,
+      ];
+
+      //Send to isolate 1.
+      if (isolatePort1 != null) {
+        isolatePort1!.send(config);
+        setState(() {
+          hasSentConfigIsolate1 = true;
+        });
+      }
+      if (isolatePort2 != null) {
+        isolatePort2!.send(config);
+        setState(() {
+          hasSentConfigIsolate2 = true;
+        });
+      }
+    }
+  }
+
+  //Draw on canvas from barcode message.
+  void drawImage(List barcodeDataBatch) {
     if (isBusy) return;
     isBusy = true;
 
-    //Calculate phone angle.
-    vm.Vector3 gravityDirection3D = accelerometerEvent - userAccelerometerEvent;
-    double angleRadians = calculatePhoneAngle(gravityDirection3D);
+    final painter = NavigatorPainterIsolate(
+        message: barcodeDataBatch, containerEntry: widget.containerEntry);
+    customPaint = CustomPaint(painter: painter);
 
-    //Get on screen barcodes.
-    List<Barcode> barcodes = await barcodeScanner.processImage(inputImage);
+    barcodeDataBatches.add(barcodeDataBatch);
 
-    if (inputImage.inputImageData?.size != null &&
-        inputImage.inputImageData?.imageRotation != null) {
-      if (barcodes.length >= 2) {
-        ///Captures a list of barcodes and accelerometerData for a a single image frame.
-        allRawOnImageBarcodeData.add(
-          RawOnImageBarcodeData(
-            barcodes: barcodes,
-            timestamp: DateTime.now().millisecondsSinceEpoch,
-            accelerometerData: getAccelerometerData(),
-          ),
-        );
-      }
-      //Custom Painter.
-      customPaint = CustomPaint(
-        painter: BarcodeDetectorPainterNavigation(
-            barcodes: barcodes,
-            absoluteImageSize: inputImage.inputImageData!.size,
-            rotation: inputImage.inputImageData!.imageRotation,
-            selectedBarcodeID: widget.containerEntry.barcodeUID!,
-            phoneAngle: angleRadians,
-            containingGrid: containingGrid),
-      );
-    } else {
-      customPaint = null;
-    }
     isBusy = false;
     if (mounted) {
       setState(() {});
@@ -174,227 +227,3 @@ class _NavigatorViewState extends State<NavigatorView> {
         userAccelerometerEvent: userAccelerometerEvent);
   }
 }
-
-// void checkBarcodePositions({
-//     required List<Barcode> barcodes,
-//     required List<RealBarcodePositionEntry> realBarcodePositions,
-//     required List<BarcodeDataEntry> allBarcodes,
-//     required double focalLength,
-//   }) {
-//     if (barcodes.length >= 2) {
-//       //Checks that there are more than 2 barcodes in list.
-
-//       //1. Get all the onImageBarcodeData from the current Istance.
-//       //OnImageBarcodeData in this istance.
-//       List<RawOnImageBarcodeData> allRawOnImageBarcodeData = [
-//         RawOnImageBarcodeData(
-//             barcodes: barcodes,
-//             timestamp: DateTime.now().millisecondsSinceEpoch,
-//             accelerometerData: getAccelerometerData(
-//                 accelerometerEvent, userAccelerometerEvent))
-//       ];
-
-//       //2. Build the onImageInterBarcodeData.
-//       // This list contains all onImageInterBarcodeData from the image instant.
-//       List<RawOnImageInterBarcodeData> allOnImageInterBarcodeData =
-//           buildAllOnImageInterBarcodeData(allRawOnImageBarcodeData);
-
-//       //3. Build the realInterBarcodeOffsets.
-//       // Builds and adds all the real realInterBarcodeOffsets in this instance.
-//       //Get the camera's focal length
-
-//       List<RealInterBarcodeOffset> allRealInterBarcodeOffsets =
-//           buildAllRealInterBarcodeOffsets(
-//         allOnImageInterBarcodeData: allOnImageInterBarcodeData,
-//         calibrationLookupTable: calibrationLookupTable,
-//         allBarcodes: allBarcodes,
-//         focalLength: focalLength,
-//       );
-
-//       //Add the RealInterBarcodeOffset to the map
-//       for (RealInterBarcodeOffset realInterBarcodeOffset
-//           in allRealInterBarcodeOffsets) {
-//         //This adds data to the map.
-//         String uid = realInterBarcodeOffset.uid;
-//         if (realInterBarcodeOffsetMap.containsKey(realInterBarcodeOffset.uid)) {
-//           //If the map already contains the barcodeID then add the RealInterBarcodeOffset to the list in the map.
-//           List<RealInterBarcodeOffset> temp = realInterBarcodeOffsetMap[uid]!;
-//           temp.add(realInterBarcodeOffset);
-//           realInterBarcodeOffsetMap.update(uid, (value) => temp);
-//         } else {
-//           //Create an entry for this barcodeID
-//           realInterBarcodeOffsetMap.putIfAbsent(
-//               uid, () => [realInterBarcodeOffset]);
-//         }
-
-//         //The amount of interBarcodeOffsets required before we check if a barcode has moved.
-//         int x = 5;
-//         if (realInterBarcodeOffsetMap[uid]!.length >= x) {
-//           //When there are more than X similar RealInterBarcodeOffsets it will calculate the average of the realInterBarocdeOffsets.
-//           List<RealInterBarcodeOffset> realInterBarcodeOffsets =
-//               realInterBarcodeOffsetMap[uid]!;
-
-//           //Calculate the average from the list of RealInterBarcodeOffsets.
-//           List<RealInterBarcodeOffset> averagedRealInterBarcodeOffset =
-//               processRealInterBarcodeData(
-//                   uniqueRealInterBarcodeOffsets: realInterBarcodeOffsets
-//                       .toSet()
-//                       .toList(), //This will return the unique realInterBarcode Offset.
-//                   listOfRealInterBarcodeOffsets: realInterBarcodeOffsets);
-
-//           //Retrive stored StartBarcodePosition.
-//           RealBarcodePositionEntry startBarcodePosition =
-//               realBarcodePositions.firstWhere(
-//                   (element) => element.uid == realInterBarcodeOffset.uidStart);
-
-//           //Retrive stored EndBarcodePosition.
-//           RealBarcodePositionEntry endBarcodePosition =
-//               realBarcodePositions.firstWhere(
-//                   (element) => element.uid == realInterBarcodeOffset.uidEnd);
-
-//           //Calculate the stored RealInterBarcodePosition.
-//           Offset storedInterbarcodeOffset =
-//               typeOffsetToOffset(endBarcodePosition.offset) -
-//                   typeOffsetToOffset(startBarcodePosition.offset);
-
-//           if (checkIfInterbarcodeOffsetIsWithinError(
-//               averagedRealInterBarcodeOffset[0], storedInterbarcodeOffset)) {
-//             //If the barcodes are where they should be.
-//             checksOut.addAll([
-//               averagedRealInterBarcodeOffset[0].uidStart,
-//               averagedRealInterBarcodeOffset[0].uidEnd
-//             ]);
-//           } else {
-//             //If the barcodes are not where they should be
-//             if (checkIfChecksOutContains(
-//                 checksOut, averagedRealInterBarcodeOffset[0].uidStart)) {
-//               RealBarcodePositionEntry updatedBarcodePosition =
-//                   RealBarcodePositionEntry(
-//                       uid: averagedRealInterBarcodeOffset[0].uidEnd,
-//                       offset: offsetToTypeOffset(
-//                           typeOffsetToOffset(startBarcodePosition.offset) +
-//                               averagedRealInterBarcodeOffset[0].offset),
-//                       zOffset: startBarcodePosition.zOffset +
-//                           averagedRealInterBarcodeOffset[0].zOffset,
-//                       isMarker: false,
-//                       shelfUID: 1,
-//                       timestamp: averagedRealInterBarcodeOffset[0].timestamp);
-
-//               //Remove all incorrect interBarcodeOffsets.
-//               realInterBarcodeOffsetMap
-//                   .remove(averagedRealInterBarcodeOffset[0].uid);
-//               //Get the index of this BarcodePosition.
-//               int index = realBarcodePositionsUpdated.indexWhere(
-//                   (element) => element.uid == updatedBarcodePosition.uid);
-
-//               if (index != -1) {
-//                 //Remove the barcode from the List of BarcodePositions.
-//                 realBarcodePositionsUpdated.removeAt(index);
-
-//                 //Add the new updated position.
-//                 realBarcodePositionsUpdated.add(updatedBarcodePosition);
-
-//                 //Add the new Position to the list PositionsThatChanged. This will be writen to the database afterwards.
-//                 positionsThatChanged.add(updatedBarcodePosition);
-
-//                 // log('Position updated in realBarcodePositionsUpdated: ' +
-//                 //     updatedBarcodePosition.toString());
-//               }
-//             } else {
-//               RealBarcodePositionEntry updatedBarcodePosition =
-//                   RealBarcodePositionEntry(
-//                       uid: averagedRealInterBarcodeOffset[0].uidStart,
-//                       offset: offsetToTypeOffset(
-//                           typeOffsetToOffset(endBarcodePosition.offset) -
-//                               averagedRealInterBarcodeOffset[0].offset),
-//                       zOffset: endBarcodePosition.zOffset +
-//                           averagedRealInterBarcodeOffset[0].zOffset,
-//                       isMarker: false,
-//                       shelfUID: 1,
-//                       timestamp: averagedRealInterBarcodeOffset[0].timestamp);
-
-//               //Remove all incorrect interBarcodeOffsets.
-//               realInterBarcodeOffsetMap
-//                   .remove(averagedRealInterBarcodeOffset[0].uid);
-
-//               //Get the index of this BarcodePosition.
-//               int index = realBarcodePositionsUpdated.indexWhere(
-//                   (element) => element.uid == updatedBarcodePosition.uid);
-
-//               if (index != -1) {
-//                 //Remove the barcode from the List of BarcodePositions.
-//                 realBarcodePositionsUpdated.removeAt(index);
-
-//                 //Add the new updated position.
-//                 realBarcodePositionsUpdated.add(updatedBarcodePosition);
-
-//                 //Add the new Position to the list PositionsThatChanged. This will be writen to the database afterwards.
-//                 positionsThatChanged.add(updatedBarcodePosition);
-
-//                 // log('Position updated in realBarcodePositionsUpdated: ' +
-//                 //     updatedBarcodePosition.toString());
-//               }
-//             }
-//           }
-//         }
-//       }
-//     }
-//   }
-// }
-
-///Calculate the phone angle on the X-Y plane.
-double calculatePhoneAngle(vm.Vector3 gravityDirection3D) {
-  //Convert to 2D plane X-Y
-  vm.Vector2 gravityDirection2D =
-      vm.Vector2(gravityDirection3D.x, gravityDirection3D.y);
-  vm.Vector2 zero = vm.Vector2(0, 1);
-  double angleRadians = gravityDirection2D.angleTo(zero);
-  if (gravityDirection2D.x >= 0) {
-    angleRadians = -angleRadians;
-  }
-  return angleRadians;
-}
-
-// ///This stores the AccelerometerEvent and UserAccelerometerEvent at an instant.
-// AccelerometerData getAccelerometerData(
-//     vm.Vector3 accelerometerEvent, vm.Vector3 userAccelerometerEvent) {
-//   return AccelerometerData(
-//       accelerometerEvent: accelerometerEvent,
-//       userAccelerometerEvent: userAccelerometerEvent);
-// }
-
-// //Check if the list contains a given string.
-// bool checkIfChecksOutContains(List<String> checksOut, String barcodeID) {
-//   if (checksOut.contains(barcodeID)) {
-//     return true;
-//   } else {
-//     return false;
-//   }
-// }
-
-// ///Checks if the interBarcodeOffset is within a margin of error from the storedInterBarcodeOffset
-// bool checkIfInterbarcodeOffsetIsWithinError(
-//     RealInterBarcodeOffset averagedRealInterBarcodeOffset,
-//     Offset storedInterbarcodeOffset) {
-// //This is to calculate the amount of positional error we allow for in mm.
-//   double errorValue = 20; // max error value in mm
-//   double currentX = averagedRealInterBarcodeOffset.offset.dx;
-//   double currentXLowerBoundry = currentX - (errorValue);
-//   double currentXUpperBoundry = currentX + (errorValue);
-
-//   double currentY = averagedRealInterBarcodeOffset.offset.dy;
-//   double currentYLowerBoundry = currentY - (errorValue);
-//   double currentYUpperBoundry = currentY + (errorValue);
-
-//   double storedX = storedInterbarcodeOffset.dx;
-//   double storedY = storedInterbarcodeOffset.dy;
-
-//   if (storedX <= currentXUpperBoundry &&
-//       storedX >= currentXLowerBoundry &&
-//       storedY <= currentYUpperBoundry &&
-//       storedY >= currentYLowerBoundry) {
-//     return true;
-//   } else {
-//     return false;
-//   }
-// }

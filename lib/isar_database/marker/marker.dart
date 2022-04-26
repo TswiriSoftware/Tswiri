@@ -11,7 +11,7 @@ class Marker {
 
   @override
   String toString() {
-    return 'barcodeUID: $barcodeUID, containerUID: $parentContainerUID';
+    return '\nbarcodeUID: $barcodeUID, containerUID: $parentContainerUID';
   }
 
   Map toJson() => {

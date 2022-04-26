@@ -8,7 +8,7 @@ import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
 
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-import '../../../functions/coordinate_translator/coordinates_translator.dart';
+import '../../../functions/translating/coordinates_translator.dart';
 
 class MarkerBarcodeScannerPainter extends CustomPainter {
   MarkerBarcodeScannerPainter({
@@ -74,14 +74,14 @@ class MarkerBarcodeScannerPainter extends CustomPainter {
         );
 
         if (barcodeID == barcode.value.displayValue) {
-          canvas.drawPoints(PointMode.polygon, offsetPoints,
-              paintSimple(barcodeFocusColor, 3));
+          canvas.drawPoints(
+              PointMode.polygon, offsetPoints, paintEasy(barcodeFocusColor, 3));
         } else if (selectedBarcodeUIDs.contains(barcode.value.displayValue)) {
           canvas.drawPoints(PointMode.polygon, offsetPoints,
-              paintSimple(barcodeMarkerColor, 3));
+              paintEasy(barcodeMarkerColor, 3));
         } else {
           canvas.drawPoints(PointMode.polygon, offsetPoints,
-              paintSimple(barcodeDefaultColor, 3));
+              paintEasy(barcodeDefaultColor, 3));
         }
       }
     }

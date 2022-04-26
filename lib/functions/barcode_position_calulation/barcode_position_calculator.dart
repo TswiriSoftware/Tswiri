@@ -85,7 +85,6 @@ List<RealBarcodePosition> calculateRealBarcodePositions(
   }
 
   //5. Build RealInterBarcodeOffset list.
-  //TODO: implement timestamp
 
   List<String> barcodes = [];
 

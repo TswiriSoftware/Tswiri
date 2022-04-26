@@ -1,7 +1,9 @@
 import 'dart:developer';
 import 'dart:isolate';
 import 'dart:math' as math;
-import 'package:flutter_google_ml_kit/functions/coordinate_translator/coordinates_translator.dart';
+import 'package:flutter_google_ml_kit/functions/translating/coordinates_translator.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isolate/image_processing_isolate.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/painters/barcode_position_painter_isolate.dart';
 import 'package:vector_math/vector_math.dart' as vm;
@@ -15,15 +17,11 @@ import 'package:sensors_plus/sensors_plus.dart';
 class BarcodePositionScannerView extends StatefulWidget {
   const BarcodePositionScannerView({
     Key? key,
-    required this.barcodesToScan,
-    required this.gridMarkers,
-    required this.parentContainerUID,
+    required this.parentContainer,
     this.customColor,
   }) : super(key: key);
 
-  final List<String> barcodesToScan;
-  final List<String> gridMarkers;
-  final String parentContainerUID;
+  final ContainerEntry parentContainer;
   final Color? customColor;
 
   @override
@@ -33,9 +31,6 @@ class BarcodePositionScannerView extends StatefulWidget {
 
 class _BarcodePositionScannerViewState
     extends State<BarcodePositionScannerView> {
-  late List<String> barcodesToScan = widget.barcodesToScan;
-  late List<String> gridMarkers = widget.gridMarkers;
-
   // BarcodeScanner barcodeScanner =
   //     GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
 
@@ -134,9 +129,7 @@ class _BarcodePositionScannerViewState
               MaterialPageRoute(
                 builder: (context) => BarcodePositionScannerProcessingView(
                   barcodeDataBatches: barcodeDataBatches,
-                  parentContainerUID: widget.parentContainerUID,
-                  gridMarkers: gridMarkers,
-                  barcodesToScan: barcodesToScan,
+                  parentContainer: widget.parentContainer,
                 ),
               ),
             );
@@ -245,102 +238,4 @@ class _BarcodePositionScannerViewState
         accelerometerEvent: accelerometerEvent,
         userAccelerometerEvent: userAccelerometerEvent);
   }
-}
-
-void imageProcessorIsolate(SendPort sendPort) {
-  ReceivePort receivePort = ReceivePort();
-  sendPort.send(receivePort.sendPort);
-  InputImageData? inputImageData;
-  Size? screenSize;
-
-  BarcodeScanner barcodeScanner =
-      GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
-
-  void processImage(var message) async {
-    if (inputImageData != null && screenSize != null) {
-      InputImage inputImage = InputImage.fromBytes(
-          bytes:
-              (message[1] as TransferableTypedData).materialize().asUint8List(),
-          inputImageData: inputImageData!);
-
-      final List<Barcode> barcodes =
-          await barcodeScanner.processImage(inputImage);
-
-      List<dynamic> barcodeData = [];
-
-      for (Barcode barcode in barcodes) {
-        List<Offset> offsetPoints = <Offset>[];
-        List<math.Point<num>> cornerPoints = barcode.value.cornerPoints!;
-        for (var point in cornerPoints) {
-          double x = translateX(point.x.toDouble(),
-              inputImageData!.imageRotation, screenSize!, inputImageData!.size);
-          double y = translateY(point.y.toDouble(),
-              inputImageData!.imageRotation, screenSize!, inputImageData!.size);
-
-          offsetPoints.add(Offset(x, y));
-        }
-
-        barcodeData.add([
-          barcode.value.displayValue, //Display value. [0]
-          [
-            //On Screen Points [1]
-            offsetPoints[0].dx,
-            offsetPoints[0].dy,
-            offsetPoints[1].dx,
-            offsetPoints[1].dy,
-            offsetPoints[2].dx,
-            offsetPoints[2].dy,
-            offsetPoints[3].dx,
-            offsetPoints[3].dy,
-          ],
-          [
-            //On Image Points [2]
-            cornerPoints[0].x.toDouble(), // Point1. x
-            cornerPoints[0].y.toDouble(), // Point1. y
-            cornerPoints[1].x.toDouble(), // Point2. x
-            cornerPoints[1].y.toDouble(), // Point2. y
-            cornerPoints[2].x.toDouble(), // Point3. x
-            cornerPoints[2].y.toDouble(), // Point3. y
-            cornerPoints[3].x.toDouble(), // Point4. x
-            cornerPoints[3].y.toDouble(), // Point5. y
-          ],
-          [
-            // Accelerometer Data [3]
-            message[2][0], //accelerometerEvent.x
-            message[2][1], //accelerometerEvent.y
-            message[2][2], //accelerometerEvent.z
-            message[2][3], //userAccelerometerEvent.x
-            message[2][4], //userAccelerometerEvent.y
-            message[2][5], //userAccelerometerEvent.z
-          ],
-          message[3], // timeStamp [4]
-        ]);
-      }
-      //log(barcodeData.toString());
-
-      sendPort.send(barcodeData);
-    }
-  }
-
-  receivePort.listen(
-    (message) {
-      if (message[0] == 'compute') {
-        //Process the image.
-        processImage(message);
-      } else if (message is List) {
-        log('configured');
-        //Configure InputImageData.
-        inputImageData = InputImageData(
-          size: Size(message[1], message[0]),
-          imageRotation: InputImageRotation.Rotation_90deg,
-          inputImageFormat: InputImageFormat.values.elementAt(message[2]),
-          planeData: null,
-        );
-
-        screenSize = Size(message[3], message[4]);
-
-        sendPort.send('configured');
-      }
-    },
-  );
 }
