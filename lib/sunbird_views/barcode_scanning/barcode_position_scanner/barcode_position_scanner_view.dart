@@ -1,7 +1,4 @@
-import 'dart:developer';
 import 'dart:isolate';
-import 'dart:math' as math;
-import 'package:flutter_google_ml_kit/functions/translating/coordinates_translator.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isolate/image_processing_isolate.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';

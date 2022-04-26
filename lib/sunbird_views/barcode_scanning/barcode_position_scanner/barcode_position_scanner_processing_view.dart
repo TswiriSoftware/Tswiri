@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/on_image_data.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/on_image_inter_barcode_data.dart';
 import 'package:flutter/material.dart';

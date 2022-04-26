@@ -1,19 +1,14 @@
-import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/barcode_position_calulation/barcode_position_calculator.dart';
-import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.dart';
 
 import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
-import 'package:flutter_google_ml_kit/functions/translating/unit_vectors.dart';
 import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 
 import 'package:flutter_google_ml_kit/objects/display/display_point.dart';
-import 'package:flutter_google_ml_kit/objects/display/real_barcode_position.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/grid_object.dart';
 
 import 'package:isar/isar.dart';

@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
@@ -10,7 +9,6 @@ import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/objects/display/display_point.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/grid_position.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/grid_visualizer_painter.dart';
 import 'package:isar/isar.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 

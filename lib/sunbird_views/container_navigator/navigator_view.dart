@@ -2,7 +2,6 @@ import 'dart:isolate';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isolate/image_processing_isolate.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/painters/barcode_position_painter_isolate.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/navigator_painter_isolate.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_camera_view.dart';
