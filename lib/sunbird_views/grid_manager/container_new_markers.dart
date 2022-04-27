@@ -4,7 +4,7 @@ import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings_functions.dart';
 import 'package:isar/isar.dart';
 
-import '../../../functions/isar_functions/isar_functions.dart';
+import '../../functions/isar_functions/isar_functions.dart';
 
 class ContainerNewMarkersView extends StatefulWidget {
   const ContainerNewMarkersView(

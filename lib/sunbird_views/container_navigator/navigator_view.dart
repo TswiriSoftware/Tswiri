@@ -1,8 +1,14 @@
 import 'dart:isolate';
+import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isolate/image_processing_isolate.dart';
+import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
+import 'package:flutter_google_ml_kit/isolate/navigator_image_processing_isolate.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/grid_object.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/navigator_painter_isolate.dart';
+import 'package:isar/isar.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_camera_view.dart';
 import 'package:flutter/material.dart';
@@ -25,9 +31,6 @@ class NavigatorView extends StatefulWidget {
 }
 
 class _NavigatorViewState extends State<NavigatorView> {
-  // BarcodeScanner barcodeScanner =
-  //     GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
-
   bool isBusy = false;
   CustomPaint? customPaint;
 
@@ -50,10 +53,8 @@ class _NavigatorViewState extends State<NavigatorView> {
   int counter1 = 0;
 
   List<dynamic> barcodeDataBatches = [];
-
-  //Spawn Isolate.
-
-  //TODO: multiple Isolates ?
+  List<GridObject> knownGrids = [];
+  List<BarcodeProperty> storedBarcodeProperties = [];
 
   @override
   void initState() {
@@ -65,6 +66,29 @@ class _NavigatorViewState extends State<NavigatorView> {
       userAccelerometerEvent = vm.Vector3(event.x, event.y, event.z);
     });
 
+    //Build all known Grids.
+    List<ContainerType> containerTypes = isarDatabase!.containerTypes
+        .filter()
+        .markerToChilrenEqualTo(true)
+        .findAllSync();
+
+    List<ContainerEntry> originContainers = isarDatabase!.containerEntrys
+        .filter()
+        .repeat(
+            containerTypes,
+            (q, ContainerType element) =>
+                q.containerTypeMatches(element.containerType))
+        .findAllSync();
+
+    for (ContainerEntry item in originContainers) {
+      GridObject gridObject = GridObject(originContainer: item);
+      gridObject.grid; // generate the grid.
+      knownGrids.add(gridObject);
+    }
+
+    storedBarcodeProperties
+        .addAll(isarDatabase!.barcodePropertys.where().findAllSync());
+
     initIsolate();
 
     super.initState();
@@ -72,9 +96,9 @@ class _NavigatorViewState extends State<NavigatorView> {
 
   void initIsolate() async {
     //Spawn Isolate.
-    FlutterIsolate.spawn(imageProcessorIsolate, mainPort.sendPort);
+    FlutterIsolate.spawn(navigatorImageProcessorIsolate, mainPort.sendPort);
 
-    FlutterIsolate.spawn(imageProcessorIsolate, mainPort2.sendPort);
+    FlutterIsolate.spawn(navigatorImageProcessorIsolate, mainPort2.sendPort);
 
     //Port setup.
     mainPort.listen((msg) {
@@ -177,13 +201,22 @@ class _NavigatorViewState extends State<NavigatorView> {
               kToolbarHeight -
               MediaQuery.of(context).padding.top);
 
+      Map<String, double> barcodeProperties = {
+        'default': defaultBarcodeDiagonalLength!
+      };
+      for (BarcodeProperty barcodeProperty in storedBarcodeProperties) {
+        barcodeProperties.putIfAbsent(
+            barcodeProperty.barcodeUID, () => barcodeProperty.size);
+      }
+
       //Setup config List.
       List config = [
-        inputImage.inputImageData!.size.height,
-        inputImage.inputImageData!.size.width,
-        inputImage.inputImageData!.inputImageFormat.index,
-        screenSize.width,
-        screenSize.height,
+        inputImage.inputImageData!.size.width, //[0]
+        inputImage.inputImageData!.size.height, //[1]
+        inputImage.inputImageData!.inputImageFormat.index, //[2]
+        screenSize.width, //[3]
+        screenSize.height, //[4]
+        barcodeProperties, //[5]
       ];
 
       //Send to isolate 1.
@@ -208,7 +241,11 @@ class _NavigatorViewState extends State<NavigatorView> {
     isBusy = true;
 
     final painter = NavigatorPainterIsolate(
-        message: barcodeDataBatch, containerEntry: widget.containerEntry);
+      message: barcodeDataBatch,
+      containerEntry: widget.containerEntry,
+      knownGrids: knownGrids,
+    );
+
     customPaint = CustomPaint(painter: painter);
 
     barcodeDataBatches.add(barcodeDataBatch);

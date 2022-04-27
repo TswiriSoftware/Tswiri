@@ -1,5 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
+import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
 
 class BarcodePositionPainterIsolate extends CustomPainter {
   BarcodePositionPainterIsolate({
@@ -9,11 +11,6 @@ class BarcodePositionPainterIsolate extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0
-      ..color = Colors.lightGreenAccent;
-
     for (int i = 0; i < message.length; i++) {
       List<Offset> offsetPoints = <Offset>[
         Offset(message[i][1][0], message[i][1][1]),
@@ -23,7 +20,8 @@ class BarcodePositionPainterIsolate extends CustomPainter {
         Offset(message[i][1][0], message[i][1][1]),
       ];
 
-      canvas.drawPoints(PointMode.polygon, offsetPoints, paint);
+      canvas.drawPoints(
+          PointMode.polygon, offsetPoints, paintEasy(barcodeDefaultColor, 3.0));
     }
   }
 

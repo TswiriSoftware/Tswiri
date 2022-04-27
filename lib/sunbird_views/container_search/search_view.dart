@@ -9,6 +9,7 @@ import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.da
 import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
+import 'package:flutter_google_ml_kit/objects/search/search_object.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/navigator_view.dart';
 import 'package:isar/isar.dart';
@@ -679,36 +680,5 @@ class _SearchViewState extends State<SearchView> {
     });
 
     //log(searchResults.toString());
-  }
-}
-
-class SearchObject {
-  SearchObject(
-      {required this.containerEntry,
-      required this.tags,
-      required this.photoTags,
-      required this.containerPhotos,
-      required this.score});
-
-  final ContainerEntry containerEntry;
-  final List<ContainerTag> tags;
-  final List<PhotoTag> photoTags;
-  final List<ContainerPhoto> containerPhotos;
-  int score;
-
-  @override
-  String toString() {
-    return '\nuid: ${containerEntry.containerUID}, tags: $tags, score: $score';
-  }
-
-  @override
-  // ignore: hash_and_equals
-  bool operator ==(Object other) {
-    if (other is SearchObject && other.runtimeType == runtimeType) {
-      if (other.containerEntry.containerUID == containerEntry.containerUID) {
-        return true;
-      }
-    }
-    return false;
   }
 }

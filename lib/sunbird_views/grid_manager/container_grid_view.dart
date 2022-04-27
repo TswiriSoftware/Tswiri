@@ -9,11 +9,11 @@ import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/container_new_markers.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/grid_visualizer_painter.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/grid_manager/container_new_markers.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/grid_manager/grid_visualizer_painter.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
 import 'package:isar/isar.dart';
-import '../../../isar_database/container_relationship/container_relationship.dart';
+import '../../isar_database/container_relationship/container_relationship.dart';
 
 class ContainerGridView extends StatefulWidget {
   const ContainerGridView(

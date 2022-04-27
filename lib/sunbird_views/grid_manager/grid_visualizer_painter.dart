@@ -9,7 +9,7 @@ import 'package:flutter_google_ml_kit/isar_database/container_relationship/conta
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 
 import 'package:flutter_google_ml_kit/objects/display/display_point.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/grid_object.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/grid_object.dart';
 
 import 'package:isar/isar.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';

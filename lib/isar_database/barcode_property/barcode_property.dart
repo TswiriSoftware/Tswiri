@@ -26,4 +26,8 @@ class BarcodeProperty {
       ..barcodeUID = json['barcodeUID']
       ..size = json['size'] as double;
   }
+
+  Map<String, double> toIsolateMap() => {
+        barcodeUID: size,
+      };
 }

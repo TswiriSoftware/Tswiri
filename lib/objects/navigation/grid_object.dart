@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
@@ -8,7 +9,8 @@ import 'package:flutter_google_ml_kit/isar_database/container_relationship/conta
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/objects/display/display_point.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/grid/grid_position.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/grid_position.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/navigator_data.dart';
 import 'package:isar/isar.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 
@@ -20,7 +22,10 @@ class GridObject {
   //The Grid's Origin Point.
   final ContainerEntry originContainer;
 
-  //Markers contained in grid.
+  late List<GridPosition> grid = gridPositions;
+  late List<String> barcodes = getBarcodes;
+
+  ///Markers contained in grid.
   List<Marker> get markers {
     return isarDatabase!.markers
         .filter()
@@ -28,14 +33,14 @@ class GridObject {
         .findAllSync();
   }
 
-  //The origin marker.
+  ///The origin marker.
   Marker get originMarker {
     return markers
         .where((element) => element.barcodeUID == originContainer.barcodeUID)
         .first;
   }
 
-  //Find all the children of the Origin Container.
+  ///Find all the children of the Origin Container.
   List<ContainerEntry> get children {
     List<ContainerRelationship> containerRelationships = [];
     containerRelationships.addAll(isarDatabase!.containerRelationships
@@ -55,12 +60,17 @@ class GridObject {
     return children;
   }
 
-  List<String> get childrenBarcodes {
-    return children.map((e) => e.barcodeUID!).toList();
+  ///Get all the barcodes in the grid.
+  List<String> get getBarcodes {
+    List<String> barcodes = [];
+    barcodes.addAll(children.map((e) => e.barcodeUID!).toList());
+    barcodes.addAll(markers.map((e) => e.barcodeUID).toList());
+    return barcodes;
   }
 
   ///Build the grid.
   List<GridPosition> get gridPositions {
+    //log('calculating grid');
     if (children.isNotEmpty) {
       //Find all relevant barcodeUID's.
       List<String> relevantBarcodes =
@@ -96,7 +106,18 @@ class GridObject {
                   .endBarcodeUIDMatches(element))
           .findAllSync());
 
-      //log(interBarcodevectorEntries.toString());
+      //Add all other barcodes that have been scanned with the relevant barcodes.
+      List<String> allBarcodes = [];
+      allBarcodes.addAll(
+          interBarcodevectorEntries.map((e) => e.startBarcodeUID).toList());
+      allBarcodes.addAll(
+          interBarcodevectorEntries.map((e) => e.endBarcodeUID).toList());
+
+      for (String item in allBarcodes) {
+        if (!gridPositions.map((e) => e.barcodeUID).contains(item)) {
+          gridPositions.add(GridPosition(barcodeUID: item, position: null));
+        }
+      }
 
       //Initialize variables.
       int nonNullPositions = 1;
@@ -201,6 +222,7 @@ class GridObject {
     return [];
   }
 
+  ///Calculate the onScreenPoints.
   List<DisplayPoint> displayPoints(Size screenSize) {
     List<GridPosition> positions = gridPositions;
     List<double> unitVector = unitVectors(
@@ -248,6 +270,43 @@ class GridObject {
     return myPoints;
   }
 
+  ///Calculate the offset to a specified barcode, given navigator data.
+  Offset calculateOffsetToBarcde({
+    required List<NavigatorData> navigatorData,
+    required String barcodeUID,
+  }) {
+    //1. Average the Navigator data to find realScreenCenter.
+    Offset? realScreenCenter;
+    for (var item in navigatorData.take(3)) {
+      //Get the Grid Position
+      GridPosition barcodePosition =
+          grid.where((element) => element.barcodeUID == item.barcodeUID).first;
+
+      Offset screenCenter =
+          Offset(barcodePosition.position!.x, barcodePosition.position!.y) -
+              item.offsetToScreenCenter;
+
+      if (realScreenCenter == null) {
+        realScreenCenter = screenCenter;
+      } else {
+        realScreenCenter = (realScreenCenter + screenCenter) / 2;
+      }
+
+      log('Real SC: ' + realScreenCenter.toString());
+    }
+
+    //2. Calculate the offset to the barcode from realScreenCenter :D.
+
+    GridPosition barcodePosition =
+        grid.where((element) => element.barcodeUID == barcodeUID).first;
+    Offset barcodeOffset =
+        Offset(barcodePosition.position!.x, barcodePosition.position!.y);
+    Offset offsetToBarcode = barcodeOffset - realScreenCenter!;
+
+    log(offsetToBarcode.toString());
+    return offsetToBarcode;
+  }
+
   @override
   String toString() {
     return
@@ -256,7 +315,8 @@ class GridObject {
 Origin : ${originContainer.containerUID},  Marker: ${originMarker.barcodeUID}
 Markers: ${markers.map((e) => e.barcodeUID.toString())}
 Chldren: ${children.map((e) => e.containerUID.toString())}
-Vectors: ${gridPositions}
+barcods: $getBarcodes
+Vectors: ${gridPositions.length}
 ____________________________________________________________________________
 ''';
   }
