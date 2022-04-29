@@ -27,11 +27,15 @@ class PhotoTag {
       };
 
   PhotoTag fromJson(Map<String, dynamic> json) {
+    List<double>? jsonBoundingBox = null;
+    if (json['boundingBox'] != null) {
+      jsonBoundingBox = (json['boundingBox'] as List<dynamic>).cast<double>();
+    }
     return PhotoTag()
       ..id = json['id']
       ..photoPath = json['photoPath']
       ..tagUID = json['tagUID'] as int
       ..confidence = json['confidence'] as double
-      ..boundingBox = (json['boundingBox'] as List<dynamic>).cast<double>();
+      ..boundingBox = jsonBoundingBox;
   }
 }

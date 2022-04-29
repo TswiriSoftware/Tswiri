@@ -1,9 +1,13 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:isolate';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
+import 'package:flutter_google_ml_kit/isolate/grid_isolate.dart';
 import 'package:flutter_google_ml_kit/isolate/navigator_image_processing_isolate.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate_grid_object.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/grid_object.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
@@ -37,10 +41,12 @@ class _NavigatorViewState extends State<NavigatorView> {
   vm.Vector3 accelerometerEvent = vm.Vector3(0, 0, 0);
   vm.Vector3 userAccelerometerEvent = vm.Vector3(0, 0, 0);
 
-  ReceivePort mainPort = ReceivePort(); // send stuff to ui thread
-  ReceivePort mainPort2 = ReceivePort();
-  SendPort? isolatePort1; //send stuff to isolate
-  SendPort? isolatePort2; //send stuff to isolate
+  ReceivePort mainPortImage1 = ReceivePort(); // send stuff to ui thread
+  ReceivePort mainPortImage2 = ReceivePort();
+  ReceivePort mainPortGrid1 = ReceivePort();
+  SendPort? isolatePortImage1; //send stuff to isolate
+  SendPort? isolatePortImage2; //send stuff to isolate
+  SendPort? isolatePorGrid1;
 
   bool hasSentConfigIsolate1 = false;
   bool hasSentConfigIsolate2 = false;
@@ -54,6 +60,7 @@ class _NavigatorViewState extends State<NavigatorView> {
 
   List<dynamic> barcodeDataBatches = [];
   List<GridObject> knownGrids = [];
+  List<IsolateGridObject> isolateGrids = [];
   List<BarcodeProperty> storedBarcodeProperties = [];
 
   @override
@@ -81,8 +88,12 @@ class _NavigatorViewState extends State<NavigatorView> {
         .findAllSync();
 
     for (ContainerEntry item in originContainers) {
-      GridObject gridObject = GridObject(originContainer: item);
-      gridObject.grid; // generate the grid.
+      GridObject gridObject = GridObject(
+        originContainer: item,
+      );
+
+      isolateGrids.add(IsolateGridObject(
+          gridPositions: gridObject.grid, markers: gridObject.markers));
       knownGrids.add(gridObject);
     }
 
@@ -95,34 +106,48 @@ class _NavigatorViewState extends State<NavigatorView> {
   }
 
   void initIsolate() async {
-    //Spawn Isolate.
-    FlutterIsolate.spawn(navigatorImageProcessorIsolate, mainPort.sendPort);
+    //Spawn grid updater...
+    await FlutterIsolate.spawn(gridIsolate, mainPortGrid1.sendPort);
 
-    FlutterIsolate.spawn(navigatorImageProcessorIsolate, mainPort2.sendPort);
+    //Spawn Impage Processing Isolates
+    await FlutterIsolate.spawn(
+        navigatorImageProcessorIsolate, mainPortImage1.sendPort);
+    await FlutterIsolate.spawn(
+        navigatorImageProcessorIsolate, mainPortImage2.sendPort);
 
     //Port setup.
-    mainPort.listen((msg) {
-      if (msg is SendPort) {
-        isolatePort1 = msg;
-      } else if (msg == 'configured') {
+    mainPortImage1.listen((message) {
+      if (message is SendPort) {
+        isolatePortImage1 = message;
+      } else if (message == 'configured') {
         setState(() {
           hasConfiguredIsolate1 = true;
         });
       } else {
-        drawImage(msg);
+        drawImage(message);
       }
     });
 
     //Port setup.
-    mainPort2.listen((msg) {
-      if (msg is SendPort) {
-        isolatePort2 = msg;
-      } else if (msg == 'configured') {
+    mainPortImage2.listen((message) {
+      if (message is SendPort) {
+        isolatePortImage2 = message;
+      } else if (message == 'configured') {
         setState(() {
           hasConfiguredIsolate2 = true;
         });
       } else {
-        drawImage(msg);
+        drawImage(message);
+      }
+    });
+
+    mainPortGrid1.listen((message) {
+      if (message is SendPort) {
+        isolatePorGrid1 = message;
+        log('Grid Isolate Port Set.');
+        String grids = jsonEncode(isolateGrids);
+
+        isolatePorGrid1!.send(grids);
       }
     });
   }
@@ -130,7 +155,7 @@ class _NavigatorViewState extends State<NavigatorView> {
   @override
   void dispose() {
     FlutterIsolate.killAll();
-    mainPort.close();
+    mainPortImage1.close();
     super.dispose();
   }
 
@@ -176,9 +201,9 @@ class _NavigatorViewState extends State<NavigatorView> {
               ];
 
               if (counter1 == 0) {
-                isolatePort1!.send(myList);
+                isolatePortImage1!.send(myList);
               } else if (counter1 == 3) {
-                isolatePort2!.send(myList);
+                isolatePortImage2!.send(myList);
               }
 
               counter1++;
@@ -220,14 +245,24 @@ class _NavigatorViewState extends State<NavigatorView> {
       ];
 
       //Send to isolate 1.
-      if (isolatePort1 != null) {
-        isolatePort1!.send(config);
+      // && isolatePorGrid1 != null
+      if (isolatePortImage1 != null) {
+        isolatePortImage1!.send(config);
+
+        if (isolatePorGrid1 != null) {
+          isolatePortImage1!.send(isolatePorGrid1);
+        }
         setState(() {
           hasSentConfigIsolate1 = true;
         });
       }
-      if (isolatePort2 != null) {
-        isolatePort2!.send(config);
+      // && isolatePorGrid1 != null
+      if (isolatePortImage2 != null) {
+        isolatePortImage2!.send(config);
+        if (isolatePorGrid1 != null) {
+          isolatePortImage2!.send(isolatePorGrid1);
+        }
+
         setState(() {
           hasSentConfigIsolate2 = true;
         });

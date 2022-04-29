@@ -75,9 +75,9 @@ class _BarcodePositionScannerViewState
 
   void initIsolate() async {
     //Spawn Isolate.
-    FlutterIsolate.spawn(imageProcessorIsolate, mainPort.sendPort);
+    await FlutterIsolate.spawn(imageProcessorIsolate, mainPort.sendPort);
 
-    FlutterIsolate.spawn(imageProcessorIsolate, mainPort2.sendPort);
+    await FlutterIsolate.spawn(imageProcessorIsolate, mainPort2.sendPort);
 
     //Port setup.
     mainPort.listen((msg) {

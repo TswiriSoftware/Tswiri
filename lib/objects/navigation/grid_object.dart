@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
@@ -15,9 +17,7 @@ import 'package:isar/isar.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 
 class GridObject {
-  GridObject({
-    required this.originContainer,
-  });
+  GridObject({required this.originContainer});
 
   //The Grid's Origin Point.
   final ContainerEntry originContainer;
@@ -303,7 +303,7 @@ class GridObject {
         Offset(barcodePosition.position!.x, barcodePosition.position!.y);
     Offset offsetToBarcode = barcodeOffset - realScreenCenter!;
 
-    log(offsetToBarcode.toString());
+    //log(offsetToBarcode.toString());
     return offsetToBarcode;
   }
 

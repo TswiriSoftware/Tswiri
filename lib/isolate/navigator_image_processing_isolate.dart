@@ -15,6 +15,7 @@ void navigatorImageProcessorIsolate(SendPort sendPort) {
   InputImageData? inputImageData;
   Size? screenSize;
   Map<String, double>? barcodeProperties;
+  SendPort? gridSendPort;
 
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
@@ -150,12 +151,18 @@ void navigatorImageProcessorIsolate(SendPort sendPort) {
       //log(barcodeData.toString());
 
       sendPort.send(barcodeData);
+      if (gridSendPort != null) {
+        gridSendPort!.send(barcodeData);
+      }
     }
   }
 
   receivePort.listen(
     (message) {
-      if (message[0] == 'compute') {
+      if (message is SendPort) {
+        gridSendPort = message;
+        log('Grid Port Received.');
+      } else if (message[0] == 'compute') {
         //Process the image.
         processImage(message);
       } else if (message is List) {

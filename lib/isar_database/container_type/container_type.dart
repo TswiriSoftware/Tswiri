@@ -26,7 +26,12 @@ class ContainerType {
 
   @override
   String toString() {
-    return 'containerType: $containerType,\ncontainerDescription: $containerDescription,\nmoveable: $moveable,\ncanContain: $canContain,\ncolor $containerColor';
+    return '''-------------------------------------
+containerType: $containerType,
+containerDescription: $containerDescription,
+moveable: $moveable, canContain: $canContain,
+color $containerColor
+-------------------------------------\n''';
   }
 
   Map toJson() => {

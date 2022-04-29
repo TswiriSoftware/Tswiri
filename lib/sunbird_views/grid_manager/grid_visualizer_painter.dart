@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -28,6 +29,9 @@ class GridVisualizerPainter extends CustomPainter {
   @override
   paint(Canvas canvas, Size size) async {
     GridObject grid = GridObject(originContainer: containerEntry);
+
+    grid.gridPositions;
+    grid.getBarcodes;
 
     List<DisplayPoint> myPoints = grid.displayPoints(size);
     List<Offset> markers = [];

@@ -12,6 +12,26 @@ class GridPosition {
   ///The absolute position.
   late vm.Vector3? position;
 
+  Map toJson() {
+    return {
+      'barcodeUID': barcodeUID,
+      'positionX': position!.x,
+      'positionY': position!.y,
+      'positionZ': position!.z,
+    };
+  }
+
+  factory GridPosition.fromJson(dynamic json) {
+    return GridPosition(
+      barcodeUID: json['barcodeUID'],
+      position: vm.Vector3(
+        json['positionX'] as double,
+        json['positionY'] as double,
+        json['positionZ'] as double,
+      ),
+    );
+  }
+
   @override
   String toString() {
     // TODO: implement toString

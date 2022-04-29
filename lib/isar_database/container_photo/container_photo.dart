@@ -27,7 +27,7 @@ class ContainerPhoto {
     return ContainerPhoto()
       ..id = json['id']
       ..containerUID = json['containerUID']
-      ..photoPath = storagepath + json['photoPath']
-      ..photoThumbnailPath = storagepath + json['photoThumbnailPath'];
+      ..photoPath = storagepath + '/' + json['photoPath']
+      ..photoThumbnailPath = storagepath + '/' + json['photoThumbnailPath'];
   }
 }

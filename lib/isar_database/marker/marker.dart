@@ -22,7 +22,7 @@ class Marker {
 
   Marker fromJson(Map<String, dynamic> json) {
     return Marker()
-      ..id = json['id']
+      ..id = json['id'] as int
       ..barcodeUID = json['barcodeUID']
       ..parentContainerUID = json['parentContainerUID'];
   }

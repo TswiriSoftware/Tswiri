@@ -41,11 +41,6 @@ class NavigatorPainterIsolate extends CustomPainter {
       );
 
       navigatorData.add(currentNavigatorData);
-
-      // if (message[i][0] == containerEntry.barcodeUID) {
-      //   selectedBarcode = currentNavigatorData;
-      // }
-
       diagonalLengths.add(message[i][6]);
 
       //ii. decode message to OffsetPoints
@@ -78,6 +73,9 @@ class NavigatorPainterIsolate extends CustomPainter {
         .where(
             (element) => element.barcodes.contains(containerEntry.barcodeUID))
         .first;
+
+    workingGrid.gridPositions;
+    workingGrid.getBarcodes;
 
     double finderCircleRadius = barcodeDiagonalLength / 3;
 

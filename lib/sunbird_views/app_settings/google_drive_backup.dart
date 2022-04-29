@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-
+import 'package:image/image.dart' as img;
+import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_generation_entry/barcode_generation_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
@@ -48,7 +49,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
 
   List<ContainerPhoto> allPhotos = [];
 
-  List<String> filesToUpload = [
+  List<String> relevantFiles = [
     'containerTypes.json',
     'containerEntries.json',
     'markers.json',
@@ -341,43 +342,263 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
     final authenticateClient = GoogleAuthClient(authHeaders);
     final driveApi = drive.DriveApi(authenticateClient);
 
-    for (var filename in filesToUpload) {
+    String storagePath = await getStorageDirectory();
+    if (!await Directory('$storagePath/sunbird').exists()) {
+      Directory('$storagePath/sunbird').create();
+    }
+
+    String photoFilePath = '$storagePath/sunbird/';
+
+    for (var filename in relevantFiles) {
       drive.FileList fileList = await driveApi.files.list(
         q: "name = '$filename' and trashed = false ",
       );
+
       if (fileList.files!.isNotEmpty) {
         setState(() {
           state = filename.split('.').first;
           downloadProgess = downloadProgess + stepValue;
         });
 
-        String backupPath =
-            (await getApplicationSupportDirectory()).path + '/download/';
+        String fileContent = await downloadFile(driveApi, fileList, filename);
+        if (fileContent.isNotEmpty) {
+          var json = jsonDecode(fileContent) as List<dynamic>;
+          switch (filename) {
+            case 'containerTypes.json':
+              List<ContainerType> containerTypeList =
+                  json.map((e) => ContainerType().fromJson(e)).toList();
 
-        if (!await File('$backupPath/sunbird/download/$filename').exists()) {
-          await File('$backupPath/sunbird/download/$filename')
-              .create(recursive: true);
-          log('created: ' + filename);
-        } else {
-          log('exists: ' + filename);
+              // log(containerTypeList.toString());
+              isarDatabase!.writeTxnSync((isar) {
+                isar.containerTypes.where().deleteAllSync();
+                isar.containerTypes.putAllSync(containerTypeList);
+              });
+              break;
+            case 'containerEntries.json':
+              List<ContainerEntry> containerEntrys =
+                  json.map((e) => ContainerEntry().fromJson(e)).toList();
+              // log(containerEntrys.toString());
+              isarDatabase!.writeTxnSync((isar) {
+                isar.containerEntrys.where().deleteAllSync();
+                isar.containerEntrys.putAllSync(containerEntrys);
+              });
+              break;
+            case 'markers.json':
+              List<Marker> markers =
+                  json.map((e) => Marker().fromJson(e)).toList();
+              // log(markers.toString());
+              isarDatabase!.writeTxnSync((isar) {
+                isar.markers.where().deleteAllSync();
+                isar.markers.putAllSync(markers);
+              });
+              break;
+            case 'mlTags.json':
+              List<MlTag> mlTags =
+                  json.map((e) => MlTag().fromJson(e)).toList();
+              // log(mlTags.toString());
+              isarDatabase!.writeTxnSync((isar) {
+                isar.mlTags.where().deleteAllSync();
+                isar.mlTags.putAllSync(mlTags);
+              });
+              break;
+            case 'photoTags.json':
+              List<PhotoTag> photoTags =
+                  json.map((e) => PhotoTag().fromJson(e)).toList();
+              //  log(photoTags.toString());
+              isarDatabase!.writeTxnSync((isar) {
+                isar.photoTags.where().deleteAllSync();
+                isar.photoTags.putAllSync(photoTags);
+              });
+              break;
+            case 'realInterBarcodeVectorEntry.json':
+              List<RealInterBarcodeVectorEntry> realInterBarcodeVectorEntrys =
+                  json
+                      .map((e) => RealInterBarcodeVectorEntry().fromJson(e))
+                      .toList();
+              // log(realInterBarcodeVectorEntrys.toString());
+              isarDatabase!.writeTxnSync((isar) {
+                isar.realInterBarcodeVectorEntrys.where().deleteAllSync();
+                isar.realInterBarcodeVectorEntrys
+                    .putAllSync(realInterBarcodeVectorEntrys);
+              });
+              break;
+            case 'tags.json':
+              List<Tag> tags = json.map((e) => Tag().fromJson(e)).toList();
+              //log(tags.toString());
+              isarDatabase!.writeTxnSync((isar) {
+                isar.tags.where().deleteAllSync();
+                isar.tags.putAllSync(tags);
+              });
+              break;
+            case 'containerRelationships.json':
+              List<ContainerRelationship> relationships =
+                  json.map((e) => ContainerRelationship().fromJson(e)).toList();
+              // log(relationships.toString());
+              isarDatabase!.writeTxnSync((isar) {
+                isar.containerRelationships.where().deleteAllSync();
+                isar.containerRelationships.putAllSync(relationships);
+              });
+              break;
+            case 'containerPhotos.json':
+              // // //Setup Storage path variable here this must also be used by the photos.
+              // List<ContainerPhoto> containerPhotos = json
+              //     .map((e) => ContainerPhoto().fromJson(e, storagePath))
+              //     .toList();
+              // // log(relationships.toString());
+              // isarDatabase!.writeTxnSync((isar) {
+              //   isar.containerPhotos.where().deleteAllSync();
+              //   isar.containerPhotos.putAllSync(containerPhotos);
+              // });
+              break;
+            case 'barcodeSizeDistanceEntrys.json':
+              List<BarcodeSizeDistanceEntry> barcodeSizeDistanceEntries = json
+                  .map((e) => BarcodeSizeDistanceEntry().fromJson(e))
+                  .toList();
+              //log(barcodeSizeDistanceEntries.toString());
+              isarDatabase!.writeTxnSync((isar) {
+                isar.barcodeSizeDistanceEntrys.where().deleteAllSync();
+                isar.barcodeSizeDistanceEntrys
+                    .putAllSync(barcodeSizeDistanceEntries);
+              });
+              break;
+            case 'barcodePropertys.json':
+              List<BarcodeProperty> barcodeProperties =
+                  json.map((e) => BarcodeProperty().fromJson(e)).toList();
+              //log(barcodeProperties.toString());
+              isarDatabase!.writeTxnSync((isar) {
+                isar.barcodePropertys.where().deleteAllSync();
+                isar.barcodePropertys.putAllSync(barcodeProperties);
+              });
+              break;
+            case 'barcodeGenerationEntry.json':
+              List<BarcodeGenerationEntry> barcodeGenerationEntries = json
+                  .map((e) => BarcodeGenerationEntry().fromJson(e))
+                  .toList();
+              //log(barcodeGenerationEntries.toString());
+              isarDatabase!.writeTxnSync((isar) {
+                isar.barcodeGenerationEntrys.where().deleteAllSync();
+                isar.barcodeGenerationEntrys
+                    .putAllSync(barcodeGenerationEntries);
+              });
+              break;
+            case 'containerTags.json':
+              List<ContainerTag> containerTags =
+                  json.map((e) => ContainerTag().fromJson(e)).toList();
+              //log(containerTags.toString());
+              isarDatabase!.writeTxnSync((isar) {
+                isar.containerTags.where().deleteAllSync();
+                isar.containerTags.putAllSync(containerTags);
+              });
+              break;
+            case '':
+              break;
+          }
         }
       }
     }
-
-    // String folderName = "photos";
-
-    // final found = await driveApi.files.list(
-    //   q: "'$folderName' in parents",
-    // );
-
-    // final files = found.files;
-
-    // log(files.toString());
 
     setState(() {
       isBusyDownloading = false;
       downloadProgess = 0;
     });
+
+    //TODO: Sort out photo download etc @049er
+
+    // const mimeType = "application/vnd.google-apps.folder";
+    // String folderName = "photos";
+
+    // drive.FileList photoFolder = await driveApi.files.list(
+    //   q: "mimeType = '$mimeType' and name ='$folderName'",
+    // );
+
+    // if (photoFolder.files != null) {
+    //   drive.FileList photoFiles = await driveApi.files.list(
+    //     q: "'${photoFolder.files!.first.id}' in parents and trashed = false",
+    //   );
+
+    //   if (photoFiles.files != null) {
+    //     for (drive.File photo in photoFiles.files!) {
+    //       drive.Media test = await driveApi.files.get(photo.id!,
+    //           downloadOptions: drive.DownloadOptions.fullMedia) as drive.Media;
+
+    //       File photoFile = File(storagePath + '/' + photo.name.toString());
+
+    //       File thumbnailFile = File(storagePath +
+    //           '/' +
+    //           photo.name.toString().split('.').first +
+    //           '_thumbnail' +
+    //           photo.name.toString().split('.').last);
+
+    //       if (await photoFile.exists()) {
+    //         log('file exists');
+    //       } else {
+    //         await photoFile.create();
+    //         List<int> dataStore = [];
+    //         test.stream.listen(
+    //           (data) {
+    //             dataStore.insertAll(dataStore.length, data);
+    //           },
+    //           onDone: () {
+    //             photoFile.writeAsBytes(dataStore);
+    //           },
+    //         );
+
+    //         var image = img.decodeJpg(photoFile.readAsBytesSync());
+    //         var thumbnail = img.copyResize(image!, width: 120);
+
+    //         await File(thumbnailFile.path)
+    //             .writeAsBytes(img.encodePng(thumbnail));
+    //       }
+
+    //       log(photo.id!);
+    //       log(photo.name.toString());
+    //     }
+    //   }
+    // }
+  }
+
+  Future<String> downloadFile(
+      drive.DriveApi driveApi, drive.FileList fileList, String filename) async {
+    drive.Media test = await driveApi.files.get(fileList.files!.first.id!,
+        downloadOptions: drive.DownloadOptions.fullMedia) as drive.Media;
+
+    String backupPath =
+        (await getApplicationSupportDirectory()).path + '/download/';
+    String fileContent = '';
+
+    if (!(await File('$backupPath/sunbird/download/$filename').exists())) {
+      File file = await File('$backupPath/sunbird/download/$filename')
+          .create(recursive: true);
+
+      List<int> dataStore = [];
+      test.stream.listen(
+        (data) {
+          dataStore.insertAll(dataStore.length, data);
+        },
+        onDone: () {
+          file.writeAsBytes(dataStore);
+        },
+      );
+
+      fileContent = await file.readAsString();
+    } else {
+      File('$backupPath/sunbird/download/$filename').deleteSync();
+      File file = await File('$backupPath/sunbird/download/$filename')
+          .create(recursive: true);
+
+      List<int> dataStore = [];
+      test.stream.listen(
+        (data) {
+          dataStore.insertAll(dataStore.length, data);
+        },
+        onDone: () {
+          file.writeAsBytes(dataStore);
+        },
+      );
+
+      fileContent = await file.readAsString();
+    }
+    return fileContent;
   }
 
   Future uploadFiles(GoogleSignInAccount user) async {
@@ -395,7 +616,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
       String backupPath = (await getApplicationSupportDirectory()).path;
 
       //Backup Database.
-      for (var fileName in filesToUpload) {
+      for (var fileName in relevantFiles) {
         //Inform user of progress
         setState(() {
           state = fileName.split('.').first;
@@ -546,7 +767,6 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
     drive.FileList fileList = await driveApi.files.list(
       q: "mimeType != 'application/vnd.google-apps.file' and name = '$name' and trashed = false ",
     );
-
     drive.File fileToUpload = drive.File();
     fileToUpload.parents = [folderID];
     fileToUpload.name = name;
