@@ -27,6 +27,7 @@ class PhotoTag {
       };
 
   PhotoTag fromJson(Map<String, dynamic> json) {
+    // ignore: avoid_init_to_null
     List<double>? jsonBoundingBox = null;
     if (json['boundingBox'] != null) {
       jsonBoundingBox = (json['boundingBox'] as List<dynamic>).cast<double>();

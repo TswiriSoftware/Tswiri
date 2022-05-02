@@ -3,12 +3,15 @@ import 'dart:ui';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 
-class OnImageBarcodeData {
-  OnImageBarcodeData({
+class IsolateOnImageBarcodeData {
+  IsolateOnImageBarcodeData({
     required this.barcodeUID,
     required this.onImageCornerPoints,
     required this.timestamp,
     required this.accelerometerData,
+    required this.onImageDiagonalLength,
+    required this.barcodeDiagonalLength,
+    required this.barcodeMMperPX,
   });
 
   ///BarcodeUID.
@@ -22,8 +25,14 @@ class OnImageBarcodeData {
   ///Accelerometer Data.
   final AccelerometerData accelerometerData;
 
+  final double barcodeMMperPX;
+
+  final double barcodeDiagonalLength;
+
+  final double onImageDiagonalLength;
+
   ///Create a Isolate Barcode from a List.
-  factory OnImageBarcodeData.fromMessage(List<dynamic> item) {
+  factory IsolateOnImageBarcodeData.fromMessage(List<dynamic> item) {
     AccelerometerData accelerometerData = AccelerometerData(
         accelerometerEvent: vm.Vector3(
           item[3][0] as double,
@@ -43,11 +52,14 @@ class OnImageBarcodeData {
       Offset(item[2][6] as double, item[2][7] as double),
     ];
 
-    return OnImageBarcodeData(
+    return IsolateOnImageBarcodeData(
       barcodeUID: item[0],
       onImageCornerPoints: onImageCornerPoints,
       timestamp: item[4],
       accelerometerData: accelerometerData,
+      onImageDiagonalLength: item[6],
+      barcodeDiagonalLength: item[7],
+      barcodeMMperPX: item[8],
     );
   }
 
@@ -69,17 +81,8 @@ class OnImageBarcodeData {
     return Offset(centerX, centerY);
   }
 
-  double get barcodeDiagonalLength {
-    double diagonal1 =
-        (onImageCornerPoints[0] - onImageCornerPoints[2]).distance;
-    double diagonal2 =
-        (onImageCornerPoints[1] - onImageCornerPoints[3]).distance;
-
-    return (diagonal1 + diagonal2) / 2;
-  }
-
   @override
   String toString() {
-    return '\nUID: $barcodeUID, timestamp: $timestamp, centerPoint: (${barcodeCenterPoint.dx}, ${barcodeCenterPoint.dy}), diagonalLength: $barcodeDiagonalLength)';
+    return '\nUID: $barcodeUID, timestamp: $timestamp, centerPoint: (${barcodeCenterPoint.dx}, ${barcodeCenterPoint.dy}), diagonalLength: $barcodeDiagonalLength), diag: $barcodeDiagonalLength, diagO: $onImageDiagonalLength, mmX: $barcodeMMperPX';
   }
 }

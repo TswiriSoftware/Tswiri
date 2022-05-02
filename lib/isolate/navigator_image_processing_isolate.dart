@@ -145,7 +145,9 @@ void navigatorImageProcessorIsolate(SendPort sendPort) {
             realOffset.dx,
             realOffset.dy,
           ],
-          onImageDiagonalLength //OnImage Diagonal Length [6].
+          onImageDiagonalLength, //OnImage Diagonal Length [6].
+          barcodeDiagonalLength, //final double dialogballegth; [7]
+          startBarcodeMMperPX, //BarcodeMMperPX [8]
         ]);
       }
       //log(barcodeData.toString());
