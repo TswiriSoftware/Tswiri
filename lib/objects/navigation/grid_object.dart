@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
@@ -292,7 +289,7 @@ class GridObject {
         realScreenCenter = (realScreenCenter + screenCenter) / 2;
       }
 
-      log('Real SC: ' + realScreenCenter.toString());
+      // log('Real SC: ' + realScreenCenter.toString());
     }
 
     //2. Calculate the offset to the barcode from realScreenCenter :D.

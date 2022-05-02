@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-import 'package:image/image.dart' as img;
-import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_generation_entry/barcode_generation_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
@@ -346,8 +344,6 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
     if (!await Directory('$storagePath/sunbird').exists()) {
       Directory('$storagePath/sunbird').create();
     }
-
-    String photoFilePath = '$storagePath/sunbird/';
 
     for (var filename in relevantFiles) {
       drive.FileList fileList = await driveApi.files.list(
