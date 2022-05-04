@@ -8,7 +8,6 @@ import 'package:flutter_google_ml_kit/isar_database/container_entry/container_en
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/isolate/grid_isolate.dart';
 import 'package:flutter_google_ml_kit/isolate/navigator_image_processing_isolate.dart';
-import 'package:flutter_google_ml_kit/isolate/painter_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate_grid_object.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/grid_object.dart';
@@ -110,6 +109,9 @@ class _NavigatorViewState extends State<NavigatorView> {
   }
 
   void initIsolate() async {
+    //Spawn grid updater...
+    await FlutterIsolate.spawn(gridIsolate, mainPortGrid1.sendPort);
+
     //Spawn Impage Processing Isolates
     await FlutterIsolate.spawn(
         navigatorImageProcessorIsolate, mainPortImage1.sendPort);
@@ -142,9 +144,6 @@ class _NavigatorViewState extends State<NavigatorView> {
       }
     });
 
-    //Spawn grid updater...
-    await FlutterIsolate.spawn(gridIsolate, mainPortGrid1.sendPort);
-
     mainPortGrid1.listen((message) {
       if (message is SendPort) {
         isolatePorGrid1 = message;
@@ -154,8 +153,7 @@ class _NavigatorViewState extends State<NavigatorView> {
           //Send isolate ports to Grid isolate.
           'config',
           grids,
-          isolatePortImage1!,
-          isolatePortImage2!,
+          focalLength,
         ];
         isolatePorGrid1!.send(config);
       } else if (message is List) {
@@ -246,8 +244,6 @@ class _NavigatorViewState extends State<NavigatorView> {
             barcodeProperty.barcodeUID, () => barcodeProperty.size);
       }
 
-      String initalGrids = jsonEncode(isolateGrids);
-
       //Setup config List.
       List config = [
         'config', //[0]
@@ -258,7 +254,6 @@ class _NavigatorViewState extends State<NavigatorView> {
         inputImage.inputImageData!.inputImageFormat.index, //[5]
         widget.containerEntry.barcodeUID, //[6]
         barcodeProperties, //[7]
-        initalGrids, //[8]
       ];
 
       //Send to isolate 1.
@@ -288,17 +283,19 @@ class _NavigatorViewState extends State<NavigatorView> {
   }
 
   //Draw on canvas from barcode message.
-  void drawImage(message) {
+  void drawImage(List barcodeDataBatch) {
     if (isBusy) return;
     isBusy = true;
 
     final painter = NavigatorPainterIsolate(
-      message: message,
+      message: barcodeDataBatch,
+      containerEntry: widget.containerEntry,
+      knownGrids: knownGrids,
     );
 
     customPaint = CustomPaint(painter: painter);
 
-    barcodeDataBatches.add(message);
+    barcodeDataBatches.add(barcodeDataBatch);
 
     isBusy = false;
     if (mounted) {

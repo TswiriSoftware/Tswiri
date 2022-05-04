@@ -11,8 +11,7 @@ void gridIsolate(SendPort sendPort) {
   sendPort.send(receivePort.sendPort);
   List<IsolateGridObject>? initialGrids;
   List<RollingGridObject> currentGrids = [];
-  SendPort? isolatePortImage1; //send stuff to isolate
-  SendPort? isolatePortImage2; //send stuff to isolate
+  double isolateFocalLength = 0;
 
   void processGrid(var message) async {
     //1. Decode Messgae.
@@ -88,7 +87,7 @@ void gridIsolate(SendPort sendPort) {
 
   receivePort.listen(
     (message) {
-      if (message[0] == 'config') {
+      if (message is List && message[0] == 'config') {
         //This is the initial set of grids.
         List<dynamic> parsedListJson = jsonDecode(message[1]);
         initialGrids = List<IsolateGridObject>.from(
@@ -101,19 +100,15 @@ void gridIsolate(SendPort sendPort) {
 
           newRollingGrid.initiateGrid(
               newRollingGrid.markers, grid.gridPositions);
+
           currentGrids.add(newRollingGrid);
         }
-        isolatePortImage1 = message[2];
-        isolatePortImage2 = message[3];
-
-        List update = ['update'];
-        isolatePortImage1!.send(update);
-        isolatePortImage2!.send(update);
+        isolateFocalLength = message[2] as double;
 
         //  log(currentGrids.toString());
-      } else if (message is List) {
+      } else if (message[0] == 'compute') {
         //This is the data received from the Image Processors
-        processGrid(message);
+        processGrid(message[1]);
       }
     },
   );

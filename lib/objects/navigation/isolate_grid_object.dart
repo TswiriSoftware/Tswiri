@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/grid_object.dart';
@@ -16,7 +15,6 @@ class IsolateGridObject {
   });
   //List of all grid positions
   List<GridPosition> gridPositions;
-
   //List of all markers in grid.
   List<Marker> markers;
 
@@ -28,25 +26,6 @@ class IsolateGridObject {
       barcodes.add(position.barcodeUID);
     }
     return barcodes;
-  }
-
-  ///Calculate the offset to a specified barcode, given navigator data.
-  Offset? calculateOffsetToBarcde({
-    required Offset? realScreenCenter,
-    required String barcodeUID,
-  }) {
-    //2. Calculate the offset to the barcode from realScreenCenter :D.
-    if (realScreenCenter != null) {
-      GridPosition barcodePosition = gridPositions
-          .where((element) => element.barcodeUID == barcodeUID)
-          .first;
-      Offset barcodeOffset =
-          Offset(barcodePosition.position!.x, barcodePosition.position!.y);
-      Offset offsetToBarcode = barcodeOffset - realScreenCenter;
-      return offsetToBarcode;
-    }
-
-    return null;
   }
 
   bool comparePosition(RollingGridPosition rollingGridPosition) {
