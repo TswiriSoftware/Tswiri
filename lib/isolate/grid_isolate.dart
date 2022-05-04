@@ -11,6 +11,8 @@ void gridIsolate(SendPort sendPort) {
   sendPort.send(receivePort.sendPort);
   List<IsolateGridObject>? initialGrids;
   List<RollingGridObject> currentGrids = [];
+  SendPort? isolatePortImage1; //send stuff to isolate
+  SendPort? isolatePortImage2; //send stuff to isolate
 
   void processGrid(var message) async {
     //1. Decode Messgae.
@@ -51,21 +53,44 @@ void gridIsolate(SendPort sendPort) {
 
     //Start building the grid :D.
     if (realInterBarcodeVectors.isNotEmpty) {
-      currentGrids
+      RollingGridObject workingGrid = currentGrids
           .where((element) => element.barcodes
               .contains(realInterBarcodeVectors.first.startBarcodeUID))
-          .first
-          .updateGrid(realInterBarcodeVectors);
+          .first;
+
+      if (workingGrid.isComplete == false) {
+        //Generate Grid working grid.
+        workingGrid.generateGrid(realInterBarcodeVectors);
+
+        //Get relvant starting grid.
+        IsolateGridObject initialGrid = initialGrids!
+            .where((element) =>
+                element.getBarcodes().contains(workingGrid.barcodes.first))
+            .first;
+
+        //My my my how have we gotten here :D.
+        //Now I shall compare the initial Grid to the latest grid :D.
+
+        for (var rollingGridPosition in workingGrid.grid) {
+          bool hasMoved = initialGrid.comparePosition(rollingGridPosition);
+          if (hasMoved) {
+            //Send this to the main Isolate so the position can be updated....
+            log('new Position: $rollingGridPosition');
+          }
+        }
+      }
     }
-    log(currentGrids.toString());
-    log(initialGrids.toString());
+
+    // log(isolateFocalLength.toString());
+    log('InitialGrids: \n' + initialGrids.toString());
+    log('CurrentGrids: \n' + currentGrids.toString());
   }
 
   receivePort.listen(
     (message) {
-      if (message is String) {
+      if (message[0] == 'config') {
         //This is the initial set of grids.
-        List<dynamic> parsedListJson = jsonDecode(message);
+        List<dynamic> parsedListJson = jsonDecode(message[1]);
         initialGrids = List<IsolateGridObject>.from(
             parsedListJson.map((e) => IsolateGridObject.fromJson(e)));
 
@@ -76,9 +101,14 @@ void gridIsolate(SendPort sendPort) {
 
           newRollingGrid.initiateGrid(
               newRollingGrid.markers, grid.gridPositions);
-
           currentGrids.add(newRollingGrid);
         }
+        isolatePortImage1 = message[2];
+        isolatePortImage2 = message[3];
+
+        List update = ['update'];
+        isolatePortImage1!.send(update);
+        isolatePortImage2!.send(update);
 
         //  log(currentGrids.toString());
       } else if (message is List) {

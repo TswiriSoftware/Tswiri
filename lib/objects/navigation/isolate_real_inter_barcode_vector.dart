@@ -16,7 +16,7 @@ class IsolateRealInterBarcodeVector {
   //End barcodeUID.
   final String endBarcodeUID;
 
-  final Vector3 vector;
+  Vector3 vector;
 
   //Returns the UID of the interBarcodeVectorEntry
   String get uid {
@@ -35,6 +35,12 @@ class IsolateRealInterBarcodeVector {
   @override
   String toString() {
     return '\nstartBarcodeUID: $startBarcodeUID, endBarcodeUID: $endBarcodeUID,X: ${vector.x}, Y: ${vector.y}, Z: ${vector.z}';
+  }
+
+  void averageInterBarcodeVector(
+      IsolateRealInterBarcodeVector isolateRealInterBarcodeVector) {
+    Vector3 newVector = (vector + isolateRealInterBarcodeVector.vector) / 2;
+    vector = newVector;
   }
 
   factory IsolateRealInterBarcodeVector.fromIsolateInterBarcodeData(
@@ -73,6 +79,6 @@ class IsolateRealInterBarcodeVector {
         startBarcodeUID: interBarcodeData.startBarcode.barcodeUID,
         endBarcodeUID: interBarcodeData.endBarcode.barcodeUID,
         vector: Vector3(averageRealInterBarcodeOffset.dx,
-            averageRealInterBarcodeOffset.dx, 0));
+            averageRealInterBarcodeOffset.dy, 0));
   }
 }

@@ -55,11 +55,11 @@ class IsolateOnImageBarcodeData {
     return IsolateOnImageBarcodeData(
       barcodeUID: item[0],
       onImageCornerPoints: onImageCornerPoints,
-      timestamp: item[4],
+      timestamp: item[8],
       accelerometerData: accelerometerData,
-      onImageDiagonalLength: item[6],
-      barcodeDiagonalLength: item[7],
-      barcodeMMperPX: item[8],
+      onImageDiagonalLength: item[5],
+      barcodeDiagonalLength: item[6],
+      barcodeMMperPX: item[7],
     );
   }
 

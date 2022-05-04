@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/isolate/grid_isolate.dart';
 import 'package:flutter_google_ml_kit/isolate/navigator_image_processing_isolate.dart';
+import 'package:flutter_google_ml_kit/isolate/painter_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate_grid_object.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/grid_object.dart';
@@ -93,7 +95,9 @@ class _NavigatorViewState extends State<NavigatorView> {
       );
 
       isolateGrids.add(IsolateGridObject(
-          gridPositions: gridObject.grid, markers: gridObject.markers));
+        gridPositions: gridObject.grid,
+        markers: gridObject.markers,
+      ));
       knownGrids.add(gridObject);
     }
 
@@ -106,9 +110,6 @@ class _NavigatorViewState extends State<NavigatorView> {
   }
 
   void initIsolate() async {
-    //Spawn grid updater...
-    await FlutterIsolate.spawn(gridIsolate, mainPortGrid1.sendPort);
-
     //Spawn Impage Processing Isolates
     await FlutterIsolate.spawn(
         navigatorImageProcessorIsolate, mainPortImage1.sendPort);
@@ -141,13 +142,24 @@ class _NavigatorViewState extends State<NavigatorView> {
       }
     });
 
+    //Spawn grid updater...
+    await FlutterIsolate.spawn(gridIsolate, mainPortGrid1.sendPort);
+
     mainPortGrid1.listen((message) {
       if (message is SendPort) {
         isolatePorGrid1 = message;
         log('Grid Isolate Port Set.');
         String grids = jsonEncode(isolateGrids);
-
-        isolatePorGrid1!.send(grids);
+        List config = [
+          //Send isolate ports to Grid isolate.
+          'config',
+          grids,
+          isolatePortImage1!,
+          isolatePortImage2!,
+        ];
+        isolatePorGrid1!.send(config);
+      } else if (message is List) {
+        log(message.toString());
       }
     });
   }
@@ -174,7 +186,7 @@ class _NavigatorViewState extends State<NavigatorView> {
           color: widget.customColor ?? Colors.deepOrange,
           title: 'Position Scanner',
           customPaint: customPaint,
-          onImage: (inputImage) async {
+          onImage: (inputImage) {
             //Configure the Isolate.
             if (hasSentConfigIsolate1 == false ||
                 hasSentConfigIsolate2 == false) {
@@ -186,7 +198,7 @@ class _NavigatorViewState extends State<NavigatorView> {
                 hasConfiguredIsolate1 == true &&
                 hasConfiguredIsolate2 == true) {
               List myList = [
-                'compute', // Identifier [0]
+                'process', // Identifier [0]
                 TransferableTypedData.fromList([inputImage.bytes!]), //Bytes [1]
                 [
                   //Accelerometer Data [2]
@@ -234,14 +246,19 @@ class _NavigatorViewState extends State<NavigatorView> {
             barcodeProperty.barcodeUID, () => barcodeProperty.size);
       }
 
+      String initalGrids = jsonEncode(isolateGrids);
+
       //Setup config List.
       List config = [
-        inputImage.inputImageData!.size.width, //[0]
-        inputImage.inputImageData!.size.height, //[1]
-        inputImage.inputImageData!.inputImageFormat.index, //[2]
+        'config', //[0]
+        inputImage.inputImageData!.size.width, //[1]
+        inputImage.inputImageData!.size.height, //[2]
         screenSize.width, //[3]
         screenSize.height, //[4]
-        barcodeProperties, //[5]
+        inputImage.inputImageData!.inputImageFormat.index, //[5]
+        widget.containerEntry.barcodeUID, //[6]
+        barcodeProperties, //[7]
+        initalGrids, //[8]
       ];
 
       //Send to isolate 1.
@@ -271,19 +288,17 @@ class _NavigatorViewState extends State<NavigatorView> {
   }
 
   //Draw on canvas from barcode message.
-  void drawImage(List barcodeDataBatch) {
+  void drawImage(message) {
     if (isBusy) return;
     isBusy = true;
 
     final painter = NavigatorPainterIsolate(
-      message: barcodeDataBatch,
-      containerEntry: widget.containerEntry,
-      knownGrids: knownGrids,
+      message: message,
     );
 
     customPaint = CustomPaint(painter: painter);
 
-    barcodeDataBatches.add(barcodeDataBatch);
+    barcodeDataBatches.add(message);
 
     isBusy = false;
     if (mounted) {
