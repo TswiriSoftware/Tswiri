@@ -6,6 +6,8 @@ class GridProcessorConfig {
   GridProcessorConfig({
     required this.grids,
     required this.focalLength,
+    // required this.isolateImagePort1,
+    // required this.isolateImagePort2,
   });
 
   ///Identifier.
@@ -16,6 +18,8 @@ class GridProcessorConfig {
 
   ///Focal Length.
   final double focalLength;
+  // final SendPort isolateImagePort1;
+  // final SendPort isolateImagePort2;
 
   List<dynamic> toMessage() {
     return [
@@ -30,6 +34,9 @@ class GridProcessorConfig {
     List<dynamic> parsedListJson = jsonDecode(message[1]);
     List<IsolateGridObject> grids = List<IsolateGridObject>.from(
         parsedListJson.map((e) => IsolateGridObject.fromJson(e)));
-    return GridProcessorConfig(grids: grids, focalLength: message[2]);
+    return GridProcessorConfig(
+      grids: grids,
+      focalLength: message[2],
+    );
   }
 }

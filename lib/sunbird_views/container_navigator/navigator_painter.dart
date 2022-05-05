@@ -13,6 +13,7 @@ class NavigatorPainter extends CustomPainter {
     required this.containerEntry,
     required this.knownGrids,
   });
+  // ignore: prefer_typing_uninitialized_variables
   final message;
   final ContainerEntry containerEntry;
   final List<GridObject> knownGrids;
@@ -65,17 +66,7 @@ class NavigatorPainter extends CustomPainter {
             PointMode.polygon, offsetPoints, paintEasy(barcodeFocusColor, 3.0));
       }
     }
-
-    //Select applicable grid.
-    GridObject workingGrid = knownGrids
-        .where(
-            (element) => element.barcodes.contains(containerEntry.barcodeUID))
-        .first;
-
-    workingGrid.gridPositions;
-    workingGrid.getBarcodes;
-
-    double finderCircleRadius = painterMesssage.diagonalLength / 3;
+    double finderCircleRadius = painterMesssage.averageDiagonalLength / 3;
 
     //Draw Finder Circle
     canvas.drawCircle(
@@ -86,45 +77,41 @@ class NavigatorPainter extends CustomPainter {
             strokeWidth: 2.0,
             style: PaintingStyle.stroke));
 
-    //Calcualte position.
-    if (navigatorData.isNotEmpty) {
-      Offset offsetToBarcode = workingGrid.calculateOffsetToBarcde(
-          navigatorData: navigatorData, barcodeUID: containerEntry.barcodeUID!);
+    if (painterMesssage.averageOffsetToBarcode != const Offset(0, 0) &&
+        painterMesssage.averageOffsetToBarcode.distance >= finderCircleRadius) {
+      //Draw arrow
+      //Start position of the arrow line.
+      Offset arrowLineStart =
+          Offset(screenCenter.dx + finderCircleRadius, screenCenter.dy);
 
-      if (offsetToBarcode.distance >= finderCircleRadius) {
-        //Draw arrow
-        //Start position of the arrow line.
-        Offset arrowLineStart =
-            Offset(screenCenter.dx + finderCircleRadius, screenCenter.dy);
+      //End position of the arrow line
+      Offset arrowLineHead = Offset(
+          arrowLineStart.dx +
+              painterMesssage.averageOffsetToBarcode.distance -
+              finderCircleRadius,
+          screenCenter.dy);
 
-        //End position of the arrow line
-        Offset arrowLineHead = Offset(
-            arrowLineStart.dx + offsetToBarcode.distance - finderCircleRadius,
-            screenCenter.dy);
+      //ArrowHeadtop
+      Offset arrowHeadtop =
+          Offset(arrowLineHead.dx - 30, arrowLineHead.dy + 20);
 
-        //ArrowHeadtop
-        Offset arrowHeadtop =
-            Offset(arrowLineHead.dx - 30, arrowLineHead.dy + 20);
+      //ArrowHeadBottom
+      Offset arrowHeadbottom =
+          Offset(arrowLineHead.dx - 30, arrowLineHead.dy - 20);
 
-        //ArrowHeadBottom
-        Offset arrowHeadbottom =
-            Offset(arrowLineHead.dx - 30, arrowLineHead.dy - 20);
+      //Translate canvas to screen center.
+      canvas.translate(screenCenter.dx, screenCenter.dy);
+      //Rotate the canvas.
+      canvas.rotate(painterMesssage.averageOffsetToBarcode.direction);
+      //Translate the canvas back to original position
+      canvas.translate(-screenCenter.dx, -screenCenter.dy);
 
-        //Translate canvas to screen center.
-        canvas.translate(screenCenter.dx, screenCenter.dy);
-        //Rotate the canvas.
-        canvas.rotate(offsetToBarcode.direction);
-        //Translate the canvas back to original position
-        canvas.translate(-screenCenter.dx, -screenCenter.dy);
-
-        //Draw the arrow
-        canvas.drawLine(
-            arrowLineStart, arrowLineHead, paintEasy(Colors.blue, 3.0));
-        canvas.drawLine(
-            arrowLineHead, arrowHeadtop, paintEasy(Colors.blue, 3.0));
-        canvas.drawLine(
-            arrowLineHead, arrowHeadbottom, paintEasy(Colors.blue, 3.0));
-      }
+      //Draw the arrow
+      canvas.drawLine(
+          arrowLineStart, arrowLineHead, paintEasy(Colors.blue, 3.0));
+      canvas.drawLine(arrowLineHead, arrowHeadtop, paintEasy(Colors.blue, 3.0));
+      canvas.drawLine(
+          arrowLineHead, arrowHeadbottom, paintEasy(Colors.blue, 3.0));
     }
   }
 

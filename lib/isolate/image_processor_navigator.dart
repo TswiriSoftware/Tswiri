@@ -3,6 +3,8 @@ import 'dart:isolate';
 import 'dart:ui';
 import 'package:flutter_google_ml_kit/functions/translating/coordinates_translator.dart';
 import 'package:flutter_google_ml_kit/functions/translating/offset_rotation.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/grid_position.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate_grid_object.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/on_image_data.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/message_objects/navigator_isolate_config.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/message_objects/navigator_isolate_data.dart';
@@ -18,6 +20,7 @@ void imageProcessorNavigator(SendPort sendPort) {
   Map<String, double>? barcodeProperties;
   SendPort? gridSendPort;
   String? selectedBarcodeUID;
+  List<IsolateGridObject>? initialGrids;
 
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
@@ -40,7 +43,8 @@ void imageProcessorNavigator(SendPort sendPort) {
 
       //Painter Message
       List<dynamic> painterData = [];
-      double? diagonalLength;
+      double? averageBarcodeDiagonalLength;
+      Offset? averageOffsetToBarcode;
 
       for (Barcode barcode in barcodes) {
         ///1. Caluclate barcode OnScreen CornerPoints.
@@ -99,13 +103,48 @@ void imageProcessorNavigator(SendPort sendPort) {
         double startBarcodeMMperPX = onImageDiagonalLength /
             barcodeDiagonalLength; //Will have to pass in the stored barcode diagonalLength....
 
-        Offset realOffset = offsetToScreenCenter / startBarcodeMMperPX;
+        Offset realOffsetToScreenCenter =
+            offsetToScreenCenter / startBarcodeMMperPX;
+
+        //Select relevant grid.
+        IsolateGridObject grid = initialGrids!
+            .where((element) =>
+                element.getBarcodes().contains(barcode.value.displayValue))
+            .first;
+
+        GridPosition barcodePosition = grid.gridPositions
+            .where(
+                (element) => element.barcodeUID == barcode.value.displayValue)
+            .first;
+
+        //Calculate real Screen Center.
+        Offset realScreenCenter =
+            Offset(barcodePosition.position!.x, barcodePosition.position!.y) -
+                realOffsetToScreenCenter;
+
+        GridPosition selectedBarcodePosition = grid.gridPositions
+            .where((element) => element.barcodeUID == selectedBarcodeUID)
+            .first;
+
+        Offset barcodeOffset = Offset(selectedBarcodePosition.position!.x,
+            selectedBarcodePosition.position!.y);
+
+        Offset offsetToBarcode = barcodeOffset - realScreenCenter;
+
+        //Calculate the average offset to selectedBarcode.
+        if (averageOffsetToBarcode == null) {
+          averageOffsetToBarcode = offsetToBarcode;
+        } else {
+          averageOffsetToBarcode =
+              (averageOffsetToBarcode + offsetToBarcode) / 2;
+        }
 
         //Painter Message
-        if (diagonalLength == null) {
-          diagonalLength = onImageDiagonalLength;
+        if (averageBarcodeDiagonalLength == null) {
+          averageBarcodeDiagonalLength = onImageDiagonalLength;
         } else {
-          diagonalLength = (diagonalLength + onImageDiagonalLength) / 2;
+          averageBarcodeDiagonalLength =
+              (averageBarcodeDiagonalLength + onImageDiagonalLength) / 2;
         }
 
         painterData.add([
@@ -122,8 +161,8 @@ void imageProcessorNavigator(SendPort sendPort) {
             offsetPoints[3].dy,
           ],
           [
-            realOffset.dx,
-            realOffset.dy,
+            realOffsetToScreenCenter.dx,
+            realOffsetToScreenCenter.dy,
           ], // Offset to Screen Center [2].
         ]);
 
@@ -160,8 +199,8 @@ void imageProcessorNavigator(SendPort sendPort) {
             message[2][5], //userAccelerometerEvent.z
           ], // Accelerometer Data [3].
           [
-            realOffset.dx,
-            realOffset.dy,
+            realOffsetToScreenCenter.dx,
+            realOffsetToScreenCenter.dy,
           ], // Offset to Screen Center [4].
           onImageDiagonalLength, //OnImage Diagonal Length [5].
           barcodeDiagonalLength, //final double dialogballegth; [6]
@@ -172,9 +211,14 @@ void imageProcessorNavigator(SendPort sendPort) {
       //log(barcodeData.toString());
 
       PainterMesssage painterMessage = PainterMesssage(
-          diagonalLength: diagonalLength ?? 100, painterData: painterData);
+        averageDiagonalLength: averageBarcodeDiagonalLength ?? 100,
+        painterData: painterData,
+        averageOffsetToBarcode: averageOffsetToBarcode ?? Offset(0, 0),
+      );
 
       sendPort.send(painterMessage.toMessage());
+
+      //log(initialGrids.toString());
 
       if (gridSendPort != null) {
         gridSendPort!.send(['compute', barcodeData]);
@@ -187,6 +231,7 @@ void imageProcessorNavigator(SendPort sendPort) {
       if (message is SendPort) {
         gridSendPort = message;
         log('Grid Port Received.');
+        gridSendPort!.send(sendPort);
       } else if (message[0] == 'process') {
         //Process the image.
         processImage(message);
@@ -206,6 +251,7 @@ void imageProcessorNavigator(SendPort sendPort) {
         canvasSize = config.canvasSize;
         selectedBarcodeUID = config.selectedBarcodeUID;
         barcodeProperties = config.barcodeProperties;
+        initialGrids = config.initialGrids;
 
         sendPort.send('configured');
       }
