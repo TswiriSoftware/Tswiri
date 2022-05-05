@@ -5,67 +5,65 @@ import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/grid_object.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/navigator_data.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/message_objects/painter_message.dart';
 
-class NavigatorPainterIsolate extends CustomPainter {
-  NavigatorPainterIsolate({
+class NavigatorPainter extends CustomPainter {
+  NavigatorPainter({
     required this.message,
     required this.containerEntry,
     required this.knownGrids,
   });
-  final List message;
+  final message;
   final ContainerEntry containerEntry;
   final List<GridObject> knownGrids;
   //final GridObject workingGrid;
 
   @override
   void paint(Canvas canvas, Size size) {
+    PainterMesssage painterMesssage = PainterMesssage.fromMessage(message);
+
     List<NavigatorData> navigatorData = [];
-    //NavigatorData? selectedBarcode;
-    List<double> diagonalLengths = [];
-    double barcodeDiagonalLength = 200;
+
     Offset screenCenter = Offset(
       size.width / 2,
       size.height / 2,
     );
 
     //1. Decode and draw all barcodeBorders.
-    for (int i = 0; i < message.length; i++) {
+    for (int i = 0; i < painterMesssage.painterData.length; i++) {
       //i. Add offset to screen center to list.
 
       NavigatorData currentNavigatorData = NavigatorData(
-        barcodeUID: message[i][0],
+        barcodeUID: painterMesssage.painterData[i][0],
         offsetToScreenCenter: Offset(
-          message[i][4][0],
-          message[i][4][1],
+          painterMesssage.painterData[i][2][0],
+          painterMesssage.painterData[i][2][1],
         ),
       );
 
       navigatorData.add(currentNavigatorData);
-      diagonalLengths.add(message[i][5]);
 
       //ii. decode message to OffsetPoints
       List<Offset> offsetPoints = <Offset>[
-        Offset(message[i][1][0], message[i][1][1]),
-        Offset(message[i][1][2], message[i][1][3]),
-        Offset(message[i][1][4], message[i][1][5]),
-        Offset(message[i][1][6], message[i][1][7]),
-        Offset(message[i][1][0], message[i][1][1]),
+        Offset(painterMesssage.painterData[i][1][0],
+            painterMesssage.painterData[i][1][1]),
+        Offset(painterMesssage.painterData[i][1][2],
+            painterMesssage.painterData[i][1][3]),
+        Offset(painterMesssage.painterData[i][1][4],
+            painterMesssage.painterData[i][1][5]),
+        Offset(painterMesssage.painterData[i][1][6],
+            painterMesssage.painterData[i][1][7]),
+        Offset(painterMesssage.painterData[i][1][0],
+            painterMesssage.painterData[i][1][1]),
       ];
 
       //Draw borders.
       canvas.drawPoints(
           PointMode.polygon, offsetPoints, paintEasy(barcodeDefaultColor, 3.0));
-      if (containerEntry.barcodeUID == message[i][0]) {
+      if (containerEntry.barcodeUID == painterMesssage.painterData[i][0]) {
         canvas.drawPoints(
             PointMode.polygon, offsetPoints, paintEasy(barcodeFocusColor, 3.0));
       }
-    }
-
-    //Calcualte average diagonal length.
-    if (diagonalLengths.isNotEmpty) {
-      barcodeDiagonalLength =
-          diagonalLengths.reduce((value, element) => value + element) /
-              diagonalLengths.length;
     }
 
     //Select applicable grid.
@@ -77,7 +75,7 @@ class NavigatorPainterIsolate extends CustomPainter {
     workingGrid.gridPositions;
     workingGrid.getBarcodes;
 
-    double finderCircleRadius = barcodeDiagonalLength / 3;
+    double finderCircleRadius = painterMesssage.diagonalLength / 3;
 
     //Draw Finder Circle
     canvas.drawCircle(
@@ -131,7 +129,7 @@ class NavigatorPainterIsolate extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(NavigatorPainterIsolate oldDelegate) {
+  bool shouldRepaint(NavigatorPainter oldDelegate) {
     return oldDelegate.message != message;
   }
 }
