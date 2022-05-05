@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/grid_object.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/grid_position.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate_real_inter_barcode_vector.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/rolling_grid_position.dart';

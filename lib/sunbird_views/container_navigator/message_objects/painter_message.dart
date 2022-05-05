@@ -1,24 +1,31 @@
+import 'dart:ui';
+
 class PainterMesssage {
   PainterMesssage({
-    required this.diagonalLength,
+    required this.averageDiagonalLength,
     required this.painterData,
+    required this.averageOffsetToBarcode,
   });
   String identifier = 'painterMessage';
-  double diagonalLength;
+  double averageDiagonalLength;
+  Offset averageOffsetToBarcode;
   List painterData;
 
   List toMessage() {
     return [
       identifier,
-      diagonalLength,
+      averageDiagonalLength,
       painterData,
+      [averageOffsetToBarcode.dx, averageOffsetToBarcode.dy]
     ];
   }
 
   factory PainterMesssage.fromMessage(message) {
     return PainterMesssage(
-      diagonalLength: message[1],
+      averageDiagonalLength: message[1],
       painterData: message[2],
+      averageOffsetToBarcode:
+          Offset(message[3][0] as double, message[3][1] as double),
     );
   }
 }
