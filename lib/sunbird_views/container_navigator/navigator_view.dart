@@ -306,9 +306,10 @@ class _NavigatorViewState extends State<NavigatorView> {
 
     //barcodeDataBatches.add(message);
 
-    isBusy = false;
     if (mounted) {
-      setState(() {});
+      setState(() {
+        isBusy = false;
+      });
     }
   }
 

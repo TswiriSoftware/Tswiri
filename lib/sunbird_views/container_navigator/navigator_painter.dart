@@ -29,28 +29,36 @@ class NavigatorPainter extends CustomPainter {
     for (int i = 0; i < painterMesssage.painterData.length; i++) {
       //i. Add offset to screen center to list.
 
-      //ii. decode message to OffsetPoints
-      List<Offset> offsetPoints = <Offset>[
-        Offset(painterMesssage.painterData[i][1][0],
-            painterMesssage.painterData[i][1][1]),
-        Offset(painterMesssage.painterData[i][1][2],
-            painterMesssage.painterData[i][1][3]),
-        Offset(painterMesssage.painterData[i][1][4],
-            painterMesssage.painterData[i][1][5]),
-        Offset(painterMesssage.painterData[i][1][6],
-            painterMesssage.painterData[i][1][7]),
-        Offset(painterMesssage.painterData[i][1][0],
-            painterMesssage.painterData[i][1][1]),
-      ];
+      // //ii. decode message to OffsetPoints
+      // List<Offset> offsetPoints = <Offset>[
+      //   Offset(painterMesssage.painterData[i][1][0],
+      //       painterMesssage.painterData[i][1][1]),
+      //   Offset(painterMesssage.painterData[i][1][2],
+      //       painterMesssage.painterData[i][1][3]),
+      //   Offset(painterMesssage.painterData[i][1][4],
+      //       painterMesssage.painterData[i][1][5]),
+      //   Offset(painterMesssage.painterData[i][1][6],
+      //       painterMesssage.painterData[i][1][7]),
+      //   Offset(painterMesssage.painterData[i][1][0],
+      //       painterMesssage.painterData[i][1][1]),
+      // ];
 
-      //Draw borders.
       canvas.drawPoints(
-          PointMode.polygon, offsetPoints, paintEasy(barcodeDefaultColor, 3.0));
-      if (containerEntry.barcodeUID == painterMesssage.painterData[i][0]) {
-        canvas.drawPoints(
-            PointMode.polygon, offsetPoints, paintEasy(barcodeFocusColor, 3.0));
-      }
+          PointMode.points,
+          [
+            Offset(painterMesssage.painterData[i][1][0],
+                painterMesssage.painterData[i][1][1])
+          ],
+          paintEasy(barcodeDefaultColor, 3.0));
+      // //Draw borders.
+      // canvas.drawPoints(
+      //     PointMode.polygon, offsetPoints, paintEasy(barcodeDefaultColor, 3.0));
+      // if (containerEntry.barcodeUID == painterMesssage.painterData[i][0]) {
+      //   canvas.drawPoints(
+      //       PointMode.polygon, offsetPoints, paintEasy(barcodeFocusColor, 3.0));
+      // }
     }
+
     double finderCircleRadius = painterMesssage.averageDiagonalLength / 3;
 
     //Draw Finder Circle
