@@ -1,17 +1,16 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate_grid_object.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate_on_image_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate_on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate_real_inter_barcode_vector.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/message_objects/grid_processor_config.dart';
 
 void gridIsolate(SendPort sendPort) {
   ReceivePort receivePort = ReceivePort();
   sendPort.send(receivePort.sendPort);
   List<IsolateGridObject>? initialGrids;
   List<RollingGridObject> currentGrids = [];
-  double isolateFocalLength = 0;
 
   void processGrid(var message) async {
     //1. Decode Messgae.
@@ -88,10 +87,9 @@ void gridIsolate(SendPort sendPort) {
   receivePort.listen(
     (message) {
       if (message is List && message[0] == 'config') {
-        //This is the initial set of grids.
-        List<dynamic> parsedListJson = jsonDecode(message[1]);
-        initialGrids = List<IsolateGridObject>.from(
-            parsedListJson.map((e) => IsolateGridObject.fromJson(e)));
+        GridProcessorConfig config = GridProcessorConfig.fromMessage(message);
+
+        initialGrids = config.grids;
 
         //Initiate all rolling grids :D.
         for (IsolateGridObject grid in initialGrids!) {
@@ -103,7 +101,6 @@ void gridIsolate(SendPort sendPort) {
 
           currentGrids.add(newRollingGrid);
         }
-        isolateFocalLength = message[2] as double;
 
         //  log(currentGrids.toString());
       } else if (message[0] == 'compute') {

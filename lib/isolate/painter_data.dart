@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:ui';
 
 class PainterData {
