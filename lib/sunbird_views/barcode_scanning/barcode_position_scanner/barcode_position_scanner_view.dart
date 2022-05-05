@@ -28,9 +28,6 @@ class BarcodePositionScannerView extends StatefulWidget {
 
 class _BarcodePositionScannerViewState
     extends State<BarcodePositionScannerView> {
-  // BarcodeScanner barcodeScanner =
-  //     GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
-
   bool isBusy = false;
   CustomPaint? customPaint;
 
