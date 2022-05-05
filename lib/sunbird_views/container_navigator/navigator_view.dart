@@ -11,9 +11,9 @@ import 'package:flutter_google_ml_kit/objects/navigation/isolate_grid_object.dar
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/grid_object.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/message_objects/grid_processor_config.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/message_objects/navigator_isolate_config.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/message_objects/navigator_isolate_data.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/message_objects/grid_processor_config.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/message_objects/navigator_isolate_config.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/message_objects/navigator_isolate_data.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/navigator_painter.dart';
 import 'package:isar/isar.dart';
 import 'package:vector_math/vector_math.dart' as vm;
@@ -300,7 +300,6 @@ class _NavigatorViewState extends State<NavigatorView> {
     final painter = NavigatorPainter(
       message: message,
       containerEntry: widget.containerEntry,
-      knownGrids: knownGrids,
     );
 
     customPaint = CustomPaint(painter: painter);

@@ -1,29 +1,24 @@
+import 'dart:developer';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
 import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/grid_object.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/navigator_data.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/message_objects/painter_message.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/message_objects/painter_message.dart';
 
 class NavigatorPainter extends CustomPainter {
   NavigatorPainter({
     required this.message,
     required this.containerEntry,
-    required this.knownGrids,
   });
   // ignore: prefer_typing_uninitialized_variables
   final message;
   final ContainerEntry containerEntry;
-  final List<GridObject> knownGrids;
-  //final GridObject workingGrid;
 
   @override
   void paint(Canvas canvas, Size size) {
     PainterMesssage painterMesssage = PainterMesssage.fromMessage(message);
-
-    List<NavigatorData> navigatorData = [];
 
     Offset screenCenter = Offset(
       size.width / 2,
@@ -33,16 +28,6 @@ class NavigatorPainter extends CustomPainter {
     //1. Decode and draw all barcodeBorders.
     for (int i = 0; i < painterMesssage.painterData.length; i++) {
       //i. Add offset to screen center to list.
-
-      NavigatorData currentNavigatorData = NavigatorData(
-        barcodeUID: painterMesssage.painterData[i][0],
-        offsetToScreenCenter: Offset(
-          painterMesssage.painterData[i][2][0],
-          painterMesssage.painterData[i][2][1],
-        ),
-      );
-
-      navigatorData.add(currentNavigatorData);
 
       //ii. decode message to OffsetPoints
       List<Offset> offsetPoints = <Offset>[
@@ -70,7 +55,7 @@ class NavigatorPainter extends CustomPainter {
 
     //Draw Finder Circle
     canvas.drawCircle(
-        Offset(size.width / 2, size.height / 2),
+        screenCenter,
         finderCircleRadius,
         paintSimple(
             color: Colors.black,

@@ -1,10 +1,11 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate_grid_object.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate_on_image_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate_on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate_real_inter_barcode_vector.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/message_objects/grid_processor_config.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/message_objects/grid_processor_config.dart';
 
 void gridIsolate(SendPort sendPort) {
   ReceivePort receivePort = ReceivePort();
@@ -76,6 +77,10 @@ void gridIsolate(SendPort sendPort) {
           if (hasMoved) {
             //Send this to the main Isolate so the position can be updated....
             log('new Position: $rollingGridPosition');
+            isolatePortImage1!
+                .send(['update', jsonEncode(rollingGridPosition.toJson())]);
+            isolatePortImage2!
+                .send(['update', jsonEncode(rollingGridPosition.toJson())]);
           }
         }
       }
@@ -116,7 +121,7 @@ void gridIsolate(SendPort sendPort) {
 
           currentGrids.add(newRollingGrid);
         }
-      } else if (message[0] == 'compute') {
+      } else if (message[0] == 'process') {
         //This is the data received from the Image Processors
         processGrid(message[1]);
       }

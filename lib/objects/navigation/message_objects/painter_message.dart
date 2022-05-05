@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 
 class PainterMesssage {
@@ -27,5 +28,15 @@ class PainterMesssage {
       averageOffsetToBarcode:
           Offset(message[3][0] as double, message[3][1] as double),
     );
+  }
+  @override
+  String toString() {
+    // TODO: implement toString
+    return '''_______________________________________________
+    identifier: $identifier
+    averageDiagonalLength: $averageDiagonalLength
+    painterData: ${painterData.length}
+    averageOffsetToBarcode: $averageOffsetToBarcode
+_______________________________________________''';
   }
 }

@@ -6,8 +6,6 @@ class GridProcessorConfig {
   GridProcessorConfig({
     required this.grids,
     required this.focalLength,
-    // required this.isolateImagePort1,
-    // required this.isolateImagePort2,
   });
 
   ///Identifier.
@@ -18,8 +16,6 @@ class GridProcessorConfig {
 
   ///Focal Length.
   final double focalLength;
-  // final SendPort isolateImagePort1;
-  // final SendPort isolateImagePort2;
 
   List<dynamic> toMessage() {
     return [

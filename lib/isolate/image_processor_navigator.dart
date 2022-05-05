@@ -6,9 +6,9 @@ import 'package:flutter_google_ml_kit/functions/translating/offset_rotation.dart
 import 'package:flutter_google_ml_kit/objects/navigation/grid_position.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate_grid_object.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/on_image_data.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/message_objects/navigator_isolate_config.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/message_objects/navigator_isolate_data.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/message_objects/painter_message.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/message_objects/navigator_isolate_config.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/message_objects/navigator_isolate_data.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/message_objects/painter_message.dart';
 import 'dart:math' as math;
 import 'package:google_ml_kit/google_ml_kit.dart';
 
@@ -39,6 +39,7 @@ void imageProcessorNavigator(SendPort sendPort) {
       final List<Barcode> barcodes =
           await barcodeScanner.processImage(inputImage);
 
+      //Grid Processor Message
       List<dynamic> barcodeData = [];
 
       //Painter Message
@@ -148,7 +149,7 @@ void imageProcessorNavigator(SendPort sendPort) {
         }
 
         painterData.add([
-          barcode.value.displayValue, //Display value. [0]
+          barcode.value.displayValue, //BarcodeUID. [0]
           [
             //On Screen Points [1].
             offsetPoints[0].dx,
@@ -169,18 +170,7 @@ void imageProcessorNavigator(SendPort sendPort) {
         barcodeData.add([
           barcode.value.displayValue, //Display value. [0]
           [
-            //On Screen Points [1].
-            offsetPoints[0].dx,
-            offsetPoints[0].dy,
-            offsetPoints[1].dx,
-            offsetPoints[1].dy,
-            offsetPoints[2].dx,
-            offsetPoints[2].dy,
-            offsetPoints[3].dx,
-            offsetPoints[3].dy,
-          ],
-          [
-            //On Image Points [2].
+            //On Image Points [1].
             cornerPoints[0].x.toDouble(), // Point1. x
             cornerPoints[0].y.toDouble(), // Point1. y
             cornerPoints[1].x.toDouble(), // Point2. x
@@ -197,23 +187,18 @@ void imageProcessorNavigator(SendPort sendPort) {
             message[2][3], //userAccelerometerEvent.x
             message[2][4], //userAccelerometerEvent.y
             message[2][5], //userAccelerometerEvent.z
-          ], // Accelerometer Data [3].
-          [
-            realOffsetToScreenCenter.dx,
-            realOffsetToScreenCenter.dy,
-          ], // Offset to Screen Center [4].
-          onImageDiagonalLength, //OnImage Diagonal Length [5].
-          barcodeDiagonalLength, //final double dialogballegth; [6]
-          startBarcodeMMperPX, //BarcodeMMperPX [7]
-          message[3], // timeStamp [8].
+          ], // Accelerometer Data [2].
+          onImageDiagonalLength, //OnImage Diagonal Length [3].
+          barcodeDiagonalLength, //Barcode Diagonal Length. [4]
+          startBarcodeMMperPX, //BarcodeMMperPX [5]
+          message[3], // timeStamp [6].
         ]);
       }
-      //log(barcodeData.toString());
 
       PainterMesssage painterMessage = PainterMesssage(
         averageDiagonalLength: averageBarcodeDiagonalLength ?? 100,
         painterData: painterData,
-        averageOffsetToBarcode: averageOffsetToBarcode ?? Offset(0, 0),
+        averageOffsetToBarcode: averageOffsetToBarcode ?? const Offset(0, 0),
       );
 
       sendPort.send(painterMessage.toMessage());
@@ -221,7 +206,7 @@ void imageProcessorNavigator(SendPort sendPort) {
       //log(initialGrids.toString());
 
       if (gridSendPort != null) {
-        gridSendPort!.send(['compute', barcodeData]);
+        gridSendPort!.send(['process', barcodeData]);
       }
     }
   }
@@ -231,7 +216,7 @@ void imageProcessorNavigator(SendPort sendPort) {
       if (message is SendPort) {
         gridSendPort = message;
         log('Grid Port Received.');
-        gridSendPort!.send(sendPort);
+        gridSendPort!.send(receivePort.sendPort);
       } else if (message[0] == 'process') {
         //Process the image.
         processImage(message);
@@ -254,6 +239,8 @@ void imageProcessorNavigator(SendPort sendPort) {
         initialGrids = config.initialGrids;
 
         sendPort.send('configured');
+      } else if (message[0] == 'update') {
+        log('updating');
       }
     },
   );

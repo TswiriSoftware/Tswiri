@@ -35,31 +35,31 @@ class IsolateOnImageBarcodeData {
   factory IsolateOnImageBarcodeData.fromMessage(List<dynamic> item) {
     AccelerometerData accelerometerData = AccelerometerData(
         accelerometerEvent: vm.Vector3(
-          item[3][0] as double,
-          item[3][1] as double,
-          item[3][2] as double,
+          item[2][0] as double,
+          item[2][1] as double,
+          item[2][2] as double,
         ),
         userAccelerometerEvent: vm.Vector3(
-          item[3][3] as double,
-          item[3][4] as double,
-          item[3][5] as double,
+          item[2][3] as double,
+          item[2][4] as double,
+          item[2][5] as double,
         ));
 
     List<Offset> onImageCornerPoints = [
-      Offset(item[2][0] as double, item[2][1] as double),
-      Offset(item[2][2] as double, item[2][3] as double),
-      Offset(item[2][4] as double, item[2][5] as double),
-      Offset(item[2][6] as double, item[2][7] as double),
+      Offset(item[1][0] as double, item[1][1] as double),
+      Offset(item[1][2] as double, item[1][3] as double),
+      Offset(item[1][4] as double, item[1][5] as double),
+      Offset(item[1][6] as double, item[1][7] as double),
     ];
 
     return IsolateOnImageBarcodeData(
       barcodeUID: item[0],
       onImageCornerPoints: onImageCornerPoints,
-      timestamp: item[8],
+      timestamp: item[6],
       accelerometerData: accelerometerData,
-      onImageDiagonalLength: item[5],
-      barcodeDiagonalLength: item[6],
-      barcodeMMperPX: item[7],
+      onImageDiagonalLength: item[3],
+      barcodeDiagonalLength: item[4],
+      barcodeMMperPX: item[5],
     );
   }
 

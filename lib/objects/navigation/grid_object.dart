@@ -267,42 +267,42 @@ class GridObject {
     return myPoints;
   }
 
-  ///Calculate the offset to a specified barcode, given navigator data.
-  Offset calculateOffsetToBarcde({
-    required List<NavigatorData> navigatorData,
-    required String barcodeUID,
-  }) {
-    //1. Average the Navigator data to find realScreenCenter.
-    Offset? realScreenCenter;
-    for (var item in navigatorData.take(3)) {
-      //Get the Grid Position
-      GridPosition barcodePosition =
-          grid.where((element) => element.barcodeUID == item.barcodeUID).first;
+  // ///Calculate the offset to a specified barcode, given navigator data.
+  // Offset calculateOffsetToBarcde({
+  //   required List<NavigatorData> navigatorData,
+  //   required String barcodeUID,
+  // }) {
+  //   //1. Average the Navigator data to find realScreenCenter.
+  //   Offset? realScreenCenter;
+  //   for (var item in navigatorData.take(3)) {
+  //     //Get the Grid Position
+  //     GridPosition barcodePosition =
+  //         grid.where((element) => element.barcodeUID == item.barcodeUID).first;
 
-      Offset screenCenter =
-          Offset(barcodePosition.position!.x, barcodePosition.position!.y) -
-              item.offsetToScreenCenter;
+  //     Offset screenCenter =
+  //         Offset(barcodePosition.position!.x, barcodePosition.position!.y) -
+  //             item.offsetToScreenCenter;
 
-      if (realScreenCenter == null) {
-        realScreenCenter = screenCenter;
-      } else {
-        realScreenCenter = (realScreenCenter + screenCenter) / 2;
-      }
+  //     if (realScreenCenter == null) {
+  //       realScreenCenter = screenCenter;
+  //     } else {
+  //       realScreenCenter = (realScreenCenter + screenCenter) / 2;
+  //     }
 
-      // log('Real SC: ' + realScreenCenter.toString());
-    }
+  //     // log('Real SC: ' + realScreenCenter.toString());
+  //   }
 
-    //2. Calculate the offset to the barcode from realScreenCenter :D.
+  //   //2. Calculate the offset to the barcode from realScreenCenter :D.
 
-    GridPosition barcodePosition =
-        grid.where((element) => element.barcodeUID == barcodeUID).first;
-    Offset barcodeOffset =
-        Offset(barcodePosition.position!.x, barcodePosition.position!.y);
-    Offset offsetToBarcode = barcodeOffset - realScreenCenter!;
+  //   GridPosition barcodePosition =
+  //       grid.where((element) => element.barcodeUID == barcodeUID).first;
+  //   Offset barcodeOffset =
+  //       Offset(barcodePosition.position!.x, barcodePosition.position!.y);
+  //   Offset offsetToBarcode = barcodeOffset - realScreenCenter!;
 
-    //log(offsetToBarcode.toString());
-    return offsetToBarcode;
-  }
+  //   //log(offsetToBarcode.toString());
+  //   return offsetToBarcode;
+  // }
 
   @override
   String toString() {
