@@ -1,17 +1,18 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
-import 'package:flutter_google_ml_kit/objects/navigation/isolate_grid_object.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/isolate_on_image_data.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/isolate_on_image_inter_barcode_data.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/isolate_real_inter_barcode_vector.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_grid.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_on_image_data.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_on_image_inter_barcode_data.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_real_inter_barcode_vector.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_rolling_grid.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/message_objects/grid_processor_config.dart';
 
 void gridIsolate(SendPort sendPort) {
   ReceivePort receivePort = ReceivePort();
   sendPort.send(receivePort.sendPort);
-  List<IsolateGridObject>? initialGrids;
-  List<RollingGridObject> currentGrids = [];
+  List<IsolateGrid>? initialGrids;
+  List<RollingGrid> currentGrids = [];
   SendPort? isolatePortImage1; //send stuff to isolate
   SendPort? isolatePortImage2; //send stuff to isolate
 
@@ -54,7 +55,7 @@ void gridIsolate(SendPort sendPort) {
 
     //Start building the grid :D.
     if (realInterBarcodeVectors.isNotEmpty) {
-      RollingGridObject workingGrid = currentGrids
+      RollingGrid workingGrid = currentGrids
           .where((element) => element.barcodes
               .contains(realInterBarcodeVectors.first.startBarcodeUID))
           .first;
@@ -64,7 +65,7 @@ void gridIsolate(SendPort sendPort) {
         workingGrid.generateGrid(realInterBarcodeVectors);
 
         //Get relvant starting grid.
-        IsolateGridObject initialGrid = initialGrids!
+        IsolateGrid initialGrid = initialGrids!
             .where((element) =>
                 element.getBarcodes().contains(workingGrid.barcodes.first))
             .first;
@@ -74,26 +75,24 @@ void gridIsolate(SendPort sendPort) {
 
         for (var rollingGridPosition in workingGrid.grid) {
           bool hasMoved = initialGrid.comparePosition(rollingGridPosition);
+          log(hasMoved.toString());
           if (hasMoved) {
             //Send this to the main Isolate so the position can be updated....
             log('new Position: $rollingGridPosition');
-            isolatePortImage1!
-                .send(['update', jsonEncode(rollingGridPosition.toJson())]);
-            isolatePortImage2!
-                .send(['update', jsonEncode(rollingGridPosition.toJson())]);
+
+            sendPort.send(['update', jsonEncode(rollingGridPosition.toJson())]);
+
+            // isolatePortImage1!
+            //     .send(['update1', jsonEncode(rollingGridPosition.toJson())]);
+            // isolatePortImage2!
+            //     .send(['update2', jsonEncode(rollingGridPosition.toJson())]);
+
+            //Update Position in inital Grids
+            initialGrid.updatePosition(rollingGridPosition);
           }
         }
       }
     }
-
-    // if (isolatePortImage1 != null && isolatePortImage2 != null) {
-    //   isolatePortImage1!.send('hi');
-    //   isolatePortImage2!.send('hi');
-    // }
-
-    // // log(isolateFocalLength.toString());
-    // log('InitialGrids: \n' + initialGrids.toString());
-    // log('CurrentGrids: \n' + currentGrids.toString());
   }
 
   receivePort.listen(
@@ -101,7 +100,7 @@ void gridIsolate(SendPort sendPort) {
       if (message is SendPort) {
         if (isolatePortImage1 == null) {
           isolatePortImage1 = message;
-          log('isolate1 port set');
+          log('isolate1 port set: ');
         } else if (isolatePortImage2 == null) {
           isolatePortImage2 = message;
           log('isolate2 port set');
@@ -112,9 +111,8 @@ void gridIsolate(SendPort sendPort) {
         initialGrids = config.grids;
 
         //Initiate all rolling grids :D.
-        for (IsolateGridObject grid in initialGrids!) {
-          RollingGridObject newRollingGrid =
-              RollingGridObject(markers: grid.markers);
+        for (IsolateGrid grid in initialGrids!) {
+          RollingGrid newRollingGrid = RollingGrid(markers: grid.markers);
 
           newRollingGrid.initiateGrid(
               newRollingGrid.markers, grid.gridPositions);

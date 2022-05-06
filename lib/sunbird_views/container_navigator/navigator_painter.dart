@@ -1,10 +1,9 @@
-import 'dart:developer';
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
 import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/grid_object.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/message_objects/painter_message.dart';
 
 class NavigatorPainter extends CustomPainter {
@@ -25,50 +24,40 @@ class NavigatorPainter extends CustomPainter {
       size.height / 2,
     );
 
-    //1. Decode and draw all barcodeBorders.
-    for (int i = 0; i < painterMesssage.painterData.length; i++) {
-      //i. Add offset to screen center to list.
-
-      // //ii. decode message to OffsetPoints
-      // List<Offset> offsetPoints = <Offset>[
-      //   Offset(painterMesssage.painterData[i][1][0],
-      //       painterMesssage.painterData[i][1][1]),
-      //   Offset(painterMesssage.painterData[i][1][2],
-      //       painterMesssage.painterData[i][1][3]),
-      //   Offset(painterMesssage.painterData[i][1][4],
-      //       painterMesssage.painterData[i][1][5]),
-      //   Offset(painterMesssage.painterData[i][1][6],
-      //       painterMesssage.painterData[i][1][7]),
-      //   Offset(painterMesssage.painterData[i][1][0],
-      //       painterMesssage.painterData[i][1][1]),
-      // ];
-
+    //Draw selected barcode border.
+    if (painterMesssage.painterData
+        .any((element) => element.barcodeUID == containerEntry.barcodeUID)) {
       canvas.drawPoints(
-          PointMode.points,
-          [
-            Offset(painterMesssage.painterData[i][1][0],
-                painterMesssage.painterData[i][1][1])
-          ],
-          paintEasy(barcodeDefaultColor, 3.0));
-      // //Draw borders.
-      // canvas.drawPoints(
-      //     PointMode.polygon, offsetPoints, paintEasy(barcodeDefaultColor, 3.0));
-      // if (containerEntry.barcodeUID == painterMesssage.painterData[i][0]) {
-      //   canvas.drawPoints(
-      //       PointMode.polygon, offsetPoints, paintEasy(barcodeFocusColor, 3.0));
-      // }
+          PointMode.polygon,
+          painterMesssage.painterData
+              .where(
+                  (element) => element.barcodeUID == containerEntry.barcodeUID)
+              .first
+              .conrnerPoints,
+          paintEasy(barcodeFocusColor, 3.0));
     }
 
     double finderCircleRadius = painterMesssage.averageDiagonalLength / 3;
 
-    //Draw Finder Circle
-    canvas.drawCircle(
-        screenCenter,
-        finderCircleRadius,
-        paintSimple(
-            color: Colors.black,
-            strokeWidth: 2.0,
-            style: PaintingStyle.stroke));
+    if (painterMesssage.averageOffsetToBarcode.distance <= finderCircleRadius) {
+      //Draw Finder Circle
+      canvas.drawCircle(
+          screenCenter,
+          finderCircleRadius,
+          paintSimple(
+              color: Colors.greenAccent,
+              strokeWidth: 2.0,
+              style: PaintingStyle.stroke));
+    } else {
+      //Draw Finder Circle
+      canvas.drawCircle(
+          screenCenter,
+          finderCircleRadius,
+          paintSimple(
+              color: Colors.redAccent,
+              strokeWidth: 2.0,
+              style: PaintingStyle.stroke));
+    }
 
     if (painterMesssage.averageOffsetToBarcode != const Offset(0, 0) &&
         painterMesssage.averageOffsetToBarcode.distance >= finderCircleRadius) {

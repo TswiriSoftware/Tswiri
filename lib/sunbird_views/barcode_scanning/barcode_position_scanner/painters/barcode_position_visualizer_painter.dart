@@ -33,7 +33,7 @@ class BarcodePositionVisualizerPainter extends CustomPainter {
 
     for (DisplayPoint point in myPoints) {
       final textSpan = TextSpan(
-          text: point.barcodeID +
+          text: point.barcodeUID +
               '\n x: ' +
               point.realBarcodePosition[0].toString() +
               '\n y: ' +

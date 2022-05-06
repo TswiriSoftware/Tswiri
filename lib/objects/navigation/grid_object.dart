@@ -9,7 +9,6 @@ import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/objects/display/display_point.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/grid_position.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/navigator_data.dart';
 import 'package:isar/isar.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 
@@ -18,7 +17,6 @@ class GridObject {
 
   //The Grid's Origin Point.
   final ContainerEntry originContainer;
-
   late List<GridPosition> grid = gridPositions;
   late List<String> barcodes = getBarcodes;
 
@@ -251,13 +249,13 @@ class GridObject {
             .contains(realBarcodePosition.barcodeUID)) {
           myPoints.add(DisplayPoint(
               isMarker: true,
-              barcodeID: realBarcodePosition.barcodeUID,
+              barcodeUID: realBarcodePosition.barcodeUID,
               barcodePosition: barcodePosition,
               realBarcodePosition: barcodeRealPosition));
         } else {
           myPoints.add(DisplayPoint(
               isMarker: false,
-              barcodeID: realBarcodePosition.barcodeUID,
+              barcodeUID: realBarcodePosition.barcodeUID,
               barcodePosition: barcodePosition,
               realBarcodePosition: barcodeRealPosition));
         }
@@ -266,43 +264,6 @@ class GridObject {
 
     return myPoints;
   }
-
-  // ///Calculate the offset to a specified barcode, given navigator data.
-  // Offset calculateOffsetToBarcde({
-  //   required List<NavigatorData> navigatorData,
-  //   required String barcodeUID,
-  // }) {
-  //   //1. Average the Navigator data to find realScreenCenter.
-  //   Offset? realScreenCenter;
-  //   for (var item in navigatorData.take(3)) {
-  //     //Get the Grid Position
-  //     GridPosition barcodePosition =
-  //         grid.where((element) => element.barcodeUID == item.barcodeUID).first;
-
-  //     Offset screenCenter =
-  //         Offset(barcodePosition.position!.x, barcodePosition.position!.y) -
-  //             item.offsetToScreenCenter;
-
-  //     if (realScreenCenter == null) {
-  //       realScreenCenter = screenCenter;
-  //     } else {
-  //       realScreenCenter = (realScreenCenter + screenCenter) / 2;
-  //     }
-
-  //     // log('Real SC: ' + realScreenCenter.toString());
-  //   }
-
-  //   //2. Calculate the offset to the barcode from realScreenCenter :D.
-
-  //   GridPosition barcodePosition =
-  //       grid.where((element) => element.barcodeUID == barcodeUID).first;
-  //   Offset barcodeOffset =
-  //       Offset(barcodePosition.position!.x, barcodePosition.position!.y);
-  //   Offset offsetToBarcode = barcodeOffset - realScreenCenter!;
-
-  //   //log(offsetToBarcode.toString());
-  //   return offsetToBarcode;
-  // }
 
   @override
   String toString() {

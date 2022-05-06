@@ -9,9 +9,17 @@ class NavigatorIsolateData {
     required this.accelerometerData,
     required this.timestamp,
   });
+
+  ///Identifier. [String]
   final String identifier = 'process';
+
+  ///Image Bytes. [Uint8List]
   final Uint8List bytes;
+
+  ///Accelerometer Data. [AccelerometerData]
   final AccelerometerData accelerometerData;
+
+  ///Timestamp. [int]
   final int timestamp;
 
   List toMessage() {

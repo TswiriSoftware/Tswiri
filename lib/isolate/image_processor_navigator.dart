@@ -1,10 +1,12 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
 import 'dart:ui';
 import 'package:flutter_google_ml_kit/functions/translating/coordinates_translator.dart';
 import 'package:flutter_google_ml_kit/functions/translating/offset_rotation.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/grid_position.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/isolate_grid_object.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_grid.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate/rolling_grid_position.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/on_image_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/message_objects/navigator_isolate_config.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/message_objects/navigator_isolate_data.dart';
@@ -20,7 +22,7 @@ void imageProcessorNavigator(SendPort sendPort) {
   Map<String, double>? barcodeProperties;
   SendPort? gridSendPort;
   String? selectedBarcodeUID;
-  List<IsolateGridObject>? initialGrids;
+  List<IsolateGrid>? initialGrids;
 
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
@@ -43,13 +45,13 @@ void imageProcessorNavigator(SendPort sendPort) {
       List<dynamic> barcodeData = [];
 
       //Painter Message
-      List<dynamic> painterData = [];
+      List<PainterBarcodeData> painterData = [];
       double? averageBarcodeDiagonalLength;
       Offset? averageOffsetToBarcode;
 
       for (Barcode barcode in barcodes) {
         ///1. Caluclate barcode OnScreen CornerPoints.
-        List<Offset> offsetPoints = <Offset>[];
+        List<Offset> conrnerPoints = <Offset>[];
         List<math.Point<num>> cornerPoints = barcode.value.cornerPoints!;
         for (var point in cornerPoints) {
           double x = translateX(point.x.toDouble(),
@@ -57,7 +59,7 @@ void imageProcessorNavigator(SendPort sendPort) {
           double y = translateY(point.y.toDouble(),
               inputImageData!.imageRotation, canvasSize!, inputImageData!.size);
 
-          offsetPoints.add(Offset(x, y));
+          conrnerPoints.add(Offset(x, y));
         }
 
         //2. Build onImageBarcodeData.
@@ -108,7 +110,7 @@ void imageProcessorNavigator(SendPort sendPort) {
             offsetToScreenCenter / startBarcodeMMperPX;
 
         //Select relevant grid.
-        IsolateGridObject grid = initialGrids!
+        IsolateGrid grid = initialGrids!
             .where((element) =>
                 element.getBarcodes().contains(barcode.value.displayValue))
             .first;
@@ -148,24 +150,12 @@ void imageProcessorNavigator(SendPort sendPort) {
               (averageBarcodeDiagonalLength + onImageDiagonalLength) / 2;
         }
 
-        painterData.add([
-          barcode.value.displayValue, //BarcodeUID. [0]
-          [
-            //On Screen Points [1].
-            offsetPoints[0].dx,
-            offsetPoints[0].dy,
-            offsetPoints[1].dx,
-            offsetPoints[1].dy,
-            offsetPoints[2].dx,
-            offsetPoints[2].dy,
-            offsetPoints[3].dx,
-            offsetPoints[3].dy,
-          ],
-          [
-            realOffsetToScreenCenter.dx,
-            realOffsetToScreenCenter.dy,
-          ], // Offset to Screen Center [2].
-        ]);
+        ///
+        PainterBarcodeData barcodePainterData = PainterBarcodeData(
+          barcodeUID: barcode.value.displayValue!,
+          conrnerPoints: conrnerPoints,
+        );
+        painterData.add(barcodePainterData);
 
         barcodeData.add([
           barcode.value.displayValue, //Display value. [0]
@@ -203,8 +193,6 @@ void imageProcessorNavigator(SendPort sendPort) {
 
       sendPort.send(painterMessage.toMessage());
 
-      //log(initialGrids.toString());
-
       if (gridSendPort != null) {
         gridSendPort!.send(['process', barcodeData]);
       }
@@ -241,7 +229,15 @@ void imageProcessorNavigator(SendPort sendPort) {
         sendPort.send('configured');
       } else if (message[0] == 'update') {
         log('updating');
-      }
+        RollingGridPosition rollingGridPosition =
+            RollingGridPosition.fromJson(jsonDecode(message[1]));
+
+        initialGrids!
+            .where((element) =>
+                element.getBarcodes().contains(rollingGridPosition.barcodeUID))
+            .first
+            .updatePosition(rollingGridPosition);
+      } 
     },
   );
 }

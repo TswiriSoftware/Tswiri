@@ -87,17 +87,17 @@ class GridVisualizerPainter extends CustomPainter {
 
     //log('Children: ' + children.toString());
     for (DisplayPoint point in myPoints) {
-      if (barcodesToDraw.contains(point.barcodeID)) {
+      if (barcodesToDraw.contains(point.barcodeUID)) {
         boxes.add(point.barcodePosition);
-      } else if (markersToDraw.contains(point.barcodeID)) {
+      } else if (markersToDraw.contains(point.barcodeUID)) {
         markers.add(point.barcodePosition);
       } else if (parentContainerEntry != null &&
-          point.barcodeID == parentContainerEntry.barcodeUID) {
+          point.barcodeUID == parentContainerEntry.barcodeUID) {
         parent = point.barcodePosition;
       } else {
         other.add(point.barcodePosition);
       }
-      if (point.barcodeID == currentContainer.barcodeUID) {
+      if (point.barcodeUID == currentContainer.barcodeUID) {
         currentBarcode = point.barcodePosition;
       }
     }
@@ -122,7 +122,7 @@ class GridVisualizerPainter extends CustomPainter {
 
     for (DisplayPoint point in myPoints) {
       final textSpan = TextSpan(
-          text: point.barcodeID +
+          text: point.barcodeUID +
               '\n x: ' +
               point.realBarcodePosition[0].toString() +
               '\n y: ' +

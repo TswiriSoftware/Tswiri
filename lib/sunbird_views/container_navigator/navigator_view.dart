@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
@@ -5,9 +6,11 @@ import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
+import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/isolate/grid_isolate.dart';
 import 'package:flutter_google_ml_kit/isolate/image_processor_navigator.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/isolate_grid_object.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_grid.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate/rolling_grid_position.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/grid_object.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
@@ -63,7 +66,7 @@ class _NavigatorViewState extends State<NavigatorView> {
 
   List<dynamic> barcodeDataBatches = [];
   List<GridObject> knownGrids = [];
-  List<IsolateGridObject> isolateGrids = [];
+  List<IsolateGrid> isolateGrids = [];
   List<BarcodeProperty> storedBarcodeProperties = [];
 
   @override
@@ -95,7 +98,7 @@ class _NavigatorViewState extends State<NavigatorView> {
         originContainer: item,
       );
 
-      isolateGrids.add(IsolateGridObject(
+      isolateGrids.add(IsolateGrid(
         gridPositions: gridObject.grid,
         markers: gridObject.markers,
       ));
@@ -159,10 +162,56 @@ class _NavigatorViewState extends State<NavigatorView> {
 
         //Send config.
         isolatePorGrid1!.send(config.toMessage());
-      } else if (message is List) {
-        log(message.toString());
+      } else if (message[0] == 'update') {
+        ///Update knowGrids....
+        RollingGridPosition rollingGridPosition =
+            RollingGridPosition.fromJson(jsonDecode(message[1]));
+        updateRealInterBarcodeVector(rollingGridPosition);
+        isolateImagePort1!.send(message);
+        isolateImagePort2!.send(message);
       }
     });
+  }
+
+  void updateRealInterBarcodeVector(RollingGridPosition rollingGridPosition) {
+    //TODO: Remove all interBarcodeVectorEntries related to the new position and generate a single interbarcodeVector entry from the marker.
+
+    //1. Find origin markerUID.
+    String? markerBarcodeUID = knownGrids
+        .where((element) =>
+            element.barcodes.contains(rollingGridPosition.barcodeUID))
+        .first
+        .originContainer
+        .barcodeUID;
+
+    if (markerBarcodeUID != null) {
+      //2. Get Timestamp.
+      int timestamp = DateTime.now().millisecondsSinceEpoch;
+
+      //3. Create realInterBarcodeVectorEntry.
+      RealInterBarcodeVectorEntry realInterBarcodeVectorEntry =
+          RealInterBarcodeVectorEntry()
+            ..creationTimestamp = timestamp
+            ..startBarcodeUID = markerBarcodeUID
+            ..endBarcodeUID = rollingGridPosition.barcodeUID
+            ..timestamp = timestamp
+            ..x = rollingGridPosition.position!.x
+            ..y = rollingGridPosition.position!.y
+            ..z = rollingGridPosition.position!.z;
+
+      isarDatabase!.writeTxnSync((isar) {
+        //4. Delete all related realInterBarcodeVectorEntry.
+        isar.realInterBarcodeVectorEntrys
+            .filter()
+            .group((q) => q
+                .endBarcodeUIDMatches(rollingGridPosition.barcodeUID)
+                .or()
+                .startBarcodeUIDMatches(rollingGridPosition.barcodeUID))
+            .deleteAllSync();
+        //5. Put new realInterBarcodeVectorEntry.
+        isar.realInterBarcodeVectorEntrys.putSync(realInterBarcodeVectorEntry);
+      });
+    }
   }
 
   @override

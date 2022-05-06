@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/translating/offset_rotation.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/isolate_on_image_inter_barcode_data.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_on_image_inter_barcode_data.dart';
 import 'package:vector_math/vector_math.dart';
 
 class IsolateRealInterBarcodeVector {

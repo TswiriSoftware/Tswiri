@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter_google_ml_kit/objects/navigation/isolate_grid_object.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_grid.dart';
 
 class GridProcessorConfig {
   GridProcessorConfig({
@@ -8,13 +8,13 @@ class GridProcessorConfig {
     required this.focalLength,
   });
 
-  ///Identifier.
+  ///Identifier. [String]
   final String identifier = 'config';
 
-  ///Initalgrids.
-  final List<IsolateGridObject> grids;
+  ///Inital Grids. [IsolateGrid]
+  final List<IsolateGrid> grids;
 
-  ///Focal Length.
+  ///Focal Length. [double]
   final double focalLength;
 
   List<dynamic> toMessage() {
@@ -28,8 +28,8 @@ class GridProcessorConfig {
   factory GridProcessorConfig.fromMessage(message) {
     //This is the initial set of grids.
     List<dynamic> parsedListJson = jsonDecode(message[1]);
-    List<IsolateGridObject> grids = List<IsolateGridObject>.from(
-        parsedListJson.map((e) => IsolateGridObject.fromJson(e)));
+    List<IsolateGrid> grids = List<IsolateGrid>.from(
+        parsedListJson.map((e) => IsolateGrid.fromJson(e)));
     return GridProcessorConfig(
       grids: grids,
       focalLength: message[2],
