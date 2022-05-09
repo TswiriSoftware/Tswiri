@@ -9,10 +9,10 @@ import 'package:flutter_google_ml_kit/isar_database/container_type/container_typ
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/isolate/grid_isolate.dart';
 import 'package:flutter_google_ml_kit/isolate/image_processor_navigator.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_grid.dart';
+import 'package:flutter_google_ml_kit/objects/grid/grid.dart';
+import 'package:flutter_google_ml_kit/objects/grid/isolate_grid.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate/rolling_grid_position.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/grid_object.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/message_objects/grid_processor_config.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/message_objects/navigator_isolate_config.dart';
@@ -65,9 +65,10 @@ class _NavigatorViewState extends State<NavigatorView> {
   int counter1 = 0;
 
   List<dynamic> barcodeDataBatches = [];
-  List<GridObject> knownGrids = [];
-  List<IsolateGrid> isolateGrids = [];
+  //List<IsolateGridOLD> isolateGrids = [];
   List<BarcodeProperty> storedBarcodeProperties = [];
+
+  late IsolateGrid isolateGrid = IsolateGrid.fromGrid(Grid());
 
   @override
   void initState() {
@@ -79,31 +80,31 @@ class _NavigatorViewState extends State<NavigatorView> {
       userAccelerometerEvent = vm.Vector3(event.x, event.y, event.z);
     });
 
-    //Build all known Grids.
-    List<ContainerType> containerTypes = isarDatabase!.containerTypes
-        .filter()
-        .markerToChilrenEqualTo(true)
-        .findAllSync();
+    // //Build all known Grids.
+    // List<ContainerType> containerTypes = isarDatabase!.containerTypes
+    //     .filter()
+    //     .markerToChilrenEqualTo(true)
+    //     .findAllSync();
 
-    List<ContainerEntry> originContainers = isarDatabase!.containerEntrys
-        .filter()
-        .repeat(
-            containerTypes,
-            (q, ContainerType element) =>
-                q.containerTypeMatches(element.containerType))
-        .findAllSync();
+    // List<ContainerEntry> originContainers = isarDatabase!.containerEntrys
+    //     .filter()
+    //     .repeat(
+    //         containerTypes,
+    //         (q, ContainerType element) =>
+    //             q.containerTypeMatches(element.containerType))
+    //     .findAllSync();
 
-    for (ContainerEntry item in originContainers) {
-      GridObject gridObject = GridObject(
-        originContainer: item,
-      );
+    // for (ContainerEntry item in originContainers) {
+    //   GridObjectOLD gridObject = GridObjectOLD(
+    //     originContainer: item,
+    //   );
 
-      isolateGrids.add(IsolateGrid(
-        gridPositions: gridObject.grid,
-        markers: gridObject.markers,
-      ));
-      knownGrids.add(gridObject);
-    }
+    //   isolateGrids.add(IsolateGridOLD(
+    //     gridPositions: gridObject.grid,
+    //     markers: gridObject.markers,
+    //   ));
+    //   knownGrids.add(gridObject);
+    // }
 
     storedBarcodeProperties
         .addAll(isarDatabase!.barcodePropertys.where().findAllSync());
@@ -156,7 +157,7 @@ class _NavigatorViewState extends State<NavigatorView> {
 
         //Setup config.
         GridProcessorConfig config = GridProcessorConfig(
-          grids: isolateGrids,
+          grid: isolateGrid,
           focalLength: focalLength,
         );
 
@@ -174,44 +175,47 @@ class _NavigatorViewState extends State<NavigatorView> {
   }
 
   void updateRealInterBarcodeVector(RollingGridPosition rollingGridPosition) {
-    //TODO: Remove all interBarcodeVectorEntries related to the new position and generate a single interbarcodeVector entry from the marker.
+    //TODO: re-write update code.
 
     //1. Find origin markerUID.
-    String? markerBarcodeUID = knownGrids
-        .where((element) =>
-            element.barcodes.contains(rollingGridPosition.barcodeUID))
-        .first
-        .originContainer
-        .barcodeUID;
+    //String? markerBarcodeUID = Grid().positionalGrids.where((element) =>  element.barcodes.contains(rollingGridPosition.barcodeUID)).first
 
-    if (markerBarcodeUID != null) {
-      //2. Get Timestamp.
-      int timestamp = DateTime.now().millisecondsSinceEpoch;
+    // knownGrids
+    //     .where((element) =>
+    //         element.barcodes.contains(rollingGridPosition.barcodeUID))
+    //     .first
+    //     .originContainer
+    //     .barcodeUID;
 
-      //3. Create realInterBarcodeVectorEntry.
-      RealInterBarcodeVectorEntry realInterBarcodeVectorEntry =
-          RealInterBarcodeVectorEntry()
-            ..creationTimestamp = timestamp
-            ..startBarcodeUID = markerBarcodeUID
-            ..endBarcodeUID = rollingGridPosition.barcodeUID
-            ..timestamp = timestamp
-            ..x = rollingGridPosition.position!.x
-            ..y = rollingGridPosition.position!.y
-            ..z = rollingGridPosition.position!.z;
+    // if (markerBarcodeUID != null) {
+    //   //2. Get Timestamp.
+    //   int timestamp = DateTime.now().millisecondsSinceEpoch;
 
-      isarDatabase!.writeTxnSync((isar) {
-        //4. Delete all related realInterBarcodeVectorEntry.
-        isar.realInterBarcodeVectorEntrys
-            .filter()
-            .group((q) => q
-                .endBarcodeUIDMatches(rollingGridPosition.barcodeUID)
-                .or()
-                .startBarcodeUIDMatches(rollingGridPosition.barcodeUID))
-            .deleteAllSync();
-        //5. Put new realInterBarcodeVectorEntry.
-        isar.realInterBarcodeVectorEntrys.putSync(realInterBarcodeVectorEntry);
-      });
-    }
+    //   //3. Create realInterBarcodeVectorEntry.
+    //   RealInterBarcodeVectorEntry realInterBarcodeVectorEntry =
+    //       RealInterBarcodeVectorEntry()
+    //         ..creationTimestamp = timestamp
+    //         ..startBarcodeUID = markerBarcodeUID
+    //         ..endBarcodeUID = rollingGridPosition.barcodeUID
+    //         ..timestamp = timestamp
+    //         ..x = rollingGridPosition.position!.x
+    //         ..y = rollingGridPosition.position!.y
+    //         ..z = rollingGridPosition.position!.z;
+
+    //   isarDatabase!.writeTxnSync((isar) {
+    //     //4. Delete all related realInterBarcodeVectorEntry.
+    //     isar.realInterBarcodeVectorEntrys
+    //         .filter()
+    //         .group((q) => q
+    //             .endBarcodeUIDMatches(rollingGridPosition.barcodeUID)
+    //             .or()
+    //             .startBarcodeUIDMatches(rollingGridPosition.barcodeUID))
+    //         .deleteAllSync();
+
+    //     //5. Put new realInterBarcodeVectorEntry.
+    //     isar.realInterBarcodeVectorEntrys.putSync(realInterBarcodeVectorEntry);
+    //   });
+    // }
   }
 
   @override
@@ -312,7 +316,7 @@ class _NavigatorViewState extends State<NavigatorView> {
         inputImageFormat: inputImage.inputImageData!.inputImageFormat,
         selectedBarcodeUID: widget.containerEntry.barcodeUID!,
         barcodeProperties: barcodeProperties,
-        initialGrids: isolateGrids,
+        grid: isolateGrid,
       );
 
       //Send to isolate 1.

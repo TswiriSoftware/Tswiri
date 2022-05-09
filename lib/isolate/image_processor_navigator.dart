@@ -4,8 +4,8 @@ import 'dart:isolate';
 import 'dart:ui';
 import 'package:flutter_google_ml_kit/functions/translating/coordinates_translator.dart';
 import 'package:flutter_google_ml_kit/functions/translating/offset_rotation.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/grid_position.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_grid.dart';
+import 'package:flutter_google_ml_kit/objects/grid/isolate_grid.dart';
+import 'package:flutter_google_ml_kit/objects/grid/position.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate/rolling_grid_position.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/on_image_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/message_objects/navigator_isolate_config.dart';
@@ -22,7 +22,8 @@ void imageProcessorNavigator(SendPort sendPort) {
   Map<String, double>? barcodeProperties;
   SendPort? gridSendPort;
   String? selectedBarcodeUID;
-  List<IsolateGrid>? initialGrids;
+  //List<IsolateGridOLD>? initialGrids;
+  IsolateGrid? isolateGrid;
 
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
@@ -110,36 +111,46 @@ void imageProcessorNavigator(SendPort sendPort) {
             offsetToScreenCenter / startBarcodeMMperPX;
 
         //Select relevant grid.
-        IsolateGrid grid = initialGrids!
-            .where((element) =>
-                element.getBarcodes().contains(barcode.value.displayValue))
-            .first;
+        // IsolatePositionalGrid? grid = isolateGrid!.positionalGrids
+        //     .where((element) =>
+        //         element.barcodes.contains(barcode.value.displayValue!)).firstWhere((element) => false) ;
 
-        GridPosition barcodePosition = grid.gridPositions
-            .where(
-                (element) => element.barcodeUID == barcode.value.displayValue)
-            .first;
+        int index2 = isolateGrid!.positionalGrids.indexWhere((element) =>
+            element.barcodes.contains(barcode.value.displayValue!));
 
-        //Calculate real Screen Center.
-        Offset realScreenCenter =
-            Offset(barcodePosition.position!.x, barcodePosition.position!.y) -
-                realOffsetToScreenCenter;
+        if (index2 != -1) {
+          IsolatePositionalGrid? grid = isolateGrid!.positionalGrids[index2];
 
-        GridPosition selectedBarcodePosition = grid.gridPositions
-            .where((element) => element.barcodeUID == selectedBarcodeUID)
-            .first;
+          Position barcodePosition = grid.positions
+              .where(
+                  (element) => element.barcodeUID == barcode.value.displayValue)
+              .first;
 
-        Offset barcodeOffset = Offset(selectedBarcodePosition.position!.x,
-            selectedBarcodePosition.position!.y);
+          //Calculate real Screen Center.
+          Offset realScreenCenter =
+              Offset(barcodePosition.position!.x, barcodePosition.position!.y) -
+                  realOffsetToScreenCenter;
 
-        Offset offsetToBarcode = barcodeOffset - realScreenCenter;
+          int index = grid.positions.indexWhere(
+              (element) => element.barcodeUID == selectedBarcodeUID);
 
-        //Calculate the average offset to selectedBarcode.
-        if (averageOffsetToBarcode == null) {
-          averageOffsetToBarcode = offsetToBarcode;
-        } else {
-          averageOffsetToBarcode =
-              (averageOffsetToBarcode + offsetToBarcode) / 2;
+          if (index == -1) {
+            log('barcode is not in grid..');
+          } else {
+            Position selectedBarcodePosition = grid.positions[index];
+
+            Offset barcodeOffset = Offset(selectedBarcodePosition.position!.x,
+                selectedBarcodePosition.position!.y);
+
+            Offset offsetToBarcode = barcodeOffset - realScreenCenter;
+            //Calculate the average offset to selectedBarcode.
+            if (averageOffsetToBarcode == null) {
+              averageOffsetToBarcode = offsetToBarcode;
+            } else {
+              averageOffsetToBarcode =
+                  (averageOffsetToBarcode + offsetToBarcode) / 2;
+            }
+          }
         }
 
         //Painter Message
@@ -224,7 +235,8 @@ void imageProcessorNavigator(SendPort sendPort) {
         canvasSize = config.canvasSize;
         selectedBarcodeUID = config.selectedBarcodeUID;
         barcodeProperties = config.barcodeProperties;
-        initialGrids = config.initialGrids;
+        isolateGrid = config.grid;
+        log(config.grid.toString());
 
         sendPort.send('configured');
       } else if (message[0] == 'update') {
@@ -232,12 +244,12 @@ void imageProcessorNavigator(SendPort sendPort) {
         RollingGridPosition rollingGridPosition =
             RollingGridPosition.fromJson(jsonDecode(message[1]));
 
-        initialGrids!
+        isolateGrid!.positionalGrids
             .where((element) =>
-                element.getBarcodes().contains(rollingGridPosition.barcodeUID))
+                element.barcodes.contains(rollingGridPosition.barcodeUID))
             .first
             .updatePosition(rollingGridPosition);
-      } 
+      }
     },
   );
 }

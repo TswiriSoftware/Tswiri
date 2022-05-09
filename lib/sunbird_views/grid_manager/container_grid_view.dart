@@ -7,6 +7,7 @@ import 'package:flutter_google_ml_kit/isar_database/container_entry/container_en
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
+import 'package:flutter_google_ml_kit/objects/grid/grid.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/grid_manager/container_new_markers.dart';
@@ -177,6 +178,8 @@ class _ContainerGridViewState extends State<ContainerGridView> {
           backgroundColor: MaterialStateProperty.all(containerTypeColor)),
       onPressed: () async {
         await FlutterIsolate.killAll();
+        //Grid myGrid = Grid();
+        //log(myGrid.markers.toString());
       },
       child: Row(
         children: [

@@ -8,31 +8,30 @@ import 'package:flutter_google_ml_kit/isar_database/container_relationship/conta
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/objects/display/display_point.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/grid_position.dart';
+import 'package:flutter_google_ml_kit/objects/grid/position.dart';
 import 'package:isar/isar.dart';
-import 'package:vector_math/vector_math.dart' as vm;
+import 'package:vector_math/vector_math.dart';
 
-class GridObject {
-  GridObject({required this.originContainer});
+class PositionalGrid {
+  PositionalGrid({
+    required this.originContainer,
+  });
+  //This is the origin of the grid.
+  ContainerEntry originContainer;
 
-  //The Grid's Origin Point.
-  final ContainerEntry originContainer;
-  late List<GridPosition> grid = gridPositions;
-  late List<String> barcodes = getBarcodes;
-
-  ///Markers contained in grid.
-  List<Marker> get markers {
-    return isarDatabase!.markers
+  ContainerEntry? get parentContainer {
+    ContainerRelationship? parentRelationship = isarDatabase!
+        .containerRelationships
         .filter()
-        .parentContainerUIDMatches(originContainer.containerUID)
-        .findAllSync();
-  }
+        .containerUIDMatches(originContainer.containerUID)
+        .findFirstSync();
 
-  ///The origin marker.
-  Marker get originMarker {
-    return markers
-        .where((element) => element.barcodeUID == originContainer.barcodeUID)
-        .first;
+    if (parentRelationship != null) {
+      return isarDatabase!.containerEntrys
+          .filter()
+          .containerUIDMatches(parentRelationship.parentUID!)
+          .findFirstSync();
+    }
   }
 
   ///Find all the children of the Origin Container.
@@ -63,8 +62,16 @@ class GridObject {
     return barcodes;
   }
 
+  ///Markers contained in grid.
+  List<Marker> get markers {
+    return isarDatabase!.markers
+        .filter()
+        .parentContainerUIDMatches(originContainer.containerUID)
+        .findAllSync();
+  }
+
   ///Build the grid.
-  List<GridPosition> get gridPositions {
+  List<Position> get gridPositions {
     //log('calculating grid');
     if (children.isNotEmpty) {
       //Find all relevant barcodeUID's.
@@ -72,21 +79,20 @@ class GridObject {
           children.map((e) => e.barcodeUID!).toList();
 
       //Map them to GridPosition(s).
-      List<GridPosition> gridPositions = relevantBarcodes
-          .map((e) => GridPosition(barcodeUID: e, position: null))
+      List<Position> gridPositions = relevantBarcodes
+          .map((e) => Position(barcodeUID: e, position: null))
           .toList();
 
       relevantBarcodes.addAll(markers.map((e) => e.barcodeUID));
 
       //Add the Origin.
-      gridPositions.add(GridPosition(
-          barcodeUID: originContainer.barcodeUID!,
-          position: vm.Vector3(0, 0, 0)));
+      gridPositions.add(Position(
+          barcodeUID: originContainer.barcodeUID!, position: Vector3(0, 0, 0)));
 
       //Add other markers to gridPositions.
       gridPositions.addAll(markers
           .where((element) => element.barcodeUID != originContainer.barcodeUID!)
-          .map((e) => GridPosition(barcodeUID: e.barcodeUID, position: null)));
+          .map((e) => Position(barcodeUID: e.barcodeUID, position: null)));
 
       //Find all relevant realInterBarcodeVectorEntrys.
       List<RealInterBarcodeVectorEntry> interBarcodevectorEntries = [];
@@ -110,7 +116,7 @@ class GridObject {
 
       for (String item in allBarcodes) {
         if (!gridPositions.map((e) => e.barcodeUID).contains(item)) {
-          gridPositions.add(GridPosition(barcodeUID: item, position: null));
+          gridPositions.add(Position(barcodeUID: item, position: null));
         }
       }
 
@@ -120,7 +126,7 @@ class GridObject {
 
       for (int i = 0; i <= interBarcodevectorEntries.length;) {
         nonNullPositionsInPreviousIteration = nonNullPositions;
-        for (GridPosition endBarcodeRealPosition in gridPositions) {
+        for (Position endBarcodeRealPosition in gridPositions) {
           if (endBarcodeRealPosition.position == null) {
             //startBarcode : The barcode that we are going to use as a reference (has offset relative to origin)
             //endBarcode : the barcode whose Real Position we are trying to find in this step , if we cant , we will skip and see if we can do so in the next round.
@@ -137,7 +143,7 @@ class GridObject {
                     .toList();
 
             //This list contains all realBarcodePositions with a Offset (effectivley to the Origin).
-            List<GridPosition> confirmedPositions = gridPositions
+            List<Position> confirmedPositions = gridPositions
                 .where((element) => element.position != null)
                 .toList();
 
@@ -160,7 +166,7 @@ class GridObject {
             //     confirmedPositions, relevantBarcodeOffset);
 
             if (startBarcodeIndex != -1) {
-              GridPosition startBarcode = confirmedPositions[startBarcodeIndex];
+              Position startBarcode = confirmedPositions[startBarcodeIndex];
 
               //Index of InterBarcodeOffset which contains startBarcode.
               int interBarcodeOffsetIndex =
@@ -193,12 +199,7 @@ class GridObject {
                   endBarcodeRealPosition.position = startBarcode.position! -
                       relevantInterBarcodeVectors[interBarcodeOffsetIndex]
                           .vector3;
-
-                  //log(endBarcodeRealPosition.toString());
                 }
-
-                //log(startBarcode.startBarcodeDistanceFromCamera.toString());
-
                 nonNullPositions++;
               }
             }
@@ -219,7 +220,8 @@ class GridObject {
 
   ///Calculate the onScreenPoints.
   List<DisplayPoint> displayPoints(Size screenSize) {
-    List<GridPosition> positions = gridPositions;
+    List<Position> positions = gridPositions;
+
     List<double> unitVector = unitVectors(
         realBarcodePositions: positions,
         width: screenSize.width,
@@ -228,7 +230,7 @@ class GridObject {
     List<DisplayPoint> myPoints = [];
 
     for (var i = 0; i < positions.length; i++) {
-      GridPosition realBarcodePosition = positions.elementAt(i);
+      Position realBarcodePosition = positions.elementAt(i);
       if (realBarcodePosition.position != null) {
         Offset barcodePosition = Offset(
             (realBarcodePosition.position!.x * unitVector[0]) +
@@ -267,15 +269,9 @@ class GridObject {
 
   @override
   String toString() {
-    return
-        /*Text*/
-        '''____________________________________________________________________________
-Origin : ${originContainer.containerUID},  Marker: ${originMarker.barcodeUID}
-Markers: ${markers.map((e) => e.barcodeUID.toString())}
-Chldren: ${children.map((e) => e.containerUID.toString())}
-barcods: $getBarcodes
-Vectors: ${gridPositions.length}
-____________________________________________________________________________
-''';
+    return '''_________________________________
+Origin  : $originContainer
+Barcodes: $getBarcodes    
+_________________________________''';
   }
 }

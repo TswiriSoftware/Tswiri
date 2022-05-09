@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_grid.dart';
+import 'package:flutter_google_ml_kit/objects/grid/isolate_grid.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 class NavigatorIsolateConfig {
@@ -11,7 +11,7 @@ class NavigatorIsolateConfig {
     required this.inputImageFormat,
     required this.selectedBarcodeUID,
     required this.barcodeProperties,
-    required this.initialGrids,
+    required this.grid,
   });
 
   ///identifier. [String]
@@ -32,8 +32,10 @@ class NavigatorIsolateConfig {
   ///Barcode Properties. [Map]
   Map<String, double> barcodeProperties;
 
-  ///Grids. [IsolateGrid]
-  List<IsolateGrid> initialGrids;
+  // ///Grids. [IsolateGridOLD]
+  // List<IsolateGridOLD> initialGrids;
+  ///Grid. [IsolateGrid]
+  IsolateGrid grid;
 
   List toMessage() {
     return [
@@ -45,20 +47,18 @@ class NavigatorIsolateConfig {
       inputImageFormat.index, //[5]
       selectedBarcodeUID, //[6]
       barcodeProperties, //[7]
-      jsonEncode(initialGrids) //[8]
+      jsonEncode(grid) //[8]
     ];
   }
 
   factory NavigatorIsolateConfig.fromMessage(message) {
-    List<dynamic> parsedListJson = jsonDecode(message[8]);
-    List<IsolateGrid> grids = List<IsolateGrid>.from(
-        parsedListJson.map((e) => IsolateGrid.fromJson(e)));
     return NavigatorIsolateConfig(
-        absoluteSize: Size(message[1], message[2]),
-        canvasSize: Size(message[3], message[4]),
-        inputImageFormat: InputImageFormat.values.elementAt(message[5]),
-        selectedBarcodeUID: message[6],
-        barcodeProperties: message[7],
-        initialGrids: grids);
+      absoluteSize: Size(message[1], message[2]),
+      canvasSize: Size(message[3], message[4]),
+      inputImageFormat: InputImageFormat.values.elementAt(message[5]),
+      selectedBarcodeUID: message[6],
+      barcodeProperties: message[7],
+      grid: IsolateGrid.fromJson(jsonDecode(message[8])),
+    );
   }
 }

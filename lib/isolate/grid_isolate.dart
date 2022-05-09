@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
-import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_grid.dart';
+import 'package:flutter_google_ml_kit/objects/grid/isolate_grid.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_on_image_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_real_inter_barcode_vector.dart';
@@ -11,7 +11,7 @@ import 'package:flutter_google_ml_kit/objects/navigation/message_objects/grid_pr
 void gridIsolate(SendPort sendPort) {
   ReceivePort receivePort = ReceivePort();
   sendPort.send(receivePort.sendPort);
-  List<IsolateGrid>? initialGrids;
+  IsolateGrid? isolateGrid;
   List<RollingGrid> currentGrids = [];
   SendPort? isolatePortImage1; //send stuff to isolate
   SendPort? isolatePortImage2; //send stuff to isolate
@@ -55,40 +55,45 @@ void gridIsolate(SendPort sendPort) {
 
     //Start building the grid :D.
     if (realInterBarcodeVectors.isNotEmpty) {
-      RollingGrid workingGrid = currentGrids
-          .where((element) => element.barcodes
-              .contains(realInterBarcodeVectors.first.startBarcodeUID))
-          .first;
+      int index = currentGrids.indexWhere((element) => element.barcodes
+          .contains(realInterBarcodeVectors.first.startBarcodeUID));
 
-      if (workingGrid.isComplete == false) {
-        //Generate Grid working grid.
-        workingGrid.generateGrid(realInterBarcodeVectors);
+      if (index != -1) {
+        RollingGrid workingGrid = currentGrids[index];
+        if (workingGrid.isComplete == false) {
+          //Generate Grid working grid.
+          workingGrid.generateGrid(realInterBarcodeVectors);
 
-        //Get relvant starting grid.
-        IsolateGrid initialGrid = initialGrids!
-            .where((element) =>
-                element.getBarcodes().contains(workingGrid.barcodes.first))
-            .first;
+          ///TODO: Use IsolateGrid to do this.
+          //Get relvant starting grid.
+          IsolatePositionalGrid initialGrid = isolateGrid!.positionalGrids
+              .where((element) =>
+                  element.barcodes.contains(workingGrid.barcodes.first))
+              .first;
 
-        //My my my how have we gotten here :D.
-        //Now I shall compare the initial Grid to the latest grid :D.
+          //My my my how have we gotten here :D.
+          //Now I shall compare the initial Grid to the latest grid :D.
 
-        for (var rollingGridPosition in workingGrid.grid) {
-          bool hasMoved = initialGrid.comparePosition(rollingGridPosition);
-          log(hasMoved.toString());
-          if (hasMoved) {
-            //Send this to the main Isolate so the position can be updated....
-            log('new Position: $rollingGridPosition');
+          for (var rollingGridPosition in workingGrid.grid) {
+            bool hasMoved = initialGrid.comparePosition(rollingGridPosition);
+            // initialGrid.comparePosition(rollingGridPosition);
 
-            sendPort.send(['update', jsonEncode(rollingGridPosition.toJson())]);
+            log(hasMoved.toString());
+            if (hasMoved) {
+              //Send this to the main Isolate so the position can be updated....
+              log('new Position: $rollingGridPosition');
 
-            // isolatePortImage1!
-            //     .send(['update1', jsonEncode(rollingGridPosition.toJson())]);
-            // isolatePortImage2!
-            //     .send(['update2', jsonEncode(rollingGridPosition.toJson())]);
+              sendPort
+                  .send(['update', jsonEncode(rollingGridPosition.toJson())]);
 
-            //Update Position in inital Grids
-            initialGrid.updatePosition(rollingGridPosition);
+              isolatePortImage1!
+                  .send(['update1', jsonEncode(rollingGridPosition.toJson())]);
+              isolatePortImage2!
+                  .send(['update2', jsonEncode(rollingGridPosition.toJson())]);
+
+              //Update Position in inital Grids
+              initialGrid.updatePosition(rollingGridPosition);
+            }
           }
         }
       }
@@ -108,14 +113,14 @@ void gridIsolate(SendPort sendPort) {
       } else if (message is List && message[0] == 'config') {
         GridProcessorConfig config = GridProcessorConfig.fromMessage(message);
 
-        initialGrids = config.grids;
+        isolateGrid = config.grid;
+        log(isolateGrid.toString());
 
         //Initiate all rolling grids :D.
-        for (IsolateGrid grid in initialGrids!) {
+        for (IsolatePositionalGrid grid in isolateGrid!.positionalGrids) {
           RollingGrid newRollingGrid = RollingGrid(markers: grid.markers);
 
-          newRollingGrid.initiateGrid(
-              newRollingGrid.markers, grid.gridPositions);
+          newRollingGrid.initiateGrid(newRollingGrid.markers, grid.positions);
 
           currentGrids.add(newRollingGrid);
         }

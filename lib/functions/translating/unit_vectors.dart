@@ -1,7 +1,7 @@
-import 'package:flutter_google_ml_kit/objects/navigation/grid_position.dart';
+import 'package:flutter_google_ml_kit/objects/grid/position.dart';
 
 List<double> unitVectors(
-    {required List<GridPosition> realBarcodePositions,
+    {required List<Position> realBarcodePositions,
     required double width,
     required double height}) {
   double sX = 0;
@@ -10,7 +10,7 @@ List<double> unitVectors(
   double bY = 0;
 
   for (var i = 0; i < realBarcodePositions.length; i++) {
-    GridPosition realBarcodePosition = realBarcodePositions.elementAt(i);
+    Position realBarcodePosition = realBarcodePositions.elementAt(i);
     if (realBarcodePosition.position != null) {
       if (realBarcodePosition.position != null) {
         double xDistance = realBarcodePosition.position!.x;

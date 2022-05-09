@@ -1,4 +1,4 @@
-import 'package:flutter_google_ml_kit/objects/navigation/grid_position.dart';
+import 'package:flutter_google_ml_kit/objects/grid/position.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate/rolling_grid_position.dart';
 
 import '../../../isar_database/marker/marker.dart';
@@ -14,10 +14,9 @@ class RollingGrid {
   List<IsolateRealInterBarcodeVector> vectors = [];
   bool isComplete = false;
 
-  void initiateGrid(
-      List<Marker> markers, List<GridPosition> initialGridPositions) {
+  void initiateGrid(List<Marker> markers, List<Position> initialGridPositions) {
     for (Marker marker in markers) {
-      GridPosition initalMarker = initialGridPositions
+      Position initalMarker = initialGridPositions
           .where((element) => element.barcodeUID == marker.barcodeUID)
           .first;
 

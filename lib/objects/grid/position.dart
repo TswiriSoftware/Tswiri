@@ -1,8 +1,8 @@
 import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_real_inter_barcode_vector.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 
-class GridPosition {
-  GridPosition({
+class Position {
+  Position({
     required this.barcodeUID,
     required this.position,
   });
@@ -29,26 +29,17 @@ class GridPosition {
     }
   }
 
-  @override
-  int get hashCode => (barcodeUID).hashCode;
+  Map toJson() => {
+        'barcodeUID': barcodeUID,
+        'x': position?.x,
+        'y': position?.y,
+        'z': position?.z,
+      };
 
-  Map toJson() {
-    return {
-      'barcodeUID': barcodeUID,
-      'positionX': position!.x,
-      'positionY': position!.y,
-      'positionZ': position!.z,
-    };
-  }
-
-  factory GridPosition.fromJson(dynamic json) {
-    return GridPosition(
+  factory Position.fromJson(json) {
+    return Position(
       barcodeUID: json['barcodeUID'],
-      position: vm.Vector3(
-        json['positionX'] as double,
-        json['positionY'] as double,
-        json['positionZ'] as double,
-      ),
+      position: vm.Vector3(json['x'], json['y'], json['z']),
     );
   }
 

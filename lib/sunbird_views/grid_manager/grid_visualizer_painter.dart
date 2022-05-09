@@ -9,8 +9,8 @@ import 'package:flutter_google_ml_kit/isar_database/container_relationship/conta
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 
 import 'package:flutter_google_ml_kit/objects/display/display_point.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/grid_object.dart';
-
+import 'package:flutter_google_ml_kit/objects/grid/grid.dart';
+import 'package:flutter_google_ml_kit/objects/grid/positional_grid.dart';
 import 'package:isar/isar.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 
@@ -27,12 +27,15 @@ class GridVisualizerPainter extends CustomPainter {
 
   @override
   paint(Canvas canvas, Size size) async {
-    GridObject grid = GridObject(originContainer: containerEntry);
+    //GridObjectOLD grid = GridObjectOLD(originContainer: containerEntry);
+    Grid grid = Grid();
 
-    grid.gridPositions;
-    grid.getBarcodes;
+    PositionalGrid positionalGrid = grid.positionalGrids
+        .where((element) =>
+            element.getBarcodes.contains(containerEntry.barcodeUID))
+        .first;
 
-    List<DisplayPoint> myPoints = grid.displayPoints(size);
+    List<DisplayPoint> myPoints = positionalGrid.displayPoints(size);
     List<Offset> markers = [];
     List<Offset> boxes = [];
     List<Offset> other = [];

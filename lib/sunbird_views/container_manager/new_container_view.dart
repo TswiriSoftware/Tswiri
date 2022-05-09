@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -762,6 +763,8 @@ class _NewContainerViewState extends State<NewContainerView> {
         Marker newMarker = Marker()
           ..barcodeUID = barcodeUID!
           ..parentContainerUID = newContainerEntry.containerUID;
+
+        log(newMarker.toString());
         isarDatabase!.writeTxnSync((isar) => isar.markers.putSync(newMarker));
       }
 
