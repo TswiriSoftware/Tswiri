@@ -19,6 +19,7 @@ class Position {
 
   //Comparison
   @override
+  // ignore: hash_and_equals
   bool operator ==(Object other) {
     if (other is String) {
       return barcodeUID == other;
