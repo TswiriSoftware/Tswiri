@@ -6,10 +6,10 @@ import 'package:flutter_google_ml_kit/functions/translating/real_unit_calculator
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/on_image_inter_barcode_data.dart';
 import 'package:isar/isar.dart';
-part 'real_interbarcode_vector_entry.g.dart';
+part 'interbarcode_vector_entry.g.dart';
 
 @Collection()
-class RealInterBarcodeVectorEntry {
+class InterBarcodeVectorEntry {
   int id = Isar.autoIncrement;
 
   //Start barcodeUID.
@@ -42,7 +42,7 @@ class RealInterBarcodeVectorEntry {
   //Comparison
   @override
   bool operator ==(Object other) {
-    return other is RealInterBarcodeVectorEntry && hashCode == other.hashCode;
+    return other is InterBarcodeVectorEntry && hashCode == other.hashCode;
   }
 
   @override
@@ -64,8 +64,8 @@ class RealInterBarcodeVectorEntry {
         'creationTimestamp': creationTimestamp,
       };
 
-  RealInterBarcodeVectorEntry fromJson(Map<String, dynamic> json) {
-    return RealInterBarcodeVectorEntry()
+  InterBarcodeVectorEntry fromJson(Map<String, dynamic> json) {
+    return InterBarcodeVectorEntry()
       ..id = json['id']
       ..startBarcodeUID = json['startBarcodeUID']
       ..endBarcodeUID = json['endBarcodeUID']
@@ -77,7 +77,7 @@ class RealInterBarcodeVectorEntry {
   }
 
   //Create From RawInterBarcodeData.
-  RealInterBarcodeVectorEntry fromRawInterBarcodeData(
+  InterBarcodeVectorEntry fromRawInterBarcodeData(
       OnImageInterBarcodeData interBarcodeData, int creationTimestamp) {
     ///1. Calculate RealInterBarcodeOffset
     double phoneAngleRadians =
@@ -132,7 +132,7 @@ class RealInterBarcodeVectorEntry {
     double zOffset =
         endBarcodeDistanceFromCamera - startBarcodeDistanceFromCamera;
 
-    return RealInterBarcodeVectorEntry()
+    return InterBarcodeVectorEntry()
       ..startBarcodeUID = interBarcodeData.startBarcode.barcodeUID
       ..endBarcodeUID = interBarcodeData.endBarcode.barcodeUID
       ..creationTimestamp = creationTimestamp

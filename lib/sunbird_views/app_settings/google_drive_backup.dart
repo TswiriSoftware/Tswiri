@@ -11,10 +11,10 @@ import 'package:flutter_google_ml_kit/isar_database/container_relationship/conta
 import 'package:flutter_google_ml_kit/isar_database/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/isar_database/interbarcode_vector_entry/interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
-import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:http/http.dart' as http;
@@ -407,14 +407,13 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
               });
               break;
             case 'realInterBarcodeVectorEntry.json':
-              List<RealInterBarcodeVectorEntry> realInterBarcodeVectorEntrys =
-                  json
-                      .map((e) => RealInterBarcodeVectorEntry().fromJson(e))
-                      .toList();
+              List<InterBarcodeVectorEntry> realInterBarcodeVectorEntrys = json
+                  .map((e) => InterBarcodeVectorEntry().fromJson(e))
+                  .toList();
               // log(realInterBarcodeVectorEntrys.toString());
               isarDatabase!.writeTxnSync((isar) {
-                isar.realInterBarcodeVectorEntrys.where().deleteAllSync();
-                isar.realInterBarcodeVectorEntrys
+                isar.interBarcodeVectorEntrys.where().deleteAllSync();
+                isar.interBarcodeVectorEntrys
                     .putAllSync(realInterBarcodeVectorEntrys);
               });
               break;
@@ -664,7 +663,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
             break;
           case 'realInterBarcodeVectorEntry.json':
             backupFileContent = jsonEncode(isarDatabase!
-                .realInterBarcodeVectorEntrys
+                .interBarcodeVectorEntrys
                 .where()
                 .findAllSync()
                 .map((e) => e.toJson())

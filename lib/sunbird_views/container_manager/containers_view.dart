@@ -6,9 +6,9 @@ import 'package:flutter_google_ml_kit/isar_database/container_photo/container_ph
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/isar_database/interbarcode_vector_entry/interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
-import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/new_container_view.dart';
@@ -421,7 +421,7 @@ class _ContainersViewState extends State<ContainersView> {
 
   void deleteSelection() {
     List<Marker> markers = [];
-    List<RealInterBarcodeVectorEntry> interBarcodeData = [];
+    List<InterBarcodeVectorEntry> interBarcodeData = [];
     List<ContainerRelationship> containerRelationships = [];
     List<ContainerTag> containerTags = [];
 
@@ -447,7 +447,7 @@ class _ContainersViewState extends State<ContainersView> {
 
         //InterBarcodeData
         if (container.barcodeUID != null) {
-          interBarcodeData.addAll(isarDatabase!.realInterBarcodeVectorEntrys
+          interBarcodeData.addAll(isarDatabase!.interBarcodeVectorEntrys
               .filter()
               .endBarcodeUIDMatches(container.barcodeUID!)
               .or()
@@ -506,7 +506,7 @@ class _ContainersViewState extends State<ContainersView> {
           .repeat(markers,
               (q, Marker element) => q.barcodeUIDMatches(element.barcodeUID))
           .deleteFirstSync();
-      isar.realInterBarcodeVectorEntrys
+      isar.interBarcodeVectorEntrys
           .filter()
           .repeat(
               markers,

@@ -9,7 +9,7 @@ class ContainerType {
   ///ContainerUID.
   late String containerType;
 
-  ///ContaunerDescription.
+  ///Container Description.
   late String containerDescription;
 
   ///Can this container be moved.

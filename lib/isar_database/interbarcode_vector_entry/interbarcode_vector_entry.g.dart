@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'real_interbarcode_vector_entry.dart';
+part of 'interbarcode_vector_entry.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator
@@ -8,18 +8,18 @@ part of 'real_interbarcode_vector_entry.dart';
 
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
 
-extension GetRealInterBarcodeVectorEntryCollection on Isar {
-  IsarCollection<RealInterBarcodeVectorEntry> get realInterBarcodeVectorEntrys {
-    return getCollection('RealInterBarcodeVectorEntry');
+extension GetInterBarcodeVectorEntryCollection on Isar {
+  IsarCollection<InterBarcodeVectorEntry> get interBarcodeVectorEntrys {
+    return getCollection('InterBarcodeVectorEntry');
   }
 }
 
-final RealInterBarcodeVectorEntrySchema = CollectionSchema(
-  name: 'RealInterBarcodeVectorEntry',
+final InterBarcodeVectorEntrySchema = CollectionSchema(
+  name: 'InterBarcodeVectorEntry',
   schema:
-      '{"name":"RealInterBarcodeVectorEntry","idName":"id","properties":[{"name":"creationTimestamp","type":"Long"},{"name":"endBarcodeUID","type":"String"},{"name":"hashCode","type":"Long"},{"name":"startBarcodeUID","type":"String"},{"name":"timestamp","type":"Long"},{"name":"uid","type":"String"},{"name":"x","type":"Double"},{"name":"y","type":"Double"},{"name":"z","type":"Double"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _RealInterBarcodeVectorEntryNativeAdapter(),
-  webAdapter: const _RealInterBarcodeVectorEntryWebAdapter(),
+      '{"name":"InterBarcodeVectorEntry","idName":"id","properties":[{"name":"creationTimestamp","type":"Long"},{"name":"endBarcodeUID","type":"String"},{"name":"hashCode","type":"Long"},{"name":"startBarcodeUID","type":"String"},{"name":"timestamp","type":"Long"},{"name":"uid","type":"String"},{"name":"x","type":"Double"},{"name":"y","type":"Double"},{"name":"z","type":"Double"}],"indexes":[],"links":[]}',
+  nativeAdapter: const _InterBarcodeVectorEntryNativeAdapter(),
+  webAdapter: const _InterBarcodeVectorEntryWebAdapter(),
   idName: 'id',
   propertyIds: {
     'creationTimestamp': 0,
@@ -50,13 +50,13 @@ final RealInterBarcodeVectorEntrySchema = CollectionSchema(
   version: 2,
 );
 
-class _RealInterBarcodeVectorEntryWebAdapter
-    extends IsarWebTypeAdapter<RealInterBarcodeVectorEntry> {
-  const _RealInterBarcodeVectorEntryWebAdapter();
+class _InterBarcodeVectorEntryWebAdapter
+    extends IsarWebTypeAdapter<InterBarcodeVectorEntry> {
+  const _InterBarcodeVectorEntryWebAdapter();
 
   @override
-  Object serialize(IsarCollection<RealInterBarcodeVectorEntry> collection,
-      RealInterBarcodeVectorEntry object) {
+  Object serialize(IsarCollection<InterBarcodeVectorEntry> collection,
+      InterBarcodeVectorEntry object) {
     final jsObj = IsarNative.newJsObject();
     IsarNative.jsObjectSet(
         jsObj, 'creationTimestamp', object.creationTimestamp);
@@ -73,9 +73,9 @@ class _RealInterBarcodeVectorEntryWebAdapter
   }
 
   @override
-  RealInterBarcodeVectorEntry deserialize(
-      IsarCollection<RealInterBarcodeVectorEntry> collection, dynamic jsObj) {
-    final object = RealInterBarcodeVectorEntry();
+  InterBarcodeVectorEntry deserialize(
+      IsarCollection<InterBarcodeVectorEntry> collection, dynamic jsObj) {
+    final object = InterBarcodeVectorEntry();
     object.creationTimestamp =
         IsarNative.jsObjectGet(jsObj, 'creationTimestamp') ??
             double.negativeInfinity;
@@ -127,18 +127,18 @@ class _RealInterBarcodeVectorEntryWebAdapter
   }
 
   @override
-  void attachLinks(Isar isar, int id, RealInterBarcodeVectorEntry object) {}
+  void attachLinks(Isar isar, int id, InterBarcodeVectorEntry object) {}
 }
 
-class _RealInterBarcodeVectorEntryNativeAdapter
-    extends IsarNativeTypeAdapter<RealInterBarcodeVectorEntry> {
-  const _RealInterBarcodeVectorEntryNativeAdapter();
+class _InterBarcodeVectorEntryNativeAdapter
+    extends IsarNativeTypeAdapter<InterBarcodeVectorEntry> {
+  const _InterBarcodeVectorEntryNativeAdapter();
 
   @override
   void serialize(
-      IsarCollection<RealInterBarcodeVectorEntry> collection,
+      IsarCollection<InterBarcodeVectorEntry> collection,
       IsarRawObject rawObj,
-      RealInterBarcodeVectorEntry object,
+      InterBarcodeVectorEntry object,
       int staticSize,
       List<int> offsets,
       AdapterAlloc alloc) {
@@ -182,12 +182,12 @@ class _RealInterBarcodeVectorEntryNativeAdapter
   }
 
   @override
-  RealInterBarcodeVectorEntry deserialize(
-      IsarCollection<RealInterBarcodeVectorEntry> collection,
+  InterBarcodeVectorEntry deserialize(
+      IsarCollection<InterBarcodeVectorEntry> collection,
       int id,
       IsarBinaryReader reader,
       List<int> offsets) {
-    final object = RealInterBarcodeVectorEntry();
+    final object = InterBarcodeVectorEntry();
     object.creationTimestamp = reader.readLong(offsets[0]);
     object.endBarcodeUID = reader.readString(offsets[1]);
     object.id = id;
@@ -229,20 +229,20 @@ class _RealInterBarcodeVectorEntryNativeAdapter
   }
 
   @override
-  void attachLinks(Isar isar, int id, RealInterBarcodeVectorEntry object) {}
+  void attachLinks(Isar isar, int id, InterBarcodeVectorEntry object) {}
 }
 
-extension RealInterBarcodeVectorEntryQueryWhereSort on QueryBuilder<
-    RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry, QWhere> {
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterWhere> anyId() {
+extension InterBarcodeVectorEntryQueryWhereSort
+    on QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QWhere> {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterWhere>
+      anyId() {
     return addWhereClauseInternal(const WhereClause(indexName: null));
   }
 }
 
-extension RealInterBarcodeVectorEntryQueryWhere on QueryBuilder<
-    RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry, QWhereClause> {
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+extension InterBarcodeVectorEntryQueryWhere on QueryBuilder<
+    InterBarcodeVectorEntry, InterBarcodeVectorEntry, QWhereClause> {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterWhereClause> idEqualTo(int id) {
     return addWhereClauseInternal(WhereClause(
       indexName: null,
@@ -253,7 +253,7 @@ extension RealInterBarcodeVectorEntryQueryWhere on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterWhereClause> idNotEqualTo(int id) {
     if (whereSortInternal == Sort.asc) {
       return addWhereClauseInternal(WhereClause(
@@ -278,7 +278,7 @@ extension RealInterBarcodeVectorEntryQueryWhere on QueryBuilder<
     }
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterWhereClause> idGreaterThan(
     int id, {
     bool include = false,
@@ -290,7 +290,7 @@ extension RealInterBarcodeVectorEntryQueryWhere on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterWhereClause> idLessThan(
     int id, {
     bool include = false,
@@ -302,7 +302,7 @@ extension RealInterBarcodeVectorEntryQueryWhere on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterWhereClause> idBetween(
     int lowerId,
     int upperId, {
@@ -319,11 +319,9 @@ extension RealInterBarcodeVectorEntryQueryWhere on QueryBuilder<
   }
 }
 
-extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
-    RealInterBarcodeVectorEntry,
-    RealInterBarcodeVectorEntry,
-    QFilterCondition> {
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+extension InterBarcodeVectorEntryQueryFilter on QueryBuilder<
+    InterBarcodeVectorEntry, InterBarcodeVectorEntry, QFilterCondition> {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> creationTimestampEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
@@ -332,7 +330,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> creationTimestampGreaterThan(
     int value, {
     bool include = false,
@@ -345,7 +343,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> creationTimestampLessThan(
     int value, {
     bool include = false,
@@ -358,7 +356,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> creationTimestampBetween(
     int lower,
     int upper, {
@@ -374,7 +372,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> endBarcodeUIDEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -387,7 +385,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> endBarcodeUIDGreaterThan(
     String value, {
     bool caseSensitive = true,
@@ -402,7 +400,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> endBarcodeUIDLessThan(
     String value, {
     bool caseSensitive = true,
@@ -417,7 +415,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> endBarcodeUIDBetween(
     String lower,
     String upper, {
@@ -435,7 +433,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> endBarcodeUIDStartsWith(
     String value, {
     bool caseSensitive = true,
@@ -448,7 +446,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> endBarcodeUIDEndsWith(
     String value, {
     bool caseSensitive = true,
@@ -461,7 +459,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
           QAfterFilterCondition>
       endBarcodeUIDContains(String value, {bool caseSensitive = true}) {
     return addFilterConditionInternal(FilterCondition(
@@ -472,7 +470,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
           QAfterFilterCondition>
       endBarcodeUIDMatches(String pattern, {bool caseSensitive = true}) {
     return addFilterConditionInternal(FilterCondition(
@@ -483,7 +481,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> hashCodeEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
@@ -492,7 +490,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> hashCodeGreaterThan(
     int value, {
     bool include = false,
@@ -505,7 +503,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> hashCodeLessThan(
     int value, {
     bool include = false,
@@ -518,7 +516,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> hashCodeBetween(
     int lower,
     int upper, {
@@ -534,7 +532,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> idEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
@@ -543,7 +541,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> idGreaterThan(
     int value, {
     bool include = false,
@@ -556,7 +554,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> idLessThan(
     int value, {
     bool include = false,
@@ -569,7 +567,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> idBetween(
     int lower,
     int upper, {
@@ -585,7 +583,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> startBarcodeUIDEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -598,7 +596,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> startBarcodeUIDGreaterThan(
     String value, {
     bool caseSensitive = true,
@@ -613,7 +611,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> startBarcodeUIDLessThan(
     String value, {
     bool caseSensitive = true,
@@ -628,7 +626,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> startBarcodeUIDBetween(
     String lower,
     String upper, {
@@ -646,7 +644,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> startBarcodeUIDStartsWith(
     String value, {
     bool caseSensitive = true,
@@ -659,7 +657,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> startBarcodeUIDEndsWith(
     String value, {
     bool caseSensitive = true,
@@ -672,7 +670,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
           QAfterFilterCondition>
       startBarcodeUIDContains(String value, {bool caseSensitive = true}) {
     return addFilterConditionInternal(FilterCondition(
@@ -683,7 +681,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
           QAfterFilterCondition>
       startBarcodeUIDMatches(String pattern, {bool caseSensitive = true}) {
     return addFilterConditionInternal(FilterCondition(
@@ -694,7 +692,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> timestampEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
@@ -703,7 +701,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> timestampGreaterThan(
     int value, {
     bool include = false,
@@ -716,7 +714,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> timestampLessThan(
     int value, {
     bool include = false,
@@ -729,7 +727,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> timestampBetween(
     int lower,
     int upper, {
@@ -745,7 +743,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> uidEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -758,7 +756,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> uidGreaterThan(
     String value, {
     bool caseSensitive = true,
@@ -773,7 +771,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> uidLessThan(
     String value, {
     bool caseSensitive = true,
@@ -788,7 +786,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> uidBetween(
     String lower,
     String upper, {
@@ -806,7 +804,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> uidStartsWith(
     String value, {
     bool caseSensitive = true,
@@ -819,7 +817,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> uidEndsWith(
     String value, {
     bool caseSensitive = true,
@@ -832,7 +830,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
           QAfterFilterCondition>
       uidContains(String value, {bool caseSensitive = true}) {
     return addFilterConditionInternal(FilterCondition(
@@ -843,7 +841,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
           QAfterFilterCondition>
       uidMatches(String pattern, {bool caseSensitive = true}) {
     return addFilterConditionInternal(FilterCondition(
@@ -854,7 +852,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> xGreaterThan(double value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
@@ -864,7 +862,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> xLessThan(double value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
@@ -874,7 +872,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> xBetween(double lower, double upper) {
     return addFilterConditionInternal(FilterCondition.between(
       property: 'x',
@@ -885,7 +883,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> yGreaterThan(double value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
@@ -895,7 +893,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> yLessThan(double value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
@@ -905,7 +903,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> yBetween(double lower, double upper) {
     return addFilterConditionInternal(FilterCondition.between(
       property: 'y',
@@ -916,7 +914,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> zGreaterThan(double value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
@@ -926,7 +924,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> zLessThan(double value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
@@ -936,7 +934,7 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
     ));
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
       QAfterFilterCondition> zBetween(double lower, double upper) {
     return addFilterConditionInternal(FilterCondition.between(
       property: 'z',
@@ -948,320 +946,314 @@ extension RealInterBarcodeVectorEntryQueryFilter on QueryBuilder<
   }
 }
 
-extension RealInterBarcodeVectorEntryQueryLinks on QueryBuilder<
-    RealInterBarcodeVectorEntry,
-    RealInterBarcodeVectorEntry,
-    QFilterCondition> {}
+extension InterBarcodeVectorEntryQueryLinks on QueryBuilder<
+    InterBarcodeVectorEntry, InterBarcodeVectorEntry, QFilterCondition> {}
 
-extension RealInterBarcodeVectorEntryQueryWhereSortBy on QueryBuilder<
-    RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry, QSortBy> {
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByCreationTimestamp() {
+extension InterBarcodeVectorEntryQueryWhereSortBy
+    on QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QSortBy> {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByCreationTimestamp() {
     return addSortByInternal('creationTimestamp', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByCreationTimestampDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByCreationTimestampDesc() {
     return addSortByInternal('creationTimestamp', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByEndBarcodeUID() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByEndBarcodeUID() {
     return addSortByInternal('endBarcodeUID', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByEndBarcodeUIDDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByEndBarcodeUIDDesc() {
     return addSortByInternal('endBarcodeUID', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByHashCode() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByHashCode() {
     return addSortByInternal('hashCode', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByHashCodeDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByHashCodeDesc() {
     return addSortByInternal('hashCode', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortById() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortById() {
     return addSortByInternal('id', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByIdDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByIdDesc() {
     return addSortByInternal('id', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByStartBarcodeUID() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByStartBarcodeUID() {
     return addSortByInternal('startBarcodeUID', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByStartBarcodeUIDDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByStartBarcodeUIDDesc() {
     return addSortByInternal('startBarcodeUID', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByTimestamp() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByTimestamp() {
     return addSortByInternal('timestamp', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByTimestampDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByTimestampDesc() {
     return addSortByInternal('timestamp', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByUid() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByUid() {
     return addSortByInternal('uid', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByUidDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByUidDesc() {
     return addSortByInternal('uid', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByX() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByX() {
     return addSortByInternal('x', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByXDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByXDesc() {
     return addSortByInternal('x', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByY() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByY() {
     return addSortByInternal('y', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByYDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByYDesc() {
     return addSortByInternal('y', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByZ() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByZ() {
     return addSortByInternal('z', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> sortByZDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByZDesc() {
     return addSortByInternal('z', Sort.desc);
   }
 }
 
-extension RealInterBarcodeVectorEntryQueryWhereSortThenBy on QueryBuilder<
-    RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry, QSortThenBy> {
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByCreationTimestamp() {
+extension InterBarcodeVectorEntryQueryWhereSortThenBy on QueryBuilder<
+    InterBarcodeVectorEntry, InterBarcodeVectorEntry, QSortThenBy> {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByCreationTimestamp() {
     return addSortByInternal('creationTimestamp', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByCreationTimestampDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByCreationTimestampDesc() {
     return addSortByInternal('creationTimestamp', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByEndBarcodeUID() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByEndBarcodeUID() {
     return addSortByInternal('endBarcodeUID', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByEndBarcodeUIDDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByEndBarcodeUIDDesc() {
     return addSortByInternal('endBarcodeUID', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByHashCode() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByHashCode() {
     return addSortByInternal('hashCode', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByHashCodeDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByHashCodeDesc() {
     return addSortByInternal('hashCode', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenById() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenById() {
     return addSortByInternal('id', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByIdDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByIdDesc() {
     return addSortByInternal('id', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByStartBarcodeUID() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByStartBarcodeUID() {
     return addSortByInternal('startBarcodeUID', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByStartBarcodeUIDDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByStartBarcodeUIDDesc() {
     return addSortByInternal('startBarcodeUID', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByTimestamp() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByTimestamp() {
     return addSortByInternal('timestamp', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByTimestampDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByTimestampDesc() {
     return addSortByInternal('timestamp', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByUid() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByUid() {
     return addSortByInternal('uid', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByUidDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByUidDesc() {
     return addSortByInternal('uid', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByX() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByX() {
     return addSortByInternal('x', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByXDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByXDesc() {
     return addSortByInternal('x', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByY() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByY() {
     return addSortByInternal('y', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByYDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByYDesc() {
     return addSortByInternal('y', Sort.desc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByZ() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByZ() {
     return addSortByInternal('z', Sort.asc);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QAfterSortBy> thenByZDesc() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByZDesc() {
     return addSortByInternal('z', Sort.desc);
   }
 }
 
-extension RealInterBarcodeVectorEntryQueryWhereDistinct on QueryBuilder<
-    RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry, QDistinct> {
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QDistinct> distinctByCreationTimestamp() {
+extension InterBarcodeVectorEntryQueryWhereDistinct on QueryBuilder<
+    InterBarcodeVectorEntry, InterBarcodeVectorEntry, QDistinct> {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QDistinct>
+      distinctByCreationTimestamp() {
     return addDistinctByInternal('creationTimestamp');
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QDistinct> distinctByEndBarcodeUID({bool caseSensitive = true}) {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QDistinct>
+      distinctByEndBarcodeUID({bool caseSensitive = true}) {
     return addDistinctByInternal('endBarcodeUID', caseSensitive: caseSensitive);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QDistinct> distinctByHashCode() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QDistinct>
+      distinctByHashCode() {
     return addDistinctByInternal('hashCode');
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QDistinct> distinctById() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QDistinct>
+      distinctById() {
     return addDistinctByInternal('id');
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QDistinct> distinctByStartBarcodeUID({bool caseSensitive = true}) {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QDistinct>
+      distinctByStartBarcodeUID({bool caseSensitive = true}) {
     return addDistinctByInternal('startBarcodeUID',
         caseSensitive: caseSensitive);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QDistinct> distinctByTimestamp() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QDistinct>
+      distinctByTimestamp() {
     return addDistinctByInternal('timestamp');
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QDistinct> distinctByUid({bool caseSensitive = true}) {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QDistinct>
+      distinctByUid({bool caseSensitive = true}) {
     return addDistinctByInternal('uid', caseSensitive: caseSensitive);
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QDistinct> distinctByX() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QDistinct>
+      distinctByX() {
     return addDistinctByInternal('x');
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QDistinct> distinctByY() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QDistinct>
+      distinctByY() {
     return addDistinctByInternal('y');
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry,
-      QDistinct> distinctByZ() {
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QDistinct>
+      distinctByZ() {
     return addDistinctByInternal('z');
   }
 }
 
-extension RealInterBarcodeVectorEntryQueryProperty on QueryBuilder<
-    RealInterBarcodeVectorEntry, RealInterBarcodeVectorEntry, QQueryProperty> {
-  QueryBuilder<RealInterBarcodeVectorEntry, int, QQueryOperations>
+extension InterBarcodeVectorEntryQueryProperty on QueryBuilder<
+    InterBarcodeVectorEntry, InterBarcodeVectorEntry, QQueryProperty> {
+  QueryBuilder<InterBarcodeVectorEntry, int, QQueryOperations>
       creationTimestampProperty() {
     return addPropertyNameInternal('creationTimestamp');
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, String, QQueryOperations>
+  QueryBuilder<InterBarcodeVectorEntry, String, QQueryOperations>
       endBarcodeUIDProperty() {
     return addPropertyNameInternal('endBarcodeUID');
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, int, QQueryOperations>
+  QueryBuilder<InterBarcodeVectorEntry, int, QQueryOperations>
       hashCodeProperty() {
     return addPropertyNameInternal('hashCode');
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, int, QQueryOperations>
-      idProperty() {
+  QueryBuilder<InterBarcodeVectorEntry, int, QQueryOperations> idProperty() {
     return addPropertyNameInternal('id');
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, String, QQueryOperations>
+  QueryBuilder<InterBarcodeVectorEntry, String, QQueryOperations>
       startBarcodeUIDProperty() {
     return addPropertyNameInternal('startBarcodeUID');
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, int, QQueryOperations>
+  QueryBuilder<InterBarcodeVectorEntry, int, QQueryOperations>
       timestampProperty() {
     return addPropertyNameInternal('timestamp');
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, String, QQueryOperations>
+  QueryBuilder<InterBarcodeVectorEntry, String, QQueryOperations>
       uidProperty() {
     return addPropertyNameInternal('uid');
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, double, QQueryOperations>
-      xProperty() {
+  QueryBuilder<InterBarcodeVectorEntry, double, QQueryOperations> xProperty() {
     return addPropertyNameInternal('x');
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, double, QQueryOperations>
-      yProperty() {
+  QueryBuilder<InterBarcodeVectorEntry, double, QQueryOperations> yProperty() {
     return addPropertyNameInternal('y');
   }
 
-  QueryBuilder<RealInterBarcodeVectorEntry, double, QQueryOperations>
-      zProperty() {
+  QueryBuilder<InterBarcodeVectorEntry, double, QQueryOperations> zProperty() {
     return addPropertyNameInternal('z');
   }
 }

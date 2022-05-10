@@ -5,8 +5,9 @@ import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.
 import 'package:flutter_google_ml_kit/functions/translating/unit_vectors.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar_database/interbarcode_vector_entry/interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
-import 'package:flutter_google_ml_kit/isar_database/real_interbarcode_vector_entry/real_interbarcode_vector_entry.dart';
+
 import 'package:flutter_google_ml_kit/objects/display/display_point.dart';
 import 'package:flutter_google_ml_kit/objects/grid/position.dart';
 import 'package:isar/isar.dart';
@@ -96,9 +97,8 @@ class PositionalGrid {
           .map((e) => Position(barcodeUID: e.barcodeUID, position: null)));
 
       //Find all relevant realInterBarcodeVectorEntrys.
-      List<RealInterBarcodeVectorEntry> interBarcodevectorEntries = [];
-      interBarcodevectorEntries.addAll(isarDatabase!
-          .realInterBarcodeVectorEntrys
+      List<InterBarcodeVectorEntry> interBarcodevectorEntries = [];
+      interBarcodevectorEntries.addAll(isarDatabase!.interBarcodeVectorEntrys
           .filter()
           .repeat(
               relevantBarcodes,
@@ -134,7 +134,7 @@ class PositionalGrid {
             // we are going to add the interbarcode offset between start and end barcodes to obtain the "position" of the end barcode.
 
             //This list contains all RealInterBarcode Offsets that contains the endBarcode.
-            List<RealInterBarcodeVectorEntry> relevantInterBarcodeVectors =
+            List<InterBarcodeVectorEntry> relevantInterBarcodeVectors =
                 interBarcodevectorEntries
                     .where((element) =>
                         element.startBarcodeUID ==
@@ -151,7 +151,7 @@ class PositionalGrid {
             //Finds a relevant startBarcode based on the relevantInterbarcodeOffsets and BarcodesWithOffset.
             int startBarcodeIndex =
                 confirmedPositions.indexWhere((barcodeWithOffsetToOrigin) {
-              for (RealInterBarcodeVectorEntry singleInterBarcodeData
+              for (InterBarcodeVectorEntry singleInterBarcodeData
                   in relevantInterBarcodeVectors) {
                 if (singleInterBarcodeData.startBarcodeUID ==
                         barcodeWithOffsetToOrigin.barcodeUID ||

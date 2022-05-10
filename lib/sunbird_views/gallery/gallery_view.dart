@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -122,72 +123,91 @@ class _GalleryViewState extends State<GalleryView> {
     );
   }
 
+  String? swipeDirection;
+
   ///PHOTO EDITOR///
   Widget _photoEditor() {
-    return SingleChildScrollView(
-      child: FutureBuilder<Size>(
-        future: getImageSize(selectedPhoto!),
-        builder: ((context, snapshot) {
-          if (snapshot.hasData && snapshot.data != null) {
-            return Column(
-              children: [
-                mlTagsCard(),
-                imageViewer(snapshot.data!),
-              ],
-            );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+    return GestureDetector(
+      onPanUpdate: (details) {
+        swipeDirection = details.delta.dx < 0 ? 'right' : 'left';
+      },
+      onPanEnd: (details) {
+        if (swipeDirection == null) {
+          return;
+        }
+        if (swipeDirection == 'right') {
+          log('right');
+          int index = photos.indexOf(selectedPhoto!);
+          if (index < photos.length - 1) {
+            setState(() {
+              selectedPhoto = photos[index + 1];
+            });
           }
-        }),
+        }
+        if (swipeDirection == 'left') {
+          log('left');
+          int index = photos.indexOf(selectedPhoto!);
+          if (index >= 0) {
+            setState(() {
+              selectedPhoto = photos[index - 1];
+            });
+          }
+        }
+      },
+      child: SingleChildScrollView(
+        child: FutureBuilder<Size>(
+          future: getImageSize(selectedPhoto!),
+          builder: ((context, snapshot) {
+            if (snapshot.hasData && snapshot.data != null) {
+              return Column(
+                children: [
+                  mlTagsCard(),
+                  imageViewer(snapshot.data!),
+                ],
+              );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          }),
+        ),
       ),
     );
   }
 
   Widget imageViewer(Size size) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          showTagEditor = false;
-        });
-      },
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        color: Colors.white12,
-        elevation: 5,
-        shadowColor: Colors.black26,
-        child: SizedBox(
-          width: size.width,
-          height: size.height,
-          child: InteractiveViewer(
-            minScale: 0.5,
-            maxScale: 3,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image.file(
-                  File(selectedPhoto!.photoPath),
-                  fit: BoxFit.fill,
-                ),
-                FutureBuilder<Size>(
-                    future: getImageSize(selectedPhoto!),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return CustomPaint(
-                          painter: ImageObjectDetectorPainter(
-                              containerPhoto: selectedPhoto!,
-                              absoluteSize: snapshot.data!),
-                        );
-                      } else {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                    })
-              ],
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      color: Colors.white12,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      child: SizedBox(
+        width: size.width,
+        height: size.height,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.file(
+              File(selectedPhoto!.photoPath),
+              fit: BoxFit.fill,
             ),
-          ),
+            FutureBuilder<Size>(
+                future: getImageSize(selectedPhoto!),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return CustomPaint(
+                      painter: ImageObjectDetectorPainter(
+                          containerPhoto: selectedPhoto!,
+                          absoluteSize: snapshot.data!),
+                    );
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                })
+          ],
         ),
       ),
     );
@@ -390,6 +410,11 @@ class _GalleryViewState extends State<GalleryView> {
       },
       onSubmitted: (value) {
         addTag();
+        if (value.isEmpty) {
+          setState(() {
+            showTagEditor = false;
+          });
+        }
       },
       style: const TextStyle(fontSize: 18),
       textCapitalization: TextCapitalization.words,
