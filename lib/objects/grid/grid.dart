@@ -46,8 +46,8 @@ class Grid {
   }
 
   ///Identify HigherContainers.
-  ///Higher containers are containers that dont have parents.
-  List<ContainerEntry> higherContainers() {
+  ///Parents containers are containers that dont have parents.
+  List<ContainerEntry> parents() {
     //Higher containers are containers that dont have parents.
     List<ContainerEntry> allContainers =
         isarDatabase!.containerEntrys.where().findAllSync();

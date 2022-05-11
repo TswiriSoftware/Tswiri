@@ -86,10 +86,10 @@ void gridIsolate(SendPort sendPort) {
               sendPort
                   .send(['update', jsonEncode(rollingGridPosition.toJson())]);
 
-              isolatePortImage1!
-                  .send(['update1', jsonEncode(rollingGridPosition.toJson())]);
-              isolatePortImage2!
-                  .send(['update2', jsonEncode(rollingGridPosition.toJson())]);
+              // isolatePortImage1!
+              //     .send(['update1', jsonEncode(rollingGridPosition.toJson())]);
+              // isolatePortImage2!
+              //     .send(['update2', jsonEncode(rollingGridPosition.toJson())]);
 
               //Update Position in inital Grids
               initialGrid.updatePosition(rollingGridPosition);

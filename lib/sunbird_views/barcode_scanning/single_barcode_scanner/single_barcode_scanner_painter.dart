@@ -45,9 +45,7 @@ class SingleBarcodeScannerPainter extends CustomPainter {
             textDirection: TextDirection.ltr),
       );
       builder.pushStyle(ui.TextStyle(
-          color: Colors.lightGreenAccent,
-          background: background,
-          fontSize: 20));
+          color: Colors.lightGreenAccent, background: background, fontSize: 9));
       builder.addText('${barcode.value.displayValue}');
       builder.pop();
 
@@ -66,11 +64,11 @@ class SingleBarcodeScannerPainter extends CustomPainter {
 
         offsetPoints.add(offsetPoints.first);
 
-        Offset centerPoint = calculateCenterFromCornerPoints(offsetPoints);
+        //Offset centerPoint = calculateCenterFromCornerPoints(offsetPoints);
 
         canvas.drawParagraph(
-          builder.build()..layout(const ParagraphConstraints(width: 300)),
-          centerPoint,
+          builder.build()..layout(const ParagraphConstraints(width: 100)),
+          offsetPoints.first,
         );
 
         canvas.drawPoints(PointMode.polygon, offsetPoints, paint);

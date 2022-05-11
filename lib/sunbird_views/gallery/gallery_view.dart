@@ -147,7 +147,7 @@ class _GalleryViewState extends State<GalleryView> {
         if (swipeDirection == 'left') {
           log('left');
           int index = photos.indexOf(selectedPhoto!);
-          if (index >= 0) {
+          if (index > 0) {
             setState(() {
               selectedPhoto = photos[index - 1];
             });

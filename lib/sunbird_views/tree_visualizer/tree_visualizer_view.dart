@@ -19,7 +19,7 @@ class GridVisualizerView extends StatefulWidget {
 
 class _GridVisualizerViewState extends State<GridVisualizerView> {
   late Grid grid = Grid();
-  late List<ContainerEntry> higherContainers = grid.higherContainers();
+  late List<ContainerEntry> higherContainers = grid.parents();
 
   @override
   void initState() {
@@ -201,13 +201,7 @@ class _GridVisualizerViewState extends State<GridVisualizerView> {
   Widget _refresh() {
     return FloatingActionButton(
       onPressed: () {
-        IsolateGrid isolateGrid = IsolateGrid.fromGrid(grid);
-
-        String message = jsonEncode(isolateGrid);
-
-        IsolateGrid isolateGrid1 = IsolateGrid.fromJson(jsonDecode(message));
-
-        log(isolateGrid1.positionalGrids.toString());
+        log(Grid().positionalGrids.toString());
       },
       child: const Icon(Icons.refresh),
     );

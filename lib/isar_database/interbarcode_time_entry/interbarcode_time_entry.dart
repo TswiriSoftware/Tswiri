@@ -10,13 +10,14 @@ class InterBarcodeTimeEntry {
   //End barcodeUID.
   late String endBarcodeUID;
 
+  //Time between scans.
+  late double deltaT;
+
   //Timestamp.
   late int timestamp;
 
   //Creation Timestamp
   late int creationTimestamp;
-
-  late double deltaT;
 
   //Returns the UID of the interBarcodeVectorEntry
   String get uid {

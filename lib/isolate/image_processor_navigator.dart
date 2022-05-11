@@ -135,7 +135,13 @@ void imageProcessorNavigator(SendPort sendPort) {
               (element) => element.barcodeUID == selectedBarcodeUID);
 
           if (index == -1) {
-            log('barcode is not in grid..');
+            List message = [
+              'navigate', //Identifier.
+              barcode.value.displayValue!, //Current Barcode.
+              selectedBarcodeUID, //Selected barcode.
+            ];
+
+            sendPort.send(message);
           } else {
             Position selectedBarcodePosition = grid.positions[index];
 
@@ -214,13 +220,13 @@ void imageProcessorNavigator(SendPort sendPort) {
     (message) {
       if (message is SendPort) {
         gridSendPort = message;
-        log('Grid Port Received.');
+        //log('Grid Port Received.');
         gridSendPort!.send(receivePort.sendPort);
       } else if (message[0] == 'process') {
         //Process the image.
         processImage(message);
       } else if (message[0] == 'config') {
-        log('configured');
+        //log('configured');
         NavigatorIsolateConfig config =
             NavigatorIsolateConfig.fromMessage(message);
 
@@ -236,7 +242,7 @@ void imageProcessorNavigator(SendPort sendPort) {
         selectedBarcodeUID = config.selectedBarcodeUID;
         barcodeProperties = config.barcodeProperties;
         isolateGrid = config.grid;
-        log(config.grid.toString());
+        //log(config.grid.toString());
 
         sendPort.send('configured');
       } else if (message[0] == 'update') {

@@ -11,6 +11,9 @@ class PhotoTag {
 
   late double confidence;
 
+  //TODO: Implement this
+  late bool blacklisted;
+
   ///Use Rect.fromLTRB to construct a rect.
   late List<double>? boundingBox;
 

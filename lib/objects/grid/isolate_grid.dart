@@ -14,6 +14,40 @@ class IsolateGrid {
   });
   List<IsolatePositionalGrid> positionalGrids;
 
+  List pathFinder(String startBarcodeUID, String endBarcodeUID) {
+    //1. Find Start Positional Grid.
+    IsolatePositionalGrid startGrid = positionalGrids
+        .firstWhere((element) => element.barcodes.contains(startBarcodeUID));
+
+    log(positionalGrids.toString());
+
+    List<IsolatePositionalGrid> startPath = [startGrid];
+
+    // for (var i = 0; i < positionalGrids.length; i++) {
+    //   log(startPath.last.parent.toString());
+
+    //   if (startPath.last.parent != null) {
+    //     IsolatePositionalGrid x = positionalGrids
+    //         .firstWhere((element) => element.origin == startPath.last.parent);
+    //     startPath.add(x);
+    //   }
+    // }
+
+    // while (startPath.last?.parent != null) {
+    //   IsolatePositionalGrid? x = positionalGrids.firstWhere((element) =>
+    //       element.barcodes.contains(startPath.last!.parent!.barcodeUID));
+
+    //   startPath.add(x);
+    //   log(startPath.toString());
+    // }
+
+    // //2. Find End Positional Grid.
+    // PositionalGrid? endGrid = grids
+    //     .firstWhere((element) => element.getBarcodes.contains(endBarcodeUID));
+
+    return [];
+  }
+
   Map toJson() => {
         'positionalGrids': jsonEncode(positionalGrids),
       };
