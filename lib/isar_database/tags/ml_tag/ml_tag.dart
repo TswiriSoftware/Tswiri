@@ -5,28 +5,36 @@ part 'ml_tag.g.dart';
 class MlTag {
   int id = Isar.autoIncrement;
 
-  late String tag;
+  ///MlTagID.
+  late int mlTagID;
 
+  ///TextTagID.
+  late int textTagID;
+
+  ///Tag Confidence.
+  late double confidence;
+
+  ///TagID
   @MlTagTypeConverter()
   late mlTagType tagType;
 
   @override
   String toString() {
-    return 'tag: $tag';
+    return 'tagID: $textTagID, confidence: $confidence';
   }
 
   Map toJson() => {
-        'id': id,
-        'tag': tag,
-        'tagType': tagType.name,
+        // 'id': id,
+        // 'tagID': textTagID,
+        // 'tagType': tagType.name,
       };
 
-  MlTag fromJson(Map<String, dynamic> json) {
-    return MlTag()
-      ..id = json['id']
-      ..tag = json['tag']
-      ..tagType = mlTagType.values.byName(json['tagType']);
-  }
+  // MlTag fromJson(Map<String, dynamic> json) {
+  //   return MlTag()
+  //     ..id = json['id']
+  //     ..textTagID = json['tag']
+  //     ..tagType = mlTagType.values.byName(json['tagType']);
+  // }
 }
 
 enum mlTagType {
@@ -36,7 +44,7 @@ enum mlTagType {
 }
 
 class MlTagTypeConverter extends TypeConverter<mlTagType, int> {
-  const MlTagTypeConverter(); // Converters need to have an empty const constructor
+  const MlTagTypeConverter();
 
   @override
   mlTagType fromIsar(int object) {

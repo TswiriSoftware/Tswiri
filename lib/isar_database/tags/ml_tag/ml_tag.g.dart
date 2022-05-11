@@ -17,11 +17,11 @@ extension GetMlTagCollection on Isar {
 final MlTagSchema = CollectionSchema(
   name: 'MlTag',
   schema:
-      '{"name":"MlTag","idName":"id","properties":[{"name":"tag","type":"String"},{"name":"tagType","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"MlTag","idName":"id","properties":[{"name":"confidence","type":"Double"},{"name":"mlTagID","type":"Long"},{"name":"tagType","type":"Long"},{"name":"textTagID","type":"Long"}],"indexes":[],"links":[]}',
   nativeAdapter: const _MlTagNativeAdapter(),
   webAdapter: const _MlTagWebAdapter(),
   idName: 'id',
-  propertyIds: {'tag': 0, 'tagType': 1},
+  propertyIds: {'confidence': 0, 'mlTagID': 1, 'tagType': 2, 'textTagID': 3},
   listProperties: {},
   indexIds: {},
   indexTypes: {},
@@ -48,35 +48,49 @@ class _MlTagWebAdapter extends IsarWebTypeAdapter<MlTag> {
   @override
   Object serialize(IsarCollection<MlTag> collection, MlTag object) {
     final jsObj = IsarNative.newJsObject();
+    IsarNative.jsObjectSet(jsObj, 'confidence', object.confidence);
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'tag', object.tag);
+    IsarNative.jsObjectSet(jsObj, 'mlTagID', object.mlTagID);
     IsarNative.jsObjectSet(
         jsObj, 'tagType', _mlTagMlTagTypeConverter.toIsar(object.tagType));
+    IsarNative.jsObjectSet(jsObj, 'textTagID', object.textTagID);
     return jsObj;
   }
 
   @override
   MlTag deserialize(IsarCollection<MlTag> collection, dynamic jsObj) {
     final object = MlTag();
+    object.confidence =
+        IsarNative.jsObjectGet(jsObj, 'confidence') ?? double.negativeInfinity;
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.tag = IsarNative.jsObjectGet(jsObj, 'tag') ?? '';
+    object.mlTagID =
+        IsarNative.jsObjectGet(jsObj, 'mlTagID') ?? double.negativeInfinity;
     object.tagType = _mlTagMlTagTypeConverter.fromIsar(
         IsarNative.jsObjectGet(jsObj, 'tagType') ?? double.negativeInfinity);
+    object.textTagID =
+        IsarNative.jsObjectGet(jsObj, 'textTagID') ?? double.negativeInfinity;
     return object;
   }
 
   @override
   P deserializeProperty<P>(Object jsObj, String propertyName) {
     switch (propertyName) {
+      case 'confidence':
+        return (IsarNative.jsObjectGet(jsObj, 'confidence') ??
+            double.negativeInfinity) as P;
       case 'id':
         return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
             as P;
-      case 'tag':
-        return (IsarNative.jsObjectGet(jsObj, 'tag') ?? '') as P;
+      case 'mlTagID':
+        return (IsarNative.jsObjectGet(jsObj, 'mlTagID') ??
+            double.negativeInfinity) as P;
       case 'tagType':
         return (_mlTagMlTagTypeConverter.fromIsar(
             IsarNative.jsObjectGet(jsObj, 'tagType') ??
                 double.negativeInfinity)) as P;
+      case 'textTagID':
+        return (IsarNative.jsObjectGet(jsObj, 'textTagID') ??
+            double.negativeInfinity) as P;
       default:
         throw 'Illegal propertyName';
     }
@@ -93,29 +107,36 @@ class _MlTagNativeAdapter extends IsarNativeTypeAdapter<MlTag> {
   void serialize(IsarCollection<MlTag> collection, IsarRawObject rawObj,
       MlTag object, int staticSize, List<int> offsets, AdapterAlloc alloc) {
     var dynamicSize = 0;
-    final value0 = object.tag;
-    final _tag = IsarBinaryWriter.utf8Encoder.convert(value0);
-    dynamicSize += (_tag.length) as int;
-    final value1 = _mlTagMlTagTypeConverter.toIsar(object.tagType);
-    final _tagType = value1;
+    final value0 = object.confidence;
+    final _confidence = value0;
+    final value1 = object.mlTagID;
+    final _mlTagID = value1;
+    final value2 = _mlTagMlTagTypeConverter.toIsar(object.tagType);
+    final _tagType = value2;
+    final value3 = object.textTagID;
+    final _textTagID = value3;
     final size = staticSize + dynamicSize;
 
     rawObj.buffer = alloc(size);
     rawObj.buffer_length = size;
     final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
     final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeBytes(offsets[0], _tag);
-    writer.writeLong(offsets[1], _tagType);
+    writer.writeDouble(offsets[0], _confidence);
+    writer.writeLong(offsets[1], _mlTagID);
+    writer.writeLong(offsets[2], _tagType);
+    writer.writeLong(offsets[3], _textTagID);
   }
 
   @override
   MlTag deserialize(IsarCollection<MlTag> collection, int id,
       IsarBinaryReader reader, List<int> offsets) {
     final object = MlTag();
+    object.confidence = reader.readDouble(offsets[0]);
     object.id = id;
-    object.tag = reader.readString(offsets[0]);
+    object.mlTagID = reader.readLong(offsets[1]);
     object.tagType =
-        _mlTagMlTagTypeConverter.fromIsar(reader.readLong(offsets[1]));
+        _mlTagMlTagTypeConverter.fromIsar(reader.readLong(offsets[2]));
+    object.textTagID = reader.readLong(offsets[3]);
     return object;
   }
 
@@ -126,10 +147,14 @@ class _MlTagNativeAdapter extends IsarNativeTypeAdapter<MlTag> {
       case -1:
         return id as P;
       case 0:
-        return (reader.readString(offset)) as P;
+        return (reader.readDouble(offset)) as P;
       case 1:
+        return (reader.readLong(offset)) as P;
+      case 2:
         return (_mlTagMlTagTypeConverter.fromIsar(reader.readLong(offset)))
             as P;
+      case 3:
+        return (reader.readLong(offset)) as P;
       default:
         throw 'Illegal propertyIndex';
     }
@@ -219,6 +244,37 @@ extension MlTagQueryWhere on QueryBuilder<MlTag, MlTag, QWhereClause> {
 }
 
 extension MlTagQueryFilter on QueryBuilder<MlTag, MlTag, QFilterCondition> {
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> confidenceGreaterThan(
+      double value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: false,
+      property: 'confidence',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> confidenceLessThan(
+      double value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: false,
+      property: 'confidence',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> confidenceBetween(
+      double lower, double upper) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'confidence',
+      lower: lower,
+      includeLower: false,
+      upper: upper,
+      includeUpper: false,
+    ));
+  }
+
   QueryBuilder<MlTag, MlTag, QAfterFilterCondition> idEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
@@ -266,104 +322,50 @@ extension MlTagQueryFilter on QueryBuilder<MlTag, MlTag, QFilterCondition> {
     ));
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> tagEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> mlTagIDEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
-      property: 'tag',
+      property: 'mlTagID',
       value: value,
-      caseSensitive: caseSensitive,
     ));
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> tagGreaterThan(
-    String value, {
-    bool caseSensitive = true,
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> mlTagIDGreaterThan(
+    int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
       include: include,
-      property: 'tag',
+      property: 'mlTagID',
       value: value,
-      caseSensitive: caseSensitive,
     ));
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> tagLessThan(
-    String value, {
-    bool caseSensitive = true,
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> mlTagIDLessThan(
+    int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
       include: include,
-      property: 'tag',
+      property: 'mlTagID',
       value: value,
-      caseSensitive: caseSensitive,
     ));
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> tagBetween(
-    String lower,
-    String upper, {
-    bool caseSensitive = true,
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> mlTagIDBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return addFilterConditionInternal(FilterCondition.between(
-      property: 'tag',
+      property: 'mlTagID',
       lower: lower,
       includeLower: includeLower,
       upper: upper,
       includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> tagStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'tag',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> tagEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'tag',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> tagContains(String value,
-      {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'tag',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> tagMatches(String pattern,
-      {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'tag',
-      value: pattern,
-      caseSensitive: caseSensitive,
     ));
   }
 
@@ -414,11 +416,67 @@ extension MlTagQueryFilter on QueryBuilder<MlTag, MlTag, QFilterCondition> {
       includeUpper: includeUpper,
     ));
   }
+
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> textTagIDEqualTo(
+      int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'textTagID',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> textTagIDGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'textTagID',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> textTagIDLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'textTagID',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> textTagIDBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'textTagID',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
 }
 
 extension MlTagQueryLinks on QueryBuilder<MlTag, MlTag, QFilterCondition> {}
 
 extension MlTagQueryWhereSortBy on QueryBuilder<MlTag, MlTag, QSortBy> {
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByConfidence() {
+    return addSortByInternal('confidence', Sort.asc);
+  }
+
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByConfidenceDesc() {
+    return addSortByInternal('confidence', Sort.desc);
+  }
+
   QueryBuilder<MlTag, MlTag, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -427,12 +485,12 @@ extension MlTagQueryWhereSortBy on QueryBuilder<MlTag, MlTag, QSortBy> {
     return addSortByInternal('id', Sort.desc);
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByTag() {
-    return addSortByInternal('tag', Sort.asc);
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByMlTagID() {
+    return addSortByInternal('mlTagID', Sort.asc);
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByTagDesc() {
-    return addSortByInternal('tag', Sort.desc);
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByMlTagIDDesc() {
+    return addSortByInternal('mlTagID', Sort.desc);
   }
 
   QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByTagType() {
@@ -442,9 +500,25 @@ extension MlTagQueryWhereSortBy on QueryBuilder<MlTag, MlTag, QSortBy> {
   QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByTagTypeDesc() {
     return addSortByInternal('tagType', Sort.desc);
   }
+
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByTextTagID() {
+    return addSortByInternal('textTagID', Sort.asc);
+  }
+
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByTextTagIDDesc() {
+    return addSortByInternal('textTagID', Sort.desc);
+  }
 }
 
 extension MlTagQueryWhereSortThenBy on QueryBuilder<MlTag, MlTag, QSortThenBy> {
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByConfidence() {
+    return addSortByInternal('confidence', Sort.asc);
+  }
+
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByConfidenceDesc() {
+    return addSortByInternal('confidence', Sort.desc);
+  }
+
   QueryBuilder<MlTag, MlTag, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -453,12 +527,12 @@ extension MlTagQueryWhereSortThenBy on QueryBuilder<MlTag, MlTag, QSortThenBy> {
     return addSortByInternal('id', Sort.desc);
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByTag() {
-    return addSortByInternal('tag', Sort.asc);
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByMlTagID() {
+    return addSortByInternal('mlTagID', Sort.asc);
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByTagDesc() {
-    return addSortByInternal('tag', Sort.desc);
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByMlTagIDDesc() {
+    return addSortByInternal('mlTagID', Sort.desc);
   }
 
   QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByTagType() {
@@ -468,33 +542,56 @@ extension MlTagQueryWhereSortThenBy on QueryBuilder<MlTag, MlTag, QSortThenBy> {
   QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByTagTypeDesc() {
     return addSortByInternal('tagType', Sort.desc);
   }
+
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByTextTagID() {
+    return addSortByInternal('textTagID', Sort.asc);
+  }
+
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByTextTagIDDesc() {
+    return addSortByInternal('textTagID', Sort.desc);
+  }
 }
 
 extension MlTagQueryWhereDistinct on QueryBuilder<MlTag, MlTag, QDistinct> {
+  QueryBuilder<MlTag, MlTag, QDistinct> distinctByConfidence() {
+    return addDistinctByInternal('confidence');
+  }
+
   QueryBuilder<MlTag, MlTag, QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
 
-  QueryBuilder<MlTag, MlTag, QDistinct> distinctByTag(
-      {bool caseSensitive = true}) {
-    return addDistinctByInternal('tag', caseSensitive: caseSensitive);
+  QueryBuilder<MlTag, MlTag, QDistinct> distinctByMlTagID() {
+    return addDistinctByInternal('mlTagID');
   }
 
   QueryBuilder<MlTag, MlTag, QDistinct> distinctByTagType() {
     return addDistinctByInternal('tagType');
   }
+
+  QueryBuilder<MlTag, MlTag, QDistinct> distinctByTextTagID() {
+    return addDistinctByInternal('textTagID');
+  }
 }
 
 extension MlTagQueryProperty on QueryBuilder<MlTag, MlTag, QQueryProperty> {
+  QueryBuilder<MlTag, double, QQueryOperations> confidenceProperty() {
+    return addPropertyNameInternal('confidence');
+  }
+
   QueryBuilder<MlTag, int, QQueryOperations> idProperty() {
     return addPropertyNameInternal('id');
   }
 
-  QueryBuilder<MlTag, String, QQueryOperations> tagProperty() {
-    return addPropertyNameInternal('tag');
+  QueryBuilder<MlTag, int, QQueryOperations> mlTagIDProperty() {
+    return addPropertyNameInternal('mlTagID');
   }
 
   QueryBuilder<MlTag, mlTagType, QQueryOperations> tagTypeProperty() {
     return addPropertyNameInternal('tagType');
+  }
+
+  QueryBuilder<MlTag, int, QQueryOperations> textTagIDProperty() {
+    return addPropertyNameInternal('textTagID');
   }
 }

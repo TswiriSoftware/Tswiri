@@ -7,15 +7,10 @@ import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/global_values/routes.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_generator/barcode_generator_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcode_manager/barcode_manager_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/camera_calibration_tools_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/containers_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_search/search_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_manager_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_types/container_types_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/gallery/gallery_view.dart';
 
-import 'package:flutter_google_ml_kit/sunbird_views/tag_manager/tag_manager_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/tree_visualizer/tree_visualizer_view.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -158,34 +153,34 @@ class HomeView extends StatelessWidget {
           crossAxisSpacing: 16,
           crossAxisCount: 2,
           children: const [
-            CustomCard(
-              'Search',
-              SearchView(),
-              Icons.search,
-              featureCompleted: true,
-              tileColor: sunbirdOrange,
-            ),
+            // CustomCard(
+            //   'Search',
+            //   SearchView(),
+            //   Icons.search,
+            //   featureCompleted: true,
+            //   tileColor: sunbirdOrange,
+            // ),
             CustomCard(
               'Containers',
-              ContainersView(),
+              ContainerManagerView(),
               Icons.add_box_outlined,
               featureCompleted: true,
               tileColor: sunbirdOrange,
             ),
-            CustomCard(
-              'Barcodes',
-              BarcodeManagerView(),
-              Icons.list,
-              featureCompleted: true,
-              tileColor: sunbirdOrange,
-            ),
-            CustomCard(
-              'Tags',
-              TagManagerView(),
-              Icons.tag,
-              featureCompleted: true,
-              tileColor: sunbirdOrange,
-            ),
+            // CustomCard(
+            //   'Barcodes',
+            //   BarcodeManagerView(),
+            //   Icons.list,
+            //   featureCompleted: true,
+            //   tileColor: sunbirdOrange,
+            // ),
+            // CustomCard(
+            //   'Tags',
+            //   TagManagerView(),
+            //   Icons.tag,
+            //   featureCompleted: true,
+            //   tileColor: sunbirdOrange,
+            // ),
             CustomCard(
               'Generate Barcodes',
               BarcodeGeneratorView(),
@@ -207,20 +202,20 @@ class HomeView extends StatelessWidget {
               featureCompleted: true,
               tileColor: sunbirdOrange,
             ),
-            CustomCard(
-              'Gallery',
-              GalleryView(),
-              Icons.photo,
-              featureCompleted: true,
-              tileColor: sunbirdOrange,
-            ),
-            CustomCard(
-              'Tree Visualizer',
-              GridVisualizerView(),
-              Icons.grid_4x4_sharp,
-              featureCompleted: true,
-              tileColor: sunbirdOrange,
-            ),
+            // CustomCard(
+            //   'Gallery',
+            //   GalleryView(),
+            //   Icons.photo,
+            //   featureCompleted: true,
+            //   tileColor: sunbirdOrange,
+            // ),
+            // CustomCard(
+            //   'Tree Visualizer',
+            //   GridVisualizerView(),
+            //   Icons.grid_4x4_sharp,
+            //   featureCompleted: true,
+            //   tileColor: sunbirdOrange,
+            // ),
           ],
         ),
       ),

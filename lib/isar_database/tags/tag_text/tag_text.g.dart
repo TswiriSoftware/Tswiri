@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'tag.dart';
+part of 'tag_text.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator
@@ -8,18 +8,18 @@ part of 'tag.dart';
 
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
 
-extension GetTagCollection on Isar {
-  IsarCollection<Tag> get tags {
-    return getCollection('Tag');
+extension GetTagTextCollection on Isar {
+  IsarCollection<TagText> get tagTexts {
+    return getCollection('TagText');
   }
 }
 
-final TagSchema = CollectionSchema(
-  name: 'Tag',
+final TagTextSchema = CollectionSchema(
+  name: 'TagText',
   schema:
-      '{"name":"Tag","idName":"id","properties":[{"name":"tag","type":"String"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _TagNativeAdapter(),
-  webAdapter: const _TagWebAdapter(),
+      '{"name":"TagText","idName":"id","properties":[{"name":"tag","type":"String"}],"indexes":[],"links":[]}',
+  nativeAdapter: const _TagTextNativeAdapter(),
+  webAdapter: const _TagTextWebAdapter(),
   idName: 'id',
   propertyIds: {'tag': 0},
   listProperties: {},
@@ -40,11 +40,11 @@ final TagSchema = CollectionSchema(
   version: 2,
 );
 
-class _TagWebAdapter extends IsarWebTypeAdapter<Tag> {
-  const _TagWebAdapter();
+class _TagTextWebAdapter extends IsarWebTypeAdapter<TagText> {
+  const _TagTextWebAdapter();
 
   @override
-  Object serialize(IsarCollection<Tag> collection, Tag object) {
+  Object serialize(IsarCollection<TagText> collection, TagText object) {
     final jsObj = IsarNative.newJsObject();
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
     IsarNative.jsObjectSet(jsObj, 'tag', object.tag);
@@ -52,8 +52,8 @@ class _TagWebAdapter extends IsarWebTypeAdapter<Tag> {
   }
 
   @override
-  Tag deserialize(IsarCollection<Tag> collection, dynamic jsObj) {
-    final object = Tag();
+  TagText deserialize(IsarCollection<TagText> collection, dynamic jsObj) {
+    final object = TagText();
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
     object.tag = IsarNative.jsObjectGet(jsObj, 'tag') ?? '';
     return object;
@@ -73,15 +73,15 @@ class _TagWebAdapter extends IsarWebTypeAdapter<Tag> {
   }
 
   @override
-  void attachLinks(Isar isar, int id, Tag object) {}
+  void attachLinks(Isar isar, int id, TagText object) {}
 }
 
-class _TagNativeAdapter extends IsarNativeTypeAdapter<Tag> {
-  const _TagNativeAdapter();
+class _TagTextNativeAdapter extends IsarNativeTypeAdapter<TagText> {
+  const _TagTextNativeAdapter();
 
   @override
-  void serialize(IsarCollection<Tag> collection, IsarRawObject rawObj,
-      Tag object, int staticSize, List<int> offsets, AdapterAlloc alloc) {
+  void serialize(IsarCollection<TagText> collection, IsarRawObject rawObj,
+      TagText object, int staticSize, List<int> offsets, AdapterAlloc alloc) {
     var dynamicSize = 0;
     final value0 = object.tag;
     final _tag = IsarBinaryWriter.utf8Encoder.convert(value0);
@@ -96,9 +96,9 @@ class _TagNativeAdapter extends IsarNativeTypeAdapter<Tag> {
   }
 
   @override
-  Tag deserialize(IsarCollection<Tag> collection, int id,
+  TagText deserialize(IsarCollection<TagText> collection, int id,
       IsarBinaryReader reader, List<int> offsets) {
-    final object = Tag();
+    final object = TagText();
     object.id = id;
     object.tag = reader.readString(offsets[0]);
     return object;
@@ -118,17 +118,17 @@ class _TagNativeAdapter extends IsarNativeTypeAdapter<Tag> {
   }
 
   @override
-  void attachLinks(Isar isar, int id, Tag object) {}
+  void attachLinks(Isar isar, int id, TagText object) {}
 }
 
-extension TagQueryWhereSort on QueryBuilder<Tag, Tag, QWhere> {
-  QueryBuilder<Tag, Tag, QAfterWhere> anyId() {
+extension TagTextQueryWhereSort on QueryBuilder<TagText, TagText, QWhere> {
+  QueryBuilder<TagText, TagText, QAfterWhere> anyId() {
     return addWhereClauseInternal(const WhereClause(indexName: null));
   }
 }
 
-extension TagQueryWhere on QueryBuilder<Tag, Tag, QWhereClause> {
-  QueryBuilder<Tag, Tag, QAfterWhereClause> idEqualTo(int id) {
+extension TagTextQueryWhere on QueryBuilder<TagText, TagText, QWhereClause> {
+  QueryBuilder<TagText, TagText, QAfterWhereClause> idEqualTo(int id) {
     return addWhereClauseInternal(WhereClause(
       indexName: null,
       lower: [id],
@@ -138,7 +138,7 @@ extension TagQueryWhere on QueryBuilder<Tag, Tag, QWhereClause> {
     ));
   }
 
-  QueryBuilder<Tag, Tag, QAfterWhereClause> idNotEqualTo(int id) {
+  QueryBuilder<TagText, TagText, QAfterWhereClause> idNotEqualTo(int id) {
     if (whereSortInternal == Sort.asc) {
       return addWhereClauseInternal(WhereClause(
         indexName: null,
@@ -162,7 +162,7 @@ extension TagQueryWhere on QueryBuilder<Tag, Tag, QWhereClause> {
     }
   }
 
-  QueryBuilder<Tag, Tag, QAfterWhereClause> idGreaterThan(
+  QueryBuilder<TagText, TagText, QAfterWhereClause> idGreaterThan(
     int id, {
     bool include = false,
   }) {
@@ -173,7 +173,7 @@ extension TagQueryWhere on QueryBuilder<Tag, Tag, QWhereClause> {
     ));
   }
 
-  QueryBuilder<Tag, Tag, QAfterWhereClause> idLessThan(
+  QueryBuilder<TagText, TagText, QAfterWhereClause> idLessThan(
     int id, {
     bool include = false,
   }) {
@@ -184,7 +184,7 @@ extension TagQueryWhere on QueryBuilder<Tag, Tag, QWhereClause> {
     ));
   }
 
-  QueryBuilder<Tag, Tag, QAfterWhereClause> idBetween(
+  QueryBuilder<TagText, TagText, QAfterWhereClause> idBetween(
     int lowerId,
     int upperId, {
     bool includeLower = true,
@@ -200,8 +200,9 @@ extension TagQueryWhere on QueryBuilder<Tag, Tag, QWhereClause> {
   }
 }
 
-extension TagQueryFilter on QueryBuilder<Tag, Tag, QFilterCondition> {
-  QueryBuilder<Tag, Tag, QAfterFilterCondition> idEqualTo(int value) {
+extension TagTextQueryFilter
+    on QueryBuilder<TagText, TagText, QFilterCondition> {
+  QueryBuilder<TagText, TagText, QAfterFilterCondition> idEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
       property: 'id',
@@ -209,7 +210,7 @@ extension TagQueryFilter on QueryBuilder<Tag, Tag, QFilterCondition> {
     ));
   }
 
-  QueryBuilder<Tag, Tag, QAfterFilterCondition> idGreaterThan(
+  QueryBuilder<TagText, TagText, QAfterFilterCondition> idGreaterThan(
     int value, {
     bool include = false,
   }) {
@@ -221,7 +222,7 @@ extension TagQueryFilter on QueryBuilder<Tag, Tag, QFilterCondition> {
     ));
   }
 
-  QueryBuilder<Tag, Tag, QAfterFilterCondition> idLessThan(
+  QueryBuilder<TagText, TagText, QAfterFilterCondition> idLessThan(
     int value, {
     bool include = false,
   }) {
@@ -233,7 +234,7 @@ extension TagQueryFilter on QueryBuilder<Tag, Tag, QFilterCondition> {
     ));
   }
 
-  QueryBuilder<Tag, Tag, QAfterFilterCondition> idBetween(
+  QueryBuilder<TagText, TagText, QAfterFilterCondition> idBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -248,7 +249,7 @@ extension TagQueryFilter on QueryBuilder<Tag, Tag, QFilterCondition> {
     ));
   }
 
-  QueryBuilder<Tag, Tag, QAfterFilterCondition> tagEqualTo(
+  QueryBuilder<TagText, TagText, QAfterFilterCondition> tagEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -260,7 +261,7 @@ extension TagQueryFilter on QueryBuilder<Tag, Tag, QFilterCondition> {
     ));
   }
 
-  QueryBuilder<Tag, Tag, QAfterFilterCondition> tagGreaterThan(
+  QueryBuilder<TagText, TagText, QAfterFilterCondition> tagGreaterThan(
     String value, {
     bool caseSensitive = true,
     bool include = false,
@@ -274,7 +275,7 @@ extension TagQueryFilter on QueryBuilder<Tag, Tag, QFilterCondition> {
     ));
   }
 
-  QueryBuilder<Tag, Tag, QAfterFilterCondition> tagLessThan(
+  QueryBuilder<TagText, TagText, QAfterFilterCondition> tagLessThan(
     String value, {
     bool caseSensitive = true,
     bool include = false,
@@ -288,7 +289,7 @@ extension TagQueryFilter on QueryBuilder<Tag, Tag, QFilterCondition> {
     ));
   }
 
-  QueryBuilder<Tag, Tag, QAfterFilterCondition> tagBetween(
+  QueryBuilder<TagText, TagText, QAfterFilterCondition> tagBetween(
     String lower,
     String upper, {
     bool caseSensitive = true,
@@ -305,7 +306,7 @@ extension TagQueryFilter on QueryBuilder<Tag, Tag, QFilterCondition> {
     ));
   }
 
-  QueryBuilder<Tag, Tag, QAfterFilterCondition> tagStartsWith(
+  QueryBuilder<TagText, TagText, QAfterFilterCondition> tagStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -317,7 +318,7 @@ extension TagQueryFilter on QueryBuilder<Tag, Tag, QFilterCondition> {
     ));
   }
 
-  QueryBuilder<Tag, Tag, QAfterFilterCondition> tagEndsWith(
+  QueryBuilder<TagText, TagText, QAfterFilterCondition> tagEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -329,7 +330,8 @@ extension TagQueryFilter on QueryBuilder<Tag, Tag, QFilterCondition> {
     ));
   }
 
-  QueryBuilder<Tag, Tag, QAfterFilterCondition> tagContains(String value,
+  QueryBuilder<TagText, TagText, QAfterFilterCondition> tagContains(
+      String value,
       {bool caseSensitive = true}) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.contains,
@@ -339,7 +341,8 @@ extension TagQueryFilter on QueryBuilder<Tag, Tag, QFilterCondition> {
     ));
   }
 
-  QueryBuilder<Tag, Tag, QAfterFilterCondition> tagMatches(String pattern,
+  QueryBuilder<TagText, TagText, QAfterFilterCondition> tagMatches(
+      String pattern,
       {bool caseSensitive = true}) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.matches,
@@ -350,60 +353,65 @@ extension TagQueryFilter on QueryBuilder<Tag, Tag, QFilterCondition> {
   }
 }
 
-extension TagQueryLinks on QueryBuilder<Tag, Tag, QFilterCondition> {}
+extension TagTextQueryLinks
+    on QueryBuilder<TagText, TagText, QFilterCondition> {}
 
-extension TagQueryWhereSortBy on QueryBuilder<Tag, Tag, QSortBy> {
-  QueryBuilder<Tag, Tag, QAfterSortBy> sortById() {
+extension TagTextQueryWhereSortBy on QueryBuilder<TagText, TagText, QSortBy> {
+  QueryBuilder<TagText, TagText, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
 
-  QueryBuilder<Tag, Tag, QAfterSortBy> sortByIdDesc() {
+  QueryBuilder<TagText, TagText, QAfterSortBy> sortByIdDesc() {
     return addSortByInternal('id', Sort.desc);
   }
 
-  QueryBuilder<Tag, Tag, QAfterSortBy> sortByTag() {
+  QueryBuilder<TagText, TagText, QAfterSortBy> sortByTag() {
     return addSortByInternal('tag', Sort.asc);
   }
 
-  QueryBuilder<Tag, Tag, QAfterSortBy> sortByTagDesc() {
+  QueryBuilder<TagText, TagText, QAfterSortBy> sortByTagDesc() {
     return addSortByInternal('tag', Sort.desc);
   }
 }
 
-extension TagQueryWhereSortThenBy on QueryBuilder<Tag, Tag, QSortThenBy> {
-  QueryBuilder<Tag, Tag, QAfterSortBy> thenById() {
+extension TagTextQueryWhereSortThenBy
+    on QueryBuilder<TagText, TagText, QSortThenBy> {
+  QueryBuilder<TagText, TagText, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
 
-  QueryBuilder<Tag, Tag, QAfterSortBy> thenByIdDesc() {
+  QueryBuilder<TagText, TagText, QAfterSortBy> thenByIdDesc() {
     return addSortByInternal('id', Sort.desc);
   }
 
-  QueryBuilder<Tag, Tag, QAfterSortBy> thenByTag() {
+  QueryBuilder<TagText, TagText, QAfterSortBy> thenByTag() {
     return addSortByInternal('tag', Sort.asc);
   }
 
-  QueryBuilder<Tag, Tag, QAfterSortBy> thenByTagDesc() {
+  QueryBuilder<TagText, TagText, QAfterSortBy> thenByTagDesc() {
     return addSortByInternal('tag', Sort.desc);
   }
 }
 
-extension TagQueryWhereDistinct on QueryBuilder<Tag, Tag, QDistinct> {
-  QueryBuilder<Tag, Tag, QDistinct> distinctById() {
+extension TagTextQueryWhereDistinct
+    on QueryBuilder<TagText, TagText, QDistinct> {
+  QueryBuilder<TagText, TagText, QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
 
-  QueryBuilder<Tag, Tag, QDistinct> distinctByTag({bool caseSensitive = true}) {
+  QueryBuilder<TagText, TagText, QDistinct> distinctByTag(
+      {bool caseSensitive = true}) {
     return addDistinctByInternal('tag', caseSensitive: caseSensitive);
   }
 }
 
-extension TagQueryProperty on QueryBuilder<Tag, Tag, QQueryProperty> {
-  QueryBuilder<Tag, int, QQueryOperations> idProperty() {
+extension TagTextQueryProperty
+    on QueryBuilder<TagText, TagText, QQueryProperty> {
+  QueryBuilder<TagText, int, QQueryOperations> idProperty() {
     return addPropertyNameInternal('id');
   }
 
-  QueryBuilder<Tag, String, QQueryOperations> tagProperty() {
+  QueryBuilder<TagText, String, QQueryOperations> tagProperty() {
     return addPropertyNameInternal('tag');
   }
 }

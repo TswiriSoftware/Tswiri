@@ -5,16 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/extentions/capitalize_first_character.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_photo/container_photo.dart';
+
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
-import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
+import 'package:flutter_google_ml_kit/isar_database/photo/photo.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/single_barcode_scanner/single_barcode_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/photo_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_view.dart';
 import 'package:isar/isar.dart';
 
 class NewContainerView extends StatefulWidget {
@@ -54,7 +52,7 @@ class _NewContainerViewState extends State<NewContainerView> {
   String? description;
 
   //5. A list of photos added to this container.
-  List<ContainerPhoto> containerPhotos = [];
+  List<Photo> photos = [];
 
   //6. Is this containers barcode considered a marker to its children ?
   Marker? marker;
@@ -90,11 +88,10 @@ class _NewContainerViewState extends State<NewContainerView> {
   @override
   void dispose() {
     if (!hasCreated) {
-      for (ContainerPhoto photo in containerPhotos) {
+      for (Photo photo in photos) {
         File(photo.photoPath).deleteSync();
-        File(photo.photoThumbnailPath).deleteSync();
-        isarDatabase!
-            .writeTxnSync((isar) => isar.containerPhotos.deleteSync(photo.id));
+        File(photo.thumbnailPath).deleteSync();
+        isarDatabase!.writeTxnSync((isar) => isar.photos.deleteSync(photo.id));
       }
     }
     super.dispose();
@@ -556,8 +553,8 @@ class _NewContainerViewState extends State<NewContainerView> {
   Widget _photosBuilder() {
     return Builder(
       builder: (context) {
-        containerPhotos = [];
-        containerPhotos.addAll(isarDatabase!.containerPhotos
+        photos = [];
+        photos.addAll(isarDatabase!.photos
             .filter()
             .containerUIDMatches(containerUID ?? '')
             .findAllSync());
@@ -566,7 +563,7 @@ class _NewContainerViewState extends State<NewContainerView> {
           _photoAddCard(),
         ];
 
-        photoWidgets.addAll(containerPhotos.map((e) => photoCard(e)).toList());
+        photoWidgets.addAll(photos.map((e) => photoCard(e)).toList());
         return Wrap(
           spacing: 1,
           runSpacing: 1,
@@ -579,20 +576,22 @@ class _NewContainerViewState extends State<NewContainerView> {
     );
   }
 
-  Widget photoCard(ContainerPhoto containerPhoto) {
+  Widget photoCard(Photo containerPhoto) {
     return Card(
       child: InkWell(
         onTap: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PhotoView(
-                containerPhoto: containerPhoto,
-                containerColor: _containerColor ?? sunbirdOrange,
-              ),
-            ),
-          );
-          setState(() {});
+          //TODO: navigate to PhotoView.
+
+          // await Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => PhotoView(
+          //       containerPhoto: containerPhoto,
+          //       containerColor: _containerColor ?? sunbirdOrange,
+          //     ),
+          //   ),
+          // );
+          // setState(() {});
         },
         child: Stack(
           alignment: AlignmentDirectional.topStart,
@@ -620,7 +619,7 @@ class _NewContainerViewState extends State<NewContainerView> {
     );
   }
 
-  Widget photoDeleteButton(ContainerPhoto containerPhoto) {
+  Widget photoDeleteButton(Photo containerPhoto) {
     return Container(
       width: 35,
       height: 35,
@@ -650,15 +649,17 @@ class _NewContainerViewState extends State<NewContainerView> {
   Widget _photoAddCard() {
     return InkWell(
       onTap: () async {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ObjectDetectorView(
-              customColor: _containerColor,
-              containerUID: containerUID!,
-            ),
-          ),
-        );
+        //TODO: navigate to Object Detector View.
+
+        // await Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => ObjectDetectorView(
+        //       customColor: _containerColor,
+        //       containerUID: containerUID!,
+        //     ),
+        //   ),
+        // );
 
         setState(() {});
       },
@@ -685,24 +686,18 @@ class _NewContainerViewState extends State<NewContainerView> {
     );
   }
 
-  void deletePhoto(ContainerPhoto containerPhoto) {
+  void deletePhoto(Photo photo) {
     //Delete Photo.
-    File(containerPhoto.photoPath).delete();
+    File(photo.photoPath).delete();
 
     //Delete Photo Thumbnail.
-    File(containerPhoto.photoThumbnailPath).delete();
+    File(photo.thumbnailPath).delete();
 
     //Delete References from database.
     isarDatabase!.writeTxnSync((isar) {
-      isar.containerPhotos
-          .filter()
-          .photoPathMatches(containerPhoto.photoPath)
-          .deleteFirstSync();
+      isar.photos.filter().photoPathMatches(photo.photoPath).deleteFirstSync();
 
-      isar.photoTags
-          .filter()
-          .photoPathMatches(containerPhoto.photoPath)
-          .deleteAllSync();
+      isar.photos.filter().photoPathMatches(photo.photoPath).deleteAllSync();
     });
   }
 
@@ -771,13 +766,17 @@ class _NewContainerViewState extends State<NewContainerView> {
       if (parentContainer != null) {
         Navigator.pop(context);
       } else {
+        //TODO: navigate to ContainerView.
+
         Navigator.pop(context);
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ContainerView(
-                      containerEntry: newContainerEntry,
-                    )));
+          context,
+          MaterialPageRoute(
+            builder: (context) => ContainerView(
+              containerEntry: newContainerEntry,
+            ),
+          ),
+        );
       }
     }
   }

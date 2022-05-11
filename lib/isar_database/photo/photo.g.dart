@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'container_photo.dart';
+part of 'photo.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator
@@ -8,20 +8,20 @@ part of 'container_photo.dart';
 
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
 
-extension GetContainerPhotoCollection on Isar {
-  IsarCollection<ContainerPhoto> get containerPhotos {
-    return getCollection('ContainerPhoto');
+extension GetPhotoCollection on Isar {
+  IsarCollection<Photo> get photos {
+    return getCollection('Photo');
   }
 }
 
-final ContainerPhotoSchema = CollectionSchema(
-  name: 'ContainerPhoto',
+final PhotoSchema = CollectionSchema(
+  name: 'Photo',
   schema:
-      '{"name":"ContainerPhoto","idName":"id","properties":[{"name":"containerUID","type":"String"},{"name":"photoPath","type":"String"},{"name":"photoThumbnailPath","type":"String"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _ContainerPhotoNativeAdapter(),
-  webAdapter: const _ContainerPhotoWebAdapter(),
+      '{"name":"Photo","idName":"id","properties":[{"name":"containerUID","type":"String"},{"name":"photoPath","type":"String"},{"name":"thumbnailPath","type":"String"}],"indexes":[],"links":[]}',
+  nativeAdapter: const _PhotoNativeAdapter(),
+  webAdapter: const _PhotoWebAdapter(),
   idName: 'id',
-  propertyIds: {'containerUID': 0, 'photoPath': 1, 'photoThumbnailPath': 2},
+  propertyIds: {'containerUID': 0, 'photoPath': 1, 'thumbnailPath': 2},
   listProperties: {},
   indexIds: {},
   indexTypes: {},
@@ -40,30 +40,26 @@ final ContainerPhotoSchema = CollectionSchema(
   version: 2,
 );
 
-class _ContainerPhotoWebAdapter extends IsarWebTypeAdapter<ContainerPhoto> {
-  const _ContainerPhotoWebAdapter();
+class _PhotoWebAdapter extends IsarWebTypeAdapter<Photo> {
+  const _PhotoWebAdapter();
 
   @override
-  Object serialize(
-      IsarCollection<ContainerPhoto> collection, ContainerPhoto object) {
+  Object serialize(IsarCollection<Photo> collection, Photo object) {
     final jsObj = IsarNative.newJsObject();
     IsarNative.jsObjectSet(jsObj, 'containerUID', object.containerUID);
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
     IsarNative.jsObjectSet(jsObj, 'photoPath', object.photoPath);
-    IsarNative.jsObjectSet(
-        jsObj, 'photoThumbnailPath', object.photoThumbnailPath);
+    IsarNative.jsObjectSet(jsObj, 'thumbnailPath', object.thumbnailPath);
     return jsObj;
   }
 
   @override
-  ContainerPhoto deserialize(
-      IsarCollection<ContainerPhoto> collection, dynamic jsObj) {
-    final object = ContainerPhoto();
+  Photo deserialize(IsarCollection<Photo> collection, dynamic jsObj) {
+    final object = Photo();
     object.containerUID = IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '';
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
     object.photoPath = IsarNative.jsObjectGet(jsObj, 'photoPath') ?? '';
-    object.photoThumbnailPath =
-        IsarNative.jsObjectGet(jsObj, 'photoThumbnailPath') ?? '';
+    object.thumbnailPath = IsarNative.jsObjectGet(jsObj, 'thumbnailPath') ?? '';
     return object;
   }
 
@@ -77,29 +73,23 @@ class _ContainerPhotoWebAdapter extends IsarWebTypeAdapter<ContainerPhoto> {
             as P;
       case 'photoPath':
         return (IsarNative.jsObjectGet(jsObj, 'photoPath') ?? '') as P;
-      case 'photoThumbnailPath':
-        return (IsarNative.jsObjectGet(jsObj, 'photoThumbnailPath') ?? '') as P;
+      case 'thumbnailPath':
+        return (IsarNative.jsObjectGet(jsObj, 'thumbnailPath') ?? '') as P;
       default:
         throw 'Illegal propertyName';
     }
   }
 
   @override
-  void attachLinks(Isar isar, int id, ContainerPhoto object) {}
+  void attachLinks(Isar isar, int id, Photo object) {}
 }
 
-class _ContainerPhotoNativeAdapter
-    extends IsarNativeTypeAdapter<ContainerPhoto> {
-  const _ContainerPhotoNativeAdapter();
+class _PhotoNativeAdapter extends IsarNativeTypeAdapter<Photo> {
+  const _PhotoNativeAdapter();
 
   @override
-  void serialize(
-      IsarCollection<ContainerPhoto> collection,
-      IsarRawObject rawObj,
-      ContainerPhoto object,
-      int staticSize,
-      List<int> offsets,
-      AdapterAlloc alloc) {
+  void serialize(IsarCollection<Photo> collection, IsarRawObject rawObj,
+      Photo object, int staticSize, List<int> offsets, AdapterAlloc alloc) {
     var dynamicSize = 0;
     final value0 = object.containerUID;
     final _containerUID = IsarBinaryWriter.utf8Encoder.convert(value0);
@@ -107,9 +97,9 @@ class _ContainerPhotoNativeAdapter
     final value1 = object.photoPath;
     final _photoPath = IsarBinaryWriter.utf8Encoder.convert(value1);
     dynamicSize += (_photoPath.length) as int;
-    final value2 = object.photoThumbnailPath;
-    final _photoThumbnailPath = IsarBinaryWriter.utf8Encoder.convert(value2);
-    dynamicSize += (_photoThumbnailPath.length) as int;
+    final value2 = object.thumbnailPath;
+    final _thumbnailPath = IsarBinaryWriter.utf8Encoder.convert(value2);
+    dynamicSize += (_thumbnailPath.length) as int;
     final size = staticSize + dynamicSize;
 
     rawObj.buffer = alloc(size);
@@ -118,17 +108,17 @@ class _ContainerPhotoNativeAdapter
     final writer = IsarBinaryWriter(buffer, staticSize);
     writer.writeBytes(offsets[0], _containerUID);
     writer.writeBytes(offsets[1], _photoPath);
-    writer.writeBytes(offsets[2], _photoThumbnailPath);
+    writer.writeBytes(offsets[2], _thumbnailPath);
   }
 
   @override
-  ContainerPhoto deserialize(IsarCollection<ContainerPhoto> collection, int id,
+  Photo deserialize(IsarCollection<Photo> collection, int id,
       IsarBinaryReader reader, List<int> offsets) {
-    final object = ContainerPhoto();
+    final object = Photo();
     object.containerUID = reader.readString(offsets[0]);
     object.id = id;
     object.photoPath = reader.readString(offsets[1]);
-    object.photoThumbnailPath = reader.readString(offsets[2]);
+    object.thumbnailPath = reader.readString(offsets[2]);
     return object;
   }
 
@@ -150,20 +140,17 @@ class _ContainerPhotoNativeAdapter
   }
 
   @override
-  void attachLinks(Isar isar, int id, ContainerPhoto object) {}
+  void attachLinks(Isar isar, int id, Photo object) {}
 }
 
-extension ContainerPhotoQueryWhereSort
-    on QueryBuilder<ContainerPhoto, ContainerPhoto, QWhere> {
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterWhere> anyId() {
+extension PhotoQueryWhereSort on QueryBuilder<Photo, Photo, QWhere> {
+  QueryBuilder<Photo, Photo, QAfterWhere> anyId() {
     return addWhereClauseInternal(const WhereClause(indexName: null));
   }
 }
 
-extension ContainerPhotoQueryWhere
-    on QueryBuilder<ContainerPhoto, ContainerPhoto, QWhereClause> {
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterWhereClause> idEqualTo(
-      int id) {
+extension PhotoQueryWhere on QueryBuilder<Photo, Photo, QWhereClause> {
+  QueryBuilder<Photo, Photo, QAfterWhereClause> idEqualTo(int id) {
     return addWhereClauseInternal(WhereClause(
       indexName: null,
       lower: [id],
@@ -173,8 +160,7 @@ extension ContainerPhotoQueryWhere
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterWhereClause> idNotEqualTo(
-      int id) {
+  QueryBuilder<Photo, Photo, QAfterWhereClause> idNotEqualTo(int id) {
     if (whereSortInternal == Sort.asc) {
       return addWhereClauseInternal(WhereClause(
         indexName: null,
@@ -198,7 +184,7 @@ extension ContainerPhotoQueryWhere
     }
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterWhereClause> idGreaterThan(
+  QueryBuilder<Photo, Photo, QAfterWhereClause> idGreaterThan(
     int id, {
     bool include = false,
   }) {
@@ -209,7 +195,7 @@ extension ContainerPhotoQueryWhere
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterWhereClause> idLessThan(
+  QueryBuilder<Photo, Photo, QAfterWhereClause> idLessThan(
     int id, {
     bool include = false,
   }) {
@@ -220,7 +206,7 @@ extension ContainerPhotoQueryWhere
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterWhereClause> idBetween(
+  QueryBuilder<Photo, Photo, QAfterWhereClause> idBetween(
     int lowerId,
     int upperId, {
     bool includeLower = true,
@@ -236,10 +222,8 @@ extension ContainerPhotoQueryWhere
   }
 }
 
-extension ContainerPhotoQueryFilter
-    on QueryBuilder<ContainerPhoto, ContainerPhoto, QFilterCondition> {
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      containerUIDEqualTo(
+extension PhotoQueryFilter on QueryBuilder<Photo, Photo, QFilterCondition> {
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> containerUIDEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -251,8 +235,7 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      containerUIDGreaterThan(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> containerUIDGreaterThan(
     String value, {
     bool caseSensitive = true,
     bool include = false,
@@ -266,8 +249,7 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      containerUIDLessThan(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> containerUIDLessThan(
     String value, {
     bool caseSensitive = true,
     bool include = false,
@@ -281,8 +263,7 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      containerUIDBetween(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> containerUIDBetween(
     String lower,
     String upper, {
     bool caseSensitive = true,
@@ -299,8 +280,7 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      containerUIDStartsWith(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> containerUIDStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -312,8 +292,7 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      containerUIDEndsWith(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> containerUIDEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -325,8 +304,9 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      containerUIDContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> containerUIDContains(
+      String value,
+      {bool caseSensitive = true}) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.contains,
       property: 'containerUID',
@@ -335,8 +315,9 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      containerUIDMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> containerUIDMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.matches,
       property: 'containerUID',
@@ -345,8 +326,7 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition> idEqualTo(
-      int value) {
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> idEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
       property: 'id',
@@ -354,8 +334,7 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      idGreaterThan(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> idGreaterThan(
     int value, {
     bool include = false,
   }) {
@@ -367,8 +346,7 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      idLessThan(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> idLessThan(
     int value, {
     bool include = false,
   }) {
@@ -380,7 +358,7 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition> idBetween(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> idBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -395,8 +373,7 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      photoPathEqualTo(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> photoPathEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -408,8 +385,7 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      photoPathGreaterThan(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> photoPathGreaterThan(
     String value, {
     bool caseSensitive = true,
     bool include = false,
@@ -423,8 +399,7 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      photoPathLessThan(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> photoPathLessThan(
     String value, {
     bool caseSensitive = true,
     bool include = false,
@@ -438,8 +413,7 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      photoPathBetween(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> photoPathBetween(
     String lower,
     String upper, {
     bool caseSensitive = true,
@@ -456,8 +430,7 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      photoPathStartsWith(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> photoPathStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -469,8 +442,7 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      photoPathEndsWith(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> photoPathEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -482,8 +454,9 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      photoPathContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> photoPathContains(
+      String value,
+      {bool caseSensitive = true}) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.contains,
       property: 'photoPath',
@@ -492,8 +465,9 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      photoPathMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> photoPathMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.matches,
       property: 'photoPath',
@@ -502,21 +476,19 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      photoThumbnailPathEqualTo(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> thumbnailPathEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
-      property: 'photoThumbnailPath',
+      property: 'thumbnailPath',
       value: value,
       caseSensitive: caseSensitive,
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      photoThumbnailPathGreaterThan(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> thumbnailPathGreaterThan(
     String value, {
     bool caseSensitive = true,
     bool include = false,
@@ -524,14 +496,13 @@ extension ContainerPhotoQueryFilter
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
       include: include,
-      property: 'photoThumbnailPath',
+      property: 'thumbnailPath',
       value: value,
       caseSensitive: caseSensitive,
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      photoThumbnailPathLessThan(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> thumbnailPathLessThan(
     String value, {
     bool caseSensitive = true,
     bool include = false,
@@ -539,14 +510,13 @@ extension ContainerPhotoQueryFilter
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
       include: include,
-      property: 'photoThumbnailPath',
+      property: 'thumbnailPath',
       value: value,
       caseSensitive: caseSensitive,
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      photoThumbnailPathBetween(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> thumbnailPathBetween(
     String lower,
     String upper, {
     bool caseSensitive = true,
@@ -554,7 +524,7 @@ extension ContainerPhotoQueryFilter
     bool includeUpper = true,
   }) {
     return addFilterConditionInternal(FilterCondition.between(
-      property: 'photoThumbnailPath',
+      property: 'thumbnailPath',
       lower: lower,
       includeLower: includeLower,
       upper: upper,
@@ -563,176 +533,158 @@ extension ContainerPhotoQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      photoThumbnailPathStartsWith(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> thumbnailPathStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.startsWith,
-      property: 'photoThumbnailPath',
+      property: 'thumbnailPath',
       value: value,
       caseSensitive: caseSensitive,
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      photoThumbnailPathEndsWith(
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> thumbnailPathEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.endsWith,
-      property: 'photoThumbnailPath',
+      property: 'thumbnailPath',
       value: value,
       caseSensitive: caseSensitive,
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      photoThumbnailPathContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> thumbnailPathContains(
+      String value,
+      {bool caseSensitive = true}) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.contains,
-      property: 'photoThumbnailPath',
+      property: 'thumbnailPath',
       value: value,
       caseSensitive: caseSensitive,
     ));
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterFilterCondition>
-      photoThumbnailPathMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> thumbnailPathMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.matches,
-      property: 'photoThumbnailPath',
+      property: 'thumbnailPath',
       value: pattern,
       caseSensitive: caseSensitive,
     ));
   }
 }
 
-extension ContainerPhotoQueryLinks
-    on QueryBuilder<ContainerPhoto, ContainerPhoto, QFilterCondition> {}
+extension PhotoQueryLinks on QueryBuilder<Photo, Photo, QFilterCondition> {}
 
-extension ContainerPhotoQueryWhereSortBy
-    on QueryBuilder<ContainerPhoto, ContainerPhoto, QSortBy> {
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy>
-      sortByContainerUID() {
+extension PhotoQueryWhereSortBy on QueryBuilder<Photo, Photo, QSortBy> {
+  QueryBuilder<Photo, Photo, QAfterSortBy> sortByContainerUID() {
     return addSortByInternal('containerUID', Sort.asc);
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy>
-      sortByContainerUIDDesc() {
+  QueryBuilder<Photo, Photo, QAfterSortBy> sortByContainerUIDDesc() {
     return addSortByInternal('containerUID', Sort.desc);
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy> sortById() {
+  QueryBuilder<Photo, Photo, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy> sortByIdDesc() {
+  QueryBuilder<Photo, Photo, QAfterSortBy> sortByIdDesc() {
     return addSortByInternal('id', Sort.desc);
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy> sortByPhotoPath() {
+  QueryBuilder<Photo, Photo, QAfterSortBy> sortByPhotoPath() {
     return addSortByInternal('photoPath', Sort.asc);
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy>
-      sortByPhotoPathDesc() {
+  QueryBuilder<Photo, Photo, QAfterSortBy> sortByPhotoPathDesc() {
     return addSortByInternal('photoPath', Sort.desc);
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy>
-      sortByPhotoThumbnailPath() {
-    return addSortByInternal('photoThumbnailPath', Sort.asc);
+  QueryBuilder<Photo, Photo, QAfterSortBy> sortByThumbnailPath() {
+    return addSortByInternal('thumbnailPath', Sort.asc);
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy>
-      sortByPhotoThumbnailPathDesc() {
-    return addSortByInternal('photoThumbnailPath', Sort.desc);
+  QueryBuilder<Photo, Photo, QAfterSortBy> sortByThumbnailPathDesc() {
+    return addSortByInternal('thumbnailPath', Sort.desc);
   }
 }
 
-extension ContainerPhotoQueryWhereSortThenBy
-    on QueryBuilder<ContainerPhoto, ContainerPhoto, QSortThenBy> {
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy>
-      thenByContainerUID() {
+extension PhotoQueryWhereSortThenBy on QueryBuilder<Photo, Photo, QSortThenBy> {
+  QueryBuilder<Photo, Photo, QAfterSortBy> thenByContainerUID() {
     return addSortByInternal('containerUID', Sort.asc);
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy>
-      thenByContainerUIDDesc() {
+  QueryBuilder<Photo, Photo, QAfterSortBy> thenByContainerUIDDesc() {
     return addSortByInternal('containerUID', Sort.desc);
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy> thenById() {
+  QueryBuilder<Photo, Photo, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy> thenByIdDesc() {
+  QueryBuilder<Photo, Photo, QAfterSortBy> thenByIdDesc() {
     return addSortByInternal('id', Sort.desc);
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy> thenByPhotoPath() {
+  QueryBuilder<Photo, Photo, QAfterSortBy> thenByPhotoPath() {
     return addSortByInternal('photoPath', Sort.asc);
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy>
-      thenByPhotoPathDesc() {
+  QueryBuilder<Photo, Photo, QAfterSortBy> thenByPhotoPathDesc() {
     return addSortByInternal('photoPath', Sort.desc);
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy>
-      thenByPhotoThumbnailPath() {
-    return addSortByInternal('photoThumbnailPath', Sort.asc);
+  QueryBuilder<Photo, Photo, QAfterSortBy> thenByThumbnailPath() {
+    return addSortByInternal('thumbnailPath', Sort.asc);
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QAfterSortBy>
-      thenByPhotoThumbnailPathDesc() {
-    return addSortByInternal('photoThumbnailPath', Sort.desc);
+  QueryBuilder<Photo, Photo, QAfterSortBy> thenByThumbnailPathDesc() {
+    return addSortByInternal('thumbnailPath', Sort.desc);
   }
 }
 
-extension ContainerPhotoQueryWhereDistinct
-    on QueryBuilder<ContainerPhoto, ContainerPhoto, QDistinct> {
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QDistinct>
-      distinctByContainerUID({bool caseSensitive = true}) {
+extension PhotoQueryWhereDistinct on QueryBuilder<Photo, Photo, QDistinct> {
+  QueryBuilder<Photo, Photo, QDistinct> distinctByContainerUID(
+      {bool caseSensitive = true}) {
     return addDistinctByInternal('containerUID', caseSensitive: caseSensitive);
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QDistinct> distinctById() {
+  QueryBuilder<Photo, Photo, QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QDistinct> distinctByPhotoPath(
+  QueryBuilder<Photo, Photo, QDistinct> distinctByPhotoPath(
       {bool caseSensitive = true}) {
     return addDistinctByInternal('photoPath', caseSensitive: caseSensitive);
   }
 
-  QueryBuilder<ContainerPhoto, ContainerPhoto, QDistinct>
-      distinctByPhotoThumbnailPath({bool caseSensitive = true}) {
-    return addDistinctByInternal('photoThumbnailPath',
-        caseSensitive: caseSensitive);
+  QueryBuilder<Photo, Photo, QDistinct> distinctByThumbnailPath(
+      {bool caseSensitive = true}) {
+    return addDistinctByInternal('thumbnailPath', caseSensitive: caseSensitive);
   }
 }
 
-extension ContainerPhotoQueryProperty
-    on QueryBuilder<ContainerPhoto, ContainerPhoto, QQueryProperty> {
-  QueryBuilder<ContainerPhoto, String, QQueryOperations>
-      containerUIDProperty() {
+extension PhotoQueryProperty on QueryBuilder<Photo, Photo, QQueryProperty> {
+  QueryBuilder<Photo, String, QQueryOperations> containerUIDProperty() {
     return addPropertyNameInternal('containerUID');
   }
 
-  QueryBuilder<ContainerPhoto, int, QQueryOperations> idProperty() {
+  QueryBuilder<Photo, int, QQueryOperations> idProperty() {
     return addPropertyNameInternal('id');
   }
 
-  QueryBuilder<ContainerPhoto, String, QQueryOperations> photoPathProperty() {
+  QueryBuilder<Photo, String, QQueryOperations> photoPathProperty() {
     return addPropertyNameInternal('photoPath');
   }
 
-  QueryBuilder<ContainerPhoto, String, QQueryOperations>
-      photoThumbnailPathProperty() {
-    return addPropertyNameInternal('photoThumbnailPath');
+  QueryBuilder<Photo, String, QQueryOperations> thumbnailPathProperty() {
+    return addPropertyNameInternal('thumbnailPath');
   }
 }

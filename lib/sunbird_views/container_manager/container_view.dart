@@ -1,18 +1,15 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_photo/container_photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
-import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
-import 'package:flutter_google_ml_kit/isar_database/tag/tag.dart';
+import 'package:flutter_google_ml_kit/isar_database/photo/photo.dart';
+import 'package:flutter_google_ml_kit/isar_database/tags/container_tag/container_tag.dart';
+import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/grid_manager/container_grid_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/new_container_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_manager/photo_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_view.dart';
 import 'package:isar/isar.dart';
 
 class ContainerView extends StatefulWidget {
@@ -50,7 +47,7 @@ class _ContainerViewState extends State<ContainerView> {
   late GlobalObjectKey tagsKey =
       GlobalObjectKey('${widget.containerEntry.containerUID}_tags');
 
-  List<int> assignedTags = [];
+  List<int> assignedTagIDs = [];
   List<int> allTags = [];
 
   @override
@@ -126,6 +123,10 @@ class _ContainerViewState extends State<ContainerView> {
 
           //Photo Tags
           _photoTags(),
+
+          SizedBox(
+            height: 500,
+          ),
         ],
       ),
     );
@@ -569,7 +570,7 @@ class _ContainerViewState extends State<ContainerView> {
         addTag(),
       ];
 
-      tags.addAll(assignedTags.map((e) => tag(e)).toList());
+      tags.addAll(assignedTagIDs.map((e) => tag(e)).toList());
 
       return Wrap(
         runSpacing: 2.5,
@@ -633,24 +634,26 @@ class _ContainerViewState extends State<ContainerView> {
       scrollDirection: Axis.horizontal,
       child: Builder(builder: (context) {
         List<int> displayTags = [];
+
         if (tagsController.text.isNotEmpty) {
-          displayTags.addAll(isarDatabase!.tags
+          displayTags.addAll(isarDatabase!.tagTexts
               .filter()
               .tagContains(tagsController.text.toLowerCase(),
                   caseSensitive: false)
               .findAllSync()
               .map((e) => e.id)
-              .where((element) => !assignedTags.contains(element)));
+              .where((element) => !assignedTagIDs.contains(element)));
         } else {
-          displayTags.addAll(isarDatabase!.tags
+          displayTags.addAll(isarDatabase!.tagTexts
               .filter()
               .tagContains(tagsController.text.toLowerCase(),
                   caseSensitive: false)
               .findAllSync()
               .map((e) => e.id)
-              .where((element) => !assignedTags.contains(element))
+              .where((element) => !assignedTagIDs.contains(element))
               .take(10));
         }
+
         return Wrap(
           spacing: 5,
           children: displayTags.map((e) => tag(e)).toList(),
@@ -671,33 +674,7 @@ class _ContainerViewState extends State<ContainerView> {
           tagsController.clear();
           _tagsNode.unfocus();
         } else {
-          Tag? tag = isarDatabase!.tags
-              .filter()
-              .tagMatches(tagsController.text.trim(), caseSensitive: false)
-              .findFirstSync();
-
-          if (tag != null) {
-            //Add Existing Tag.
-            isarDatabase!.writeTxnSync(
-                (isar) => isar.containerTags.putSync(ContainerTag()
-                  ..containerUID = _containerEntry.containerUID
-                  ..tagID = tag.id));
-          } else {
-            //New Tag.
-            Tag newTag = Tag()..tag = tagsController.text.toLowerCase().trim();
-            isarDatabase!.writeTxnSync(
-              (isar) => isar.tags.putSync(newTag),
-            );
-            //New Container Tag.
-            isarDatabase!.writeTxnSync(
-                (isar) => isar.containerTags.putSync(ContainerTag()
-                  ..containerUID = _containerEntry.containerUID
-                  ..tagID = newTag.id));
-          }
-          updateTags();
-          setState(() {});
-          tagsController.clear();
-          _tagsNode.requestFocus();
+          _addNewTag();
         }
       },
       style: const TextStyle(fontSize: 18),
@@ -710,8 +687,7 @@ class _ContainerViewState extends State<ContainerView> {
         labelStyle: const TextStyle(fontSize: 15, color: Colors.white),
         suffixIcon: IconButton(
           onPressed: () {
-            tagsController.clear();
-            _tagsNode.requestFocus();
+            _addNewTag();
           },
           icon: const Icon(Icons.add),
         ),
@@ -723,9 +699,41 @@ class _ContainerViewState extends State<ContainerView> {
     );
   }
 
+  void _addNewTag() {
+    TagText? tag = isarDatabase!.tagTexts
+        .filter()
+        .tagMatches(tagsController.text.trim(), caseSensitive: false)
+        .findFirstSync();
+
+    if (tag != null) {
+      //Add Existing Tag.
+      isarDatabase!
+          .writeTxnSync((isar) => isar.containerTags.putSync(ContainerTag()
+            ..containerUID = _containerEntry.containerUID
+            ..textTagID = tag.id));
+    } else {
+      log('new tag');
+      //New Tag.
+      TagText newTag = TagText()
+        ..tag = tagsController.text.toLowerCase().trim();
+      isarDatabase!.writeTxnSync(
+        (isar) => isar.tagTexts.putSync(newTag),
+      );
+      //New Container Tag.
+      isarDatabase!
+          .writeTxnSync((isar) => isar.containerTags.putSync(ContainerTag()
+            ..containerUID = _containerEntry.containerUID
+            ..textTagID = newTag.id));
+    }
+    updateTags();
+    setState(() {});
+    tagsController.clear();
+    _tagsNode.requestFocus();
+  }
+
   Widget tag(int tagID) {
     return Builder(builder: (context) {
-      Tag tag = isarDatabase!.tags.getSync(tagID)!;
+      TagText tag = isarDatabase!.tagTexts.getSync(tagID)!;
       return ActionChip(
         backgroundColor: _containerColor,
         label: Row(
@@ -736,16 +744,16 @@ class _ContainerViewState extends State<ContainerView> {
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             Icon(
-              assignedTags.contains(tagID) ? Icons.close : Icons.add,
+              assignedTagIDs.contains(tagID) ? Icons.close : Icons.add,
               size: 12.5,
             ),
           ],
         ),
         onPressed: () {
-          if (assignedTags.contains(tagID)) {
+          if (assignedTagIDs.contains(tagID)) {
             isarDatabase!.writeTxnSync((isar) => isar.containerTags
                 .filter()
-                .tagIDEqualTo(tagID)
+                .textTagIDEqualTo(tagID)
                 .deleteFirstSync());
             updateTags();
             setState(() {});
@@ -753,8 +761,9 @@ class _ContainerViewState extends State<ContainerView> {
             isarDatabase!.writeTxnSync(
                 (isar) => isar.containerTags.putSync(ContainerTag()
                   ..containerUID = _containerEntry.containerUID
-                  ..tagID = tagID));
+                  ..textTagID = tagID));
             updateTags();
+            tagsController.clear();
             setState(() {});
           }
         },
@@ -763,16 +772,16 @@ class _ContainerViewState extends State<ContainerView> {
   }
 
   void updateTags() {
-    assignedTags = [];
+    assignedTagIDs = [];
 
-    assignedTags.addAll(isarDatabase!.containerTags
+    assignedTagIDs.addAll(isarDatabase!.containerTags
         .filter()
         .containerUIDMatches(_containerEntry.containerUID)
-        .tagIDProperty()
+        .textTagIDProperty()
         .findAllSync());
 
     allTags =
-        isarDatabase!.tags.where().findAllSync().map((e) => e.id).toList();
+        isarDatabase!.tagTexts.where().findAllSync().map((e) => e.id).toList();
   }
 
   ///PHOTOS///
@@ -794,80 +803,80 @@ class _ContainerViewState extends State<ContainerView> {
           children: [
             Text('Photos', style: Theme.of(context).textTheme.headlineSmall),
             _dividerHeading(),
-            _photosBuilder(),
+            //_photosBuilder(),
           ],
         ),
       ),
     );
   }
 
-  Widget _photosBuilder() {
-    return Builder(
-      builder: (context) {
-        List<ContainerPhoto> containerPhotos = [];
-        containerPhotos.addAll(isarDatabase!.containerPhotos
-            .filter()
-            .containerUIDMatches(_containerEntry.containerUID)
-            .findAllSync());
+  // Widget _photosBuilder() {
+  //   return Builder(
+  //     builder: (context) {
+  //       List<Photo> containerPhotos = [];
+  //       containerPhotos.addAll(isarDatabase!.photos
+  //           .filter()
+  //           .containerUIDMatches(_containerEntry.containerUID)
+  //           .findAllSync());
 
-        List<Widget> photoWidgets = [
-          _photoAddCard(),
-        ];
+  //       List<Widget> photoWidgets = [
+  //         _photoAddCard(),
+  //       ];
 
-        photoWidgets.addAll(containerPhotos.map((e) => photoCard(e)).toList());
-        return Wrap(
-          spacing: 1,
-          runSpacing: 1,
-          alignment: WrapAlignment.center,
-          runAlignment: WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: photoWidgets,
-        );
-      },
-    );
-  }
+  //       photoWidgets.addAll(containerPhotos.map((e) => photoCard(e)).toList());
+  //       return Wrap(
+  //         spacing: 1,
+  //         runSpacing: 1,
+  //         alignment: WrapAlignment.center,
+  //         runAlignment: WrapAlignment.center,
+  //         crossAxisAlignment: WrapCrossAlignment.center,
+  //         children: photoWidgets,
+  //       );
+  //     },
+  //   );
+  // }
 
-  Widget photoCard(ContainerPhoto containerPhoto) {
-    return Card(
-      child: InkWell(
-        onTap: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PhotoView(
-                containerPhoto: containerPhoto,
-                containerColor: _containerColor,
-              ),
-            ),
-          );
-          setState(() {});
-        },
-        child: Stack(
-          alignment: AlignmentDirectional.topStart,
-          children: [
-            Container(
-              width: MediaQuery.of(context).size.width * 0.27,
-              height: MediaQuery.of(context).size.width * 0.4,
-              decoration: BoxDecoration(
-                border: Border.all(color: _containerColor, width: 1),
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(5),
-                ),
-              ),
-              padding: const EdgeInsets.all(2.5),
-              child: Image.file(
-                File(containerPhoto.photoPath),
-                fit: BoxFit.cover,
-              ),
-            ),
-            photoDeleteButton(containerPhoto),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget photoCard(Photo containerPhoto) {
+  //   return Card(
+  //     child: InkWell(
+  //       onTap: () async {
+  //         await Navigator.push(
+  //           context,
+  //           MaterialPageRoute(
+  //             builder: (context) => PhotoView(
+  //               containerPhoto: containerPhoto,
+  //               containerColor: _containerColor,
+  //             ),
+  //           ),
+  //         );
+  //         setState(() {});
+  //       },
+  //       child: Stack(
+  //         alignment: AlignmentDirectional.topStart,
+  //         children: [
+  //           Container(
+  //             width: MediaQuery.of(context).size.width * 0.27,
+  //             height: MediaQuery.of(context).size.width * 0.4,
+  //             decoration: BoxDecoration(
+  //               border: Border.all(color: _containerColor, width: 1),
+  //               borderRadius: const BorderRadius.all(
+  //                 Radius.circular(5),
+  //               ),
+  //             ),
+  //             padding: const EdgeInsets.all(2.5),
+  //             child: Image.file(
+  //               File(containerPhoto.photoPath),
+  //               fit: BoxFit.cover,
+  //             ),
+  //           ),
+  //           photoDeleteButton(containerPhoto),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  Widget photoDeleteButton(ContainerPhoto containerPhoto) {
+  Widget photoDeleteButton(Photo containerPhoto) {
     return Container(
       width: 35,
       height: 35,
@@ -894,58 +903,58 @@ class _ContainerViewState extends State<ContainerView> {
     );
   }
 
-  Widget _photoAddCard() {
-    return InkWell(
-      onTap: () async {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ObjectDetectorView(
-              customColor: _containerColor,
-              containerUID: _containerEntry.containerUID,
-            ),
-          ),
-        );
+  // Widget _photoAddCard() {
+  //   return InkWell(
+  //     onTap: () async {
+  //       await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => ObjectDetectorView(
+  //             customColor: _containerColor,
+  //             containerUID: _containerEntry.containerUID,
+  //           ),
+  //         ),
+  //       );
 
-        setState(() {});
-      },
-      child: Card(
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.27,
-          height: MediaQuery.of(context).size.width * 0.4,
-          padding: const EdgeInsets.all(2.5),
-          decoration: BoxDecoration(
-            border: Border.all(color: _containerColor, width: 1),
-            borderRadius: const BorderRadius.all(
-              Radius.circular(5),
-            ),
-          ),
-          child: Center(
-            child: Text(
-              '+',
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  //       setState(() {});
+  //     },
+  //     child: Card(
+  //       child: Container(
+  //         width: MediaQuery.of(context).size.width * 0.27,
+  //         height: MediaQuery.of(context).size.width * 0.4,
+  //         padding: const EdgeInsets.all(2.5),
+  //         decoration: BoxDecoration(
+  //           border: Border.all(color: _containerColor, width: 1),
+  //           borderRadius: const BorderRadius.all(
+  //             Radius.circular(5),
+  //           ),
+  //         ),
+  //         child: Center(
+  //           child: Text(
+  //             '+',
+  //             style: Theme.of(context).textTheme.labelLarge,
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  void deletePhoto(ContainerPhoto containerPhoto) {
+  void deletePhoto(Photo containerPhoto) {
     //Delete Photo.
     File(containerPhoto.photoPath).delete();
 
     //Delete Photo Thumbnail.
-    File(containerPhoto.photoThumbnailPath).delete();
+    File(containerPhoto.thumbnailPath).delete();
 
     //Delete References from database.
     isarDatabase!.writeTxnSync((isar) {
-      isar.containerPhotos
+      isar.photos
           .filter()
           .photoPathMatches(containerPhoto.photoPath)
           .deleteFirstSync();
 
-      isar.photoTags
+      isar.photos
           .filter()
           .photoPathMatches(containerPhoto.photoPath)
           .deleteAllSync();
@@ -971,89 +980,89 @@ class _ContainerViewState extends State<ContainerView> {
           children: [
             Text('AI Tags', style: Theme.of(context).textTheme.headlineSmall),
             _dividerHeading(),
-            _photoTagsBuilder(),
+            //_photoTagsBuilder(),
           ],
         ),
       ),
     );
   }
 
-  Widget _photoTagsBuilder() {
-    return Builder(builder: (context) {
-      List<MlTag> mlTags = [];
-      List<PhotoTag> photoTags = [];
+  // Widget _photoTagsBuilder() {
+  //   return Builder(builder: (context) {
+  //     List<MlTag> mlTags = [];
+  //     List<PhotoTag> photoTags = [];
 
-      List<ContainerPhoto> containerPhotos = isarDatabase!.containerPhotos
-          .filter()
-          .containerUIDMatches(_containerEntry.containerUID)
-          .findAllSync();
+  //     List<ContainerPhoto> containerPhotos = isarDatabase!.containerPhotos
+  //         .filter()
+  //         .containerUIDMatches(_containerEntry.containerUID)
+  //         .findAllSync();
 
-      if (containerPhotos.isNotEmpty) {
-        photoTags = isarDatabase!.photoTags
-            .filter()
-            .repeat(
-                containerPhotos,
-                (q, ContainerPhoto element) =>
-                    q.photoPathMatches(element.photoPath))
-            .findAllSync();
+  //     if (containerPhotos.isNotEmpty) {
+  //       photoTags = isarDatabase!.photoTags
+  //           .filter()
+  //           .repeat(
+  //               containerPhotos,
+  //               (q, ContainerPhoto element) =>
+  //                   q.photoPathMatches(element.photoPath))
+  //           .findAllSync();
 
-        if (photoTags.isNotEmpty) {
-          mlTags = isarDatabase!.mlTags
-              .filter()
-              .repeat(photoTags,
-                  (q, PhotoTag element) => q.idEqualTo(element.tagUID))
-              .findAllSync();
-        }
-      }
-      if (mlTags.isNotEmpty) {
-        return Wrap(
-          runSpacing: 2.5,
-          spacing: 2.5,
-          children: mlTags.map((e) => mlTag(e)).toList(),
-        );
-      } else {
-        return Center(
-          child: Text(
-            'no tags',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        );
-      }
-    });
-  }
+  //       if (photoTags.isNotEmpty) {
+  //         mlTags = isarDatabase!.mlTags
+  //             .filter()
+  //             .repeat(photoTags,
+  //                 (q, PhotoTag element) => q.idEqualTo(element.tagUID))
+  //             .findAllSync();
+  //       }
+  //     }
+  //     if (mlTags.isNotEmpty) {
+  //       return Wrap(
+  //         runSpacing: 2.5,
+  //         spacing: 2.5,
+  //         children: mlTags.map((e) => mlTag(e)).toList(),
+  //       );
+  //     } else {
+  //       return Center(
+  //         child: Text(
+  //           'no tags',
+  //           style: Theme.of(context).textTheme.bodySmall,
+  //         ),
+  //       );
+  //     }
+  //   });
+  // }
 
-  Widget mlTag(MlTag mltag) {
-    return Builder(builder: (context) {
-      return Chip(
-        avatar: Builder(builder: (context) {
-          switch (mltag.tagType) {
-            case mlTagType.text:
-              return const Icon(
-                Icons.format_size,
-                size: 15,
-              );
+  // Widget mlTag(MlTag mltag) {
+  //   return Builder(builder: (context) {
+  //     return Chip(
+  //       avatar: Builder(builder: (context) {
+  //         switch (mltag.tagType) {
+  //           case mlTagType.text:
+  //             return const Icon(
+  //               Icons.format_size,
+  //               size: 15,
+  //             );
 
-            case mlTagType.objectLabel:
-              return const Icon(
-                Icons.emoji_objects,
-                size: 15,
-              );
+  //           case mlTagType.objectLabel:
+  //             return const Icon(
+  //               Icons.emoji_objects,
+  //               size: 15,
+  //             );
 
-            case mlTagType.imageLabel:
-              return const Icon(
-                Icons.photo,
-                size: 15,
-              );
-          }
-        }),
-        backgroundColor: _containerColor,
-        label: Text(
-          mltag.tag,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-      );
-    });
-  }
+  //           case mlTagType.imageLabel:
+  //             return const Icon(
+  //               Icons.photo,
+  //               size: 15,
+  //             );
+  //         }
+  //       }),
+  //       backgroundColor: _containerColor,
+  //       label: Text(
+  //         mltag.tag,
+  //         style: Theme.of(context).textTheme.bodyMedium,
+  //       ),
+  //     );
+  //   });
+  // }
 
   ///MISC///
 

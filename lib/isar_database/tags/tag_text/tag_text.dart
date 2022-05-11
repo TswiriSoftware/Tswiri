@@ -1,8 +1,8 @@
 import 'package:isar/isar.dart';
-part 'tag.g.dart';
+part 'tag_text.g.dart';
 
 @Collection()
-class Tag {
+class TagText {
   int id = Isar.autoIncrement;
 
   late String tag;
@@ -17,8 +17,8 @@ class Tag {
         'tag': tag,
       };
 
-  Tag fromJson(Map<String, dynamic> json) {
-    return Tag()
+  TagText fromJson(Map<String, dynamic> json) {
+    return TagText()
       ..id = json['id']
       ..tag = json['tag'];
   }
