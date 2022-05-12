@@ -16,12 +16,8 @@ class IsolateGrid {
 
   List pathFinder(String startBarcodeUID, String endBarcodeUID) {
     //1. Find Start Positional Grid.
-    IsolatePositionalGrid startGrid = positionalGrids
-        .firstWhere((element) => element.barcodes.contains(startBarcodeUID));
 
     log(positionalGrids.toString());
-
-    List<IsolatePositionalGrid> startPath = [startGrid];
 
     // for (var i = 0; i < positionalGrids.length; i++) {
     //   log(startPath.last.parent.toString());

@@ -1,22 +1,22 @@
-import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_on_image_data.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate/on_image_data.dart';
 
 ///Describes the "Offset" between two barcodes.
-class IsolateOnImageInterBarcodeData {
-  IsolateOnImageInterBarcodeData({
+class OnImageInterBarcodeData {
+  OnImageInterBarcodeData({
     required this.startBarcode,
     required this.endBarcode,
   });
 
   ///Data related to the start barcode.
-  final IsolateOnImageBarcodeData startBarcode;
+  final OnImageBarcodeData startBarcode;
 
   ///Data related to the end barcode.
-  final IsolateOnImageBarcodeData endBarcode;
+  final OnImageBarcodeData endBarcode;
 
   ///This takes 2 IsolateRawOnImageBarcodeData and returns them so that the smaller barcode is always first.
-  factory IsolateOnImageInterBarcodeData.fromBarcodeDataPair(
-    IsolateOnImageBarcodeData rawOnImageBarcodeData1,
-    IsolateOnImageBarcodeData rawOnImageBarcodeData2,
+  factory OnImageInterBarcodeData.fromBarcodeDataPair(
+    OnImageBarcodeData rawOnImageBarcodeData1,
+    OnImageBarcodeData rawOnImageBarcodeData2,
   ) {
     int startBarcode =
         int.parse(rawOnImageBarcodeData1.barcodeUID.split('_').first);
@@ -24,12 +24,12 @@ class IsolateOnImageInterBarcodeData {
         int.parse(rawOnImageBarcodeData2.barcodeUID.split('_').first);
 
     if (startBarcode < endBarcode) {
-      return IsolateOnImageInterBarcodeData(
+      return OnImageInterBarcodeData(
         startBarcode: rawOnImageBarcodeData1,
         endBarcode: rawOnImageBarcodeData2,
       );
     } else {
-      return IsolateOnImageInterBarcodeData(
+      return OnImageInterBarcodeData(
         startBarcode: rawOnImageBarcodeData2,
         endBarcode: rawOnImageBarcodeData1,
       );
@@ -43,8 +43,7 @@ class IsolateOnImageInterBarcodeData {
 
   @override
   bool operator ==(Object other) {
-    return other is IsolateOnImageInterBarcodeData &&
-        hashCode == other.hashCode;
+    return other is OnImageInterBarcodeData && hashCode == other.hashCode;
   }
 
   @override

@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/app_settings/google_drive_backup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app_settings_functions.dart';

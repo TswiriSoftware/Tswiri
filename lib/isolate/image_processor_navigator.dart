@@ -22,7 +22,6 @@ void imageProcessorNavigator(SendPort sendPort) {
   Map<String, double>? barcodeProperties;
   SendPort? gridSendPort;
   String? selectedBarcodeUID;
-  //List<IsolateGridOLD>? initialGrids;
   IsolateGrid? isolateGrid;
 
   BarcodeScanner barcodeScanner =
@@ -42,7 +41,7 @@ void imageProcessorNavigator(SendPort sendPort) {
       final List<Barcode> barcodes =
           await barcodeScanner.processImage(inputImage);
 
-      //Grid Processor Message
+      //Grid Isolate Message
       List<dynamic> barcodeData = [];
 
       //Painter Message
@@ -109,11 +108,6 @@ void imageProcessorNavigator(SendPort sendPort) {
 
         Offset realOffsetToScreenCenter =
             offsetToScreenCenter / startBarcodeMMperPX;
-
-        //Select relevant grid.
-        // IsolatePositionalGrid? grid = isolateGrid!.positionalGrids
-        //     .where((element) =>
-        //         element.barcodes.contains(barcode.value.displayValue!)).firstWhere((element) => false) ;
 
         int index2 = isolateGrid!.positionalGrids.indexWhere((element) =>
             element.barcodes.contains(barcode.value.displayValue!));

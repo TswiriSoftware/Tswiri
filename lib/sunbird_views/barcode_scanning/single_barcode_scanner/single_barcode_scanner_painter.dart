@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/barcode_calculations/calculate_barcode_positional_data.dart';
 import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 
@@ -15,13 +14,11 @@ class SingleBarcodeScannerPainter extends CustomPainter {
     required this.barcodes,
     required this.absoluteImageSize,
     required this.rotation,
-    //required this.allBarcodes,
     this.barcodeID,
   });
   final List<Barcode> barcodes;
   final Size absoluteImageSize;
   final InputImageRotation rotation;
-  // List<BarcodeDataEntry> allBarcodes;
   final String? barcodeID;
 
   @override

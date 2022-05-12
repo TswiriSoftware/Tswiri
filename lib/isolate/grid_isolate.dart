@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
 import 'package:flutter_google_ml_kit/objects/grid/isolate_grid.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_on_image_data.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_on_image_inter_barcode_data.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_real_inter_barcode_vector.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/isolate/isolate_rolling_grid.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate/on_image_data.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate/on_image_inter_barcode_data.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate/real_inter_barcode_vector.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/isolate/rolling_grid.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/message_objects/grid_processor_config.dart';
 
 void gridIsolate(SendPort sendPort) {
@@ -19,16 +19,14 @@ void gridIsolate(SendPort sendPort) {
   void processGrid(var message) async {
     //1. Decode Messgae.
     //i. Build IsolateOnImageBarcodeData.
-    List<IsolateOnImageBarcodeData> onImageBarcodeDataBatch = [];
+    List<OnImageBarcodeData> onImageBarcodeDataBatch = [];
     for (int x = 0; x < message.length; x++) {
       //ii. Iterate through the barcodeDataBatch and generate IsolateRawOnImageBarcodeData.
-      onImageBarcodeDataBatch
-          .add(IsolateOnImageBarcodeData.fromMessage(message[x]));
+      onImageBarcodeDataBatch.add(OnImageBarcodeData.fromMessage(message[x]));
     }
 
-    List<IsolateOnImageInterBarcodeData> onImageInterBarcodeData = [];
-    for (IsolateOnImageBarcodeData onImageBarcodeData
-        in onImageBarcodeDataBatch) {
+    List<OnImageInterBarcodeData> onImageInterBarcodeData = [];
+    for (OnImageBarcodeData onImageBarcodeData in onImageBarcodeDataBatch) {
       //iii.Iterate through onImageBarcodeDataBatch.
 
       for (int z = 1; z < onImageBarcodeDataBatch.length; z++) {
@@ -36,20 +34,19 @@ void gridIsolate(SendPort sendPort) {
         if (onImageBarcodeData.barcodeUID !=
             onImageBarcodeDataBatch[z].barcodeUID) {
           onImageInterBarcodeData.add(
-              IsolateOnImageInterBarcodeData.fromBarcodeDataPair(
+              OnImageInterBarcodeData.fromBarcodeDataPair(
                   onImageBarcodeData, onImageBarcodeDataBatch[z]));
         }
       }
     }
 
     ///2. Build list of RealInterBarcodeData.
-    List<IsolateRealInterBarcodeVector> realInterBarcodeVectors = [];
+    List<RealInterBarcodeVector> realInterBarcodeVectors = [];
     int creationTimestamp = DateTime.now().millisecondsSinceEpoch;
-    for (IsolateOnImageInterBarcodeData interBarcodeData
-        in onImageInterBarcodeData) {
+    for (OnImageInterBarcodeData interBarcodeData in onImageInterBarcodeData) {
       // i. Iterate through onImageInterBarcodeData and generate IsolateRealInterBarcodeData.
       realInterBarcodeVectors.add(
-          IsolateRealInterBarcodeVector.fromIsolateInterBarcodeData(
+          RealInterBarcodeVector.fromIsolateInterBarcodeData(
               interBarcodeData, creationTimestamp));
     }
 
@@ -85,11 +82,6 @@ void gridIsolate(SendPort sendPort) {
 
               sendPort
                   .send(['update', jsonEncode(rollingGridPosition.toJson())]);
-
-              // isolatePortImage1!
-              //     .send(['update1', jsonEncode(rollingGridPosition.toJson())]);
-              // isolatePortImage2!
-              //     .send(['update2', jsonEncode(rollingGridPosition.toJson())]);
 
               //Update Position in inital Grids
               initialGrid.updatePosition(rollingGridPosition);

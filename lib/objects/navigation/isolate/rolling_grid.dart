@@ -2,7 +2,7 @@ import 'package:flutter_google_ml_kit/objects/grid/position.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate/rolling_grid_position.dart';
 
 import '../../../isar_database/marker/marker.dart';
-import 'isolate_real_inter_barcode_vector.dart';
+import 'real_inter_barcode_vector.dart';
 import 'package:vector_math/vector_math.dart';
 
 ///Used to build a rolling grid.
@@ -11,7 +11,7 @@ class RollingGrid {
   List<Marker> markers;
   List<RollingGridPosition> grid = [];
   List<String> barcodes = [];
-  List<IsolateRealInterBarcodeVector> vectors = [];
+  List<RealInterBarcodeVector> vectors = [];
   bool isComplete = false;
 
   void initiateGrid(List<Marker> markers, List<Position> initialGridPositions) {
@@ -29,17 +29,15 @@ class RollingGrid {
     }
   }
 
-  void generateGrid(
-      List<IsolateRealInterBarcodeVector> realInterBarcodeVectors) {
+  void generateGrid(List<RealInterBarcodeVector> realInterBarcodeVectors) {
     vectors.addAll(realInterBarcodeVectors);
 
-    List<IsolateRealInterBarcodeVector> uniqueVectors =
-        vectors.toSet().toList();
+    List<RealInterBarcodeVector> uniqueVectors = vectors.toSet().toList();
 
-    List<IsolateRealInterBarcodeVector> averagedVectors = [];
+    List<RealInterBarcodeVector> averagedVectors = [];
 
     for (var uniqueVector in uniqueVectors) {
-      List<IsolateRealInterBarcodeVector> relevantVectors =
+      List<RealInterBarcodeVector> relevantVectors =
           vectors.where((element) => element.uid == uniqueVector.uid).toList();
 
       if (relevantVectors.length >= 10) {

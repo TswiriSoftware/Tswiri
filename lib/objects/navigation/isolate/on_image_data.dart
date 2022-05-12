@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 
-class IsolateOnImageBarcodeData {
-  IsolateOnImageBarcodeData({
+class OnImageBarcodeData {
+  OnImageBarcodeData({
     required this.barcodeUID,
     required this.onImageCornerPoints,
     required this.timestamp,
@@ -32,7 +32,7 @@ class IsolateOnImageBarcodeData {
   final double onImageDiagonalLength;
 
   ///Create a Isolate Barcode from a List.
-  factory IsolateOnImageBarcodeData.fromMessage(List<dynamic> item) {
+  factory OnImageBarcodeData.fromMessage(List<dynamic> item) {
     AccelerometerData accelerometerData = AccelerometerData(
         accelerometerEvent: vm.Vector3(
           item[2][0] as double,
@@ -52,7 +52,7 @@ class IsolateOnImageBarcodeData {
       Offset(item[1][6] as double, item[1][7] as double),
     ];
 
-    return IsolateOnImageBarcodeData(
+    return OnImageBarcodeData(
       barcodeUID: item[0],
       onImageCornerPoints: onImageCornerPoints,
       timestamp: item[6],
