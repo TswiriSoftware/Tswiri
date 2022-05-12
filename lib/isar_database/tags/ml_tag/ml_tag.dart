@@ -14,13 +14,16 @@ class MlTag {
   ///Tag Confidence.
   late double confidence;
 
+  ///Blacklisted?
+  late bool blackListed;
+
   ///TagID
   @MlTagTypeConverter()
   late mlTagType tagType;
 
   @override
   String toString() {
-    return 'tagID: $textTagID, confidence: $confidence';
+    return '\ntagID: $textTagID, confidence: $confidence, blacklisted: $blackListed';
   }
 
   Map toJson() => {

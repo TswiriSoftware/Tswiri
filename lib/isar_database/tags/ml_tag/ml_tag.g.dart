@@ -17,11 +17,17 @@ extension GetMlTagCollection on Isar {
 final MlTagSchema = CollectionSchema(
   name: 'MlTag',
   schema:
-      '{"name":"MlTag","idName":"id","properties":[{"name":"confidence","type":"Double"},{"name":"mlTagID","type":"Long"},{"name":"tagType","type":"Long"},{"name":"textTagID","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"MlTag","idName":"id","properties":[{"name":"blackListed","type":"Bool"},{"name":"confidence","type":"Double"},{"name":"mlTagID","type":"Long"},{"name":"tagType","type":"Long"},{"name":"textTagID","type":"Long"}],"indexes":[],"links":[]}',
   nativeAdapter: const _MlTagNativeAdapter(),
   webAdapter: const _MlTagWebAdapter(),
   idName: 'id',
-  propertyIds: {'confidence': 0, 'mlTagID': 1, 'tagType': 2, 'textTagID': 3},
+  propertyIds: {
+    'blackListed': 0,
+    'confidence': 1,
+    'mlTagID': 2,
+    'tagType': 3,
+    'textTagID': 4
+  },
   listProperties: {},
   indexIds: {},
   indexTypes: {},
@@ -48,6 +54,7 @@ class _MlTagWebAdapter extends IsarWebTypeAdapter<MlTag> {
   @override
   Object serialize(IsarCollection<MlTag> collection, MlTag object) {
     final jsObj = IsarNative.newJsObject();
+    IsarNative.jsObjectSet(jsObj, 'blackListed', object.blackListed);
     IsarNative.jsObjectSet(jsObj, 'confidence', object.confidence);
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
     IsarNative.jsObjectSet(jsObj, 'mlTagID', object.mlTagID);
@@ -60,6 +67,7 @@ class _MlTagWebAdapter extends IsarWebTypeAdapter<MlTag> {
   @override
   MlTag deserialize(IsarCollection<MlTag> collection, dynamic jsObj) {
     final object = MlTag();
+    object.blackListed = IsarNative.jsObjectGet(jsObj, 'blackListed') ?? false;
     object.confidence =
         IsarNative.jsObjectGet(jsObj, 'confidence') ?? double.negativeInfinity;
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
@@ -75,6 +83,8 @@ class _MlTagWebAdapter extends IsarWebTypeAdapter<MlTag> {
   @override
   P deserializeProperty<P>(Object jsObj, String propertyName) {
     switch (propertyName) {
+      case 'blackListed':
+        return (IsarNative.jsObjectGet(jsObj, 'blackListed') ?? false) as P;
       case 'confidence':
         return (IsarNative.jsObjectGet(jsObj, 'confidence') ??
             double.negativeInfinity) as P;
@@ -107,36 +117,40 @@ class _MlTagNativeAdapter extends IsarNativeTypeAdapter<MlTag> {
   void serialize(IsarCollection<MlTag> collection, IsarRawObject rawObj,
       MlTag object, int staticSize, List<int> offsets, AdapterAlloc alloc) {
     var dynamicSize = 0;
-    final value0 = object.confidence;
-    final _confidence = value0;
-    final value1 = object.mlTagID;
-    final _mlTagID = value1;
-    final value2 = _mlTagMlTagTypeConverter.toIsar(object.tagType);
-    final _tagType = value2;
-    final value3 = object.textTagID;
-    final _textTagID = value3;
+    final value0 = object.blackListed;
+    final _blackListed = value0;
+    final value1 = object.confidence;
+    final _confidence = value1;
+    final value2 = object.mlTagID;
+    final _mlTagID = value2;
+    final value3 = _mlTagMlTagTypeConverter.toIsar(object.tagType);
+    final _tagType = value3;
+    final value4 = object.textTagID;
+    final _textTagID = value4;
     final size = staticSize + dynamicSize;
 
     rawObj.buffer = alloc(size);
     rawObj.buffer_length = size;
     final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
     final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeDouble(offsets[0], _confidence);
-    writer.writeLong(offsets[1], _mlTagID);
-    writer.writeLong(offsets[2], _tagType);
-    writer.writeLong(offsets[3], _textTagID);
+    writer.writeBool(offsets[0], _blackListed);
+    writer.writeDouble(offsets[1], _confidence);
+    writer.writeLong(offsets[2], _mlTagID);
+    writer.writeLong(offsets[3], _tagType);
+    writer.writeLong(offsets[4], _textTagID);
   }
 
   @override
   MlTag deserialize(IsarCollection<MlTag> collection, int id,
       IsarBinaryReader reader, List<int> offsets) {
     final object = MlTag();
-    object.confidence = reader.readDouble(offsets[0]);
+    object.blackListed = reader.readBool(offsets[0]);
+    object.confidence = reader.readDouble(offsets[1]);
     object.id = id;
-    object.mlTagID = reader.readLong(offsets[1]);
+    object.mlTagID = reader.readLong(offsets[2]);
     object.tagType =
-        _mlTagMlTagTypeConverter.fromIsar(reader.readLong(offsets[2]));
-    object.textTagID = reader.readLong(offsets[3]);
+        _mlTagMlTagTypeConverter.fromIsar(reader.readLong(offsets[3]));
+    object.textTagID = reader.readLong(offsets[4]);
     return object;
   }
 
@@ -147,13 +161,15 @@ class _MlTagNativeAdapter extends IsarNativeTypeAdapter<MlTag> {
       case -1:
         return id as P;
       case 0:
-        return (reader.readDouble(offset)) as P;
+        return (reader.readBool(offset)) as P;
       case 1:
-        return (reader.readLong(offset)) as P;
+        return (reader.readDouble(offset)) as P;
       case 2:
+        return (reader.readLong(offset)) as P;
+      case 3:
         return (_mlTagMlTagTypeConverter.fromIsar(reader.readLong(offset)))
             as P;
-      case 3:
+      case 4:
         return (reader.readLong(offset)) as P;
       default:
         throw 'Illegal propertyIndex';
@@ -244,6 +260,15 @@ extension MlTagQueryWhere on QueryBuilder<MlTag, MlTag, QWhereClause> {
 }
 
 extension MlTagQueryFilter on QueryBuilder<MlTag, MlTag, QFilterCondition> {
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> blackListedEqualTo(
+      bool value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'blackListed',
+      value: value,
+    ));
+  }
+
   QueryBuilder<MlTag, MlTag, QAfterFilterCondition> confidenceGreaterThan(
       double value) {
     return addFilterConditionInternal(FilterCondition(
@@ -469,6 +494,14 @@ extension MlTagQueryFilter on QueryBuilder<MlTag, MlTag, QFilterCondition> {
 extension MlTagQueryLinks on QueryBuilder<MlTag, MlTag, QFilterCondition> {}
 
 extension MlTagQueryWhereSortBy on QueryBuilder<MlTag, MlTag, QSortBy> {
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByBlackListed() {
+    return addSortByInternal('blackListed', Sort.asc);
+  }
+
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByBlackListedDesc() {
+    return addSortByInternal('blackListed', Sort.desc);
+  }
+
   QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByConfidence() {
     return addSortByInternal('confidence', Sort.asc);
   }
@@ -511,6 +544,14 @@ extension MlTagQueryWhereSortBy on QueryBuilder<MlTag, MlTag, QSortBy> {
 }
 
 extension MlTagQueryWhereSortThenBy on QueryBuilder<MlTag, MlTag, QSortThenBy> {
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByBlackListed() {
+    return addSortByInternal('blackListed', Sort.asc);
+  }
+
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByBlackListedDesc() {
+    return addSortByInternal('blackListed', Sort.desc);
+  }
+
   QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByConfidence() {
     return addSortByInternal('confidence', Sort.asc);
   }
@@ -553,6 +594,10 @@ extension MlTagQueryWhereSortThenBy on QueryBuilder<MlTag, MlTag, QSortThenBy> {
 }
 
 extension MlTagQueryWhereDistinct on QueryBuilder<MlTag, MlTag, QDistinct> {
+  QueryBuilder<MlTag, MlTag, QDistinct> distinctByBlackListed() {
+    return addDistinctByInternal('blackListed');
+  }
+
   QueryBuilder<MlTag, MlTag, QDistinct> distinctByConfidence() {
     return addDistinctByInternal('confidence');
   }
@@ -575,6 +620,10 @@ extension MlTagQueryWhereDistinct on QueryBuilder<MlTag, MlTag, QDistinct> {
 }
 
 extension MlTagQueryProperty on QueryBuilder<MlTag, MlTag, QQueryProperty> {
+  QueryBuilder<MlTag, bool, QQueryOperations> blackListedProperty() {
+    return addPropertyNameInternal('blackListed');
+  }
+
   QueryBuilder<MlTag, double, QQueryOperations> confidenceProperty() {
     return addPropertyNameInternal('confidence');
   }

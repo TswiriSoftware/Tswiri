@@ -5,21 +5,23 @@ part 'user_tag.g.dart';
 class UserTag {
   int id = Isar.autoIncrement;
 
-  late int tagID;
+  late int userTagID;
+
+  late int tagTextID;
 
   @override
   String toString() {
-    return 'tagID: $tagID';
+    return 'tagID: $userTagID, textID: $tagTextID';
   }
 
   Map toJson() => {
         'id': id,
-        'tagID': tagID,
+        'tagID': userTagID,
       };
 
   UserTag fromJson(Map<String, dynamic> json) {
     return UserTag()
       ..id = json['id']
-      ..tagID = json['tagID'];
+      ..userTagID = json['tagID'];
   }
 }

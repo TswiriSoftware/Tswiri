@@ -3,6 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/firebase_options.dart';
+import 'package:flutter_google_ml_kit/global_values/dictionary.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/global_values/routes.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
@@ -17,6 +18,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'sunbird_views/app_settings/app_settings_functions.dart';
 import 'sunbird_views/app_settings/app_settings_view.dart';
+import 'sunbird_views/gallery/gallery_view.dart';
 
 List<CameraDescription> cameras = [];
 Future<void> main() async {
@@ -202,13 +204,13 @@ class HomeView extends StatelessWidget {
               featureCompleted: true,
               tileColor: sunbirdOrange,
             ),
-            // CustomCard(
-            //   'Gallery',
-            //   GalleryView(),
-            //   Icons.photo,
-            //   featureCompleted: true,
-            //   tileColor: sunbirdOrange,
-            // ),
+            CustomCard(
+              'Gallery',
+              GalleryView(),
+              Icons.photo,
+              featureCompleted: true,
+              tileColor: sunbirdOrange,
+            ),
             // CustomCard(
             //   'Tree Visualizer',
             //   GridVisualizerView(),

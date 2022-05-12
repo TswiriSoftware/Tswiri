@@ -17,11 +17,11 @@ extension GetTagBoundingBoxCollection on Isar {
 final TagBoundingBoxSchema = CollectionSchema(
   name: 'TagBoundingBox',
   schema:
-      '{"name":"TagBoundingBox","idName":"id","properties":[{"name":"boundingBox","type":"DoubleList"},{"name":"boundingBoxID","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"TagBoundingBox","idName":"id","properties":[{"name":"boundingBox","type":"DoubleList"},{"name":"mlTagID","type":"Long"}],"indexes":[],"links":[]}',
   nativeAdapter: const _TagBoundingBoxNativeAdapter(),
   webAdapter: const _TagBoundingBoxWebAdapter(),
   idName: 'id',
-  propertyIds: {'boundingBox': 0, 'boundingBoxID': 1},
+  propertyIds: {'boundingBox': 0, 'mlTagID': 1},
   listProperties: {'boundingBox'},
   indexIds: {},
   indexTypes: {},
@@ -48,8 +48,8 @@ class _TagBoundingBoxWebAdapter extends IsarWebTypeAdapter<TagBoundingBox> {
       IsarCollection<TagBoundingBox> collection, TagBoundingBox object) {
     final jsObj = IsarNative.newJsObject();
     IsarNative.jsObjectSet(jsObj, 'boundingBox', object.boundingBox);
-    IsarNative.jsObjectSet(jsObj, 'boundingBoxID', object.boundingBoxID);
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
+    IsarNative.jsObjectSet(jsObj, 'mlTagID', object.mlTagID);
     return jsObj;
   }
 
@@ -62,9 +62,9 @@ class _TagBoundingBoxWebAdapter extends IsarWebTypeAdapter<TagBoundingBox> {
             .toList()
             .cast<double>() ??
         [];
-    object.boundingBoxID = IsarNative.jsObjectGet(jsObj, 'boundingBoxID') ??
-        double.negativeInfinity;
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+    object.mlTagID =
+        IsarNative.jsObjectGet(jsObj, 'mlTagID') ?? double.negativeInfinity;
     return object;
   }
 
@@ -77,12 +77,12 @@ class _TagBoundingBoxWebAdapter extends IsarWebTypeAdapter<TagBoundingBox> {
                 .toList()
                 .cast<double>() ??
             []) as P;
-      case 'boundingBoxID':
-        return (IsarNative.jsObjectGet(jsObj, 'boundingBoxID') ??
-            double.negativeInfinity) as P;
       case 'id':
         return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
             as P;
+      case 'mlTagID':
+        return (IsarNative.jsObjectGet(jsObj, 'mlTagID') ??
+            double.negativeInfinity) as P;
       default:
         throw 'Illegal propertyName';
     }
@@ -108,8 +108,8 @@ class _TagBoundingBoxNativeAdapter
     final value0 = object.boundingBox;
     dynamicSize += (value0.length) * 8;
     final _boundingBox = value0;
-    final value1 = object.boundingBoxID;
-    final _boundingBoxID = value1;
+    final value1 = object.mlTagID;
+    final _mlTagID = value1;
     final size = staticSize + dynamicSize;
 
     rawObj.buffer = alloc(size);
@@ -117,7 +117,7 @@ class _TagBoundingBoxNativeAdapter
     final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
     final writer = IsarBinaryWriter(buffer, staticSize);
     writer.writeDoubleList(offsets[0], _boundingBox);
-    writer.writeLong(offsets[1], _boundingBoxID);
+    writer.writeLong(offsets[1], _mlTagID);
   }
 
   @override
@@ -125,8 +125,8 @@ class _TagBoundingBoxNativeAdapter
       IsarBinaryReader reader, List<int> offsets) {
     final object = TagBoundingBox();
     object.boundingBox = reader.readDoubleList(offsets[0]) ?? [];
-    object.boundingBoxID = reader.readLong(offsets[1]);
     object.id = id;
+    object.mlTagID = reader.readLong(offsets[1]);
     return object;
   }
 
@@ -265,57 +265,6 @@ extension TagBoundingBoxQueryFilter
     ));
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition>
-      boundingBoxIDEqualTo(int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'boundingBoxID',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition>
-      boundingBoxIDGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'boundingBoxID',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition>
-      boundingBoxIDLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'boundingBoxID',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition>
-      boundingBoxIDBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'boundingBoxID',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
-  }
-
   QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition> idEqualTo(
       int value) {
     return addFilterConditionInternal(FilterCondition(
@@ -365,6 +314,57 @@ extension TagBoundingBoxQueryFilter
       includeUpper: includeUpper,
     ));
   }
+
+  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition>
+      mlTagIDEqualTo(int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'mlTagID',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition>
+      mlTagIDGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'mlTagID',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition>
+      mlTagIDLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'mlTagID',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition>
+      mlTagIDBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'mlTagID',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
 }
 
 extension TagBoundingBoxQueryLinks
@@ -372,16 +372,6 @@ extension TagBoundingBoxQueryLinks
 
 extension TagBoundingBoxQueryWhereSortBy
     on QueryBuilder<TagBoundingBox, TagBoundingBox, QSortBy> {
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy>
-      sortByBoundingBoxID() {
-    return addSortByInternal('boundingBoxID', Sort.asc);
-  }
-
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy>
-      sortByBoundingBoxIDDesc() {
-    return addSortByInternal('boundingBoxID', Sort.desc);
-  }
-
   QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -389,20 +379,19 @@ extension TagBoundingBoxQueryWhereSortBy
   QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy> sortByIdDesc() {
     return addSortByInternal('id', Sort.desc);
   }
+
+  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy> sortByMlTagID() {
+    return addSortByInternal('mlTagID', Sort.asc);
+  }
+
+  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy>
+      sortByMlTagIDDesc() {
+    return addSortByInternal('mlTagID', Sort.desc);
+  }
 }
 
 extension TagBoundingBoxQueryWhereSortThenBy
     on QueryBuilder<TagBoundingBox, TagBoundingBox, QSortThenBy> {
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy>
-      thenByBoundingBoxID() {
-    return addSortByInternal('boundingBoxID', Sort.asc);
-  }
-
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy>
-      thenByBoundingBoxIDDesc() {
-    return addSortByInternal('boundingBoxID', Sort.desc);
-  }
-
   QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -410,17 +399,25 @@ extension TagBoundingBoxQueryWhereSortThenBy
   QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy> thenByIdDesc() {
     return addSortByInternal('id', Sort.desc);
   }
+
+  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy> thenByMlTagID() {
+    return addSortByInternal('mlTagID', Sort.asc);
+  }
+
+  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy>
+      thenByMlTagIDDesc() {
+    return addSortByInternal('mlTagID', Sort.desc);
+  }
 }
 
 extension TagBoundingBoxQueryWhereDistinct
     on QueryBuilder<TagBoundingBox, TagBoundingBox, QDistinct> {
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QDistinct>
-      distinctByBoundingBoxID() {
-    return addDistinctByInternal('boundingBoxID');
-  }
-
   QueryBuilder<TagBoundingBox, TagBoundingBox, QDistinct> distinctById() {
     return addDistinctByInternal('id');
+  }
+
+  QueryBuilder<TagBoundingBox, TagBoundingBox, QDistinct> distinctByMlTagID() {
+    return addDistinctByInternal('mlTagID');
   }
 }
 
@@ -431,11 +428,11 @@ extension TagBoundingBoxQueryProperty
     return addPropertyNameInternal('boundingBox');
   }
 
-  QueryBuilder<TagBoundingBox, int, QQueryOperations> boundingBoxIDProperty() {
-    return addPropertyNameInternal('boundingBoxID');
-  }
-
   QueryBuilder<TagBoundingBox, int, QQueryOperations> idProperty() {
     return addPropertyNameInternal('id');
+  }
+
+  QueryBuilder<TagBoundingBox, int, QQueryOperations> mlTagIDProperty() {
+    return addPropertyNameInternal('mlTagID');
   }
 }

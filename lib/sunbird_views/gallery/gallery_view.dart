@@ -1,568 +1,561 @@
-// import 'dart:developer';
-// import 'dart:io';
+import 'dart:developer';
+import 'dart:io';
 
-// import 'package:flutter/material.dart';
-// import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
-// import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
-// import 'package:flutter_google_ml_kit/isar_database/container_photo/container_photo.dart';
-// import 'package:flutter_google_ml_kit/isar_database/ml_tag/ml_tag.dart';
-// import 'package:flutter_google_ml_kit/isar_database/photo_tag/photo_tag.dart';
-// import 'package:flutter_google_ml_kit/sunbird_views/gallery/image_painter.dart.dart';
-// import 'package:isar/isar.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
+import 'package:flutter_google_ml_kit/isar_database/photo/photo.dart';
+import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
+import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
+import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart';
 
-// class GalleryView extends StatefulWidget {
-//   const GalleryView({Key? key}) : super(key: key);
+import 'package:flutter_google_ml_kit/sunbird_views/gallery/image_painter.dart.dart';
+import 'package:isar/isar.dart';
 
-//   @override
-//   State<GalleryView> createState() => _GalleryViewState();
-// }
+class GalleryView extends StatefulWidget {
+  const GalleryView({Key? key}) : super(key: key);
 
-// class _GalleryViewState extends State<GalleryView> {
-//   ///List of all Photos.
-//   List<ContainerPhoto> photos = [];
+  @override
+  State<GalleryView> createState() => _GalleryViewState();
+}
 
-//   ///Selected Photo.
-//   ContainerPhoto? selectedPhoto;
+class _GalleryViewState extends State<GalleryView> {
+  ///List of all Photos.
+  List<Photo> photos = [];
 
-//   List<PhotoTag> photoTags = [];
-//   List<int> assignedTagIDs = [];
+  ///Selected Photo.
+  Photo? selectedPhoto;
 
-//   TextEditingController tagsController = TextEditingController();
-//   final _tagsNode = FocusNode();
-//   bool showTagEditor = false;
+  List<MlTag> mlTags = [];
+  List<int> assignedTagIDs = [];
 
-//   @override
-//   void initState() {
-//     updatePhotos();
-//     super.initState();
-//   }
+  late List<TagText> tagTexts = isarDatabase!.tagTexts.where().findAllSync();
+  List<UserTag> userTags = [];
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: _appBar(),
-//       body: _body(),
-//       bottomSheet: _bottomSheet(),
-//     );
-//   }
+  TextEditingController tagsController = TextEditingController();
+  final _tagsNode = FocusNode();
+  bool showTagEditor = false;
 
-//   ///APP BAR///
+  @override
+  void initState() {
+    updatePhotos();
+    super.initState();
+  }
 
-//   AppBar _appBar() {
-//     return AppBar(
-//       backgroundColor: sunbirdOrange,
-//       elevation: 25,
-//       centerTitle: true,
-//       title: _title(),
-//       shadowColor: Colors.black54,
-//       automaticallyImplyLeading: false,
-//       leading: IconButton(
-//           onPressed: () {
-//             setState(() {
-//               if (selectedPhoto == null) {
-//                 Navigator.pop(context);
-//               } else {
-//                 selectedPhoto = null;
-//               }
-//             });
-//           },
-//           icon: const Icon(Icons.arrow_back)),
-//     );
-//   }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: _appBar(),
+      body: _body(),
+      bottomSheet: _bottomSheet(),
+    );
+  }
 
-//   Text _title() {
-//     return Text(
-//       'Gallery',
-//       style: Theme.of(context).textTheme.titleMedium,
-//     );
-//   }
+  ///APP BAR///
 
-//   ///BODY///
-//   Widget _body() {
-//     return Builder(builder: (context) {
-//       if (selectedPhoto == null) {
-//         return _photoGridView();
-//       } else {
-//         return _photoEditor();
-//       }
-//     });
-//   }
+  AppBar _appBar() {
+    return AppBar(
+      backgroundColor: sunbirdOrange,
+      elevation: 25,
+      centerTitle: true,
+      title: _title(),
+      shadowColor: Colors.black54,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+          onPressed: () {
+            setState(() {
+              if (selectedPhoto == null) {
+                Navigator.pop(context);
+              } else {
+                selectedPhoto = null;
+              }
+            });
+          },
+          icon: const Icon(Icons.arrow_back)),
+    );
+  }
 
-//   ///GRID VIEW///
-//   Widget _photoGridView() {
-//     return GridView.builder(
-//       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-//         mainAxisSpacing: 1.0,
-//         crossAxisCount: 3,
-//       ),
-//       itemCount: photos.length,
-//       itemBuilder: (context, index) {
-//         return photoCard(photos[index]);
-//       },
-//     );
-//   }
+  Text _title() {
+    return Text(
+      'Gallery',
+      style: Theme.of(context).textTheme.titleMedium,
+    );
+  }
 
-//   Widget photoCard(ContainerPhoto containerPhoto) {
-//     return GestureDetector(
-//       onTap: () {
-//         setState(() {
-//           selectedPhoto = containerPhoto;
-//         });
-//       },
-//       child: Card(
-//         child: ClipRRect(
-//           borderRadius: BorderRadius.circular(2.5), // Image border
-//           child: SizedBox.fromSize(
-//             child: Image.file(
-//               File(containerPhoto.photoPath),
-//               fit: BoxFit.cover,
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
+  ///BODY///
+  Widget _body() {
+    return Builder(builder: (context) {
+      if (selectedPhoto == null) {
+        return _photoGridView();
+      } else {
+        return _photoEditor();
+      }
+    });
+  }
 
-//   String? swipeDirection;
+  ///GRID VIEW///
+  Widget _photoGridView() {
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        mainAxisSpacing: 1.0,
+        crossAxisCount: 3,
+      ),
+      itemCount: photos.length,
+      itemBuilder: (context, index) {
+        return photoCard(photos[index]);
+      },
+    );
+  }
 
-//   ///PHOTO EDITOR///
-//   Widget _photoEditor() {
-//     return GestureDetector(
-//       onPanUpdate: (details) {
-//         swipeDirection = details.delta.dx < 0 ? 'right' : 'left';
-//       },
-//       onPanEnd: (details) {
-//         if (swipeDirection == null) {
-//           return;
-//         }
-//         if (swipeDirection == 'right') {
-//           log('right');
-//           int index = photos.indexOf(selectedPhoto!);
-//           if (index < photos.length - 1) {
-//             setState(() {
-//               selectedPhoto = photos[index + 1];
-//             });
-//           }
-//         }
-//         if (swipeDirection == 'left') {
-//           log('left');
-//           int index = photos.indexOf(selectedPhoto!);
-//           if (index > 0) {
-//             setState(() {
-//               selectedPhoto = photos[index - 1];
-//             });
-//           }
-//         }
-//       },
-//       child: SingleChildScrollView(
-//         child: FutureBuilder<Size>(
-//           future: getImageSize(selectedPhoto!),
-//           builder: ((context, snapshot) {
-//             if (snapshot.hasData && snapshot.data != null) {
-//               return Column(
-//                 children: [
-//                   mlTagsCard(),
-//                   imageViewer(snapshot.data!),
-//                 ],
-//               );
-//             } else {
-//               return const Center(
-//                 child: CircularProgressIndicator(),
-//               );
-//             }
-//           }),
-//         ),
-//       ),
-//     );
-//   }
+  Widget photoCard(Photo containerPhoto) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedPhoto = containerPhoto;
+        });
+      },
+      child: Card(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(2.5), // Image border
+          child: SizedBox.fromSize(
+            child: Image.file(
+              File(containerPhoto.photoPath),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
-//   Widget imageViewer(Size size) {
-//     return Card(
-//       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-//       color: Colors.white12,
-//       elevation: 5,
-//       shadowColor: Colors.black26,
-//       child: SizedBox(
-//         width: size.width,
-//         height: size.height,
-//         child: Stack(
-//           fit: StackFit.expand,
-//           children: [
-//             Image.file(
-//               File(selectedPhoto!.photoPath),
-//               fit: BoxFit.fill,
-//             ),
-//             FutureBuilder<Size>(
-//                 future: getImageSize(selectedPhoto!),
-//                 builder: (context, snapshot) {
-//                   if (snapshot.hasData) {
-//                     return CustomPaint(
-//                       painter: ImageObjectDetectorPainter(
-//                           containerPhoto: selectedPhoto!,
-//                           absoluteSize: snapshot.data!),
-//                     );
-//                   } else {
-//                     return const Center(
-//                       child: CircularProgressIndicator(),
-//                     );
-//                   }
-//                 })
-//           ],
-//         ),
-//       ),
-//     );
-//   }
+  String? swipeDirection;
 
-//   Widget mlTagsCard() {
-//     return Card(
-//       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-//       color: Colors.white12,
-//       elevation: 5,
-//       shadowColor: Colors.black26,
-//       shape: RoundedRectangleBorder(
-//         side: const BorderSide(color: sunbirdOrange, width: 2),
-//         borderRadius: BorderRadius.circular(10),
-//       ),
-//       child: Padding(
-//         padding: const EdgeInsets.all(8.0),
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.start,
-//           crossAxisAlignment: CrossAxisAlignment.center,
-//           children: [
-//             _mlTagsHeading(),
-//             _dividerHeading(),
-//             mlTagsBuilder(),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
+  ///PHOTO EDITOR///
+  Widget _photoEditor() {
+    return GestureDetector(
+      onPanUpdate: (details) {
+        swipeDirection = details.delta.dx < 0 ? 'right' : 'left';
+      },
+      onPanEnd: (details) {
+        if (swipeDirection == null) {
+          return;
+        }
+        if (swipeDirection == 'right') {
+          log('right');
+          int index = photos.indexOf(selectedPhoto!);
+          if (index < photos.length - 1) {
+            setState(() {
+              selectedPhoto = photos[index + 1];
+            });
+          }
+        }
+        if (swipeDirection == 'left') {
+          log('left');
+          int index = photos.indexOf(selectedPhoto!);
+          if (index > 0) {
+            setState(() {
+              selectedPhoto = photos[index - 1];
+            });
+          }
+        }
+      },
+      child: SingleChildScrollView(
+        child: FutureBuilder<Size>(
+          future: getImageSize(selectedPhoto!),
+          builder: ((context, snapshot) {
+            if (snapshot.hasData && snapshot.data != null) {
+              return Column(
+                children: [
+                  _userTagsCard(),
+                  imageViewer(snapshot.data!),
+                ],
+              );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          }),
+        ),
+      ),
+    );
+  }
 
-//   Widget _mlTagsHeading() {
-//     return Text('AI Tags', style: Theme.of(context).textTheme.headlineSmall);
-//   }
+  Widget imageViewer(Size size) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      color: Colors.white12,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      child: SizedBox(
+        width: size.width,
+        height: size.height,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.file(
+              File(selectedPhoto!.photoPath),
+              fit: BoxFit.fill,
+            ),
+            FutureBuilder<Size>(
+                future: getImageSize(selectedPhoto!),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return CustomPaint(
+                      painter: ImageObjectDetectorPainter(
+                          photo: selectedPhoto!, absoluteSize: snapshot.data!),
+                    );
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                })
+          ],
+        ),
+      ),
+    );
+  }
 
-//   Widget mlTagsBuilder() {
-//     return Builder(builder: (context) {
-//       List<PhotoTag> photoTags = [];
-//       photoTags.addAll(isarDatabase!.photoTags
-//           .filter()
-//           .photoPathMatches(selectedPhoto!.photoPath)
-//           .findAllSync());
+  ///USER TAGS///
+  Widget _userTagsCard() {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      color: Colors.white12,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: sunbirdOrange, width: 2),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _userTagsHeading(),
+            _dividerHeading(),
+            _userTagsBuilder(),
+          ],
+        ),
+      ),
+    );
+  }
 
-//       assignedTagIDs = [];
-//       assignedTagIDs = photoTags.map((e) => e.tagUID).toList();
+  Widget _userTagsHeading() {
+    return Text('UserTags', style: Theme.of(context).textTheme.headlineSmall);
+  }
 
-//       List<Widget> tags = [_addTag()];
-//       tags.addAll(photoTags.map((e) => photoTag(e)).toList());
+  Widget _userTagsBuilder() {
+    return Builder(builder: (context) {
+      userTags = isarDatabase!.userTags
+          .filter()
+          .userTagIDEqualTo(selectedPhoto!.id)
+          .findAllSync();
 
-//       return Wrap(
-//         spacing: 10,
-//         alignment: WrapAlignment.center,
-//         runSpacing: 2,
-//         children: tags,
-//       );
-//     });
-//   }
+      List<Widget> tags = [_addTag()];
+      tags.addAll(userTags.map((e) => userTag(e)));
+      //tags.addAll(photoTags.map((e) => photoTag(e)).toList());
 
-//   Widget _addTag() {
-//     return Visibility(
-//       visible: !showTagEditor,
-//       child: InputChip(
-//         shape: RoundedRectangleBorder(
-//           borderRadius: BorderRadius.circular(30),
-//         ),
-//         onPressed: () {
-//           setState(() {
-//             _tagsNode.requestFocus();
-//             showTagEditor = !showTagEditor;
-//           });
-//         },
-//         label: const Text('+'),
-//       ),
-//     );
-//   }
+      return Wrap(
+        spacing: 10,
+        alignment: WrapAlignment.start,
+        runSpacing: 2,
+        children: tags,
+      );
+    });
+  }
 
-//   Widget photoTag(PhotoTag photoTag) {
-//     return Builder(builder: (context) {
-//       MlTag tag = isarDatabase!.mlTags.getSync(photoTag.tagUID)!;
-//       return ActionChip(
-//           avatar: Builder(builder: (context) {
-//             switch (tag.tagType) {
-//               case mlTagType.text:
-//                 return const Icon(
-//                   Icons.format_size,
-//                   size: 15,
-//                 );
+  Widget userTag(UserTag userTag) {
+    return Builder(builder: (context) {
+      String tagText = isarDatabase!.tagTexts.getSync(userTag.tagTextID)!.tag;
+      return ActionChip(
+        label: Text(tagText),
+        onPressed: () {
+          setState(() {
+            userTags.remove(userTag);
+            isarDatabase!
+                .writeTxnSync((isar) => isar.userTags.deleteSync(userTag.id));
+          });
+        },
+        backgroundColor: sunbirdOrange,
+      );
+    });
+  }
 
-//               case mlTagType.objectLabel:
-//                 return const Icon(
-//                   Icons.emoji_objects,
-//                   size: 15,
-//                 );
+  ///NEW USER TAGS///
+  Widget _bottomSheet() {
+    return Visibility(
+      visible: showTagEditor,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: sunbirdOrange, width: 1),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(5),
+          ),
+        ),
+        padding: const EdgeInsets.only(top: 5),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Tags',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            _tagSelector(),
+            _divider(),
+            _tagTextField(),
+          ],
+        ),
+      ),
+    );
+  }
 
-//               case mlTagType.imageLabel:
-//                 return const Icon(
-//                   Icons.image,
-//                   size: 15,
-//                 );
-//             }
-//           }),
-//           backgroundColor: sunbirdOrange,
-//           label: Row(
-//             mainAxisSize: MainAxisSize.min,
-//             children: [
-//               Text(
-//                 tag.tag + ' ',
-//                 style: Theme.of(context).textTheme.bodyMedium,
-//               ),
-//               const Icon(
-//                 Icons.close,
-//                 size: 12.5,
-//               ),
-//             ],
-//           ),
-//           onPressed: () {
-//             setState(() {
-//               isarDatabase!.writeTxnSync(
-//                   (isar) => isar.photoTags.deleteSync(photoTag.id));
-//             });
-//           });
-//     });
-//   }
+  Widget _addTag() {
+    return Visibility(
+      visible: !showTagEditor,
+      child: InputChip(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        onPressed: () {
+          setState(() {
+            _tagsNode.requestFocus();
+            showTagEditor = !showTagEditor;
+          });
+        },
+        label: const Text('+'),
+      ),
+    );
+  }
 
-//   Future<Size> getImageSize(ContainerPhoto selectedPhoto) async {
-//     var decodedImage = await decodeImageFromList(
-//         File(selectedPhoto.photoPath).readAsBytesSync());
+  Widget _tagSelector() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      scrollDirection: Axis.horizontal,
+      child: Builder(builder: (context) {
+        List<TagText> tagTexts = [];
+        if (tagsController.text.isNotEmpty) {
+          tagTexts.addAll(isarDatabase!.tagTexts
+              .filter()
+              .tagContains(tagsController.text.toLowerCase())
+              .and()
+              .not()
+              .repeat(userTags,
+                  (q, UserTag element) => q.idEqualTo(element.tagTextID))
+              .findAllSync());
+        } else {
+          List<int> usr = userTags.map((e) => e.tagTextID).toList();
+          tagTexts.addAll(isarDatabase!.tagTexts
+              .filter()
+              .not()
+              .repeat(userTags,
+                  (q, UserTag element) => q.idEqualTo(element.tagTextID))
+              .findAllSync()
+              .where((element) => !usr.contains(element.id)));
+        }
 
-//     Size absoluteSize =
-//         Size(decodedImage.height.toDouble(), decodedImage.width.toDouble());
+        // }
+        return Wrap(
+          spacing: 5,
+          children: tagTexts.map((e) => tagText(e)).toList(),
+        );
+      }),
+    );
+  }
 
-//     return absoluteSize;
-//   }
+  Widget tagText(TagText tagText) {
+    return ActionChip(
+      label: Text(tagText.tag),
+      onPressed: () {
+        setState(() {
+          UserTag newUserTag = UserTag()
+            ..tagTextID = tagText.id
+            ..userTagID = selectedPhoto!.id;
+          userTags.add(newUserTag);
+          isarDatabase!
+              .writeTxnSync((isar) => isar.userTags.putSync(newUserTag));
+        });
+      },
+      backgroundColor: sunbirdOrange,
+    );
+  }
 
-//   Widget _bottomSheet() {
-//     return Visibility(
-//       visible: showTagEditor,
-//       child: Container(
-//         decoration: BoxDecoration(
-//           border: Border.all(color: sunbirdOrange, width: 1),
-//           borderRadius: const BorderRadius.all(
-//             Radius.circular(5),
-//           ),
-//         ),
-//         padding: const EdgeInsets.only(top: 5),
-//         child: Column(
-//           mainAxisSize: MainAxisSize.min,
-//           crossAxisAlignment: CrossAxisAlignment.center,
-//           children: [
-//             Text(
-//               'Tags',
-//               style: Theme.of(context).textTheme.bodySmall,
-//             ),
-//             _tagSelector(),
-//             _divider(),
-//             _tagTextField(),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
+  Widget _tagTextField() {
+    return TextField(
+      controller: tagsController,
+      focusNode: _tagsNode,
+      onChanged: (value) {
+        setState(() {});
+      },
+      onSubmitted: (value) {
+        addTag();
+        if (value.isEmpty) {
+          setState(() {
+            showTagEditor = false;
+          });
+        }
+      },
+      style: const TextStyle(fontSize: 18),
+      textCapitalization: TextCapitalization.words,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white10,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+        labelText: 'Tag',
+        labelStyle: const TextStyle(fontSize: 15, color: Colors.white),
+        suffixIcon: IconButton(
+          onPressed: () {
+            addTag();
+          },
+          icon: const Icon(Icons.add),
+        ),
+        border: const OutlineInputBorder(
+            borderSide: BorderSide(color: sunbirdOrange)),
+        focusedBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: sunbirdOrange)),
+      ),
+    );
+  }
 
-//   Widget _tagSelector() {
-//     return SingleChildScrollView(
-//       padding: const EdgeInsets.symmetric(horizontal: 5),
-//       scrollDirection: Axis.horizontal,
-//       child: Builder(builder: (context) {
-//         List<int> displayTagIDs = [];
+  Widget mlTag(int tagID) {
+    return Builder(builder: (context) {
+      MlTag currentMlTag = isarDatabase!.mlTags.getSync(tagID)!;
+      return ActionChip(
+        avatar: Builder(builder: (context) {
+          switch (currentMlTag.tagType) {
+            case mlTagType.text:
+              return const Icon(
+                Icons.format_size,
+                size: 15,
+              );
 
-//         if (tagsController.text.isNotEmpty) {
-//           displayTagIDs.addAll(isarDatabase!.mlTags
-//               .filter()
-//               .tagContains(tagsController.text.toLowerCase(),
-//                   caseSensitive: false)
-//               .findAllSync()
-//               .map((e) => e.id)
-//               .where((element) => !assignedTagIDs.contains(element))
-//               .take(8));
-//         } else {
-//           displayTagIDs.addAll(isarDatabase!.mlTags
-//               .where()
-//               .findAllSync()
-//               .map((e) => e.id)
-//               .where((element) => !assignedTagIDs.contains(element))
-//               .take(10));
-//         }
-//         return Wrap(
-//           spacing: 5,
-//           children: displayTagIDs.map((e) => mlTag(e)).toList(),
-//         );
-//       }),
-//     );
-//   }
+            case mlTagType.objectLabel:
+              return const Icon(
+                Icons.emoji_objects,
+                size: 15,
+              );
 
-//   Widget _tagTextField() {
-//     return TextField(
-//       controller: tagsController,
-//       focusNode: _tagsNode,
-//       onChanged: (value) {
-//         setState(() {});
-//       },
-//       onSubmitted: (value) {
-//         addTag();
-//         if (value.isEmpty) {
-//           setState(() {
-//             showTagEditor = false;
-//           });
-//         }
-//       },
-//       style: const TextStyle(fontSize: 18),
-//       textCapitalization: TextCapitalization.words,
-//       decoration: InputDecoration(
-//         filled: true,
-//         fillColor: Colors.white10,
-//         contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-//         labelText: 'Tag',
-//         labelStyle: const TextStyle(fontSize: 15, color: Colors.white),
-//         suffixIcon: IconButton(
-//           onPressed: () {
-//             addTag();
-//           },
-//           icon: const Icon(Icons.add),
-//         ),
-//         border: const OutlineInputBorder(
-//             borderSide: BorderSide(color: sunbirdOrange)),
-//         focusedBorder: const OutlineInputBorder(
-//             borderSide: BorderSide(color: sunbirdOrange)),
-//       ),
-//     );
-//   }
+            case mlTagType.imageLabel:
+              return const Icon(
+                Icons.image,
+                size: 15,
+              );
+          }
+        }),
+        backgroundColor: sunbirdOrange,
+        label: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              ' a',
+              // currentMlTag.tag + ' ',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            Icon(
+              assignedTagIDs.contains(tagID) ? Icons.close : Icons.add,
+              size: 12.5,
+            ),
+          ],
+        ),
+        onPressed: () {
+          // if (assignedTagIDs.contains(tagID)) {
+          //   //Remove Tag
+          //   PhotoTag currentPhotoTag =
+          //       photoTags.where((element) => element.tagUID == tagID).first;
+          //   isarDatabase!.writeTxnSync(
+          //       (isar) => isar.photoTags.deleteSync(currentPhotoTag.id));
+          // } else {
+          //   //Add Tag
+          //   isarDatabase!
+          //       .writeTxnSync((isar) => isar.photoTags.putSync(PhotoTag()
+          //         ..photoPath = selectedPhoto!.photoPath
+          //         ..tagUID = tagID
+          //         ..confidence = 1.0
+          //         ..boundingBox = null));
+          //   tagsController.clear();
+          // }
+          //updateTags();
+          addTag();
+          setState(() {});
+        },
+      );
+    });
+  }
 
-//   Widget mlTag(int tagID) {
-//     return Builder(builder: (context) {
-//       MlTag currentMlTag = isarDatabase!.mlTags.getSync(tagID)!;
-//       return ActionChip(
-//         avatar: Builder(builder: (context) {
-//           switch (currentMlTag.tagType) {
-//             case mlTagType.text:
-//               return const Icon(
-//                 Icons.format_size,
-//                 size: 15,
-//               );
+  void addTag() {
+    // if (tagsController.text.isEmpty) {
+    //   _tagsNode.unfocus();
+    // } else {
+    //   //Should this be text only ?
+    //   MlTag? mltag = isarDatabase!.mlTags
+    //       .filter()
+    //       .tagMatches(tagsController.text.toLowerCase().trim(),
+    //           caseSensitive: false)
+    //       .and()
+    //       .tagTypeEqualTo(mlTagType.text)
+    //       .findFirstSync();
 
-//             case mlTagType.objectLabel:
-//               return const Icon(
-//                 Icons.emoji_objects,
-//                 size: 15,
-//               );
+    //   if (mltag != null) {
+    //     isarDatabase!.writeTxnSync((isar) => isar.mlTags.putSync(PhotoTag()
+    //       ..photoPath = selectedPhoto!.photoPath
+    //       ..tagUID = mltag.id
+    //       ..confidence = 1.0
+    //       ..boundingBox = null));
+    //   } else {
+    //     MlTag newMlTag = MlTag()
+    //       ..tag = tagsController.text.toLowerCase().trim()
+    //       ..tagType = mlTagType.text;
 
-//             case mlTagType.imageLabel:
-//               return const Icon(
-//                 Icons.image,
-//                 size: 15,
-//               );
-//           }
-//         }),
-//         backgroundColor: sunbirdOrange,
-//         label: Row(
-//           mainAxisSize: MainAxisSize.min,
-//           children: [
-//             Text(
-//               currentMlTag.tag + ' ',
-//               style: Theme.of(context).textTheme.bodyMedium,
-//             ),
-//             Icon(
-//               assignedTagIDs.contains(tagID) ? Icons.close : Icons.add,
-//               size: 12.5,
-//             ),
-//           ],
-//         ),
-//         onPressed: () {
-//           // if (assignedTagIDs.contains(tagID)) {
-//           //   //Remove Tag
-//           //   PhotoTag currentPhotoTag =
-//           //       photoTags.where((element) => element.tagUID == tagID).first;
-//           //   isarDatabase!.writeTxnSync(
-//           //       (isar) => isar.photoTags.deleteSync(currentPhotoTag.id));
-//           // } else {
-//           //   //Add Tag
-//           //   isarDatabase!
-//           //       .writeTxnSync((isar) => isar.photoTags.putSync(PhotoTag()
-//           //         ..photoPath = selectedPhoto!.photoPath
-//           //         ..tagUID = tagID
-//           //         ..confidence = 1.0
-//           //         ..boundingBox = null));
-//           //   tagsController.clear();
-//           // }
-//           //updateTags();
-//           addTag();
-//           setState(() {});
-//         },
-//       );
-//     });
-//   }
+    //     isarDatabase!.writeTxnSync((isar) => isar.mlTags.putSync(newMlTag));
 
-//   void addTag() {
-//     if (tagsController.text.isEmpty) {
-//       _tagsNode.unfocus();
-//     } else {
-//       //Should this be text only ?
-//       MlTag? mltag = isarDatabase!.mlTags
-//           .filter()
-//           .tagMatches(tagsController.text.toLowerCase().trim(),
-//               caseSensitive: false)
-//           .and()
-//           .tagTypeEqualTo(mlTagType.text)
-//           .findFirstSync();
+    //     isarDatabase!.writeTxnSync((isar) => isar.mlTags.putSync(PhotoTag()
+    //       ..photoPath = selectedPhoto!.photoPath
+    //       ..tagUID = newMlTag.id
+    //       ..confidence = 1.0
+    //       ..boundingBox = null));
+    //   }
 
-//       if (mltag != null) {
-//         isarDatabase!.writeTxnSync((isar) => isar.photoTags.putSync(PhotoTag()
-//           ..photoPath = selectedPhoto!.photoPath
-//           ..tagUID = mltag.id
-//           ..confidence = 1.0
-//           ..boundingBox = null));
-//       } else {
-//         MlTag newMlTag = MlTag()
-//           ..tag = tagsController.text.toLowerCase().trim()
-//           ..tagType = mlTagType.text;
+    //   tagsController.clear();
+    //   _tagsNode.requestFocus();
 
-//         isarDatabase!.writeTxnSync((isar) => isar.mlTags.putSync(newMlTag));
+    //   setState(() {});
+    // }
+  }
 
-//         isarDatabase!.writeTxnSync((isar) => isar.photoTags.putSync(PhotoTag()
-//           ..photoPath = selectedPhoto!.photoPath
-//           ..tagUID = newMlTag.id
-//           ..confidence = 1.0
-//           ..boundingBox = null));
-//       }
+  void updatePhotos() {
+    setState(() {
+      photos = isarDatabase!.photos.where().findAllSync();
+    });
+  }
 
-//       tagsController.clear();
-//       _tagsNode.requestFocus();
+  Future<Size> getImageSize(Photo selectedPhoto) async {
+    var decodedImage = await decodeImageFromList(
+        File(selectedPhoto.photoPath).readAsBytesSync());
 
-//       setState(() {});
-//     }
-//   }
+    Size absoluteSize =
+        Size(decodedImage.height.toDouble(), decodedImage.width.toDouble());
 
-//   void updatePhotos() {
-//     setState(() {
-//       photos = isarDatabase!.containerPhotos.where().findAllSync();
-//     });
-//   }
+    return absoluteSize;
+  }
 
-//   ///MISC///
+  ///MISC///
 
-//   Divider _divider() {
-//     return const Divider(
-//       height: 8,
-//       indent: 2,
-//       color: Colors.white30,
-//     );
-//   }
+  Divider _divider() {
+    return const Divider(
+      height: 8,
+      indent: 2,
+      color: Colors.white30,
+    );
+  }
 
-//   Divider _dividerHeading() {
-//     return const Divider(
-//       height: 8,
-//       thickness: 1,
-//       color: Colors.white,
-//     );
-//   }
-// }
+  Divider _dividerHeading() {
+    return const Divider(
+      height: 8,
+      thickness: 1,
+      color: Colors.white,
+    );
+  }
+}

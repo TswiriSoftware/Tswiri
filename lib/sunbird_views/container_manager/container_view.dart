@@ -1,6 +1,4 @@
-import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
@@ -8,8 +6,10 @@ import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.da
 import 'package:flutter_google_ml_kit/isar_database/photo/photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/photo_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/grid_manager/container_grid_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/new_container_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_view.dart';
 import 'package:isar/isar.dart';
 
 class ContainerView extends StatefulWidget {
@@ -180,6 +180,7 @@ class _ContainerViewState extends State<ContainerView> {
           return _nameEdit();
         } else {
           return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,6 +194,16 @@ class _ContainerViewState extends State<ContainerView> {
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
+              ),
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    nameIsFocused = !nameIsFocused;
+                    _nameNode.requestFocus();
+                  });
+                },
+                icon: const Icon(Icons.edit),
+                iconSize: 15,
               ),
             ],
           );
@@ -216,6 +227,7 @@ class _ContainerViewState extends State<ContainerView> {
           return _descriptionEdit();
         } else {
           return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -229,6 +241,16 @@ class _ContainerViewState extends State<ContainerView> {
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
+              ),
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    descriptionIsFocused = !descriptionIsFocused;
+                    _descriptionNode.requestFocus();
+                  });
+                },
+                icon: const Icon(Icons.edit),
+                iconSize: 15,
               ),
             ],
           );
@@ -289,6 +311,7 @@ class _ContainerViewState extends State<ContainerView> {
           suffixIcon: IconButton(
             onPressed: () {
               saveDescription(descriptionController.text);
+              _descriptionNode.unfocus();
             },
             icon: const Icon(Icons.save),
           ),
@@ -712,7 +735,7 @@ class _ContainerViewState extends State<ContainerView> {
             ..containerUID = _containerEntry.containerUID
             ..textTagID = tag.id));
     } else {
-      log('new tag');
+      //log('new tag');
       //New Tag.
       TagText newTag = TagText()
         ..tag = tagsController.text.toLowerCase().trim();
@@ -803,78 +826,79 @@ class _ContainerViewState extends State<ContainerView> {
           children: [
             Text('Photos', style: Theme.of(context).textTheme.headlineSmall),
             _dividerHeading(),
-            //_photosBuilder(),
+            _photosBuilder(),
+            //_photoAddCard(),
           ],
         ),
       ),
     );
   }
 
-  // Widget _photosBuilder() {
-  //   return Builder(
-  //     builder: (context) {
-  //       List<Photo> containerPhotos = [];
-  //       containerPhotos.addAll(isarDatabase!.photos
-  //           .filter()
-  //           .containerUIDMatches(_containerEntry.containerUID)
-  //           .findAllSync());
+  Widget _photosBuilder() {
+    return Builder(
+      builder: (context) {
+        List<Photo> containerPhotos = [];
+        containerPhotos.addAll(isarDatabase!.photos
+            .filter()
+            .containerUIDMatches(_containerEntry.containerUID)
+            .findAllSync());
 
-  //       List<Widget> photoWidgets = [
-  //         _photoAddCard(),
-  //       ];
+        List<Widget> photoWidgets = [
+          _photoAddCard(),
+        ];
 
-  //       photoWidgets.addAll(containerPhotos.map((e) => photoCard(e)).toList());
-  //       return Wrap(
-  //         spacing: 1,
-  //         runSpacing: 1,
-  //         alignment: WrapAlignment.center,
-  //         runAlignment: WrapAlignment.center,
-  //         crossAxisAlignment: WrapCrossAlignment.center,
-  //         children: photoWidgets,
-  //       );
-  //     },
-  //   );
-  // }
+        photoWidgets.addAll(containerPhotos.map((e) => photoCard(e)).toList());
+        return Wrap(
+          spacing: 1,
+          runSpacing: 1,
+          alignment: WrapAlignment.center,
+          runAlignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: photoWidgets,
+        );
+      },
+    );
+  }
 
-  // Widget photoCard(Photo containerPhoto) {
-  //   return Card(
-  //     child: InkWell(
-  //       onTap: () async {
-  //         await Navigator.push(
-  //           context,
-  //           MaterialPageRoute(
-  //             builder: (context) => PhotoView(
-  //               containerPhoto: containerPhoto,
-  //               containerColor: _containerColor,
-  //             ),
-  //           ),
-  //         );
-  //         setState(() {});
-  //       },
-  //       child: Stack(
-  //         alignment: AlignmentDirectional.topStart,
-  //         children: [
-  //           Container(
-  //             width: MediaQuery.of(context).size.width * 0.27,
-  //             height: MediaQuery.of(context).size.width * 0.4,
-  //             decoration: BoxDecoration(
-  //               border: Border.all(color: _containerColor, width: 1),
-  //               borderRadius: const BorderRadius.all(
-  //                 Radius.circular(5),
-  //               ),
-  //             ),
-  //             padding: const EdgeInsets.all(2.5),
-  //             child: Image.file(
-  //               File(containerPhoto.photoPath),
-  //               fit: BoxFit.cover,
-  //             ),
-  //           ),
-  //           photoDeleteButton(containerPhoto),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
+  Widget photoCard(Photo containerPhoto) {
+    return Card(
+      child: InkWell(
+        onTap: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PhotoView(
+                containerPhoto: containerPhoto,
+                containerColor: _containerColor,
+              ),
+            ),
+          );
+          setState(() {});
+        },
+        child: Stack(
+          alignment: AlignmentDirectional.topStart,
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width * 0.27,
+              height: MediaQuery.of(context).size.width * 0.4,
+              decoration: BoxDecoration(
+                border: Border.all(color: _containerColor, width: 1),
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(5),
+                ),
+              ),
+              padding: const EdgeInsets.all(2.5),
+              child: Image.file(
+                File(containerPhoto.photoPath),
+                fit: BoxFit.cover,
+              ),
+            ),
+            photoDeleteButton(containerPhoto),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget photoDeleteButton(Photo containerPhoto) {
     return Container(
@@ -903,42 +927,42 @@ class _ContainerViewState extends State<ContainerView> {
     );
   }
 
-  // Widget _photoAddCard() {
-  //   return InkWell(
-  //     onTap: () async {
-  //       await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => ObjectDetectorView(
-  //             customColor: _containerColor,
-  //             containerUID: _containerEntry.containerUID,
-  //           ),
-  //         ),
-  //       );
+  Widget _photoAddCard() {
+    return InkWell(
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ObjectDetectorView(
+              customColor: _containerColor,
+              containerUID: _containerEntry.containerUID,
+            ),
+          ),
+        );
 
-  //       setState(() {});
-  //     },
-  //     child: Card(
-  //       child: Container(
-  //         width: MediaQuery.of(context).size.width * 0.27,
-  //         height: MediaQuery.of(context).size.width * 0.4,
-  //         padding: const EdgeInsets.all(2.5),
-  //         decoration: BoxDecoration(
-  //           border: Border.all(color: _containerColor, width: 1),
-  //           borderRadius: const BorderRadius.all(
-  //             Radius.circular(5),
-  //           ),
-  //         ),
-  //         child: Center(
-  //           child: Text(
-  //             '+',
-  //             style: Theme.of(context).textTheme.labelLarge,
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
+        setState(() {});
+      },
+      child: Card(
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.27,
+          height: MediaQuery.of(context).size.width * 0.4,
+          padding: const EdgeInsets.all(2.5),
+          decoration: BoxDecoration(
+            border: Border.all(color: _containerColor, width: 1),
+            borderRadius: const BorderRadius.all(
+              Radius.circular(5),
+            ),
+          ),
+          child: Center(
+            child: Text(
+              '+',
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   void deletePhoto(Photo containerPhoto) {
     //Delete Photo.
