@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/isar_database/photo/photo.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/photo_view.dart';
@@ -661,7 +661,7 @@ class _ContainerViewState extends State<ContainerView> {
         if (tagsController.text.isNotEmpty) {
           displayTags.addAll(isarDatabase!.tagTexts
               .filter()
-              .tagContains(tagsController.text.toLowerCase(),
+              .textContains(tagsController.text.toLowerCase(),
                   caseSensitive: false)
               .findAllSync()
               .map((e) => e.id)
@@ -669,7 +669,7 @@ class _ContainerViewState extends State<ContainerView> {
         } else {
           displayTags.addAll(isarDatabase!.tagTexts
               .filter()
-              .tagContains(tagsController.text.toLowerCase(),
+              .textContains(tagsController.text.toLowerCase(),
                   caseSensitive: false)
               .findAllSync()
               .map((e) => e.id)
@@ -725,7 +725,7 @@ class _ContainerViewState extends State<ContainerView> {
   void _addNewTag() {
     TagText? tag = isarDatabase!.tagTexts
         .filter()
-        .tagMatches(tagsController.text.trim(), caseSensitive: false)
+        .textMatches(tagsController.text.trim(), caseSensitive: false)
         .findFirstSync();
 
     if (tag != null) {
@@ -733,12 +733,12 @@ class _ContainerViewState extends State<ContainerView> {
       isarDatabase!
           .writeTxnSync((isar) => isar.containerTags.putSync(ContainerTag()
             ..containerUID = _containerEntry.containerUID
-            ..textTagID = tag.id));
+            ..textID = tag.id));
     } else {
       //log('new tag');
       //New Tag.
       TagText newTag = TagText()
-        ..tag = tagsController.text.toLowerCase().trim();
+        ..text = tagsController.text.toLowerCase().trim();
       isarDatabase!.writeTxnSync(
         (isar) => isar.tagTexts.putSync(newTag),
       );
@@ -746,7 +746,7 @@ class _ContainerViewState extends State<ContainerView> {
       isarDatabase!
           .writeTxnSync((isar) => isar.containerTags.putSync(ContainerTag()
             ..containerUID = _containerEntry.containerUID
-            ..textTagID = newTag.id));
+            ..textID = newTag.id));
     }
     updateTags();
     setState(() {});
@@ -763,7 +763,7 @@ class _ContainerViewState extends State<ContainerView> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              tag.tag + ' ',
+              tag.text + ' ',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             Icon(
@@ -776,7 +776,7 @@ class _ContainerViewState extends State<ContainerView> {
           if (assignedTagIDs.contains(tagID)) {
             isarDatabase!.writeTxnSync((isar) => isar.containerTags
                 .filter()
-                .textTagIDEqualTo(tagID)
+                .textIDEqualTo(tagID)
                 .deleteFirstSync());
             updateTags();
             setState(() {});
@@ -784,7 +784,7 @@ class _ContainerViewState extends State<ContainerView> {
             isarDatabase!.writeTxnSync(
                 (isar) => isar.containerTags.putSync(ContainerTag()
                   ..containerUID = _containerEntry.containerUID
-                  ..textTagID = tagID));
+                  ..textID = tagID));
             updateTags();
             tagsController.clear();
             setState(() {});
@@ -800,7 +800,7 @@ class _ContainerViewState extends State<ContainerView> {
     assignedTagIDs.addAll(isarDatabase!.containerTags
         .filter()
         .containerUIDMatches(_containerEntry.containerUID)
-        .textTagIDProperty()
+        .textIDProperty()
         .findAllSync());
 
     allTags =

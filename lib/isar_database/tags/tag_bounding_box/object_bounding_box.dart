@@ -1,19 +1,19 @@
 import 'package:isar/isar.dart';
-part 'tag_bounding_box.g.dart';
+part 'object_bounding_box.g.dart';
 
 @Collection()
-class TagBoundingBox {
+class ObjectBoundingBox {
   int id = Isar.autoIncrement;
 
   ///BoundingBoxID.
-  late int mlTagID;
+  late int photoID;
 
   ///The boundingBox. use rect.fromLTRB
   late List<double> boundingBox;
 
   @override
   String toString() {
-    return 'boundingBox: $boundingBox, mlTagID: $mlTagID';
+    return 'boundingBox: $boundingBox, mlTagID: $photoID';
   }
 
   // Map toJson() => {

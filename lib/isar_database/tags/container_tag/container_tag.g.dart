@@ -17,11 +17,11 @@ extension GetContainerTagCollection on Isar {
 final ContainerTagSchema = CollectionSchema(
   name: 'ContainerTag',
   schema:
-      '{"name":"ContainerTag","idName":"id","properties":[{"name":"containerUID","type":"String"},{"name":"textTagID","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"ContainerTag","idName":"id","properties":[{"name":"containerUID","type":"String"},{"name":"textID","type":"Long"}],"indexes":[],"links":[]}',
   nativeAdapter: const _ContainerTagNativeAdapter(),
   webAdapter: const _ContainerTagWebAdapter(),
   idName: 'id',
-  propertyIds: {'containerUID': 0, 'textTagID': 1},
+  propertyIds: {'containerUID': 0, 'textID': 1},
   listProperties: {},
   indexIds: {},
   indexTypes: {},
@@ -49,7 +49,7 @@ class _ContainerTagWebAdapter extends IsarWebTypeAdapter<ContainerTag> {
     final jsObj = IsarNative.newJsObject();
     IsarNative.jsObjectSet(jsObj, 'containerUID', object.containerUID);
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'textTagID', object.textTagID);
+    IsarNative.jsObjectSet(jsObj, 'textID', object.textID);
     return jsObj;
   }
 
@@ -59,8 +59,8 @@ class _ContainerTagWebAdapter extends IsarWebTypeAdapter<ContainerTag> {
     final object = ContainerTag();
     object.containerUID = IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '';
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.textTagID =
-        IsarNative.jsObjectGet(jsObj, 'textTagID') ?? double.negativeInfinity;
+    object.textID =
+        IsarNative.jsObjectGet(jsObj, 'textID') ?? double.negativeInfinity;
     return object;
   }
 
@@ -72,8 +72,8 @@ class _ContainerTagWebAdapter extends IsarWebTypeAdapter<ContainerTag> {
       case 'id':
         return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
             as P;
-      case 'textTagID':
-        return (IsarNative.jsObjectGet(jsObj, 'textTagID') ??
+      case 'textID':
+        return (IsarNative.jsObjectGet(jsObj, 'textID') ??
             double.negativeInfinity) as P;
       default:
         throw 'Illegal propertyName';
@@ -99,8 +99,8 @@ class _ContainerTagNativeAdapter extends IsarNativeTypeAdapter<ContainerTag> {
     final value0 = object.containerUID;
     final _containerUID = IsarBinaryWriter.utf8Encoder.convert(value0);
     dynamicSize += (_containerUID.length) as int;
-    final value1 = object.textTagID;
-    final _textTagID = value1;
+    final value1 = object.textID;
+    final _textID = value1;
     final size = staticSize + dynamicSize;
 
     rawObj.buffer = alloc(size);
@@ -108,7 +108,7 @@ class _ContainerTagNativeAdapter extends IsarNativeTypeAdapter<ContainerTag> {
     final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
     final writer = IsarBinaryWriter(buffer, staticSize);
     writer.writeBytes(offsets[0], _containerUID);
-    writer.writeLong(offsets[1], _textTagID);
+    writer.writeLong(offsets[1], _textID);
   }
 
   @override
@@ -117,7 +117,7 @@ class _ContainerTagNativeAdapter extends IsarNativeTypeAdapter<ContainerTag> {
     final object = ContainerTag();
     object.containerUID = reader.readString(offsets[0]);
     object.id = id;
-    object.textTagID = reader.readLong(offsets[1]);
+    object.textID = reader.readLong(offsets[1]);
     return object;
   }
 
@@ -380,50 +380,49 @@ extension ContainerTagQueryFilter
     ));
   }
 
-  QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition>
-      textTagIDEqualTo(int value) {
+  QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition> textIDEqualTo(
+      int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
-      property: 'textTagID',
+      property: 'textID',
       value: value,
     ));
   }
 
   QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition>
-      textTagIDGreaterThan(
+      textIDGreaterThan(
     int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
       include: include,
-      property: 'textTagID',
+      property: 'textID',
       value: value,
     ));
   }
 
   QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition>
-      textTagIDLessThan(
+      textIDLessThan(
     int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
       include: include,
-      property: 'textTagID',
+      property: 'textID',
       value: value,
     ));
   }
 
-  QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition>
-      textTagIDBetween(
+  QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition> textIDBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return addFilterConditionInternal(FilterCondition.between(
-      property: 'textTagID',
+      property: 'textID',
       lower: lower,
       includeLower: includeLower,
       upper: upper,
@@ -454,12 +453,12 @@ extension ContainerTagQueryWhereSortBy
     return addSortByInternal('id', Sort.desc);
   }
 
-  QueryBuilder<ContainerTag, ContainerTag, QAfterSortBy> sortByTextTagID() {
-    return addSortByInternal('textTagID', Sort.asc);
+  QueryBuilder<ContainerTag, ContainerTag, QAfterSortBy> sortByTextID() {
+    return addSortByInternal('textID', Sort.asc);
   }
 
-  QueryBuilder<ContainerTag, ContainerTag, QAfterSortBy> sortByTextTagIDDesc() {
-    return addSortByInternal('textTagID', Sort.desc);
+  QueryBuilder<ContainerTag, ContainerTag, QAfterSortBy> sortByTextIDDesc() {
+    return addSortByInternal('textID', Sort.desc);
   }
 }
 
@@ -482,12 +481,12 @@ extension ContainerTagQueryWhereSortThenBy
     return addSortByInternal('id', Sort.desc);
   }
 
-  QueryBuilder<ContainerTag, ContainerTag, QAfterSortBy> thenByTextTagID() {
-    return addSortByInternal('textTagID', Sort.asc);
+  QueryBuilder<ContainerTag, ContainerTag, QAfterSortBy> thenByTextID() {
+    return addSortByInternal('textID', Sort.asc);
   }
 
-  QueryBuilder<ContainerTag, ContainerTag, QAfterSortBy> thenByTextTagIDDesc() {
-    return addSortByInternal('textTagID', Sort.desc);
+  QueryBuilder<ContainerTag, ContainerTag, QAfterSortBy> thenByTextIDDesc() {
+    return addSortByInternal('textID', Sort.desc);
   }
 }
 
@@ -502,8 +501,8 @@ extension ContainerTagQueryWhereDistinct
     return addDistinctByInternal('id');
   }
 
-  QueryBuilder<ContainerTag, ContainerTag, QDistinct> distinctByTextTagID() {
-    return addDistinctByInternal('textTagID');
+  QueryBuilder<ContainerTag, ContainerTag, QDistinct> distinctByTextID() {
+    return addDistinctByInternal('textID');
   }
 }
 
@@ -517,7 +516,7 @@ extension ContainerTagQueryProperty
     return addPropertyNameInternal('id');
   }
 
-  QueryBuilder<ContainerTag, int, QQueryOperations> textTagIDProperty() {
-    return addPropertyNameInternal('textTagID');
+  QueryBuilder<ContainerTag, int, QQueryOperations> textIDProperty() {
+    return addPropertyNameInternal('textID');
   }
 }

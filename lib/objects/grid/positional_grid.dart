@@ -3,10 +3,10 @@ import 'dart:ui';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.dart';
 import 'package:flutter_google_ml_kit/functions/translating/unit_vectors.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
-import 'package:flutter_google_ml_kit/isar_database/interbarcode_vector_entry/interbarcode_vector_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcodes/interbarcode_vector_entry/interbarcode_vector_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
 
 import 'package:flutter_google_ml_kit/objects/display/display_point.dart';
 import 'package:flutter_google_ml_kit/objects/grid/position.dart';

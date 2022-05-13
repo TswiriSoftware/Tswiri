@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
 import 'package:flutter_google_ml_kit/objects/grid/grid.dart';
 import 'package:flutter_google_ml_kit/objects/grid/position.dart';
 import 'package:flutter_google_ml_kit/objects/grid/positional_grid.dart';

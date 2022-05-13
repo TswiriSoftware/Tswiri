@@ -3,7 +3,6 @@ import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/firebase_options.dart';
-import 'package:flutter_google_ml_kit/global_values/dictionary.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/global_values/routes.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
@@ -11,7 +10,6 @@ import 'package:flutter_google_ml_kit/sunbird_views/barcode_generator/barcode_ge
 import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/camera_calibration_tools_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_manager_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_types/container_types_view.dart';
-
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -24,10 +22,13 @@ List<CameraDescription> cameras = [];
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  //Set screen orientation.
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
 
+  //Initialize Firebase.
   if (Firebase.apps.isEmpty) {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,

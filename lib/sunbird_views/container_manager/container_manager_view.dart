@@ -1,16 +1,15 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_type/container_type.dart';
-import 'package:flutter_google_ml_kit/isar_database/interbarcode_vector_entry/interbarcode_vector_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
-import 'package:flutter_google_ml_kit/isar_database/photo/photo.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_type/container_type.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcodes/interbarcode_vector_entry/interbarcode_vector_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
@@ -353,9 +352,9 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
     return Builder(builder: (context) {
       String tag = isarDatabase!.tagTexts
           .filter()
-          .idEqualTo(containerTag.textTagID)
+          .idEqualTo(containerTag.textID)
           .findFirstSync()!
-          .tag;
+          .text;
       return Chip(
         label: Text(
           tag,
@@ -469,7 +468,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
         photoTags.addAll(isarDatabase!.mlTags
             .filter()
             .repeat(containerPhotos,
-                (q, Photo element) => q.mlTagIDEqualTo(element.id))
+                (q, Photo element) => q.photoIDEqualTo(element.id))
             .findAllSync());
       }
     }
@@ -528,7 +527,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
 
       isar.mlTags
           .filter()
-          .repeat(photoTags, (q, MlTag element) => q.mlTagIDEqualTo(element.id))
+          .repeat(photoTags, (q, MlTag element) => q.photoIDEqualTo(element.id))
           .deleteAllSync();
 
       isar.containerEntrys

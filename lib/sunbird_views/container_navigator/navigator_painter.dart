@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
 import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/message_objects/painter_message.dart';
 
 class NavigatorPainter extends CustomPainter {

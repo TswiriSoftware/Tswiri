@@ -1,8 +1,8 @@
 import 'dart:developer';
 import 'dart:io';
-import 'package:flutter_google_ml_kit/isar_database/photo/photo.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
-import 'package:flutter_google_ml_kit/isar_database/tags/tag_bounding_box/tag_bounding_box.dart';
+import 'package:flutter_google_ml_kit/isar_database/tags/tag_bounding_box/object_bounding_box.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
 import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
@@ -197,30 +197,30 @@ class _ObjectDetectorProcessingView
         //v. Check if label text exists.
         TagText? tagText = isarDatabase!.tagTexts
             .filter()
-            .tagMatches(labelText)
+            .textMatches(labelText)
             .findFirstSync();
 
         //vi. Create new TagText.
         if (tagText == null) {
-          tagText = TagText()..tag = labelText;
+          tagText = TagText()..text = labelText;
           isarDatabase!.writeTxnSync((isar) => isar.tagTexts.putSync(tagText!));
         }
 
         //vii. Create MlTag.
         MlTag mlTag = MlTag()
-          ..mlTagID = photo.id
+          ..photoID = photo.id
           ..tagType = mlTagType.objectLabel
-          ..textTagID = tagText.id
+          ..textID = tagText.id
           ..confidence = objectLabel.getConfidence()
           ..blackListed = false;
         isarDatabase!.writeTxnSync((isar) => isar.mlTags.putSync(mlTag));
 
         //viii. Create BoundingBox.
-        TagBoundingBox tagBoundingBox = TagBoundingBox()
-          ..mlTagID = mlTag.mlTagID
+        ObjectBoundingBox tagBoundingBox = ObjectBoundingBox()
+          ..photoID = mlTag.photoID
           ..boundingBox = boundingBox;
         isarDatabase!.writeTxnSync(
-            (isar) => isar.tagBoundingBoxs.putSync(tagBoundingBox));
+            (isar) => isar.objectBoundingBoxs.putSync(tagBoundingBox));
       }
     }
 
@@ -230,20 +230,22 @@ class _ObjectDetectorProcessingView
       String labelText = label.label.toLowerCase();
 
       //ii. Check if label text exists.
-      TagText? tagText =
-          isarDatabase!.tagTexts.filter().tagMatches(labelText).findFirstSync();
+      TagText? tagText = isarDatabase!.tagTexts
+          .filter()
+          .textMatches(labelText)
+          .findFirstSync();
 
       //iii. Create new TagText.
       if (tagText == null) {
-        tagText = TagText()..tag = labelText;
+        tagText = TagText()..text = labelText;
         isarDatabase!.writeTxnSync((isar) => isar.tagTexts.putSync(tagText!));
       }
 
       //iv. Create MlTag.
       MlTag mlTag = MlTag()
-        ..mlTagID = photo.id
+        ..photoID = photo.id
         ..tagType = mlTagType.imageLabel
-        ..textTagID = tagText.id
+        ..textID = tagText.id
         ..confidence = label.confidence
         ..blackListed = false;
       isarDatabase!.writeTxnSync((isar) => isar.mlTags.putSync(mlTag));
@@ -267,21 +269,21 @@ class _ObjectDetectorProcessingView
             //ii. Check if label text exists.
             TagText? tagText = isarDatabase!.tagTexts
                 .filter()
-                .tagMatches(labelText)
+                .textMatches(labelText)
                 .findFirstSync();
 
             //iii. Create new TagText.
             if (tagText == null) {
-              tagText = TagText()..tag = labelText;
+              tagText = TagText()..text = labelText;
               isarDatabase!
                   .writeTxnSync((isar) => isar.tagTexts.putSync(tagText!));
             }
 
             //iv. Create MlTag.
             MlTag mlTag = MlTag()
-              ..mlTagID = photo.id
+              ..photoID = photo.id
               ..tagType = mlTagType.text
-              ..textTagID = tagText.id
+              ..textID = tagText.id
               ..confidence = 0.99
               ..blackListed = false;
             isarDatabase!.writeTxnSync((isar) => isar.mlTags.putSync(mlTag));

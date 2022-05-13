@@ -1,29 +1,23 @@
-import 'dart:developer';
 import 'dart:ui';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/isar_database/photo/photo.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
-import 'package:flutter_google_ml_kit/isar_database/tags/tag_bounding_box/tag_bounding_box.dart';
+import 'package:flutter_google_ml_kit/isar_database/tags/tag_bounding_box/object_bounding_box.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
 
 import '../../../functions/translating/coordinates_translator.dart';
 
-class ImageObjectDetectorPainter extends CustomPainter {
-  ImageObjectDetectorPainter({required this.photo, required this.absoluteSize});
+class ObjectPainter extends CustomPainter {
+  ObjectPainter({required this.photo, required this.absoluteSize});
   final Photo photo;
   final Size absoluteSize;
 
   @override
   Future<void> paint(Canvas canvas, Size size) async {
-    // List<DetectedObject> _objects = objectData.detectedObjects;
-    // List<TextBlock> _textData = objectData.detectedText!.blocks;
-    // Size absoluteSize = objectData.size;
-    // InputImageRotation rotation = objectData.imageRotation;
-
     final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.0
@@ -31,19 +25,19 @@ class ImageObjectDetectorPainter extends CustomPainter {
 
     final Paint background = Paint()..color = const Color(0x99000000);
 
-    //PhotoTags with boundingBoxes
+    //1. Find Object MlTags.
     List<MlTag> mlTags = isarDatabase!.mlTags
         .filter()
-        .mlTagIDEqualTo(photo.id)
+        .photoIDEqualTo(photo.id)
         .and()
         .tagTypeEqualTo(mlTagType.objectLabel)
         .findAllSync();
 
     for (var photoTag in mlTags) {
-      //log(isarDatabase!.tagBoundingBoxs.where().findAllSync().toString());
-      List<double> boundingBox = isarDatabase!.tagBoundingBoxs
+      //2. Get the boundingBoxes of objects.
+      List<double> boundingBox = isarDatabase!.objectBoundingBoxs
           .filter()
-          .mlTagIDEqualTo(photoTag.mlTagID)
+          .photoIDEqualTo(photoTag.photoID)
           .boundingBoxProperty()
           .findFirstSync()!;
 
@@ -56,6 +50,7 @@ class ImageObjectDetectorPainter extends CustomPainter {
       final bottom = translateY(boundingBox[3],
           InputImageRotation.Rotation_90deg, size, absoluteSize);
 
+      //3. Construct the Rect.
       Rect rect = Rect.fromLTRB(
         left,
         top,
@@ -63,6 +58,7 @@ class ImageObjectDetectorPainter extends CustomPainter {
         bottom,
       );
 
+      //4. Draw the Rect.
       canvas.drawRect(rect, paint);
 
       final ParagraphBuilder builder = ParagraphBuilder(
@@ -75,7 +71,7 @@ class ImageObjectDetectorPainter extends CustomPainter {
       builder.pushStyle(
           ui.TextStyle(color: Colors.lightGreenAccent, background: background));
 
-      builder.addText(isarDatabase!.tagTexts.getSync(photoTag.textTagID)!.tag);
+      builder.addText(isarDatabase!.tagTexts.getSync(photoTag.textID)!.text);
 
       canvas.drawParagraph(
         builder.build()

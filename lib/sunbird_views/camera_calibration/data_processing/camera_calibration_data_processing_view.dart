@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 
-import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
-import 'package:flutter_google_ml_kit/isar_database/barcode_size_distance_entry/barcode_size_distance_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/barcode_property.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_size_distance_entry/barcode_size_distance_entry.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/user_accelerometer_z_axis_data_objects.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/barcode_size_objects.dart';

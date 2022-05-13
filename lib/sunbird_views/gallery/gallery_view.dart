@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
-import 'package:flutter_google_ml_kit/isar_database/photo/photo.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart';
@@ -26,7 +26,7 @@ class _GalleryViewState extends State<GalleryView> {
   ///Selected Photo.
   Photo? selectedPhoto;
 
-  List<MlTag> mlTags = [];
+  //List<MlTag> mlTags = [];
   List<int> assignedTagIDs = [];
 
   late List<TagText> tagTexts = isarDatabase!.tagTexts.where().findAllSync();
@@ -68,6 +68,8 @@ class _GalleryViewState extends State<GalleryView> {
                 Navigator.pop(context);
               } else {
                 selectedPhoto = null;
+                _tagsNode.unfocus();
+                showTagEditor = false;
               }
             });
           },
@@ -202,7 +204,7 @@ class _GalleryViewState extends State<GalleryView> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return CustomPaint(
-                      painter: ImageObjectDetectorPainter(
+                      painter: ObjectPainter(
                           photo: selectedPhoto!, absoluteSize: snapshot.data!),
                     );
                   } else {
@@ -251,12 +253,11 @@ class _GalleryViewState extends State<GalleryView> {
     return Builder(builder: (context) {
       userTags = isarDatabase!.userTags
           .filter()
-          .userTagIDEqualTo(selectedPhoto!.id)
+          .photoIDEqualTo(selectedPhoto!.id)
           .findAllSync();
 
       List<Widget> tags = [_addTag()];
       tags.addAll(userTags.map((e) => userTag(e)));
-      //tags.addAll(photoTags.map((e) => photoTag(e)).toList());
 
       return Wrap(
         spacing: 10,
@@ -269,7 +270,7 @@ class _GalleryViewState extends State<GalleryView> {
 
   Widget userTag(UserTag userTag) {
     return Builder(builder: (context) {
-      String tagText = isarDatabase!.tagTexts.getSync(userTag.tagTextID)!.tag;
+      String tagText = isarDatabase!.tagTexts.getSync(userTag.textID)!.text;
       return ActionChip(
         label: Text(tagText),
         onPressed: () {
@@ -340,19 +341,19 @@ class _GalleryViewState extends State<GalleryView> {
         if (tagsController.text.isNotEmpty) {
           tagTexts.addAll(isarDatabase!.tagTexts
               .filter()
-              .tagContains(tagsController.text.toLowerCase())
+              .textMatches(tagsController.text.toLowerCase())
               .and()
               .not()
-              .repeat(userTags,
-                  (q, UserTag element) => q.idEqualTo(element.tagTextID))
+              .repeat(
+                  userTags, (q, UserTag element) => q.idEqualTo(element.textID))
               .findAllSync());
         } else {
-          List<int> usr = userTags.map((e) => e.tagTextID).toList();
+          List<int> usr = userTags.map((e) => e.textID).toList();
           tagTexts.addAll(isarDatabase!.tagTexts
               .filter()
               .not()
-              .repeat(userTags,
-                  (q, UserTag element) => q.idEqualTo(element.tagTextID))
+              .repeat(
+                  userTags, (q, UserTag element) => q.idEqualTo(element.textID))
               .findAllSync()
               .where((element) => !usr.contains(element.id)));
         }
@@ -368,12 +369,12 @@ class _GalleryViewState extends State<GalleryView> {
 
   Widget tagText(TagText tagText) {
     return ActionChip(
-      label: Text(tagText.tag),
+      label: Text(tagText.text),
       onPressed: () {
         setState(() {
           UserTag newUserTag = UserTag()
-            ..tagTextID = tagText.id
-            ..userTagID = selectedPhoto!.id;
+            ..textID = tagText.id
+            ..photoID = selectedPhoto!.id;
           userTags.add(newUserTag);
           isarDatabase!
               .writeTxnSync((isar) => isar.userTags.putSync(newUserTag));
@@ -486,6 +487,26 @@ class _GalleryViewState extends State<GalleryView> {
   }
 
   void addTag() {
+    if (tagsController.text.isNotEmpty) {
+      //1. Get Text.
+      String text = tagsController.text.toLowerCase();
+
+      //2. Check if it exists.
+      TagText? tagText =
+          isarDatabase!.tagTexts.filter().textMatches(text).findFirstSync();
+
+      if (tagText != null) {
+        List<int> usr = userTags.map((e) => e.textID).toList();
+        if (!usr.contains(tagText.id)) {
+          //Create new
+          UserTag userTag = UserTag()
+            ..textID = tagText.id
+            ..photoID = selectedPhoto!.id;
+
+          isarDatabase!.writeTxnSync((isar) => isar.userTags.putSync(userTag));
+        }
+      } else {}
+    }
     // if (tagsController.text.isEmpty) {
     //   _tagsNode.unfocus();
     // } else {

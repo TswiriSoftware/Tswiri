@@ -1,6 +1,6 @@
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/objects/grid/positional_grid.dart';
 import 'package:isar/isar.dart';
 

@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/isar_database/photo/photo.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart';
@@ -34,7 +34,7 @@ class _PhotoViewState extends State<PhotoView> {
 
   late List<MlTag> mlTags = isarDatabase!.mlTags
       .filter()
-      .mlTagIDEqualTo(_containerPhoto.id)
+      .photoIDEqualTo(_containerPhoto.id)
       .findAllSync();
 
   @override
@@ -134,7 +134,7 @@ class _PhotoViewState extends State<PhotoView> {
                   fit: BoxFit.fill,
                 ),
                 CustomPaint(
-                  painter: ImageObjectDetectorPainter(
+                  painter: ObjectPainter(
                       photo: _containerPhoto, absoluteSize: snapshot.data!),
                 ),
               ],
@@ -223,8 +223,8 @@ class _PhotoViewState extends State<PhotoView> {
     return Builder(builder: (context) {
       String tagText = isarDatabase!.tagTexts
           .filter()
-          .idEqualTo(mlTag.textTagID)
-          .tagProperty()
+          .idEqualTo(mlTag.textID)
+          .textProperty()
           .findFirstSync()!;
 
       return ActionChip(
@@ -305,7 +305,7 @@ class _PhotoViewState extends State<PhotoView> {
 
       widgets.addAll(isarDatabase!.userTags
           .filter()
-          .userTagIDEqualTo(_containerPhoto.id)
+          .photoIDEqualTo(_containerPhoto.id)
           .findAllSync()
           .map((e) => userTag(e)));
 
@@ -327,8 +327,8 @@ class _PhotoViewState extends State<PhotoView> {
       builder: (context) {
         String tagtext = isarDatabase!.tagTexts
             .filter()
-            .idEqualTo(userTag.tagTextID)
-            .tagProperty()
+            .idEqualTo(userTag.textID)
+            .textProperty()
             .findFirstSync()!;
 
         return ActionChip(
@@ -441,13 +441,13 @@ class _PhotoViewState extends State<PhotoView> {
         List<int> assignedTags = isarDatabase!.userTags
             .where()
             .findAllSync()
-            .map((e) => e.tagTextID)
+            .map((e) => e.textID)
             .toList();
 
         if (tagsController.text.isNotEmpty) {
           tagTexts.addAll(isarDatabase!.tagTexts
               .filter()
-              .tagContains(tagsController.text.toLowerCase())
+              .textMatches(tagsController.text.toLowerCase())
               .and()
               .not()
               .repeat(assignedTags, (q, int element) => q.idEqualTo(element))
@@ -471,16 +471,16 @@ class _PhotoViewState extends State<PhotoView> {
 
   Widget newUserTag(TagText tagText) {
     return ActionChip(
-      label: Text(tagText.tag),
+      label: Text(tagText.text),
       onPressed: () {
         UserTag? userTag = isarDatabase!.userTags
             .filter()
-            .tagTextIDEqualTo(tagText.id)
+            .textIDEqualTo(tagText.id)
             .findFirstSync();
         if (userTag == null) {
           userTag = UserTag()
-            ..tagTextID = tagText.id
-            ..userTagID = _containerPhoto.id;
+            ..textID = tagText.id
+            ..photoID = _containerPhoto.id;
 
           isarDatabase!.writeTxnSync((isar) => isar.userTags.putSync(userTag!));
         }
@@ -520,26 +520,28 @@ class _PhotoViewState extends State<PhotoView> {
       String labelText = value.toLowerCase();
 
       //ii. Check if label text exists.
-      TagText? tagText =
-          isarDatabase!.tagTexts.filter().tagMatches(labelText).findFirstSync();
+      TagText? tagText = isarDatabase!.tagTexts
+          .filter()
+          .textMatches(labelText)
+          .findFirstSync();
 
       //iii. Create new TagText.
       if (tagText == null) {
-        tagText = TagText()..tag = labelText;
+        tagText = TagText()..text = labelText;
         isarDatabase!.writeTxnSync((isar) => isar.tagTexts.putSync(tagText!));
       }
 
       UserTag? userTag = isarDatabase!.userTags
           .filter()
-          .userTagIDEqualTo(_containerPhoto.id)
+          .photoIDEqualTo(_containerPhoto.id)
           .and()
-          .tagTextIDEqualTo(tagText.id)
+          .textIDEqualTo(tagText.id)
           .findFirstSync();
 
       if (userTag == null) {
         UserTag userTag = UserTag()
-          ..tagTextID = tagText.id
-          ..userTagID = _containerPhoto.id;
+          ..textID = tagText.id
+          ..photoID = _containerPhoto.id;
         isarDatabase!.writeTxnSync((isar) => isar.userTags.putSync(userTag));
         setState(() {});
       }

@@ -1,8 +1,8 @@
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_camera_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';

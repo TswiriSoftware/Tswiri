@@ -6,10 +6,10 @@ class MlTag {
   int id = Isar.autoIncrement;
 
   ///MlTagID.
-  late int mlTagID;
+  late int photoID;
 
   ///TextTagID.
-  late int textTagID;
+  late int textID;
 
   ///Tag Confidence.
   late double confidence;
@@ -23,7 +23,7 @@ class MlTag {
 
   @override
   String toString() {
-    return '\ntagID: $textTagID, confidence: $confidence, blacklisted: $blackListed';
+    return '\ntagID: $textID, confidence: $confidence, blacklisted: $blackListed';
   }
 
   Map toJson() => {

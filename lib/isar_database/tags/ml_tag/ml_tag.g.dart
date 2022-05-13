@@ -17,16 +17,16 @@ extension GetMlTagCollection on Isar {
 final MlTagSchema = CollectionSchema(
   name: 'MlTag',
   schema:
-      '{"name":"MlTag","idName":"id","properties":[{"name":"blackListed","type":"Bool"},{"name":"confidence","type":"Double"},{"name":"mlTagID","type":"Long"},{"name":"tagType","type":"Long"},{"name":"textTagID","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"MlTag","idName":"id","properties":[{"name":"blackListed","type":"Bool"},{"name":"confidence","type":"Double"},{"name":"photoID","type":"Long"},{"name":"tagType","type":"Long"},{"name":"textID","type":"Long"}],"indexes":[],"links":[]}',
   nativeAdapter: const _MlTagNativeAdapter(),
   webAdapter: const _MlTagWebAdapter(),
   idName: 'id',
   propertyIds: {
     'blackListed': 0,
     'confidence': 1,
-    'mlTagID': 2,
+    'photoID': 2,
     'tagType': 3,
-    'textTagID': 4
+    'textID': 4
   },
   listProperties: {},
   indexIds: {},
@@ -57,10 +57,10 @@ class _MlTagWebAdapter extends IsarWebTypeAdapter<MlTag> {
     IsarNative.jsObjectSet(jsObj, 'blackListed', object.blackListed);
     IsarNative.jsObjectSet(jsObj, 'confidence', object.confidence);
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'mlTagID', object.mlTagID);
+    IsarNative.jsObjectSet(jsObj, 'photoID', object.photoID);
     IsarNative.jsObjectSet(
         jsObj, 'tagType', _mlTagMlTagTypeConverter.toIsar(object.tagType));
-    IsarNative.jsObjectSet(jsObj, 'textTagID', object.textTagID);
+    IsarNative.jsObjectSet(jsObj, 'textID', object.textID);
     return jsObj;
   }
 
@@ -71,12 +71,12 @@ class _MlTagWebAdapter extends IsarWebTypeAdapter<MlTag> {
     object.confidence =
         IsarNative.jsObjectGet(jsObj, 'confidence') ?? double.negativeInfinity;
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.mlTagID =
-        IsarNative.jsObjectGet(jsObj, 'mlTagID') ?? double.negativeInfinity;
+    object.photoID =
+        IsarNative.jsObjectGet(jsObj, 'photoID') ?? double.negativeInfinity;
     object.tagType = _mlTagMlTagTypeConverter.fromIsar(
         IsarNative.jsObjectGet(jsObj, 'tagType') ?? double.negativeInfinity);
-    object.textTagID =
-        IsarNative.jsObjectGet(jsObj, 'textTagID') ?? double.negativeInfinity;
+    object.textID =
+        IsarNative.jsObjectGet(jsObj, 'textID') ?? double.negativeInfinity;
     return object;
   }
 
@@ -91,15 +91,15 @@ class _MlTagWebAdapter extends IsarWebTypeAdapter<MlTag> {
       case 'id':
         return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
             as P;
-      case 'mlTagID':
-        return (IsarNative.jsObjectGet(jsObj, 'mlTagID') ??
+      case 'photoID':
+        return (IsarNative.jsObjectGet(jsObj, 'photoID') ??
             double.negativeInfinity) as P;
       case 'tagType':
         return (_mlTagMlTagTypeConverter.fromIsar(
             IsarNative.jsObjectGet(jsObj, 'tagType') ??
                 double.negativeInfinity)) as P;
-      case 'textTagID':
-        return (IsarNative.jsObjectGet(jsObj, 'textTagID') ??
+      case 'textID':
+        return (IsarNative.jsObjectGet(jsObj, 'textID') ??
             double.negativeInfinity) as P;
       default:
         throw 'Illegal propertyName';
@@ -121,12 +121,12 @@ class _MlTagNativeAdapter extends IsarNativeTypeAdapter<MlTag> {
     final _blackListed = value0;
     final value1 = object.confidence;
     final _confidence = value1;
-    final value2 = object.mlTagID;
-    final _mlTagID = value2;
+    final value2 = object.photoID;
+    final _photoID = value2;
     final value3 = _mlTagMlTagTypeConverter.toIsar(object.tagType);
     final _tagType = value3;
-    final value4 = object.textTagID;
-    final _textTagID = value4;
+    final value4 = object.textID;
+    final _textID = value4;
     final size = staticSize + dynamicSize;
 
     rawObj.buffer = alloc(size);
@@ -135,9 +135,9 @@ class _MlTagNativeAdapter extends IsarNativeTypeAdapter<MlTag> {
     final writer = IsarBinaryWriter(buffer, staticSize);
     writer.writeBool(offsets[0], _blackListed);
     writer.writeDouble(offsets[1], _confidence);
-    writer.writeLong(offsets[2], _mlTagID);
+    writer.writeLong(offsets[2], _photoID);
     writer.writeLong(offsets[3], _tagType);
-    writer.writeLong(offsets[4], _textTagID);
+    writer.writeLong(offsets[4], _textID);
   }
 
   @override
@@ -147,10 +147,10 @@ class _MlTagNativeAdapter extends IsarNativeTypeAdapter<MlTag> {
     object.blackListed = reader.readBool(offsets[0]);
     object.confidence = reader.readDouble(offsets[1]);
     object.id = id;
-    object.mlTagID = reader.readLong(offsets[2]);
+    object.photoID = reader.readLong(offsets[2]);
     object.tagType =
         _mlTagMlTagTypeConverter.fromIsar(reader.readLong(offsets[3]));
-    object.textTagID = reader.readLong(offsets[4]);
+    object.textID = reader.readLong(offsets[4]);
     return object;
   }
 
@@ -347,46 +347,46 @@ extension MlTagQueryFilter on QueryBuilder<MlTag, MlTag, QFilterCondition> {
     ));
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> mlTagIDEqualTo(int value) {
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> photoIDEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
-      property: 'mlTagID',
+      property: 'photoID',
       value: value,
     ));
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> mlTagIDGreaterThan(
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> photoIDGreaterThan(
     int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
       include: include,
-      property: 'mlTagID',
+      property: 'photoID',
       value: value,
     ));
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> mlTagIDLessThan(
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> photoIDLessThan(
     int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
       include: include,
-      property: 'mlTagID',
+      property: 'photoID',
       value: value,
     ));
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> mlTagIDBetween(
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> photoIDBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return addFilterConditionInternal(FilterCondition.between(
-      property: 'mlTagID',
+      property: 'photoID',
       lower: lower,
       includeLower: includeLower,
       upper: upper,
@@ -442,47 +442,46 @@ extension MlTagQueryFilter on QueryBuilder<MlTag, MlTag, QFilterCondition> {
     ));
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> textTagIDEqualTo(
-      int value) {
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> textIDEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
-      property: 'textTagID',
+      property: 'textID',
       value: value,
     ));
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> textTagIDGreaterThan(
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> textIDGreaterThan(
     int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
       include: include,
-      property: 'textTagID',
+      property: 'textID',
       value: value,
     ));
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> textTagIDLessThan(
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> textIDLessThan(
     int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
       include: include,
-      property: 'textTagID',
+      property: 'textID',
       value: value,
     ));
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> textTagIDBetween(
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> textIDBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return addFilterConditionInternal(FilterCondition.between(
-      property: 'textTagID',
+      property: 'textID',
       lower: lower,
       includeLower: includeLower,
       upper: upper,
@@ -518,12 +517,12 @@ extension MlTagQueryWhereSortBy on QueryBuilder<MlTag, MlTag, QSortBy> {
     return addSortByInternal('id', Sort.desc);
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByMlTagID() {
-    return addSortByInternal('mlTagID', Sort.asc);
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByPhotoID() {
+    return addSortByInternal('photoID', Sort.asc);
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByMlTagIDDesc() {
-    return addSortByInternal('mlTagID', Sort.desc);
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByPhotoIDDesc() {
+    return addSortByInternal('photoID', Sort.desc);
   }
 
   QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByTagType() {
@@ -534,12 +533,12 @@ extension MlTagQueryWhereSortBy on QueryBuilder<MlTag, MlTag, QSortBy> {
     return addSortByInternal('tagType', Sort.desc);
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByTextTagID() {
-    return addSortByInternal('textTagID', Sort.asc);
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByTextID() {
+    return addSortByInternal('textID', Sort.asc);
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByTextTagIDDesc() {
-    return addSortByInternal('textTagID', Sort.desc);
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByTextIDDesc() {
+    return addSortByInternal('textID', Sort.desc);
   }
 }
 
@@ -568,12 +567,12 @@ extension MlTagQueryWhereSortThenBy on QueryBuilder<MlTag, MlTag, QSortThenBy> {
     return addSortByInternal('id', Sort.desc);
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByMlTagID() {
-    return addSortByInternal('mlTagID', Sort.asc);
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByPhotoID() {
+    return addSortByInternal('photoID', Sort.asc);
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByMlTagIDDesc() {
-    return addSortByInternal('mlTagID', Sort.desc);
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByPhotoIDDesc() {
+    return addSortByInternal('photoID', Sort.desc);
   }
 
   QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByTagType() {
@@ -584,12 +583,12 @@ extension MlTagQueryWhereSortThenBy on QueryBuilder<MlTag, MlTag, QSortThenBy> {
     return addSortByInternal('tagType', Sort.desc);
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByTextTagID() {
-    return addSortByInternal('textTagID', Sort.asc);
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByTextID() {
+    return addSortByInternal('textID', Sort.asc);
   }
 
-  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByTextTagIDDesc() {
-    return addSortByInternal('textTagID', Sort.desc);
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByTextIDDesc() {
+    return addSortByInternal('textID', Sort.desc);
   }
 }
 
@@ -606,16 +605,16 @@ extension MlTagQueryWhereDistinct on QueryBuilder<MlTag, MlTag, QDistinct> {
     return addDistinctByInternal('id');
   }
 
-  QueryBuilder<MlTag, MlTag, QDistinct> distinctByMlTagID() {
-    return addDistinctByInternal('mlTagID');
+  QueryBuilder<MlTag, MlTag, QDistinct> distinctByPhotoID() {
+    return addDistinctByInternal('photoID');
   }
 
   QueryBuilder<MlTag, MlTag, QDistinct> distinctByTagType() {
     return addDistinctByInternal('tagType');
   }
 
-  QueryBuilder<MlTag, MlTag, QDistinct> distinctByTextTagID() {
-    return addDistinctByInternal('textTagID');
+  QueryBuilder<MlTag, MlTag, QDistinct> distinctByTextID() {
+    return addDistinctByInternal('textID');
   }
 }
 
@@ -632,15 +631,15 @@ extension MlTagQueryProperty on QueryBuilder<MlTag, MlTag, QQueryProperty> {
     return addPropertyNameInternal('id');
   }
 
-  QueryBuilder<MlTag, int, QQueryOperations> mlTagIDProperty() {
-    return addPropertyNameInternal('mlTagID');
+  QueryBuilder<MlTag, int, QQueryOperations> photoIDProperty() {
+    return addPropertyNameInternal('photoID');
   }
 
   QueryBuilder<MlTag, mlTagType, QQueryOperations> tagTypeProperty() {
     return addPropertyNameInternal('tagType');
   }
 
-  QueryBuilder<MlTag, int, QQueryOperations> textTagIDProperty() {
-    return addPropertyNameInternal('textTagID');
+  QueryBuilder<MlTag, int, QQueryOperations> textIDProperty() {
+    return addPropertyNameInternal('textID');
   }
 }

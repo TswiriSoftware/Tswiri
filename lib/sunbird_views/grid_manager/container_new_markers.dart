@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings_functions.dart';
 import 'package:isar/isar.dart';
 

@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
 import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_relationship/container_relationship.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 
 import 'package:flutter_google_ml_kit/objects/display/display_point.dart';
 import 'package:flutter_google_ml_kit/objects/grid/grid.dart';
 import 'package:flutter_google_ml_kit/objects/grid/positional_grid.dart';
 import 'package:isar/isar.dart';
-import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
 
 class GridVisualizerPainter extends CustomPainter {
   GridVisualizerPainter({

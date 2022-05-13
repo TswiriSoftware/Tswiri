@@ -3,17 +3,17 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
-import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/isar_database/interbarcode_vector_entry/interbarcode_vector_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/marker/marker.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcodes/interbarcode_vector_entry/interbarcode_vector_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/grid_manager/container_new_markers.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/grid_manager/grid_visualizer_painter.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
 import 'package:isar/isar.dart';
-import '../../isar_database/container_relationship/container_relationship.dart';
+import '../../isar_database/containers/container_relationship/container_relationship.dart';
 
 class ContainerGridView extends StatefulWidget {
   const ContainerGridView(

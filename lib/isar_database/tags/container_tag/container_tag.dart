@@ -9,23 +9,23 @@ class ContainerTag {
   late String containerUID;
 
   //Tag
-  late int textTagID;
+  late int textID;
 
   @override
   String toString() {
-    return 'UID: $containerUID: Tag: $textTagID';
+    return 'UID: $containerUID: Tag: $textID';
   }
 
   Map toJson() => {
         'id': id,
         'containerUID': containerUID,
-        'tagID': textTagID,
+        'tagID': textID,
       };
 
   ContainerTag fromJson(Map<String, dynamic> json) {
     return ContainerTag()
       ..id = json['id']
       ..containerUID = json['containerUID']
-      ..textTagID = json['tagID'] as int;
+      ..textID = json['tagID'] as int;
   }
 }

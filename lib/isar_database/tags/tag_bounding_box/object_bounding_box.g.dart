@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'tag_bounding_box.dart';
+part of 'object_bounding_box.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator
@@ -8,20 +8,20 @@ part of 'tag_bounding_box.dart';
 
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
 
-extension GetTagBoundingBoxCollection on Isar {
-  IsarCollection<TagBoundingBox> get tagBoundingBoxs {
-    return getCollection('TagBoundingBox');
+extension GetObjectBoundingBoxCollection on Isar {
+  IsarCollection<ObjectBoundingBox> get objectBoundingBoxs {
+    return getCollection('ObjectBoundingBox');
   }
 }
 
-final TagBoundingBoxSchema = CollectionSchema(
-  name: 'TagBoundingBox',
+final ObjectBoundingBoxSchema = CollectionSchema(
+  name: 'ObjectBoundingBox',
   schema:
-      '{"name":"TagBoundingBox","idName":"id","properties":[{"name":"boundingBox","type":"DoubleList"},{"name":"mlTagID","type":"Long"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _TagBoundingBoxNativeAdapter(),
-  webAdapter: const _TagBoundingBoxWebAdapter(),
+      '{"name":"ObjectBoundingBox","idName":"id","properties":[{"name":"boundingBox","type":"DoubleList"},{"name":"photoID","type":"Long"}],"indexes":[],"links":[]}',
+  nativeAdapter: const _ObjectBoundingBoxNativeAdapter(),
+  webAdapter: const _ObjectBoundingBoxWebAdapter(),
   idName: 'id',
-  propertyIds: {'boundingBox': 0, 'mlTagID': 1},
+  propertyIds: {'boundingBox': 0, 'photoID': 1},
   listProperties: {'boundingBox'},
   indexIds: {},
   indexTypes: {},
@@ -40,31 +40,32 @@ final TagBoundingBoxSchema = CollectionSchema(
   version: 2,
 );
 
-class _TagBoundingBoxWebAdapter extends IsarWebTypeAdapter<TagBoundingBox> {
-  const _TagBoundingBoxWebAdapter();
+class _ObjectBoundingBoxWebAdapter
+    extends IsarWebTypeAdapter<ObjectBoundingBox> {
+  const _ObjectBoundingBoxWebAdapter();
 
   @override
   Object serialize(
-      IsarCollection<TagBoundingBox> collection, TagBoundingBox object) {
+      IsarCollection<ObjectBoundingBox> collection, ObjectBoundingBox object) {
     final jsObj = IsarNative.newJsObject();
     IsarNative.jsObjectSet(jsObj, 'boundingBox', object.boundingBox);
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'mlTagID', object.mlTagID);
+    IsarNative.jsObjectSet(jsObj, 'photoID', object.photoID);
     return jsObj;
   }
 
   @override
-  TagBoundingBox deserialize(
-      IsarCollection<TagBoundingBox> collection, dynamic jsObj) {
-    final object = TagBoundingBox();
+  ObjectBoundingBox deserialize(
+      IsarCollection<ObjectBoundingBox> collection, dynamic jsObj) {
+    final object = ObjectBoundingBox();
     object.boundingBox = (IsarNative.jsObjectGet(jsObj, 'boundingBox') as List?)
             ?.map((e) => e ?? double.negativeInfinity)
             .toList()
             .cast<double>() ??
         [];
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.mlTagID =
-        IsarNative.jsObjectGet(jsObj, 'mlTagID') ?? double.negativeInfinity;
+    object.photoID =
+        IsarNative.jsObjectGet(jsObj, 'photoID') ?? double.negativeInfinity;
     return object;
   }
 
@@ -80,8 +81,8 @@ class _TagBoundingBoxWebAdapter extends IsarWebTypeAdapter<TagBoundingBox> {
       case 'id':
         return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
             as P;
-      case 'mlTagID':
-        return (IsarNative.jsObjectGet(jsObj, 'mlTagID') ??
+      case 'photoID':
+        return (IsarNative.jsObjectGet(jsObj, 'photoID') ??
             double.negativeInfinity) as P;
       default:
         throw 'Illegal propertyName';
@@ -89,18 +90,18 @@ class _TagBoundingBoxWebAdapter extends IsarWebTypeAdapter<TagBoundingBox> {
   }
 
   @override
-  void attachLinks(Isar isar, int id, TagBoundingBox object) {}
+  void attachLinks(Isar isar, int id, ObjectBoundingBox object) {}
 }
 
-class _TagBoundingBoxNativeAdapter
-    extends IsarNativeTypeAdapter<TagBoundingBox> {
-  const _TagBoundingBoxNativeAdapter();
+class _ObjectBoundingBoxNativeAdapter
+    extends IsarNativeTypeAdapter<ObjectBoundingBox> {
+  const _ObjectBoundingBoxNativeAdapter();
 
   @override
   void serialize(
-      IsarCollection<TagBoundingBox> collection,
+      IsarCollection<ObjectBoundingBox> collection,
       IsarRawObject rawObj,
-      TagBoundingBox object,
+      ObjectBoundingBox object,
       int staticSize,
       List<int> offsets,
       AdapterAlloc alloc) {
@@ -108,8 +109,8 @@ class _TagBoundingBoxNativeAdapter
     final value0 = object.boundingBox;
     dynamicSize += (value0.length) * 8;
     final _boundingBox = value0;
-    final value1 = object.mlTagID;
-    final _mlTagID = value1;
+    final value1 = object.photoID;
+    final _photoID = value1;
     final size = staticSize + dynamicSize;
 
     rawObj.buffer = alloc(size);
@@ -117,16 +118,16 @@ class _TagBoundingBoxNativeAdapter
     final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
     final writer = IsarBinaryWriter(buffer, staticSize);
     writer.writeDoubleList(offsets[0], _boundingBox);
-    writer.writeLong(offsets[1], _mlTagID);
+    writer.writeLong(offsets[1], _photoID);
   }
 
   @override
-  TagBoundingBox deserialize(IsarCollection<TagBoundingBox> collection, int id,
-      IsarBinaryReader reader, List<int> offsets) {
-    final object = TagBoundingBox();
+  ObjectBoundingBox deserialize(IsarCollection<ObjectBoundingBox> collection,
+      int id, IsarBinaryReader reader, List<int> offsets) {
+    final object = ObjectBoundingBox();
     object.boundingBox = reader.readDoubleList(offsets[0]) ?? [];
     object.id = id;
-    object.mlTagID = reader.readLong(offsets[1]);
+    object.photoID = reader.readLong(offsets[1]);
     return object;
   }
 
@@ -146,20 +147,20 @@ class _TagBoundingBoxNativeAdapter
   }
 
   @override
-  void attachLinks(Isar isar, int id, TagBoundingBox object) {}
+  void attachLinks(Isar isar, int id, ObjectBoundingBox object) {}
 }
 
-extension TagBoundingBoxQueryWhereSort
-    on QueryBuilder<TagBoundingBox, TagBoundingBox, QWhere> {
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterWhere> anyId() {
+extension ObjectBoundingBoxQueryWhereSort
+    on QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QWhere> {
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterWhere> anyId() {
     return addWhereClauseInternal(const WhereClause(indexName: null));
   }
 }
 
-extension TagBoundingBoxQueryWhere
-    on QueryBuilder<TagBoundingBox, TagBoundingBox, QWhereClause> {
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterWhereClause> idEqualTo(
-      int id) {
+extension ObjectBoundingBoxQueryWhere
+    on QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QWhereClause> {
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterWhereClause>
+      idEqualTo(int id) {
     return addWhereClauseInternal(WhereClause(
       indexName: null,
       lower: [id],
@@ -169,8 +170,8 @@ extension TagBoundingBoxQueryWhere
     ));
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterWhereClause> idNotEqualTo(
-      int id) {
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterWhereClause>
+      idNotEqualTo(int id) {
     if (whereSortInternal == Sort.asc) {
       return addWhereClauseInternal(WhereClause(
         indexName: null,
@@ -194,7 +195,8 @@ extension TagBoundingBoxQueryWhere
     }
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterWhereClause> idGreaterThan(
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterWhereClause>
+      idGreaterThan(
     int id, {
     bool include = false,
   }) {
@@ -205,7 +207,8 @@ extension TagBoundingBoxQueryWhere
     ));
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterWhereClause> idLessThan(
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterWhereClause>
+      idLessThan(
     int id, {
     bool include = false,
   }) {
@@ -216,7 +219,8 @@ extension TagBoundingBoxQueryWhere
     ));
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterWhereClause> idBetween(
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterWhereClause>
+      idBetween(
     int lowerId,
     int upperId, {
     bool includeLower = true,
@@ -232,9 +236,9 @@ extension TagBoundingBoxQueryWhere
   }
 }
 
-extension TagBoundingBoxQueryFilter
-    on QueryBuilder<TagBoundingBox, TagBoundingBox, QFilterCondition> {
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition>
+extension ObjectBoundingBoxQueryFilter
+    on QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QFilterCondition> {
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterFilterCondition>
       boundingBoxAnyGreaterThan(double value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
@@ -244,7 +248,7 @@ extension TagBoundingBoxQueryFilter
     ));
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition>
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterFilterCondition>
       boundingBoxAnyLessThan(double value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
@@ -254,7 +258,7 @@ extension TagBoundingBoxQueryFilter
     ));
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition>
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterFilterCondition>
       boundingBoxAnyBetween(double lower, double upper) {
     return addFilterConditionInternal(FilterCondition.between(
       property: 'boundingBox',
@@ -265,8 +269,8 @@ extension TagBoundingBoxQueryFilter
     ));
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition> idEqualTo(
-      int value) {
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterFilterCondition>
+      idEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
       property: 'id',
@@ -274,7 +278,7 @@ extension TagBoundingBoxQueryFilter
     ));
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition>
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterFilterCondition>
       idGreaterThan(
     int value, {
     bool include = false,
@@ -287,7 +291,7 @@ extension TagBoundingBoxQueryFilter
     ));
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition>
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterFilterCondition>
       idLessThan(
     int value, {
     bool include = false,
@@ -300,7 +304,8 @@ extension TagBoundingBoxQueryFilter
     ));
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition> idBetween(
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterFilterCondition>
+      idBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -315,50 +320,50 @@ extension TagBoundingBoxQueryFilter
     ));
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition>
-      mlTagIDEqualTo(int value) {
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterFilterCondition>
+      photoIDEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
-      property: 'mlTagID',
+      property: 'photoID',
       value: value,
     ));
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition>
-      mlTagIDGreaterThan(
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterFilterCondition>
+      photoIDGreaterThan(
     int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
       include: include,
-      property: 'mlTagID',
+      property: 'photoID',
       value: value,
     ));
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition>
-      mlTagIDLessThan(
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterFilterCondition>
+      photoIDLessThan(
     int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
       include: include,
-      property: 'mlTagID',
+      property: 'photoID',
       value: value,
     ));
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterFilterCondition>
-      mlTagIDBetween(
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterFilterCondition>
+      photoIDBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return addFilterConditionInternal(FilterCondition.between(
-      property: 'mlTagID',
+      property: 'photoID',
       lower: lower,
       includeLower: includeLower,
       upper: upper,
@@ -367,72 +372,77 @@ extension TagBoundingBoxQueryFilter
   }
 }
 
-extension TagBoundingBoxQueryLinks
-    on QueryBuilder<TagBoundingBox, TagBoundingBox, QFilterCondition> {}
+extension ObjectBoundingBoxQueryLinks
+    on QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QFilterCondition> {}
 
-extension TagBoundingBoxQueryWhereSortBy
-    on QueryBuilder<TagBoundingBox, TagBoundingBox, QSortBy> {
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy> sortById() {
+extension ObjectBoundingBoxQueryWhereSortBy
+    on QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QSortBy> {
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy> sortByIdDesc() {
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterSortBy>
+      sortByIdDesc() {
     return addSortByInternal('id', Sort.desc);
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy> sortByMlTagID() {
-    return addSortByInternal('mlTagID', Sort.asc);
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterSortBy>
+      sortByPhotoID() {
+    return addSortByInternal('photoID', Sort.asc);
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy>
-      sortByMlTagIDDesc() {
-    return addSortByInternal('mlTagID', Sort.desc);
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterSortBy>
+      sortByPhotoIDDesc() {
+    return addSortByInternal('photoID', Sort.desc);
   }
 }
 
-extension TagBoundingBoxQueryWhereSortThenBy
-    on QueryBuilder<TagBoundingBox, TagBoundingBox, QSortThenBy> {
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy> thenById() {
+extension ObjectBoundingBoxQueryWhereSortThenBy
+    on QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QSortThenBy> {
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy> thenByIdDesc() {
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterSortBy>
+      thenByIdDesc() {
     return addSortByInternal('id', Sort.desc);
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy> thenByMlTagID() {
-    return addSortByInternal('mlTagID', Sort.asc);
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterSortBy>
+      thenByPhotoID() {
+    return addSortByInternal('photoID', Sort.asc);
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QAfterSortBy>
-      thenByMlTagIDDesc() {
-    return addSortByInternal('mlTagID', Sort.desc);
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterSortBy>
+      thenByPhotoIDDesc() {
+    return addSortByInternal('photoID', Sort.desc);
   }
 }
 
-extension TagBoundingBoxQueryWhereDistinct
-    on QueryBuilder<TagBoundingBox, TagBoundingBox, QDistinct> {
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QDistinct> distinctById() {
+extension ObjectBoundingBoxQueryWhereDistinct
+    on QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QDistinct> {
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
 
-  QueryBuilder<TagBoundingBox, TagBoundingBox, QDistinct> distinctByMlTagID() {
-    return addDistinctByInternal('mlTagID');
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QDistinct>
+      distinctByPhotoID() {
+    return addDistinctByInternal('photoID');
   }
 }
 
-extension TagBoundingBoxQueryProperty
-    on QueryBuilder<TagBoundingBox, TagBoundingBox, QQueryProperty> {
-  QueryBuilder<TagBoundingBox, List<double>, QQueryOperations>
+extension ObjectBoundingBoxQueryProperty
+    on QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QQueryProperty> {
+  QueryBuilder<ObjectBoundingBox, List<double>, QQueryOperations>
       boundingBoxProperty() {
     return addPropertyNameInternal('boundingBox');
   }
 
-  QueryBuilder<TagBoundingBox, int, QQueryOperations> idProperty() {
+  QueryBuilder<ObjectBoundingBox, int, QQueryOperations> idProperty() {
     return addPropertyNameInternal('id');
   }
 
-  QueryBuilder<TagBoundingBox, int, QQueryOperations> mlTagIDProperty() {
-    return addPropertyNameInternal('mlTagID');
+  QueryBuilder<ObjectBoundingBox, int, QQueryOperations> photoIDProperty() {
+    return addPropertyNameInternal('photoID');
   }
 }
