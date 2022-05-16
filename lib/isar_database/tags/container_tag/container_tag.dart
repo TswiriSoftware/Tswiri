@@ -6,7 +6,7 @@ class ContainerTag {
   int id = Isar.autoIncrement;
 
   //ContainerUID
-  late String containerUID;
+  late int containerUID;
 
   //Tag
   late int textID;

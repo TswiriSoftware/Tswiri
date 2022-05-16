@@ -11,7 +11,7 @@ class UserTag {
 
   @override
   String toString() {
-    return 'tagID: $photoID, textID: $textID';
+    return 'photoID: $photoID, textID: $textID';
   }
 
   Map toJson() => {

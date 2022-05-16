@@ -124,7 +124,7 @@ class _ContainerViewState extends State<ContainerView> {
           //Photo Tags
           _photoTags(),
 
-          SizedBox(
+          const SizedBox(
             height: 500,
           ),
         ],
@@ -448,6 +448,7 @@ class _ContainerViewState extends State<ContainerView> {
     return Builder(builder: (context) {
       ContainerEntry containerEntry =
           getContainerEntry(containerUID: containerRelationship.containerUID);
+
       Color containerColor =
           getContainerColor(containerUID: containerRelationship.containerUID);
 
@@ -732,7 +733,7 @@ class _ContainerViewState extends State<ContainerView> {
       //Add Existing Tag.
       isarDatabase!
           .writeTxnSync((isar) => isar.containerTags.putSync(ContainerTag()
-            ..containerUID = _containerEntry.containerUID
+            ..containerUID = _containerEntry.id
             ..textID = tag.id));
     } else {
       //log('new tag');
@@ -745,7 +746,7 @@ class _ContainerViewState extends State<ContainerView> {
       //New Container Tag.
       isarDatabase!
           .writeTxnSync((isar) => isar.containerTags.putSync(ContainerTag()
-            ..containerUID = _containerEntry.containerUID
+            ..containerUID = _containerEntry.id
             ..textID = newTag.id));
     }
     updateTags();
@@ -783,7 +784,7 @@ class _ContainerViewState extends State<ContainerView> {
           } else {
             isarDatabase!.writeTxnSync(
                 (isar) => isar.containerTags.putSync(ContainerTag()
-                  ..containerUID = _containerEntry.containerUID
+                  ..containerUID = _containerEntry.id
                   ..textID = tagID));
             updateTags();
             tagsController.clear();
@@ -799,7 +800,7 @@ class _ContainerViewState extends State<ContainerView> {
 
     assignedTagIDs.addAll(isarDatabase!.containerTags
         .filter()
-        .containerUIDMatches(_containerEntry.containerUID)
+        .containerUIDEqualTo(_containerEntry.id)
         .textIDProperty()
         .findAllSync());
 
@@ -840,7 +841,7 @@ class _ContainerViewState extends State<ContainerView> {
         List<Photo> containerPhotos = [];
         containerPhotos.addAll(isarDatabase!.photos
             .filter()
-            .containerUIDMatches(_containerEntry.containerUID)
+            .containerIDEqualTo(_containerEntry.id)
             .findAllSync());
 
         List<Widget> photoWidgets = [
@@ -860,7 +861,7 @@ class _ContainerViewState extends State<ContainerView> {
     );
   }
 
-  Widget photoCard(Photo containerPhoto) {
+  Widget photoCard(Photo photo) {
     return Card(
       child: InkWell(
         onTap: () async {
@@ -868,8 +869,8 @@ class _ContainerViewState extends State<ContainerView> {
             context,
             MaterialPageRoute(
               builder: (context) => PhotoView(
-                containerPhoto: containerPhoto,
-                containerColor: _containerColor,
+                photo: photo,
+                color: _containerColor,
               ),
             ),
           );
@@ -889,11 +890,11 @@ class _ContainerViewState extends State<ContainerView> {
               ),
               padding: const EdgeInsets.all(2.5),
               child: Image.file(
-                File(containerPhoto.photoPath),
+                File(photo.photoPath),
                 fit: BoxFit.cover,
               ),
             ),
-            photoDeleteButton(containerPhoto),
+            photoDeleteButton(photo),
           ],
         ),
       ),
@@ -935,7 +936,7 @@ class _ContainerViewState extends State<ContainerView> {
           MaterialPageRoute(
             builder: (context) => ObjectDetectorView(
               customColor: _containerColor,
-              containerUID: _containerEntry.containerUID,
+              containerID: _containerEntry.id,
             ),
           ),
         );

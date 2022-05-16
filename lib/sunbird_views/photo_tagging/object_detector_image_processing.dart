@@ -20,11 +20,11 @@ class ObjectDetectorProcessingView extends StatefulWidget {
       {Key? key,
       required this.imagePath,
       this.customColor,
-      required this.containerUID})
+      required this.containerID})
       : super(key: key);
   final String imagePath;
   final Color? customColor;
-  final String containerUID;
+  final int containerID;
 
   //final String barcodeID;
   @override
@@ -171,7 +171,7 @@ class _ObjectDetectorProcessingView
 
     //1. Create the photo reference.
     Photo photo = Photo()
-      ..containerUID = widget.containerUID
+      ..containerID = widget.containerID
       ..photoPath = photoFilePath
       ..thumbnailPath = thumbnailPhotoPath;
 
@@ -181,6 +181,7 @@ class _ObjectDetectorProcessingView
     for (DetectedObject object in detectedObjects) {
       //i. Get object Labels.
       List<Label> objectLabels = object.getLabels();
+
       //ii. Get Object BoundingBox.
       List<double> boundingBox = [
         object.getBoundinBox().left,
@@ -188,19 +189,17 @@ class _ObjectDetectorProcessingView
         object.getBoundinBox().right,
         object.getBoundinBox().bottom
       ];
+      if (objectLabels.isEmpty) {
+        //iii. Label Text.
+        String labelText = '-';
 
-      //iii. Create MlTags for each label.
-      for (Label objectLabel in objectLabels) {
-        //iv. Label Text.
-        String labelText = objectLabel.getText().toLowerCase();
-
-        //v. Check if label text exists.
+        //iv. Check if label text exists.
         TagText? tagText = isarDatabase!.tagTexts
             .filter()
             .textMatches(labelText)
             .findFirstSync();
 
-        //vi. Create new TagText.
+        //v. Create new TagText.
         if (tagText == null) {
           tagText = TagText()..text = labelText;
           isarDatabase!.writeTxnSync((isar) => isar.tagTexts.putSync(tagText!));
@@ -211,16 +210,52 @@ class _ObjectDetectorProcessingView
           ..photoID = photo.id
           ..tagType = mlTagType.objectLabel
           ..textID = tagText.id
-          ..confidence = objectLabel.getConfidence()
-          ..blackListed = false;
+          ..confidence = 0.0
+          ..blackListed = true;
         isarDatabase!.writeTxnSync((isar) => isar.mlTags.putSync(mlTag));
 
         //viii. Create BoundingBox.
         ObjectBoundingBox tagBoundingBox = ObjectBoundingBox()
-          ..photoID = mlTag.photoID
+          ..mlTagID = mlTag.id
           ..boundingBox = boundingBox;
+
         isarDatabase!.writeTxnSync(
             (isar) => isar.objectBoundingBoxs.putSync(tagBoundingBox));
+      } else {
+        for (Label objectLabel in objectLabels) {
+          //iv. Label Text.
+          String labelText = objectLabel.getText().toLowerCase();
+
+          //v. Check if label text exists.
+          TagText? tagText = isarDatabase!.tagTexts
+              .filter()
+              .textMatches(labelText)
+              .findFirstSync();
+
+          //vi. Create new TagText.
+          if (tagText == null) {
+            tagText = TagText()..text = labelText;
+            isarDatabase!
+                .writeTxnSync((isar) => isar.tagTexts.putSync(tagText!));
+          }
+
+          //vii. Create MlTag.
+          MlTag mlTag = MlTag()
+            ..photoID = photo.id
+            ..tagType = mlTagType.objectLabel
+            ..textID = tagText.id
+            ..confidence = objectLabel.getConfidence()
+            ..blackListed = false;
+          isarDatabase!.writeTxnSync((isar) => isar.mlTags.putSync(mlTag));
+
+          //viii. Create BoundingBox.
+          ObjectBoundingBox tagBoundingBox = ObjectBoundingBox()
+            ..mlTagID = mlTag.id
+            ..boundingBox = boundingBox;
+
+          isarDatabase!.writeTxnSync(
+              (isar) => isar.objectBoundingBoxs.putSync(tagBoundingBox));
+        }
       }
     }
 
@@ -256,12 +291,9 @@ class _ObjectDetectorProcessingView
         await textDetector.processImage(inputImage);
 
     for (TextBlock block in recognisedText.blocks) {
-      log(block.text);
-
       for (TextLine line in block.lines) {
         for (String word in line.text.split(' ').toList()) {
           //TODO: implement spell checker/dictionary.
-
           //i. Label Text.
           String labelText = word.toLowerCase();
 

@@ -229,7 +229,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
               const Divider(),
 
               //TODO: Add Tags
-              userTags(containerEntry.containerUID, color),
+              userTags(containerEntry.id, color),
 
               ///INFO///
               Center(
@@ -315,12 +315,12 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
     );
   }
 
-  Widget userTags(String containerUID, Color containerColor) {
+  Widget userTags(int containerID, Color containerColor) {
     return Builder(builder: (context) {
       //Get container tags.
       List<ContainerTag> containerTags = isarDatabase!.containerTags
           .filter()
-          .containerUIDMatches(containerUID)
+          .containerUIDEqualTo(containerID)
           .findAllSync();
 
       if (containerTags.isNotEmpty) {
@@ -350,11 +350,13 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
 
   Widget tagChip(ContainerTag containerTag, Color containerColor) {
     return Builder(builder: (context) {
-      String tag = isarDatabase!.tagTexts
-          .filter()
-          .idEqualTo(containerTag.textID)
-          .findFirstSync()!
-          .text;
+      String? tag = isarDatabase!.tagTexts
+              .filter()
+              .idEqualTo(containerTag.textID)
+              .findFirstSync()
+              ?.text ??
+          '';
+
       return Chip(
         label: Text(
           tag,
@@ -377,7 +379,9 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
             context,
             MaterialPageRoute(builder: (context) => const NewContainerView()),
           );
-          setState(() {});
+          setState(() {
+            containers = isarDatabase!.containerEntrys.where().findAllSync();
+          });
         },
         child: _addIcon(),
       ),
@@ -455,13 +459,13 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
         //Container Tags
         containerTags.addAll(isarDatabase!.containerTags
             .filter()
-            .containerUIDMatches(container.containerUID)
+            .containerUIDEqualTo(container.id)
             .findAllSync());
 
         //Container Photos
         containerPhotos.addAll(isarDatabase!.photos
             .filter()
-            .containerUIDMatches(container.containerUID)
+            .containerIDEqualTo(container.id)
             .findAllSync());
 
         //Photo Tags
@@ -516,7 +520,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
           .repeat(
               containerTags,
               (q, ContainerTag element) =>
-                  q.containerUIDMatches(element.containerUID))
+                  q.containerUIDEqualTo(element.containerUID))
           .deleteAllSync();
 
       isar.photos

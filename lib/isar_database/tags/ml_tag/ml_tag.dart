@@ -1,3 +1,5 @@
+import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
 import 'package:isar/isar.dart';
 part 'ml_tag.g.dart';
 
@@ -23,7 +25,7 @@ class MlTag {
 
   @override
   String toString() {
-    return '\ntagID: $textID, confidence: $confidence, blacklisted: $blackListed';
+    return '\ntag: ${isarDatabase!.tagTexts.getSync(textID)?.text}, confidence: $confidence, blacklisted: $blackListed, photoID: $photoID';
   }
 
   Map toJson() => {

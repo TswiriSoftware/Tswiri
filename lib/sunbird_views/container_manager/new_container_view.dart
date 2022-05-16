@@ -13,6 +13,8 @@ import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart'
 import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/single_barcode_scanner/single_barcode_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/photo_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_view.dart';
 import 'package:isar/isar.dart';
 
 class NewContainerView extends StatefulWidget {
@@ -32,7 +34,7 @@ class NewContainerView extends StatefulWidget {
 class _NewContainerViewState extends State<NewContainerView> {
   //Setup
   late ContainerEntry? parentContainer = widget.parentContainer;
-  String? containerUID;
+  ContainerEntry? containerEntry;
 
   //1. Container Type (required)
   late List<ContainerType> containerTypes;
@@ -103,6 +105,7 @@ class _NewContainerViewState extends State<NewContainerView> {
       appBar: _appBar(),
       body: _body(),
       floatingActionButton: _createButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -256,15 +259,15 @@ class _NewContainerViewState extends State<NewContainerView> {
                   selectedContainerType = containerType;
                   _containerColor = typeColor;
 
-                  if (containerUID?.split('_').first !=
-                      selectedContainerType!.containerType) {
-                    containerUID = selectedContainerType!.containerType +
-                        '_' +
-                        DateTime.now().millisecondsSinceEpoch.toString();
-                  } else {
-                    containerUID = selectedContainerType!.containerType +
-                        '_' +
-                        DateTime.now().millisecondsSinceEpoch.toString();
+                  if (containerEntry == null) {
+                    containerEntry = ContainerEntry()
+                      ..name = ''
+                      ..description = ''
+                      ..barcodeUID = 'aaa'
+                      ..containerType = selectedContainerType!.containerType
+                      ..containerUID = 'new';
+                    isarDatabase!.writeTxnSync((isar) => isar.containerEntrys
+                        .putSync(containerEntry!, replaceOnConflict: true));
                   }
 
                   setState(() {});
@@ -553,11 +556,10 @@ class _NewContainerViewState extends State<NewContainerView> {
   Widget _photosBuilder() {
     return Builder(
       builder: (context) {
-        photos = [];
-        photos.addAll(isarDatabase!.photos
+        photos = isarDatabase!.photos
             .filter()
-            .containerUIDMatches(containerUID ?? '')
-            .findAllSync());
+            .containerIDEqualTo(containerEntry!.id)
+            .findAllSync();
 
         List<Widget> photoWidgets = [
           _photoAddCard(),
@@ -582,16 +584,13 @@ class _NewContainerViewState extends State<NewContainerView> {
         onTap: () async {
           //TODO: navigate to PhotoView.
 
-          // await Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => PhotoView(
-          //       containerPhoto: containerPhoto,
-          //       containerColor: _containerColor ?? sunbirdOrange,
-          //     ),
-          //   ),
-          // );
-          // setState(() {});
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PhotoView(photo: containerPhoto),
+            ),
+          );
+          setState(() {});
         },
         child: Stack(
           alignment: AlignmentDirectional.topStart,
@@ -649,17 +648,15 @@ class _NewContainerViewState extends State<NewContainerView> {
   Widget _photoAddCard() {
     return InkWell(
       onTap: () async {
-        //TODO: navigate to Object Detector View.
-
-        // await Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => ObjectDetectorView(
-        //       customColor: _containerColor,
-        //       containerUID: containerUID!,
-        //     ),
-        //   ),
-        // );
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ObjectDetectorView(
+              customColor: _containerColor,
+              containerID: containerEntry!.id,
+            ),
+          ),
+        );
 
         setState(() {});
       },
@@ -732,16 +729,20 @@ class _NewContainerViewState extends State<NewContainerView> {
     //Create ContainerEntry.
     if (selectedContainerType != null && barcodeUID != null) {
       //Create ContainerEntry.
+
       ContainerEntry newContainerEntry = ContainerEntry()
+        ..id = containerEntry!.id
         ..containerType = selectedContainerType!.containerType
-        ..containerUID = containerUID!
+        ..containerUID = selectedContainerType!.containerType +
+            '_' +
+            DateTime.now().millisecondsSinceEpoch.toString()
         ..barcodeUID = barcodeUID
         ..name = name
         ..description = description;
 
       //Write ContainerEntry.
-      isarDatabase!.writeTxnSync(
-          (isar) => isar.containerEntrys.putSync(newContainerEntry));
+      isarDatabase!.writeTxnSync((isar) => isar.containerEntrys
+          .putSync(newContainerEntry, replaceOnConflict: true));
 
       if (parentContainer != null) {
         //Create ContainerRelationship.

@@ -1,7 +1,9 @@
+import 'dart:developer';
 import 'dart:ui';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/functions/translating/coordinates_translator.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_bounding_box/object_bounding_box.dart';
@@ -9,10 +11,8 @@ import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart'
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
 
-import '../../../functions/translating/coordinates_translator.dart';
-
-class ObjectPainter extends CustomPainter {
-  ObjectPainter({required this.photo, required this.absoluteSize});
+class PhotoCardPainter extends CustomPainter {
+  PhotoCardPainter({required this.photo, required this.absoluteSize});
   final Photo photo;
   final Size absoluteSize;
 
@@ -40,6 +40,8 @@ class ObjectPainter extends CustomPainter {
           .mlTagIDEqualTo(mlTag.id)
           .boundingBoxProperty()
           .findFirstSync()!;
+
+      //log(boundingBox.toString());
 
       final left = translateX(boundingBox[0], InputImageRotation.Rotation_90deg,
           size, absoluteSize);

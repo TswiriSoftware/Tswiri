@@ -7,7 +7,7 @@ class Photo {
   int id = Isar.autoIncrement;
 
   ///ContainerUID.
-  late String containerUID;
+  late int containerID;
 
   ///PhotoPath.
   late String photoPath;
@@ -17,7 +17,7 @@ class Photo {
 
   @override
   String toString() {
-    return '\nphotoPath: $photoPath, ';
+    return '\nID: $id, containerID: $containerID ';
   }
 
   // Map toJson() => {
