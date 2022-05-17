@@ -5,14 +5,17 @@ import 'package:isar/isar.dart';
 
 ///Calculate the milimeter value of 1 on image unit (OIU). (Pixel ?)
 double calculateRealUnit(
-    {required double diagonalLength, required String barcodeUID}) {
+    {required double diagonalLength,
+    required String barcodeUID,
+    required Isar isarDatabase}) {
   //If the barcode has not been generated. use default barcode size.
-  double barcodeDiagonalLength = isarDatabase!.barcodePropertys
+  double barcodeDiagonalLength = isarDatabase.barcodePropertys
           .filter()
           .barcodeUIDMatches(barcodeUID)
           .findFirstSync()
           ?.size ??
-      defaultBarcodeDiagonalLength!;
+      defaultBarcodeDiagonalLength ??
+      100;
 
   return diagonalLength / barcodeDiagonalLength;
 }

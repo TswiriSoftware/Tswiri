@@ -186,7 +186,8 @@ class _BarcodePositionScannerProcessingViewState
     for (OnImageInterBarcodeData interBarcodeData in onImageInterBarcodeData) {
       // i. Iterate through onImageInterBarcodeData and generate IsolateRealInterBarcodeData.
       realInterBarcodeVectors.add(InterBarcodeVectorEntry()
-          .fromRawInterBarcodeData(interBarcodeData, creationTimestamp));
+          .fromRawInterBarcodeData(
+              interBarcodeData, creationTimestamp, isarDatabase!));
     }
 
     ///3. Remove outliers and calculate the average.

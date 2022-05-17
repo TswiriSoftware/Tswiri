@@ -20,11 +20,11 @@ class ObjectDetectorProcessingView extends StatefulWidget {
       {Key? key,
       required this.imagePath,
       this.customColor,
-      required this.containerID})
+      required this.containerUID})
       : super(key: key);
   final String imagePath;
   final Color? customColor;
-  final int containerID;
+  final String containerUID;
 
   //final String barcodeID;
   @override
@@ -171,7 +171,7 @@ class _ObjectDetectorProcessingView
 
     //1. Create the photo reference.
     Photo photo = Photo()
-      ..containerID = widget.containerID
+      ..containerUID = widget.containerUID
       ..photoPath = photoFilePath
       ..thumbnailPath = thumbnailPhotoPath;
 

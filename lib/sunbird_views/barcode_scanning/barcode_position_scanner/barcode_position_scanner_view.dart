@@ -51,10 +51,6 @@ class _BarcodePositionScannerViewState
 
   List<dynamic> barcodeDataBatches = [];
 
-  //Spawn Isolate.
-
-  //TODO: multiple Isolates ?
-
   @override
   void initState() {
     //Listen to accelerometer events.

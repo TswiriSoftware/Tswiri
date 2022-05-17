@@ -229,7 +229,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
               const Divider(),
 
               //TODO: Add Tags
-              userTags(containerEntry.id, color),
+              userTags(containerEntry.containerUID, color),
 
               ///INFO///
               Center(
@@ -315,12 +315,12 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
     );
   }
 
-  Widget userTags(int containerID, Color containerColor) {
+  Widget userTags(String containerUID, Color containerColor) {
     return Builder(builder: (context) {
       //Get container tags.
       List<ContainerTag> containerTags = isarDatabase!.containerTags
           .filter()
-          .containerUIDEqualTo(containerID)
+          .containerUIDMatches(containerUID)
           .findAllSync();
 
       if (containerTags.isNotEmpty) {
@@ -415,6 +415,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
   }
 
   void deleteSelection() {
+    //TODO: update to work better :D.
     List<Marker> markers = [];
     List<InterBarcodeVectorEntry> interBarcodeData = [];
     List<ContainerRelationship> containerRelationships = [];
@@ -459,13 +460,13 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
         //Container Tags
         containerTags.addAll(isarDatabase!.containerTags
             .filter()
-            .containerUIDEqualTo(container.id)
+            .containerUIDEqualTo(container.containerUID)
             .findAllSync());
 
         //Container Photos
         containerPhotos.addAll(isarDatabase!.photos
             .filter()
-            .containerIDEqualTo(container.id)
+            .containerUIDEqualTo(container.containerUID)
             .findAllSync());
 
         //Photo Tags

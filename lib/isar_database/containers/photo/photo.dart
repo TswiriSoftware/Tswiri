@@ -7,7 +7,7 @@ class Photo {
   int id = Isar.autoIncrement;
 
   ///ContainerUID.
-  late int containerID;
+  late String containerUID;
 
   ///PhotoPath.
   late String photoPath;
@@ -17,18 +17,6 @@ class Photo {
 
   @override
   String toString() {
-    return '\nID: $id, containerID: $containerID ';
+    return '\nID: $id, containerID: $containerUID ';
   }
-
-  // Map toJson() => {
-  //       'id': id,
-  //       'photoPath': photoPath,
-  //     };
-
-  // PhotoTag fromJson(Map<String, dynamic> json) {
-  //   return PhotoTag()
-  //     ..id = json['id']
-  //     ..photoPath = json['photoPath']
-  //     ..tagUID = json['tagUID'] as int;
-  // }
 }

@@ -17,7 +17,7 @@ extension GetInterBarcodeVectorEntryCollection on Isar {
 final InterBarcodeVectorEntrySchema = CollectionSchema(
   name: 'InterBarcodeVectorEntry',
   schema:
-      '{"name":"InterBarcodeVectorEntry","idName":"id","properties":[{"name":"creationTimestamp","type":"Long"},{"name":"endBarcodeUID","type":"String"},{"name":"hashCode","type":"Long"},{"name":"startBarcodeUID","type":"String"},{"name":"timestamp","type":"Long"},{"name":"uid","type":"String"},{"name":"x","type":"Double"},{"name":"y","type":"Double"},{"name":"z","type":"Double"}],"indexes":[],"links":[]}',
+      '{"name":"InterBarcodeVectorEntry","idName":"id","properties":[{"name":"creationTimestamp","type":"Long"},{"name":"endBarcodeUID","type":"String"},{"name":"hashCode","type":"Long"},{"name":"outDated","type":"Bool"},{"name":"startBarcodeUID","type":"String"},{"name":"timestamp","type":"Long"},{"name":"uid","type":"String"},{"name":"x","type":"Double"},{"name":"y","type":"Double"},{"name":"z","type":"Double"}],"indexes":[],"links":[]}',
   nativeAdapter: const _InterBarcodeVectorEntryNativeAdapter(),
   webAdapter: const _InterBarcodeVectorEntryWebAdapter(),
   idName: 'id',
@@ -25,12 +25,13 @@ final InterBarcodeVectorEntrySchema = CollectionSchema(
     'creationTimestamp': 0,
     'endBarcodeUID': 1,
     'hashCode': 2,
-    'startBarcodeUID': 3,
-    'timestamp': 4,
-    'uid': 5,
-    'x': 6,
-    'y': 7,
-    'z': 8
+    'outDated': 3,
+    'startBarcodeUID': 4,
+    'timestamp': 5,
+    'uid': 6,
+    'x': 7,
+    'y': 8,
+    'z': 9
   },
   listProperties: {},
   indexIds: {},
@@ -63,6 +64,7 @@ class _InterBarcodeVectorEntryWebAdapter
     IsarNative.jsObjectSet(jsObj, 'endBarcodeUID', object.endBarcodeUID);
     IsarNative.jsObjectSet(jsObj, 'hashCode', object.hashCode);
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
+    IsarNative.jsObjectSet(jsObj, 'outDated', object.outDated);
     IsarNative.jsObjectSet(jsObj, 'startBarcodeUID', object.startBarcodeUID);
     IsarNative.jsObjectSet(jsObj, 'timestamp', object.timestamp);
     IsarNative.jsObjectSet(jsObj, 'uid', object.uid);
@@ -81,6 +83,7 @@ class _InterBarcodeVectorEntryWebAdapter
             double.negativeInfinity;
     object.endBarcodeUID = IsarNative.jsObjectGet(jsObj, 'endBarcodeUID') ?? '';
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+    object.outDated = IsarNative.jsObjectGet(jsObj, 'outDated') ?? false;
     object.startBarcodeUID =
         IsarNative.jsObjectGet(jsObj, 'startBarcodeUID') ?? '';
     object.timestamp =
@@ -105,6 +108,8 @@ class _InterBarcodeVectorEntryWebAdapter
       case 'id':
         return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
             as P;
+      case 'outDated':
+        return (IsarNative.jsObjectGet(jsObj, 'outDated') ?? false) as P;
       case 'startBarcodeUID':
         return (IsarNative.jsObjectGet(jsObj, 'startBarcodeUID') ?? '') as P;
       case 'timestamp':
@@ -150,20 +155,22 @@ class _InterBarcodeVectorEntryNativeAdapter
     dynamicSize += (_endBarcodeUID.length) as int;
     final value2 = object.hashCode;
     final _hashCode = value2;
-    final value3 = object.startBarcodeUID;
-    final _startBarcodeUID = IsarBinaryWriter.utf8Encoder.convert(value3);
+    final value3 = object.outDated;
+    final _outDated = value3;
+    final value4 = object.startBarcodeUID;
+    final _startBarcodeUID = IsarBinaryWriter.utf8Encoder.convert(value4);
     dynamicSize += (_startBarcodeUID.length) as int;
-    final value4 = object.timestamp;
-    final _timestamp = value4;
-    final value5 = object.uid;
-    final _uid = IsarBinaryWriter.utf8Encoder.convert(value5);
+    final value5 = object.timestamp;
+    final _timestamp = value5;
+    final value6 = object.uid;
+    final _uid = IsarBinaryWriter.utf8Encoder.convert(value6);
     dynamicSize += (_uid.length) as int;
-    final value6 = object.x;
-    final _x = value6;
-    final value7 = object.y;
-    final _y = value7;
-    final value8 = object.z;
-    final _z = value8;
+    final value7 = object.x;
+    final _x = value7;
+    final value8 = object.y;
+    final _y = value8;
+    final value9 = object.z;
+    final _z = value9;
     final size = staticSize + dynamicSize;
 
     rawObj.buffer = alloc(size);
@@ -173,12 +180,13 @@ class _InterBarcodeVectorEntryNativeAdapter
     writer.writeLong(offsets[0], _creationTimestamp);
     writer.writeBytes(offsets[1], _endBarcodeUID);
     writer.writeLong(offsets[2], _hashCode);
-    writer.writeBytes(offsets[3], _startBarcodeUID);
-    writer.writeLong(offsets[4], _timestamp);
-    writer.writeBytes(offsets[5], _uid);
-    writer.writeDouble(offsets[6], _x);
-    writer.writeDouble(offsets[7], _y);
-    writer.writeDouble(offsets[8], _z);
+    writer.writeBool(offsets[3], _outDated);
+    writer.writeBytes(offsets[4], _startBarcodeUID);
+    writer.writeLong(offsets[5], _timestamp);
+    writer.writeBytes(offsets[6], _uid);
+    writer.writeDouble(offsets[7], _x);
+    writer.writeDouble(offsets[8], _y);
+    writer.writeDouble(offsets[9], _z);
   }
 
   @override
@@ -191,11 +199,12 @@ class _InterBarcodeVectorEntryNativeAdapter
     object.creationTimestamp = reader.readLong(offsets[0]);
     object.endBarcodeUID = reader.readString(offsets[1]);
     object.id = id;
-    object.startBarcodeUID = reader.readString(offsets[3]);
-    object.timestamp = reader.readLong(offsets[4]);
-    object.x = reader.readDouble(offsets[6]);
-    object.y = reader.readDouble(offsets[7]);
-    object.z = reader.readDouble(offsets[8]);
+    object.outDated = reader.readBool(offsets[3]);
+    object.startBarcodeUID = reader.readString(offsets[4]);
+    object.timestamp = reader.readLong(offsets[5]);
+    object.x = reader.readDouble(offsets[7]);
+    object.y = reader.readDouble(offsets[8]);
+    object.z = reader.readDouble(offsets[9]);
     return object;
   }
 
@@ -212,16 +221,18 @@ class _InterBarcodeVectorEntryNativeAdapter
       case 2:
         return (reader.readLong(offset)) as P;
       case 3:
-        return (reader.readString(offset)) as P;
+        return (reader.readBool(offset)) as P;
       case 4:
-        return (reader.readLong(offset)) as P;
-      case 5:
         return (reader.readString(offset)) as P;
+      case 5:
+        return (reader.readLong(offset)) as P;
       case 6:
-        return (reader.readDouble(offset)) as P;
+        return (reader.readString(offset)) as P;
       case 7:
         return (reader.readDouble(offset)) as P;
       case 8:
+        return (reader.readDouble(offset)) as P;
+      case 9:
         return (reader.readDouble(offset)) as P;
       default:
         throw 'Illegal propertyIndex';
@@ -580,6 +591,15 @@ extension InterBarcodeVectorEntryQueryFilter on QueryBuilder<
       includeLower: includeLower,
       upper: upper,
       includeUpper: includeUpper,
+    ));
+  }
+
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry,
+      QAfterFilterCondition> outDatedEqualTo(bool value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'outDated',
+      value: value,
     ));
   }
 
@@ -992,6 +1012,16 @@ extension InterBarcodeVectorEntryQueryWhereSortBy
   }
 
   QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByOutDated() {
+    return addSortByInternal('outDated', Sort.asc);
+  }
+
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      sortByOutDatedDesc() {
+    return addSortByInternal('outDated', Sort.desc);
+  }
+
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
       sortByStartBarcodeUID() {
     return addSortByInternal('startBarcodeUID', Sort.asc);
   }
@@ -1095,6 +1125,16 @@ extension InterBarcodeVectorEntryQueryWhereSortThenBy on QueryBuilder<
   }
 
   QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByOutDated() {
+    return addSortByInternal('outDated', Sort.asc);
+  }
+
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
+      thenByOutDatedDesc() {
+    return addSortByInternal('outDated', Sort.desc);
+  }
+
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QAfterSortBy>
       thenByStartBarcodeUID() {
     return addSortByInternal('startBarcodeUID', Sort.asc);
   }
@@ -1178,6 +1218,11 @@ extension InterBarcodeVectorEntryQueryWhereDistinct on QueryBuilder<
   }
 
   QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QDistinct>
+      distinctByOutDated() {
+    return addDistinctByInternal('outDated');
+  }
+
+  QueryBuilder<InterBarcodeVectorEntry, InterBarcodeVectorEntry, QDistinct>
       distinctByStartBarcodeUID({bool caseSensitive = true}) {
     return addDistinctByInternal('startBarcodeUID',
         caseSensitive: caseSensitive);
@@ -1228,6 +1273,11 @@ extension InterBarcodeVectorEntryQueryProperty on QueryBuilder<
 
   QueryBuilder<InterBarcodeVectorEntry, int, QQueryOperations> idProperty() {
     return addPropertyNameInternal('id');
+  }
+
+  QueryBuilder<InterBarcodeVectorEntry, bool, QQueryOperations>
+      outDatedProperty() {
+    return addPropertyNameInternal('outDated');
   }
 
   QueryBuilder<InterBarcodeVectorEntry, String, QQueryOperations>

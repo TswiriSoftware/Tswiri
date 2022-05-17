@@ -30,6 +30,8 @@ class InterBarcodeVectorEntry {
   //Z vector.
   late double z; //Make nullable ?
 
+  late bool outDated;
+
   //Returns the UID of the interBarcodeVectorEntry
   String get uid {
     return '${startBarcodeUID}_$endBarcodeUID';
@@ -78,7 +80,9 @@ class InterBarcodeVectorEntry {
 
   //Create From RawInterBarcodeData.
   InterBarcodeVectorEntry fromRawInterBarcodeData(
-      OnImageInterBarcodeData interBarcodeData, int creationTimestamp) {
+      OnImageInterBarcodeData interBarcodeData,
+      int creationTimestamp,
+      Isar isarDatabase) {
     ///1. Calculate RealInterBarcodeOffset
     double phoneAngleRadians =
         interBarcodeData.startBarcode.accelerometerData.calculatePhoneAngle();
@@ -95,14 +99,14 @@ class InterBarcodeVectorEntry {
         rotatedEndBarcodeCenter - rotatedStartBarcodeCenter;
 
     double startBarcodeMMperPX = calculateRealUnit(
-      diagonalLength: interBarcodeData.startBarcode.barcodeDiagonalLength,
-      barcodeUID: interBarcodeData.startBarcode.barcodeUID,
-    );
+        diagonalLength: interBarcodeData.startBarcode.barcodeDiagonalLength,
+        barcodeUID: interBarcodeData.startBarcode.barcodeUID,
+        isarDatabase: isarDatabase);
 
     double endBarcodeMMperPX = calculateRealUnit(
-      diagonalLength: interBarcodeData.endBarcode.barcodeDiagonalLength,
-      barcodeUID: interBarcodeData.endBarcode.barcodeUID,
-    );
+        diagonalLength: interBarcodeData.endBarcode.barcodeDiagonalLength,
+        barcodeUID: interBarcodeData.endBarcode.barcodeUID,
+        isarDatabase: isarDatabase);
 
     Offset realOffsetStartBarcode = interBarcodeOffset / startBarcodeMMperPX;
     Offset realOffsetEndBarcode = interBarcodeOffset / endBarcodeMMperPX;
@@ -114,19 +118,19 @@ class InterBarcodeVectorEntry {
     ///2. Find the distance bewteen the camera and barcodes using the camera's focal length.
     //StartBarcode
     double startBarcodeDistanceFromCamera = calculateDistanceFromCamera(
-      barcodeOnImageDiagonalLength:
-          interBarcodeData.startBarcode.barcodeDiagonalLength,
-      barcodeUID: interBarcodeData.startBarcode.barcodeUID,
-      focalLength: focalLength,
-    );
+        barcodeOnImageDiagonalLength:
+            interBarcodeData.startBarcode.barcodeDiagonalLength,
+        barcodeUID: interBarcodeData.startBarcode.barcodeUID,
+        focalLength: focalLength,
+        isarDatabase: isarDatabase);
 
     //EndBarcode
     double endBarcodeDistanceFromCamera = calculateDistanceFromCamera(
-      barcodeOnImageDiagonalLength:
-          interBarcodeData.endBarcode.barcodeDiagonalLength,
-      barcodeUID: interBarcodeData.endBarcode.barcodeUID,
-      focalLength: focalLength,
-    );
+        barcodeOnImageDiagonalLength:
+            interBarcodeData.endBarcode.barcodeDiagonalLength,
+        barcodeUID: interBarcodeData.endBarcode.barcodeUID,
+        focalLength: focalLength,
+        isarDatabase: isarDatabase);
 
     //Calculate the zOffset
     double zOffset =
@@ -139,6 +143,7 @@ class InterBarcodeVectorEntry {
       ..timestamp = interBarcodeData.startBarcode.timestamp
       ..x = averageRealInterBarcodeOffset.dx
       ..y = averageRealInterBarcodeOffset.dy
-      ..z = zOffset;
+      ..z = zOffset
+      ..outDated = false;
   }
 }

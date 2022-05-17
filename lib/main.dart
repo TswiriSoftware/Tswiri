@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'sunbird_views/app_settings/app_settings_functions.dart';
 import 'sunbird_views/app_settings/app_settings_view.dart';
 import 'sunbird_views/gallery/gallery_view.dart';
+import 'sunbird_views/tag_manager/tag_manager_view.dart';
 
 List<CameraDescription> cameras = [];
 Future<void> main() async {
@@ -58,8 +59,7 @@ Future<void> main() async {
   getCurrentAppSettings();
 
   //Get support directory
-  isarDirectory =
-      await getApplicationSupportDirectory(); // path_provider package
+  isarDirectory = await getApplicationSupportDirectory();
 
   isarDatabase = openIsar();
 
@@ -178,13 +178,13 @@ class HomeView extends StatelessWidget {
             //   featureCompleted: true,
             //   tileColor: sunbirdOrange,
             // ),
-            // CustomCard(
-            //   'Tags',
-            //   TagManagerView(),
-            //   Icons.tag,
-            //   featureCompleted: true,
-            //   tileColor: sunbirdOrange,
-            // ),
+            CustomCard(
+              'Tags',
+              TagManagerView(),
+              Icons.tag,
+              featureCompleted: true,
+              tileColor: sunbirdOrange,
+            ),
             CustomCard(
               'Generate Barcodes',
               BarcodeGeneratorView(),

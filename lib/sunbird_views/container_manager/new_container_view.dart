@@ -34,7 +34,7 @@ class NewContainerView extends StatefulWidget {
 class _NewContainerViewState extends State<NewContainerView> {
   //Setup
   late ContainerEntry? parentContainer = widget.parentContainer;
-  ContainerEntry? containerEntry;
+  String? containerUID;
 
   //1. Container Type (required)
   late List<ContainerType> containerTypes;
@@ -250,46 +250,27 @@ class _NewContainerViewState extends State<NewContainerView> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Builder(builder: (context) {
-          if (selectedContainerType == null) {
-            return ElevatedButton(
-                style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(typeColor)),
-                onPressed: () {
-                  selectedContainerType = containerType;
-                  _containerColor = typeColor;
+        Visibility(
+          visible: selectedContainerType == null,
+          child: ElevatedButton(
+            style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(typeColor)),
+            onPressed: () {
+              selectedContainerType = containerType;
+              _containerColor = typeColor;
 
-                  if (containerEntry == null) {
-                    containerEntry = ContainerEntry()
-                      ..name = ''
-                      ..description = ''
-                      ..barcodeUID = 'aaa'
-                      ..containerType = selectedContainerType!.containerType
-                      ..containerUID = 'new';
-                    isarDatabase!.writeTxnSync((isar) => isar.containerEntrys
-                        .putSync(containerEntry!, replaceOnConflict: true));
-                  }
+              containerUID = selectedContainerType!.containerType +
+                  '_' +
+                  DateTime.now().millisecondsSinceEpoch.toString();
 
-                  setState(() {});
-                },
-                child: Text(
-                  'select',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ));
-          } else {
-            return ElevatedButton(
-                style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(typeColor)),
-                onPressed: () {
-                  selectedContainerType = null;
-                  setState(() {});
-                },
-                child: Text(
-                  'change',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ));
-          }
-        })
+              setState(() {});
+            },
+            child: Text(
+              'select',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -558,7 +539,7 @@ class _NewContainerViewState extends State<NewContainerView> {
       builder: (context) {
         photos = isarDatabase!.photos
             .filter()
-            .containerIDEqualTo(containerEntry!.id)
+            .containerUIDMatches(containerUID!)
             .findAllSync();
 
         List<Widget> photoWidgets = [
@@ -653,7 +634,7 @@ class _NewContainerViewState extends State<NewContainerView> {
           MaterialPageRoute(
             builder: (context) => ObjectDetectorView(
               customColor: _containerColor,
-              containerID: containerEntry!.id,
+              containerUID: containerUID!,
             ),
           ),
         );
@@ -731,11 +712,8 @@ class _NewContainerViewState extends State<NewContainerView> {
       //Create ContainerEntry.
 
       ContainerEntry newContainerEntry = ContainerEntry()
-        ..id = containerEntry!.id
         ..containerType = selectedContainerType!.containerType
-        ..containerUID = selectedContainerType!.containerType +
-            '_' +
-            DateTime.now().millisecondsSinceEpoch.toString()
+        ..containerUID = containerUID!
         ..barcodeUID = barcodeUID
         ..name = name
         ..description = description;

@@ -6,14 +6,16 @@ import 'package:isar/isar.dart';
 double calculateDistanceFromCamera(
     {required double barcodeOnImageDiagonalLength,
     required String barcodeUID,
-    required double focalLength}) {
+    required double focalLength,
+    required Isar isarDatabase}) {
   //If the barcode has not been generated. use default barcode size.
-  double barcodeDiagonalLength = isarDatabase!.barcodePropertys
+  double barcodeDiagonalLength = isarDatabase.barcodePropertys
           .filter()
           .barcodeUIDMatches(barcodeUID)
           .findFirstSync()
           ?.size ??
-      defaultBarcodeDiagonalLength!;
+      defaultBarcodeDiagonalLength ??
+      100;
 
   //Calculate the distance from the camera
   double distanceFromCamera =

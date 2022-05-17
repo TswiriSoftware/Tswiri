@@ -2,17 +2,22 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
 import 'dart:ui';
+import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/functions/translating/coordinates_translator.dart';
 import 'package:flutter_google_ml_kit/functions/translating/offset_rotation.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/objects/grid/isolate_grid.dart';
 import 'package:flutter_google_ml_kit/objects/grid/position.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate/rolling_grid_position.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/on_image_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/message_objects/navigator_isolate_config.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/message_objects/navigator_isolate_data.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/message_objects/painter_message.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/isolates/messages/painter_message.dart';
 import 'dart:math' as math;
 import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
 
 void imageProcessorNavigator(SendPort sendPort) {
   ReceivePort receivePort = ReceivePort();
@@ -23,9 +28,30 @@ void imageProcessorNavigator(SendPort sendPort) {
   SendPort? gridSendPort;
   String? selectedBarcodeUID;
   IsolateGrid? isolateGrid;
-
+  Isar? isarDatabase;
+  log('IsolateGrid');
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
+
+  void test(String isarDirectory) async {
+    isarDatabase = openIsar(directory: isarDirectory);
+    log(isarDatabase!.containerEntrys.where().findAllSync().toString());
+  }
+
+  void write(int value) {
+    isarDatabase!.writeTxnSync((isar) => isar.containerTypes.putSync(
+        ContainerType()
+          ..id = value
+          ..containerType = 'area'
+          ..containerDescription =
+              '- An Area is a stationary container with a marker.\n- which can contain all other types of containers.\n- It is part of the childrens grid.'
+          ..canContain = ['shelf', 'box', 'drawer']
+          ..moveable = false
+          ..markerToChilren = true
+          ..containerColor = const Color(0xFFff420e).value.toString(),
+        replaceOnConflict: true));
+    log('write ' + value.toString());
+  }
 
   void processImage(var message) async {
     if (inputImageData != null &&
@@ -45,7 +71,7 @@ void imageProcessorNavigator(SendPort sendPort) {
       List<dynamic> barcodeData = [];
 
       //Painter Message
-      List<PainterBarcodeData> painterData = [];
+      List<PainterBarcodeObject> painterData = [];
       double? averageBarcodeDiagonalLength;
       Offset? averageOffsetToBarcode;
 
@@ -162,7 +188,7 @@ void imageProcessorNavigator(SendPort sendPort) {
         }
 
         ///
-        PainterBarcodeData barcodePainterData = PainterBarcodeData(
+        PainterBarcodeObject barcodePainterData = PainterBarcodeObject(
           barcodeUID: barcode.value.displayValue!,
           conrnerPoints: conrnerPoints,
         );
@@ -199,7 +225,7 @@ void imageProcessorNavigator(SendPort sendPort) {
       PainterMesssage painterMessage = PainterMesssage(
         averageDiagonalLength: averageBarcodeDiagonalLength ?? 100,
         painterData: painterData,
-        averageOffsetToBarcode: averageOffsetToBarcode ?? const Offset(0, 0),
+        //averageOffsetToBarcode: averageOffsetToBarcode ?? const Offset(0, 0),
       );
 
       sendPort.send(painterMessage.toMessage());
@@ -249,6 +275,10 @@ void imageProcessorNavigator(SendPort sendPort) {
                 element.barcodes.contains(rollingGridPosition.barcodeUID))
             .first
             .updatePosition(rollingGridPosition);
+      } else if (message[0] == 'isar') {
+        test(message[1]);
+      } else if (message[0] == 'write') {
+        write(message[1] as int);
       }
     },
   );

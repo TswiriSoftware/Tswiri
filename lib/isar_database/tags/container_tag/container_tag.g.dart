@@ -17,7 +17,7 @@ extension GetContainerTagCollection on Isar {
 final ContainerTagSchema = CollectionSchema(
   name: 'ContainerTag',
   schema:
-      '{"name":"ContainerTag","idName":"id","properties":[{"name":"containerUID","type":"Long"},{"name":"textID","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"ContainerTag","idName":"id","properties":[{"name":"containerUID","type":"String"},{"name":"textID","type":"Long"}],"indexes":[],"links":[]}',
   nativeAdapter: const _ContainerTagNativeAdapter(),
   webAdapter: const _ContainerTagWebAdapter(),
   idName: 'id',
@@ -57,8 +57,7 @@ class _ContainerTagWebAdapter extends IsarWebTypeAdapter<ContainerTag> {
   ContainerTag deserialize(
       IsarCollection<ContainerTag> collection, dynamic jsObj) {
     final object = ContainerTag();
-    object.containerUID = IsarNative.jsObjectGet(jsObj, 'containerUID') ??
-        double.negativeInfinity;
+    object.containerUID = IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '';
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
     object.textID =
         IsarNative.jsObjectGet(jsObj, 'textID') ?? double.negativeInfinity;
@@ -69,8 +68,7 @@ class _ContainerTagWebAdapter extends IsarWebTypeAdapter<ContainerTag> {
   P deserializeProperty<P>(Object jsObj, String propertyName) {
     switch (propertyName) {
       case 'containerUID':
-        return (IsarNative.jsObjectGet(jsObj, 'containerUID') ??
-            double.negativeInfinity) as P;
+        return (IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '') as P;
       case 'id':
         return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
             as P;
@@ -99,7 +97,8 @@ class _ContainerTagNativeAdapter extends IsarNativeTypeAdapter<ContainerTag> {
       AdapterAlloc alloc) {
     var dynamicSize = 0;
     final value0 = object.containerUID;
-    final _containerUID = value0;
+    final _containerUID = IsarBinaryWriter.utf8Encoder.convert(value0);
+    dynamicSize += (_containerUID.length) as int;
     final value1 = object.textID;
     final _textID = value1;
     final size = staticSize + dynamicSize;
@@ -108,7 +107,7 @@ class _ContainerTagNativeAdapter extends IsarNativeTypeAdapter<ContainerTag> {
     rawObj.buffer_length = size;
     final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
     final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeLong(offsets[0], _containerUID);
+    writer.writeBytes(offsets[0], _containerUID);
     writer.writeLong(offsets[1], _textID);
   }
 
@@ -116,7 +115,7 @@ class _ContainerTagNativeAdapter extends IsarNativeTypeAdapter<ContainerTag> {
   ContainerTag deserialize(IsarCollection<ContainerTag> collection, int id,
       IsarBinaryReader reader, List<int> offsets) {
     final object = ContainerTag();
-    object.containerUID = reader.readLong(offsets[0]);
+    object.containerUID = reader.readString(offsets[0]);
     object.id = id;
     object.textID = reader.readLong(offsets[1]);
     return object;
@@ -129,7 +128,7 @@ class _ContainerTagNativeAdapter extends IsarNativeTypeAdapter<ContainerTag> {
       case -1:
         return id as P;
       case 0:
-        return (reader.readLong(offset)) as P;
+        return (reader.readString(offset)) as P;
       case 1:
         return (reader.readLong(offset)) as P;
       default:
@@ -227,17 +226,22 @@ extension ContainerTagQueryWhere
 extension ContainerTagQueryFilter
     on QueryBuilder<ContainerTag, ContainerTag, QFilterCondition> {
   QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition>
-      containerUIDEqualTo(int value) {
+      containerUIDEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
       property: 'containerUID',
       value: value,
+      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition>
       containerUIDGreaterThan(
-    int value, {
+    String value, {
+    bool caseSensitive = true,
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
@@ -245,12 +249,14 @@ extension ContainerTagQueryFilter
       include: include,
       property: 'containerUID',
       value: value,
+      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition>
       containerUIDLessThan(
-    int value, {
+    String value, {
+    bool caseSensitive = true,
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
@@ -258,13 +264,15 @@ extension ContainerTagQueryFilter
       include: include,
       property: 'containerUID',
       value: value,
+      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition>
       containerUIDBetween(
-    int lower,
-    int upper, {
+    String lower,
+    String upper, {
+    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -274,6 +282,53 @@ extension ContainerTagQueryFilter
       includeLower: includeLower,
       upper: upper,
       includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition>
+      containerUIDStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'containerUID',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition>
+      containerUIDEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'containerUID',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition>
+      containerUIDContains(String value, {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'containerUID',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition>
+      containerUIDMatches(String pattern, {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'containerUID',
+      value: pattern,
+      caseSensitive: caseSensitive,
     ));
   }
 
@@ -437,8 +492,9 @@ extension ContainerTagQueryWhereSortThenBy
 
 extension ContainerTagQueryWhereDistinct
     on QueryBuilder<ContainerTag, ContainerTag, QDistinct> {
-  QueryBuilder<ContainerTag, ContainerTag, QDistinct> distinctByContainerUID() {
-    return addDistinctByInternal('containerUID');
+  QueryBuilder<ContainerTag, ContainerTag, QDistinct> distinctByContainerUID(
+      {bool caseSensitive = true}) {
+    return addDistinctByInternal('containerUID', caseSensitive: caseSensitive);
   }
 
   QueryBuilder<ContainerTag, ContainerTag, QDistinct> distinctById() {
@@ -452,7 +508,7 @@ extension ContainerTagQueryWhereDistinct
 
 extension ContainerTagQueryProperty
     on QueryBuilder<ContainerTag, ContainerTag, QQueryProperty> {
-  QueryBuilder<ContainerTag, int, QQueryOperations> containerUIDProperty() {
+  QueryBuilder<ContainerTag, String, QQueryOperations> containerUIDProperty() {
     return addPropertyNameInternal('containerUID');
   }
 

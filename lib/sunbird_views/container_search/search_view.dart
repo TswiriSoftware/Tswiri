@@ -1,6 +1,4 @@
-import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
@@ -13,6 +11,7 @@ import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart'
 import 'package:flutter_google_ml_kit/objects/search/search_object.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/navigator_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/old/navigator_view_old.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/default_card/defualt_card.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/dividers/dividers.dart';
 import 'package:isar/isar.dart';
@@ -304,7 +303,7 @@ class _SearchViewState extends State<SearchView> {
   ///CONTAINER TAGS///
   Widget containerTags(List<ContainerTag> containerTags, Color color) {
     return Visibility(
-      visible: filters.contains('Tags'),
+      visible: filters.contains('Tags') && containerTags.isNotEmpty,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -338,7 +337,7 @@ class _SearchViewState extends State<SearchView> {
   ///ML TAGS///
   Widget mlTags(List<MlTag> mlTags, Color color) {
     return Visibility(
-      visible: filters.contains('Photo Tags'),
+      visible: filters.contains('Photo Tags') && mlTags.isNotEmpty,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -392,7 +391,7 @@ class _SearchViewState extends State<SearchView> {
   ///USER TAGS///
   Widget userTags(List<UserTag> userTags, Color color) {
     return Visibility(
-      visible: filters.contains('Photo Tags'),
+      visible: filters.contains('Photo Tags') && userTags.isNotEmpty,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -425,7 +424,7 @@ class _SearchViewState extends State<SearchView> {
   ///PHOTOS///
   Widget photos(List<Photo> photos, Color color) {
     return Visibility(
-      visible: filters.contains('Photos'),
+      visible: filters.contains('Photos') && photos.isNotEmpty,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -567,12 +566,13 @@ class _SearchViewState extends State<SearchView> {
               .repeat(
                   containerTags,
                   (q, ContainerTag element) =>
-                      q.idEqualTo(element.containerUID))
+                      q.containerUIDMatches(element.containerUID))
               .findAllSync()
               .map((e) => SContainer(
                   container: e,
                   tags: containerTags
-                      .where((element) => element.containerUID == e.id)
+                      .where(
+                          (element) => element.containerUID == e.containerUID)
                       .toList()))
               .toList();
 
@@ -656,14 +656,17 @@ class _SearchViewState extends State<SearchView> {
 
         List<SContainer> containers = isarDatabase!.containerEntrys
             .filter()
-            .repeat(sPhotos,
-                (q, SPhoto sphoto) => q.idEqualTo(sphoto.photo.containerID))
+            .repeat(
+                sPhotos,
+                (q, SPhoto sphoto) =>
+                    q.containerUIDMatches(sphoto.photo.containerUID))
             .findAllSync()
             .map(
               (e) => SContainer(
                 container: e,
                 sPhotos: sPhotos
-                    .where((_sPhoto) => _sPhoto.photo.containerID == e.id)
+                    .where((_sPhoto) =>
+                        _sPhoto.photo.containerUID == e.containerUID)
                     .toList(),
               ),
             )

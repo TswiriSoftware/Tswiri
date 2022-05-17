@@ -733,7 +733,7 @@ class _ContainerViewState extends State<ContainerView> {
       //Add Existing Tag.
       isarDatabase!
           .writeTxnSync((isar) => isar.containerTags.putSync(ContainerTag()
-            ..containerUID = _containerEntry.id
+            ..containerUID = _containerEntry.containerUID
             ..textID = tag.id));
     } else {
       //log('new tag');
@@ -746,7 +746,7 @@ class _ContainerViewState extends State<ContainerView> {
       //New Container Tag.
       isarDatabase!
           .writeTxnSync((isar) => isar.containerTags.putSync(ContainerTag()
-            ..containerUID = _containerEntry.id
+            ..containerUID = _containerEntry.containerUID
             ..textID = newTag.id));
     }
     updateTags();
@@ -784,7 +784,7 @@ class _ContainerViewState extends State<ContainerView> {
           } else {
             isarDatabase!.writeTxnSync(
                 (isar) => isar.containerTags.putSync(ContainerTag()
-                  ..containerUID = _containerEntry.id
+                  ..containerUID = _containerEntry.containerUID
                   ..textID = tagID));
             updateTags();
             tagsController.clear();
@@ -800,7 +800,7 @@ class _ContainerViewState extends State<ContainerView> {
 
     assignedTagIDs.addAll(isarDatabase!.containerTags
         .filter()
-        .containerUIDEqualTo(_containerEntry.id)
+        .containerUIDMatches(_containerEntry.containerUID)
         .textIDProperty()
         .findAllSync());
 
@@ -841,7 +841,7 @@ class _ContainerViewState extends State<ContainerView> {
         List<Photo> containerPhotos = [];
         containerPhotos.addAll(isarDatabase!.photos
             .filter()
-            .containerIDEqualTo(_containerEntry.id)
+            .containerUIDMatches(_containerEntry.containerUID)
             .findAllSync());
 
         List<Widget> photoWidgets = [
@@ -936,7 +936,7 @@ class _ContainerViewState extends State<ContainerView> {
           MaterialPageRoute(
             builder: (context) => ObjectDetectorView(
               customColor: _containerColor,
-              containerID: _containerEntry.id,
+              containerUID: _containerEntry.containerUID,
             ),
           ),
         );

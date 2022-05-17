@@ -5,13 +5,14 @@ class PainterMesssage {
   PainterMesssage({
     required this.averageDiagonalLength,
     required this.painterData,
-    required this.averageOffsetToBarcode,
+
+    /// required this.averageOffsetToBarcode,
   });
 
   String identifier = 'painterMessage';
   double averageDiagonalLength;
-  Offset averageOffsetToBarcode;
-  List<PainterBarcodeData> painterData;
+  //Offset averageOffsetToBarcode;
+  List<PainterBarcodeObject> painterData;
 
   List toMessage() {
     List messagePainterData = painterData.map((e) => e.toMessage()).toList();
@@ -20,7 +21,7 @@ class PainterMesssage {
       identifier,
       averageDiagonalLength,
       messagePainterData,
-      [averageOffsetToBarcode.dx, averageOffsetToBarcode.dy]
+      //[averageOffsetToBarcode.dx, averageOffsetToBarcode.dy]
     ];
   }
 
@@ -30,12 +31,12 @@ class PainterMesssage {
     return PainterMesssage(
       averageDiagonalLength: message[1],
       painterData: messagePainterData
-          .map((e) => PainterBarcodeData.fromMessage(e))
+          .map((e) => PainterBarcodeObject.fromMessage(e))
           .toList(),
-      averageOffsetToBarcode: Offset(
-        message[3][0] as double,
-        message[3][1] as double,
-      ),
+      // averageOffsetToBarcode: Offset(
+      //   message[3][0] as double,
+      //   message[3][1] as double,
+      // ),
     );
   }
 
@@ -45,13 +46,14 @@ class PainterMesssage {
     identifier: $identifier
     averageDiagonalLength: $averageDiagonalLength
     painterData: ${painterData.length}
-    averageOffsetToBarcode: $averageOffsetToBarcode
+  averageOffsetToBarcode: averageOffsetToBarcode
 _______________________________________________''';
   }
 }
 
-class PainterBarcodeData {
-  PainterBarcodeData({
+///Passed to the painter for drawing
+class PainterBarcodeObject {
+  PainterBarcodeObject({
     required this.barcodeUID,
     required this.conrnerPoints,
   });
@@ -74,7 +76,7 @@ class PainterBarcodeData {
     ];
   }
 
-  factory PainterBarcodeData.fromMessage(List message) {
+  factory PainterBarcodeObject.fromMessage(List message) {
     List<Offset> cornerPoints = [
       Offset(message[1][0], message[1][1]),
       Offset(message[1][2], message[1][3]),
@@ -83,7 +85,7 @@ class PainterBarcodeData {
       Offset(message[1][0], message[1][1]),
     ];
 
-    return PainterBarcodeData(
+    return PainterBarcodeObject(
       barcodeUID: message[0],
       conrnerPoints: cornerPoints,
     );
