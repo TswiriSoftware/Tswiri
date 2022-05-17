@@ -30,7 +30,7 @@ class ObjectPainter extends CustomPainter {
         .filter()
         .photoIDEqualTo(photo.id)
         .and()
-        .tagTypeEqualTo(mlTagType.objectLabel)
+        .tagTypeEqualTo(MlTagType.objectLabel)
         .findAllSync();
 
     for (var mlTag in mlTags) {

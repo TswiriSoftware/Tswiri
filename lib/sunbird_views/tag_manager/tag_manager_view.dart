@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
-import 'package:googleapis/drive/v2.dart';
 import 'package:isar/isar.dart';
 
 class TagManagerView extends StatefulWidget {

@@ -17,7 +17,6 @@ import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/isolates
 import 'dart:math' as math;
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
 
 void imageProcessorNavigator(SendPort sendPort) {
   ReceivePort receivePort = ReceivePort();

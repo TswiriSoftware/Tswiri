@@ -11,7 +11,6 @@ import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart'
 import 'package:flutter_google_ml_kit/objects/search/search_object.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/navigator_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/old/navigator_view_old.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/default_card/defualt_card.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/dividers/dividers.dart';
 import 'package:isar/isar.dart';
@@ -362,19 +361,19 @@ class _SearchViewState extends State<SearchView> {
     return Chip(
       avatar: Builder(builder: (context) {
         switch (mlTag.tagType) {
-          case mlTagType.text:
+          case MlTagType.text:
             return const Icon(
               Icons.format_size,
               size: 15,
             );
 
-          case mlTagType.objectLabel:
+          case MlTagType.objectLabel:
             return const Icon(
               Icons.emoji_objects,
               size: 15,
             );
 
-          case mlTagType.imageLabel:
+          case MlTagType.imageLabel:
             return const Icon(
               Icons.image,
               size: 15,

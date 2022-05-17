@@ -1,19 +1,12 @@
 import 'dart:developer';
 import 'dart:isolate';
 import 'package:flutter/painting.dart';
-import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/functions/translating/coordinates_translator.dart';
-import 'package:flutter_google_ml_kit/functions/translating/offset_rotation.dart';
-import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/barcode_property.dart';
-import 'package:flutter_google_ml_kit/isar_database/barcodes/interbarcode_vector_entry/interbarcode_vector_entry.dart';
-import 'package:flutter_google_ml_kit/objects/reworked/on_image_inter_barcode_data.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/grid_builder.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/isolates/messages/image_data.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/isolates/messages/image_processor_config.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/isolates/messages/painter_message.dart';
 import 'dart:math' as math;
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:isar/isar.dart';
 
 import '../../../objects/reworked/on_image_data.dart';
 
@@ -33,21 +26,21 @@ void imageProcessor(List initialMessage) {
   ]);
 
   //4. Open Isar.
-  Isar isar = openIsar(directory: initialMessage[2], inspector: false);
+  // Isar isar = openIsar(directory: initialMessage[2], inspector: false);
 
-  //5. Get Barcode Properties.
-  List<BarcodeProperty> barcodeProperties =
-      isar.barcodePropertys.where().findAllSync();
+  // //5. Get Barcode Properties.
+  // List<BarcodeProperty> barcodeProperties =
+  //     isar.barcodePropertys.where().findAllSync();
 
-  //7. Get InterBarcodeVectors
-  List<InterBarcodeVectorEntry> interBarcodeVectors = isar
-      .interBarcodeVectorEntrys
-      .filter()
-      .outDatedEqualTo(false)
-      .findAllSync();
+  // //7. Get InterBarcodeVectors
+  // List<InterBarcodeVectorEntry> interBarcodeVectors = isar
+  //     .interBarcodeVectorEntrys
+  //     .filter()
+  //     .outDatedEqualTo(false)
+  //     .findAllSync();
 
-  //6. Configure FocalLength.
-  double focalLength = initialMessage[3];
+  // //6. Configure FocalLength.
+  // double focalLength = initialMessage[3];
 
   //7. BarcodeScanner
   BarcodeScanner barcodeScanner =
@@ -56,8 +49,8 @@ void imageProcessor(List initialMessage) {
   //8. selectedBarcodeUID
   String? selectedBarcodeUID = initialMessage[4];
 
-  //9. DefualtbarcodeSize.
-  double defaultBarcodeSize = initialMessage[5];
+  // //9. DefualtbarcodeSize.
+  // double defaultBarcodeSize = initialMessage[5];
 
   //10. Image Config
   InputImageData? inputImageData;
@@ -99,7 +92,7 @@ void imageProcessor(List initialMessage) {
       //4. Compile Painter Message
       List<PainterBarcodeObject> painterData = [];
       double? averageBarcodeDiagonalLength;
-      Offset? averageOffsetToBarcode;
+      //Offset? averageOffsetToBarcode;
 
       List<OnImageBarcodeData> onImageBarcodeDatas = [];
 

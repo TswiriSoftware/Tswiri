@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
@@ -208,7 +207,7 @@ class _ObjectDetectorProcessingView
         //vii. Create MlTag.
         MlTag mlTag = MlTag()
           ..photoID = photo.id
-          ..tagType = mlTagType.objectLabel
+          ..tagType = MlTagType.objectLabel
           ..textID = tagText.id
           ..confidence = 0.0
           ..blackListed = true;
@@ -242,7 +241,7 @@ class _ObjectDetectorProcessingView
           //vii. Create MlTag.
           MlTag mlTag = MlTag()
             ..photoID = photo.id
-            ..tagType = mlTagType.objectLabel
+            ..tagType = MlTagType.objectLabel
             ..textID = tagText.id
             ..confidence = objectLabel.getConfidence()
             ..blackListed = false;
@@ -279,7 +278,7 @@ class _ObjectDetectorProcessingView
       //iv. Create MlTag.
       MlTag mlTag = MlTag()
         ..photoID = photo.id
-        ..tagType = mlTagType.imageLabel
+        ..tagType = MlTagType.imageLabel
         ..textID = tagText.id
         ..confidence = label.confidence
         ..blackListed = false;
@@ -314,7 +313,7 @@ class _ObjectDetectorProcessingView
             //iv. Create MlTag.
             MlTag mlTag = MlTag()
               ..photoID = photo.id
-              ..tagType = mlTagType.text
+              ..tagType = MlTagType.text
               ..textID = tagText.id
               ..confidence = 0.99
               ..blackListed = false;

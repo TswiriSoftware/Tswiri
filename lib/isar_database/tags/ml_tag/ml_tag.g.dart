@@ -395,7 +395,7 @@ extension MlTagQueryFilter on QueryBuilder<MlTag, MlTag, QFilterCondition> {
   }
 
   QueryBuilder<MlTag, MlTag, QAfterFilterCondition> tagTypeEqualTo(
-      mlTagType value) {
+      MlTagType value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
       property: 'tagType',
@@ -404,7 +404,7 @@ extension MlTagQueryFilter on QueryBuilder<MlTag, MlTag, QFilterCondition> {
   }
 
   QueryBuilder<MlTag, MlTag, QAfterFilterCondition> tagTypeGreaterThan(
-    mlTagType value, {
+    MlTagType value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
@@ -416,7 +416,7 @@ extension MlTagQueryFilter on QueryBuilder<MlTag, MlTag, QFilterCondition> {
   }
 
   QueryBuilder<MlTag, MlTag, QAfterFilterCondition> tagTypeLessThan(
-    mlTagType value, {
+    MlTagType value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
@@ -428,8 +428,8 @@ extension MlTagQueryFilter on QueryBuilder<MlTag, MlTag, QFilterCondition> {
   }
 
   QueryBuilder<MlTag, MlTag, QAfterFilterCondition> tagTypeBetween(
-    mlTagType lower,
-    mlTagType upper, {
+    MlTagType lower,
+    MlTagType upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -635,7 +635,7 @@ extension MlTagQueryProperty on QueryBuilder<MlTag, MlTag, QQueryProperty> {
     return addPropertyNameInternal('photoID');
   }
 
-  QueryBuilder<MlTag, mlTagType, QQueryOperations> tagTypeProperty() {
+  QueryBuilder<MlTag, MlTagType, QQueryOperations> tagTypeProperty() {
     return addPropertyNameInternal('tagType');
   }
 

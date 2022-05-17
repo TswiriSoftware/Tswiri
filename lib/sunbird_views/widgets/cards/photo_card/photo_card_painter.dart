@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:ui';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
@@ -30,7 +29,7 @@ class PhotoCardPainter extends CustomPainter {
         .filter()
         .photoIDEqualTo(photo.id)
         .and()
-        .tagTypeEqualTo(mlTagType.objectLabel)
+        .tagTypeEqualTo(MlTagType.objectLabel)
         .findAllSync();
 
     for (var mlTag in mlTags) {

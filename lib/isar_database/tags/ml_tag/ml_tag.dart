@@ -21,7 +21,7 @@ class MlTag {
 
   ///TagID
   @MlTagTypeConverter()
-  late mlTagType tagType;
+  late MlTagType tagType;
 
   @override
   String toString() {
@@ -42,22 +42,22 @@ class MlTag {
   // }
 }
 
-enum mlTagType {
+enum MlTagType {
   objectLabel,
   imageLabel,
   text,
 }
 
-class MlTagTypeConverter extends TypeConverter<mlTagType, int> {
+class MlTagTypeConverter extends TypeConverter<MlTagType, int> {
   const MlTagTypeConverter();
 
   @override
-  mlTagType fromIsar(int object) {
-    return mlTagType.values[object];
+  MlTagType fromIsar(int object) {
+    return MlTagType.values[object];
   }
 
   @override
-  int toIsar(mlTagType object) {
+  int toIsar(MlTagType object) {
     return object.index;
   }
 }

@@ -427,19 +427,19 @@ class _GalleryViewState extends State<GalleryView> {
       return ActionChip(
         avatar: Builder(builder: (context) {
           switch (currentMlTag.tagType) {
-            case mlTagType.text:
+            case MlTagType.text:
               return const Icon(
                 Icons.format_size,
                 size: 15,
               );
 
-            case mlTagType.objectLabel:
+            case MlTagType.objectLabel:
               return const Icon(
                 Icons.emoji_objects,
                 size: 15,
               );
 
-            case mlTagType.imageLabel:
+            case MlTagType.imageLabel:
               return const Icon(
                 Icons.image,
                 size: 15,

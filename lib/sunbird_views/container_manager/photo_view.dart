@@ -1,7 +1,4 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_google_ml_kit/extentions/capitalize_first_character.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
@@ -13,7 +10,6 @@ import 'package:flutter_google_ml_kit/sunbird_views/widgets/app_bars/default_app
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/default_card/defualt_card.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/photo_card/photo_card.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/dividers/dividers.dart';
-import 'package:googleapis/androidpublisher/v3.dart';
 import 'package:isar/isar.dart';
 
 class PhotoView extends StatefulWidget {
@@ -144,19 +140,19 @@ class _PhotoViewState extends State<PhotoView> {
     return ActionChip(
       avatar: Builder(builder: (context) {
         switch (mlTag.tagType) {
-          case mlTagType.text:
+          case MlTagType.text:
             return const Icon(
               Icons.format_size,
               size: 15,
             );
 
-          case mlTagType.objectLabel:
+          case MlTagType.objectLabel:
             return const Icon(
               Icons.emoji_objects,
               size: 15,
             );
 
-          case mlTagType.imageLabel:
+          case MlTagType.imageLabel:
             return const Icon(
               Icons.image,
               size: 15,
