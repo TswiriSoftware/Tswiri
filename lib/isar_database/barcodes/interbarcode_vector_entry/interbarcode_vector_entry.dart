@@ -30,7 +30,7 @@ class InterBarcodeVectorEntry {
   //Z vector.
   late double z; //Make nullable ?
 
-  late bool outDated;
+  late bool outDated; //Outdated InterBarcodeVectors.
 
   //Returns the UID of the interBarcodeVectorEntry
   String get uid {

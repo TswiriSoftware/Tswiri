@@ -20,7 +20,7 @@ class _NewContainerTypeViewState extends State<NewContainerTypeView> {
   Color pickerColor = Colors.deepOrange;
   Color currentColor = Colors.deepOrange;
   bool moveable = false;
-  bool markerToChildren = false;
+  bool enclosing = false;
   bool canContainSelf = false;
 
   late List<ContainerType> containerTypes;
@@ -350,11 +350,11 @@ class _NewContainerTypeViewState extends State<NewContainerTypeView> {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             Checkbox(
-              value: markerToChildren,
+              value: enclosing,
               fillColor: MaterialStateProperty.all(
                   newContainerColor ?? Colors.deepOrange),
               onChanged: (value) {
-                markerToChildren = value!;
+                enclosing = value!;
 
                 setState(() {});
               },
@@ -530,7 +530,7 @@ class _NewContainerTypeViewState extends State<NewContainerTypeView> {
         ..containerDescription = descriptionController.text
         ..containerColor = newContainerColor!.value.toString()
         ..moveable = moveable
-        ..markerToChilren = markerToChildren
+        ..enclosing = enclosing
         ..canContain = canContainTypes;
 
       if (isarDatabase!.containerTypes

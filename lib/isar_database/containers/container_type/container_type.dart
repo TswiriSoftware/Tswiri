@@ -16,13 +16,15 @@ class ContainerType {
   late bool moveable;
 
   ///Is this container's barcode a marker by defaut.
-  late bool markerToChilren;
+  late bool enclosing; //Rename enclosing
 
   ///List of containers that this container can contain.
   late List<String> canContain;
 
   ///Container color.
   late String containerColor;
+
+  ///A Origin
 
   @override
   String toString() {
@@ -39,7 +41,7 @@ color $containerColor
         'containerType': containerType,
         'containerDescription': containerDescription,
         'moveable': moveable,
-        'markerToChilren': markerToChilren,
+        'markerToChilren': enclosing,
         'canContain': canContain,
         'containerColor': containerColor,
       };
@@ -51,7 +53,7 @@ color $containerColor
       ..containerColor = json['containerColor']
       ..containerDescription = json['containerDescription']
       ..containerType = json['containerType']
-      ..markerToChilren = json['markerToChilren']
+      ..enclosing = json['markerToChilren']
       ..moveable = json['moveable'];
   }
 }

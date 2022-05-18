@@ -30,6 +30,7 @@ class NavigatorView extends StatefulWidget {
 }
 
 class _NavigatorViewState extends State<NavigatorView> {
+  late ContainerEntry selectedContainer = widget.containerEntry;
   //Color
   late Color color =
       getContainerColor(containerUID: widget.containerEntry.containerUID);
@@ -37,9 +38,11 @@ class _NavigatorViewState extends State<NavigatorView> {
   //Painter
   CustomPaint? customPaint;
 
-  //Isolate Ports
-  ReceivePort uiPort = ReceivePort('uiPort1');
+  //UI-Ports (multiple-ports are snappier)
+  ReceivePort uiPort1 = ReceivePort('uiPort1');
+  ReceivePort uiPort2 = ReceivePort('uiPort2');
 
+  //Isolate-Ports
   SendPort? imageProcessor1;
   SendPort? imageProcessor2;
 
@@ -54,6 +57,9 @@ class _NavigatorViewState extends State<NavigatorView> {
 
   //Painter
   bool isBusy = false;
+
+  //Dialogs
+  bool showingDialog = false;
 
   @override
   void initState() {
@@ -79,43 +85,60 @@ class _NavigatorViewState extends State<NavigatorView> {
   //Initiate Isolates and uiPort listener.
   void initiateIsolates() {
     FlutterIsolate.spawn(imageProcessor, [
-      uiPort.sendPort, //SendPort [0]
-      1, //ID [1]
-      isarDirectory!.path, //IsarDirectory [2]
-      focalLength, // FocalLength [3]
-      widget.containerEntry.barcodeUID, //SelectedBarcodeUID [4]
-      defaultBarcodeDiagonalLength ?? 100, //Default Barcode Size [5]
+      1, //[0] ID
+      uiPort1.sendPort, //[1] SendPort
+      isarDirectory!.path, //[2] Isar Directory
+      focalLength, //[3] focalLength
+      selectedContainer.barcodeUID, //[4] selectedContainer BarcodeUID
+      defaultBarcodeDiagonalLength ?? 100, //[5]  Default Barcode Size.
     ]);
 
     FlutterIsolate.spawn(imageProcessor, [
-      uiPort.sendPort,
-      2,
-      isarDirectory!.path,
-      focalLength,
-      widget.containerEntry.barcodeUID,
-      defaultBarcodeDiagonalLength ?? 100,
+      2, //[0] ID
+      uiPort2.sendPort, //[1] SendPort
+      isarDirectory!.path, //[2] Isar Directory
+      focalLength, //[3] focalLength
+      selectedContainer.barcodeUID, //[4] selectedContainer BarcodeUID
+      defaultBarcodeDiagonalLength ?? 100, //[5]  Default Barcode Size.
     ]);
 
-    uiPort.listen((message) {
-      if (message is List && message[0] == 'ip_ui_config') {
-        switch (message[1]) {
-          case 1: //Configure ImageProcessor1.
-            setState(() {
-              imageProcessor1 = message[2];
-              log('ui : IP1 Port Set');
-            });
-            break;
-          case 2: //Configure ImageProcessor2.
-            setState(() {
-              imageProcessor2 = message[2];
-              log('ui : IP2 Port Set');
-            });
-            break;
-        }
+    uiPort1.listen((message) {
+      if (message[0] == 'Sendport') {
+        imageProcessor1 = message[1];
+        log('UI: ImageProcessor1 Port Set');
       } else if (message[0] == 'painterMessage') {
         drawImage(message);
+      } else if (message[0] == 'error') {
+        errorHandler(message);
       }
     });
+
+    uiPort2.listen((message) {
+      if (message[0] == 'Sendport') {
+        imageProcessor2 = message[1];
+        log('UI: ImageProcessor2 Port Set');
+      } else if (message[0] == 'painterMessage') {
+        drawImage(message);
+      } else if (message[0] == 'error') {
+        errorHandler(message);
+      }
+    });
+  }
+
+  void errorHandler(message) {
+    switch (message[1]) {
+      case 'nogrid':
+        showNoGridDialog(context);
+
+        break;
+      case 'unkownposition':
+        initiateDialog(
+          'Unkown Position',
+          'This barcode does not appear in any grids.',
+        );
+        break;
+      default:
+    }
   }
 
   @override
@@ -141,7 +164,7 @@ class _NavigatorViewState extends State<NavigatorView> {
           customPaint: customPaint,
           onImage: (inputImage) {
             if (hasConfiguredIPs == false) {
-              configureIPs(inputImage);
+              configureImageProcessors(inputImage);
             } else {
               sendImageDataMessage(inputImage);
             }
@@ -188,28 +211,30 @@ class _NavigatorViewState extends State<NavigatorView> {
   }
 
   ///Configures the ImageProcessor(s) so they can receive ImageBytes.
-  void configureIPs(InputImage inputImage) {
+  void configureImageProcessors(InputImage inputImage) {
     if (imageProcessor1 != null && imageProcessor2 != null) {
-      //Abosulte Image Size.
+      //1. Abosulte Image Size.
       Size absoluteSize = inputImage.inputImageData!.size;
-      //Canvas Size.
 
+      //2. Canvas Size.
       Size canvasSize = Size(
           MediaQuery.of(context).size.width,
           MediaQuery.of(context).size.height -
               kToolbarHeight -
               MediaQuery.of(context).padding.top);
 
-      //InputImageFormat
+      //3. InputImageFormat.
       InputImageFormat inputImageFormat =
           inputImage.inputImageData!.inputImageFormat;
 
+      //4. Compile ImageProcessorConfig.
       ImageProcessorConfig config = ImageProcessorConfig(
         absoluteSize: absoluteSize,
         canvasSize: canvasSize,
         inputImageFormat: inputImageFormat,
       );
 
+      //5. Send Config(s).
       imageProcessor1!.send(config.toMessage());
       imageProcessor2!.send(config.toMessage());
 
@@ -233,14 +258,82 @@ class _NavigatorViewState extends State<NavigatorView> {
     //Send Data.
     if (counter == 0) {
       imageProcessor1!.send(imageDataMessage.toMessage());
-    } else if (counter == 2) {
+    } else if (counter == 3) {
       imageProcessor2!.send(imageDataMessage.toMessage());
     }
 
     counter++;
-    if (mounted && counter == 4) {
+    if (mounted && counter == 6) {
       setState(() {
         counter = 0;
+      });
+    }
+  }
+
+  void showNoGridDialog(BuildContext context) {
+    //No Grid Error
+    if (showingDialog == false) {
+      setState(() {
+        showingDialog = true;
+      });
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (initialDialogContext) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.start,
+              children: const [
+                Text(
+                    "This container has not been scanned previously and it's location is unkown."),
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(initialDialogContext);
+                  Navigator.pop(context);
+                },
+                child: const Text('close'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void initiateDialog(String title, String message) async {
+    if (showingDialog == false) {
+      setState(() {
+        showingDialog = true;
+      });
+      await showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (initialDialogContext) {
+          return AlertDialog(
+            title: Text(title),
+            content: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.start,
+              children: [
+                Text(message),
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(initialDialogContext);
+                },
+                child: const Text('close'),
+              ),
+            ],
+          );
+        },
+      );
+      setState(() {
+        showingDialog = false;
       });
     }
   }

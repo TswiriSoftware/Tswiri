@@ -17,7 +17,7 @@ extension GetContainerTypeCollection on Isar {
 final ContainerTypeSchema = CollectionSchema(
   name: 'ContainerType',
   schema:
-      '{"name":"ContainerType","idName":"id","properties":[{"name":"canContain","type":"StringList"},{"name":"containerColor","type":"String"},{"name":"containerDescription","type":"String"},{"name":"containerType","type":"String"},{"name":"markerToChilren","type":"Bool"},{"name":"moveable","type":"Bool"}],"indexes":[],"links":[]}',
+      '{"name":"ContainerType","idName":"id","properties":[{"name":"canContain","type":"StringList"},{"name":"containerColor","type":"String"},{"name":"containerDescription","type":"String"},{"name":"containerType","type":"String"},{"name":"enclosing","type":"Bool"},{"name":"moveable","type":"Bool"}],"indexes":[],"links":[]}',
   nativeAdapter: const _ContainerTypeNativeAdapter(),
   webAdapter: const _ContainerTypeWebAdapter(),
   idName: 'id',
@@ -26,7 +26,7 @@ final ContainerTypeSchema = CollectionSchema(
     'containerColor': 1,
     'containerDescription': 2,
     'containerType': 3,
-    'markerToChilren': 4,
+    'enclosing': 4,
     'moveable': 5
   },
   listProperties: {'canContain'},
@@ -59,8 +59,8 @@ class _ContainerTypeWebAdapter extends IsarWebTypeAdapter<ContainerType> {
     IsarNative.jsObjectSet(
         jsObj, 'containerDescription', object.containerDescription);
     IsarNative.jsObjectSet(jsObj, 'containerType', object.containerType);
+    IsarNative.jsObjectSet(jsObj, 'enclosing', object.enclosing);
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'markerToChilren', object.markerToChilren);
     IsarNative.jsObjectSet(jsObj, 'moveable', object.moveable);
     return jsObj;
   }
@@ -79,9 +79,8 @@ class _ContainerTypeWebAdapter extends IsarWebTypeAdapter<ContainerType> {
     object.containerDescription =
         IsarNative.jsObjectGet(jsObj, 'containerDescription') ?? '';
     object.containerType = IsarNative.jsObjectGet(jsObj, 'containerType') ?? '';
+    object.enclosing = IsarNative.jsObjectGet(jsObj, 'enclosing') ?? false;
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.markerToChilren =
-        IsarNative.jsObjectGet(jsObj, 'markerToChilren') ?? false;
     object.moveable = IsarNative.jsObjectGet(jsObj, 'moveable') ?? false;
     return object;
   }
@@ -102,11 +101,11 @@ class _ContainerTypeWebAdapter extends IsarWebTypeAdapter<ContainerType> {
             as P;
       case 'containerType':
         return (IsarNative.jsObjectGet(jsObj, 'containerType') ?? '') as P;
+      case 'enclosing':
+        return (IsarNative.jsObjectGet(jsObj, 'enclosing') ?? false) as P;
       case 'id':
         return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
             as P;
-      case 'markerToChilren':
-        return (IsarNative.jsObjectGet(jsObj, 'markerToChilren') ?? false) as P;
       case 'moveable':
         return (IsarNative.jsObjectGet(jsObj, 'moveable') ?? false) as P;
       default:
@@ -148,8 +147,8 @@ class _ContainerTypeNativeAdapter extends IsarNativeTypeAdapter<ContainerType> {
     final value3 = object.containerType;
     final _containerType = IsarBinaryWriter.utf8Encoder.convert(value3);
     dynamicSize += (_containerType.length) as int;
-    final value4 = object.markerToChilren;
-    final _markerToChilren = value4;
+    final value4 = object.enclosing;
+    final _enclosing = value4;
     final value5 = object.moveable;
     final _moveable = value5;
     final size = staticSize + dynamicSize;
@@ -162,7 +161,7 @@ class _ContainerTypeNativeAdapter extends IsarNativeTypeAdapter<ContainerType> {
     writer.writeBytes(offsets[1], _containerColor);
     writer.writeBytes(offsets[2], _containerDescription);
     writer.writeBytes(offsets[3], _containerType);
-    writer.writeBool(offsets[4], _markerToChilren);
+    writer.writeBool(offsets[4], _enclosing);
     writer.writeBool(offsets[5], _moveable);
   }
 
@@ -174,8 +173,8 @@ class _ContainerTypeNativeAdapter extends IsarNativeTypeAdapter<ContainerType> {
     object.containerColor = reader.readString(offsets[1]);
     object.containerDescription = reader.readString(offsets[2]);
     object.containerType = reader.readString(offsets[3]);
+    object.enclosing = reader.readBool(offsets[4]);
     object.id = id;
-    object.markerToChilren = reader.readBool(offsets[4]);
     object.moveable = reader.readBool(offsets[5]);
     return object;
   }
@@ -720,6 +719,15 @@ extension ContainerTypeQueryFilter
     ));
   }
 
+  QueryBuilder<ContainerType, ContainerType, QAfterFilterCondition>
+      enclosingEqualTo(bool value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'enclosing',
+      value: value,
+    ));
+  }
+
   QueryBuilder<ContainerType, ContainerType, QAfterFilterCondition> idEqualTo(
       int value) {
     return addFilterConditionInternal(FilterCondition(
@@ -770,15 +778,6 @@ extension ContainerTypeQueryFilter
   }
 
   QueryBuilder<ContainerType, ContainerType, QAfterFilterCondition>
-      markerToChilrenEqualTo(bool value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'markerToChilren',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<ContainerType, ContainerType, QAfterFilterCondition>
       moveableEqualTo(bool value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
@@ -823,22 +822,21 @@ extension ContainerTypeQueryWhereSortBy
     return addSortByInternal('containerType', Sort.desc);
   }
 
+  QueryBuilder<ContainerType, ContainerType, QAfterSortBy> sortByEnclosing() {
+    return addSortByInternal('enclosing', Sort.asc);
+  }
+
+  QueryBuilder<ContainerType, ContainerType, QAfterSortBy>
+      sortByEnclosingDesc() {
+    return addSortByInternal('enclosing', Sort.desc);
+  }
+
   QueryBuilder<ContainerType, ContainerType, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
 
   QueryBuilder<ContainerType, ContainerType, QAfterSortBy> sortByIdDesc() {
     return addSortByInternal('id', Sort.desc);
-  }
-
-  QueryBuilder<ContainerType, ContainerType, QAfterSortBy>
-      sortByMarkerToChilren() {
-    return addSortByInternal('markerToChilren', Sort.asc);
-  }
-
-  QueryBuilder<ContainerType, ContainerType, QAfterSortBy>
-      sortByMarkerToChilrenDesc() {
-    return addSortByInternal('markerToChilren', Sort.desc);
   }
 
   QueryBuilder<ContainerType, ContainerType, QAfterSortBy> sortByMoveable() {
@@ -883,22 +881,21 @@ extension ContainerTypeQueryWhereSortThenBy
     return addSortByInternal('containerType', Sort.desc);
   }
 
+  QueryBuilder<ContainerType, ContainerType, QAfterSortBy> thenByEnclosing() {
+    return addSortByInternal('enclosing', Sort.asc);
+  }
+
+  QueryBuilder<ContainerType, ContainerType, QAfterSortBy>
+      thenByEnclosingDesc() {
+    return addSortByInternal('enclosing', Sort.desc);
+  }
+
   QueryBuilder<ContainerType, ContainerType, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
 
   QueryBuilder<ContainerType, ContainerType, QAfterSortBy> thenByIdDesc() {
     return addSortByInternal('id', Sort.desc);
-  }
-
-  QueryBuilder<ContainerType, ContainerType, QAfterSortBy>
-      thenByMarkerToChilren() {
-    return addSortByInternal('markerToChilren', Sort.asc);
-  }
-
-  QueryBuilder<ContainerType, ContainerType, QAfterSortBy>
-      thenByMarkerToChilrenDesc() {
-    return addSortByInternal('markerToChilren', Sort.desc);
   }
 
   QueryBuilder<ContainerType, ContainerType, QAfterSortBy> thenByMoveable() {
@@ -930,13 +927,12 @@ extension ContainerTypeQueryWhereDistinct
     return addDistinctByInternal('containerType', caseSensitive: caseSensitive);
   }
 
-  QueryBuilder<ContainerType, ContainerType, QDistinct> distinctById() {
-    return addDistinctByInternal('id');
+  QueryBuilder<ContainerType, ContainerType, QDistinct> distinctByEnclosing() {
+    return addDistinctByInternal('enclosing');
   }
 
-  QueryBuilder<ContainerType, ContainerType, QDistinct>
-      distinctByMarkerToChilren() {
-    return addDistinctByInternal('markerToChilren');
+  QueryBuilder<ContainerType, ContainerType, QDistinct> distinctById() {
+    return addDistinctByInternal('id');
   }
 
   QueryBuilder<ContainerType, ContainerType, QDistinct> distinctByMoveable() {
@@ -966,13 +962,12 @@ extension ContainerTypeQueryProperty
     return addPropertyNameInternal('containerType');
   }
 
-  QueryBuilder<ContainerType, int, QQueryOperations> idProperty() {
-    return addPropertyNameInternal('id');
+  QueryBuilder<ContainerType, bool, QQueryOperations> enclosingProperty() {
+    return addPropertyNameInternal('enclosing');
   }
 
-  QueryBuilder<ContainerType, bool, QQueryOperations>
-      markerToChilrenProperty() {
-    return addPropertyNameInternal('markerToChilren');
+  QueryBuilder<ContainerType, int, QQueryOperations> idProperty() {
+    return addPropertyNameInternal('id');
   }
 
   QueryBuilder<ContainerType, bool, QQueryOperations> moveableProperty() {

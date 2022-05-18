@@ -23,34 +23,39 @@ void imageProcessorNavigator(SendPort sendPort) {
   sendPort.send(receivePort.sendPort);
   InputImageData? inputImageData;
   Size? canvasSize;
+
   Map<String, double>? barcodeProperties;
+
   SendPort? gridSendPort;
+
   String? selectedBarcodeUID;
+
   IsolateGrid? isolateGrid;
   Isar? isarDatabase;
+
   log('IsolateGrid');
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
 
-  void test(String isarDirectory) async {
-    isarDatabase = openIsar(directory: isarDirectory);
-    log(isarDatabase!.containerEntrys.where().findAllSync().toString());
-  }
+  // void test(String isarDirectory) async {
+  //   isarDatabase = openIsar(directory: isarDirectory);
+  //   log(isarDatabase!.containerEntrys.where().findAllSync().toString());
+  // }
 
-  void write(int value) {
-    isarDatabase!.writeTxnSync((isar) => isar.containerTypes.putSync(
-        ContainerType()
-          ..id = value
-          ..containerType = 'area'
-          ..containerDescription =
-              '- An Area is a stationary container with a marker.\n- which can contain all other types of containers.\n- It is part of the childrens grid.'
-          ..canContain = ['shelf', 'box', 'drawer']
-          ..moveable = false
-          ..markerToChilren = true
-          ..containerColor = const Color(0xFFff420e).value.toString(),
-        replaceOnConflict: true));
-    log('write ' + value.toString());
-  }
+  // void write(int value) {
+  //   isarDatabase!.writeTxnSync((isar) => isar.containerTypes.putSync(
+  //       ContainerType()
+  //         ..id = value
+  //         ..containerType = 'area'
+  //         ..containerDescription =
+  //             '- An Area is a stationary container with a marker.\n- which can contain all other types of containers.\n- It is part of the childrens grid.'
+  //         ..canContain = ['shelf', 'box', 'drawer']
+  //         ..moveable = false
+  //         ..enclosing = true
+  //         ..containerColor = const Color(0xFFff420e).value.toString(),
+  //       replaceOnConflict: true));
+  //   log('write ' + value.toString());
+  // }
 
   void processImage(var message) async {
     if (inputImageData != null &&
@@ -186,7 +191,6 @@ void imageProcessorNavigator(SendPort sendPort) {
               (averageBarcodeDiagonalLength + onImageDiagonalLength) / 2;
         }
 
-        ///
         PainterBarcodeObject barcodePainterData = PainterBarcodeObject(
           barcodeUID: barcode.value.displayValue!,
           conrnerPoints: conrnerPoints,
@@ -224,7 +228,7 @@ void imageProcessorNavigator(SendPort sendPort) {
       PainterMesssage painterMessage = PainterMesssage(
         averageDiagonalLength: averageBarcodeDiagonalLength ?? 100,
         painterData: painterData,
-        //averageOffsetToBarcode: averageOffsetToBarcode ?? const Offset(0, 0),
+        averageOffsetToBarcode: averageOffsetToBarcode ?? const Offset(0, 0),
       );
 
       sendPort.send(painterMessage.toMessage());
@@ -274,11 +278,12 @@ void imageProcessorNavigator(SendPort sendPort) {
                 element.barcodes.contains(rollingGridPosition.barcodeUID))
             .first
             .updatePosition(rollingGridPosition);
-      } else if (message[0] == 'isar') {
-        test(message[1]);
-      } else if (message[0] == 'write') {
-        write(message[1] as int);
       }
+      // else if (message[0] == 'isar') {
+      //   test(message[1]);
+      // } else if (message[0] == 'write') {
+      //   write(message[1] as int);
+      // }
     },
   );
 }

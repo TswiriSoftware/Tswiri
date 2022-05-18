@@ -5,13 +5,12 @@ class PainterMesssage {
   PainterMesssage({
     required this.averageDiagonalLength,
     required this.painterData,
-
-    /// required this.averageOffsetToBarcode,
+    required this.averageOffsetToBarcode,
   });
 
   String identifier = 'painterMessage';
   double averageDiagonalLength;
-  //Offset averageOffsetToBarcode;
+  Offset averageOffsetToBarcode;
   List<PainterBarcodeObject> painterData;
 
   List toMessage() {
@@ -21,7 +20,7 @@ class PainterMesssage {
       identifier,
       averageDiagonalLength,
       messagePainterData,
-      //[averageOffsetToBarcode.dx, averageOffsetToBarcode.dy]
+      [averageOffsetToBarcode.dx, averageOffsetToBarcode.dy]
     ];
   }
 
@@ -33,10 +32,10 @@ class PainterMesssage {
       painterData: messagePainterData
           .map((e) => PainterBarcodeObject.fromMessage(e))
           .toList(),
-      // averageOffsetToBarcode: Offset(
-      //   message[3][0] as double,
-      //   message[3][1] as double,
-      // ),
+      averageOffsetToBarcode: Offset(
+        message[3][0] as double,
+        message[3][1] as double,
+      ),
     );
   }
 
@@ -46,7 +45,7 @@ class PainterMesssage {
     identifier: $identifier
     averageDiagonalLength: $averageDiagonalLength
     painterData: ${painterData.length}
-  averageOffsetToBarcode: averageOffsetToBarcode
+  averageOffsetToBarcode: $averageOffsetToBarcode
 _______________________________________________''';
   }
 }

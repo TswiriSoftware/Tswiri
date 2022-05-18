@@ -173,7 +173,7 @@ class _ContainerTypeViewState extends State<ContainerTypeView> {
                       ),
                       Text(
                         'Marker to Children: ' +
-                            containerType.markerToChilren.toString(),
+                            containerType.enclosing.toString(),
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ],

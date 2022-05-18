@@ -10,6 +10,7 @@ import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart'
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_position_scanner/barcode_position_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/grid_builder.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/master_grid.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/grid_manager/container_new_markers.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/grid_manager/grid_visualizer_painter.dart';
 import 'package:isar/isar.dart';
@@ -177,11 +178,9 @@ class _ContainerGridViewState extends State<ContainerGridView> {
           backgroundColor: MaterialStateProperty.all(containerTypeColor)),
       onPressed: () async {
         //await FlutterIsolate.killAll();
-        GridBuilder gridBuilder = GridBuilder(isarDatabase: isarDatabase!);
-
-        for (var independantGrid in gridBuilder.grids) {
-          log(independantGrid.toString());
-        }
+        MasterGrid masterGrid = MasterGrid(isarDatabase: isarDatabase!);
+        masterGrid.calculateRelationshipTrees();
+        //masterGrid.calculateCoordinates();
       },
       child: Row(
         children: [

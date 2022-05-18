@@ -38,7 +38,7 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
     containerColor =
         Color(int.parse(containerType.containerColor)).withOpacity(1);
     moveable = containerType.moveable;
-    markerToChildren = containerType.markerToChilren;
+    markerToChildren = containerType.enclosing;
     nameController.text = containerType.containerType.capitalize();
     descriptionController.text = containerType.containerDescription;
 
@@ -517,7 +517,7 @@ class _ContainerTypeEditViewState extends State<ContainerTypeEditView> {
           ..canContain = canContainTypes
           ..containerColor = containerColor.value.toString()
           ..moveable = moveable
-          ..markerToChilren = markerToChildren,
+          ..enclosing = markerToChildren,
         replaceOnConflict: true));
 
     // log(containerType.toString());

@@ -733,12 +733,12 @@ class _NewContainerViewState extends State<NewContainerView> {
             isar.containerRelationships.putSync(newContainerRelationship));
       }
 
-      if (selectedContainerType!.markerToChilren && barcodeUID != null) {
+      if (!selectedContainerType!.enclosing && barcodeUID != null) {
         Marker newMarker = Marker()
           ..barcodeUID = barcodeUID!
           ..parentContainerUID = newContainerEntry.containerUID;
 
-        log(newMarker.toString());
+        //log(newMarker.toString());
         isarDatabase!.writeTxnSync((isar) => isar.markers.putSync(newMarker));
       }
 

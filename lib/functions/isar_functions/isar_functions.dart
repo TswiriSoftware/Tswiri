@@ -59,7 +59,7 @@ void createBasicContainerTypes() {
                   '- An Area is a stationary container with a marker.\n- which can contain all other types of containers.\n- It is part of the childrens grid.'
               ..canContain = ['shelf', 'box', 'drawer']
               ..moveable = false
-              ..markerToChilren = true
+              ..enclosing = false
               ..containerColor = const Color(0xFFff420e).value.toString(),
             replaceOnConflict: false);
 
@@ -71,7 +71,7 @@ void createBasicContainerTypes() {
                   '- A Shelf is a stationary container with a marker.\n- which can contain Boxes and/or Drawers.\n- It is part of the childrens grid.'
               ..canContain = ['box', 'drawer']
               ..moveable = false
-              ..markerToChilren = true
+              ..enclosing = false
               ..containerColor = const Color(0xFF89da59).value.toString(),
             replaceOnConflict: false);
 
@@ -83,7 +83,7 @@ void createBasicContainerTypes() {
                   '- A Drawer is a stationary container.\n- which can contain boxes.\n- It does not form part of the childrens grid.'
               ..canContain = ['box']
               ..moveable = false
-              ..markerToChilren = false
+              ..enclosing = true
               ..containerColor = Colors.blue.value.toString(),
             replaceOnConflict: false);
 
@@ -94,7 +94,7 @@ void createBasicContainerTypes() {
               ..containerDescription = '- A Box is a moveable container.'
               ..canContain = ['box']
               ..moveable = true
-              ..markerToChilren = false
+              ..enclosing = true
               ..containerColor = const Color(0xFFF98866).value.toString(),
             replaceOnConflict: true);
       },

@@ -14,11 +14,13 @@ import 'package:isar/isar.dart';
 import 'package:vector_math/vector_math.dart';
 
 class GridBuilder {
-  GridBuilder({required this.isarDatabase});
+  GridBuilder({
+    required this.isarDatabase, // This is so it can build in an isolate
+  });
   Isar isarDatabase;
   //1. List of independant grids -(based on relationships)
   //  i - If a container has a child it is clasified as a independant grid.
-  //  ii- If the container isMarkerToChildren then it forms part of the independant grid else it does not.
+  //  ii- If the container enclosing then it forms part of the independant grid else it does not.
   //late List<IndependantGrid> independantGrids = grids;
 
   List<IndependantGrid> get grids {
@@ -90,7 +92,7 @@ class IndependantGrid {
   List<String> get findBarcodes {
     List<String> foundBarcodes = [];
     //Add parent container barcode.
-    if (containerType.markerToChilren) {
+    if (containerType.enclosing) {
       foundBarcodes.add(parentContainer.barcodeUID!);
     }
     //Add markers
@@ -262,7 +264,7 @@ class IndependantGrid {
   ///Calculate the onScreenPoints.
   List<DisplayPoint> displayPoints(Size screenSize) {
     List<Position> positions = allPositions;
-    log(allPositions.toString());
+    //log(allPositions.toString());
 
     List<double> unitVector = unitVectors(
         realBarcodePositions: positions,
