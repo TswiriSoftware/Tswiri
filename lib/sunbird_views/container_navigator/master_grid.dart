@@ -35,7 +35,7 @@ class MasterGrid {
       .findAllSync();
 
   ///List of coordinates. (Updateable)
-  late List<Coordinate> coordinates = calculateCoordinates();
+  List<Coordinate>? coordinates;
 
   ///List of relationships Trees. (Updateable)
   late List<Relationship> relationshipTrees = calculateRelationshipTrees();
@@ -77,7 +77,7 @@ class MasterGrid {
   }
 
   ///Calculate all the coordinates that can be calculated.
-  List<Coordinate> calculateCoordinates() {
+  void calculateCoordinates() {
     //1. Find All origin containers (Containers that are Non-Moveable AND Non-Enclosing).
     //i. Valid ContainerTypes
     List<String> originContainerTypes = types
@@ -224,10 +224,7 @@ class MasterGrid {
       }
       allCoordinates.addAll(coordinates);
     }
-
-    //log(allCoordinates.toString());
-
-    return allCoordinates;
+    coordinates = allCoordinates;
   }
 
   ///Containers that do not have parents. (foundlings ?)

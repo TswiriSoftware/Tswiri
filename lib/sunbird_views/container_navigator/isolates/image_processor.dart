@@ -38,9 +38,10 @@ void imageProcessor(List init) {
 
   //4. Spawn MasterGrid.
   MasterGrid masterGrid = MasterGrid(isarDatabase: isarDatabase);
+  masterGrid.calculateCoordinates();
 
-  List<Coordinate> coordinates =
-      masterGrid.calculateCoordinates(); //Calculate coordinates.
+  List<Coordinate> coordinates = masterGrid.coordinates!;
+       //Calculate coordinates.
 
   List<Relationship> relationshipTrees =
       masterGrid.relationshipTrees; //Calculate relationshipsTrees.
@@ -118,7 +119,7 @@ void imageProcessor(List init) {
 
       //4. Initiate Painter Message variables.
       List<PainterBarcodeObject> painterData = [];
-      double? averageBarcodeDiagonalLength;
+      double? averageOnImageBarcodeSize;
       Offset? averageOffsetToBarcode;
 
       List<OnImageBarcodeData> onImageBarcodeDatas = [];
@@ -180,11 +181,11 @@ void imageProcessor(List init) {
             double onImageDiagonalLength =
                 onImageBarcodeData.barcodeDiagonalLength;
 
-            if (averageBarcodeDiagonalLength == null) {
-              averageBarcodeDiagonalLength = onImageDiagonalLength;
+            if (averageOnImageBarcodeSize == null) {
+              averageOnImageBarcodeSize = onImageDiagonalLength;
             } else {
-              averageBarcodeDiagonalLength =
-                  (averageBarcodeDiagonalLength + onImageDiagonalLength) / 2;
+              averageOnImageBarcodeSize =
+                  (averageOnImageBarcodeSize + onImageDiagonalLength) / 2;
             }
 
             //vi. Find real barcode Size if it exists.
@@ -270,7 +271,7 @@ void imageProcessor(List init) {
       // }
 
       PainterMesssage painterMessage = PainterMesssage(
-        averageDiagonalLength: averageBarcodeDiagonalLength ?? 100,
+        averageDiagonalLength: averageOnImageBarcodeSize ?? 100,
         painterData: painterData,
         averageOffsetToBarcode: averageOffsetToBarcode ?? const Offset(0, 0),
       );
