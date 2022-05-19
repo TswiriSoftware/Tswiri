@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -20,7 +19,7 @@ class NavigatorPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     PainterMesssage painterMesssage = PainterMesssage.fromMessage(message);
-    log(painterMesssage.toString());
+    //log(painterMesssage.toString());
 
     Offset screenCenter = Offset(
       size.width / 2,
@@ -73,6 +72,13 @@ class NavigatorPainter extends CustomPainter {
               painterMesssage.averageOffsetToBarcode.distance -
               finderCircleRadius,
           screenCenter.dy);
+
+      //Confine arrow to screen size.
+      if (arrowLineHead.dx > (size.width)) {
+        arrowLineHead = Offset(
+            arrowLineStart.dx + (size.width / 2) - finderCircleRadius,
+            screenCenter.dy);
+      }
 
       //ArrowHeadtop
       Offset arrowHeadtop =

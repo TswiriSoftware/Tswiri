@@ -2,11 +2,8 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
 import 'dart:ui';
-import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/functions/translating/coordinates_translator.dart';
 import 'package:flutter_google_ml_kit/functions/translating/offset_rotation.dart';
-import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/containers/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/objects/grid/isolate_grid.dart';
 import 'package:flutter_google_ml_kit/objects/grid/position.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/isolate/rolling_grid_position.dart';
@@ -31,6 +28,7 @@ void imageProcessorNavigator(SendPort sendPort) {
   String? selectedBarcodeUID;
 
   IsolateGrid? isolateGrid;
+  // ignore: unused_local_variable
   Isar? isarDatabase;
 
   log('IsolateGrid');

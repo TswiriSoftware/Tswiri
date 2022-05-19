@@ -20,6 +20,7 @@ void imageProcessor(List init) {
   int id = init[0]; //[0] ID.
   SendPort sendPort = init[1]; //[1] SendPort.
   String isarDirectory = init[2]; //[2] Isar directory
+  // ignore: unused_local_variable
   double focalLength = init[3]; //[3] focalLength
   String selectedBarcodeUID = init[4]; //[4] SelectedContainer BarcodeUID
   double defualtBarcodeSize = init[5]; //[5] Default Barcode Size.
@@ -41,37 +42,20 @@ void imageProcessor(List init) {
   masterGrid.calculateCoordinates();
 
   List<Coordinate> coordinates = masterGrid.coordinates!;
-       //Calculate coordinates.
+  //Calculate coordinates.
+
+  //log(masterGrid.coordinates.toString());
 
   List<Relationship> relationshipTrees =
       masterGrid.relationshipTrees; //Calculate relationshipsTrees.
 
-  String? soughtGridID;
-  List<String>? soughtBarcodeUIDs;
-  Coordinate? soughtBarcodeCoordinate;
   Relationship? soughtContainerRelationship;
-  List<Coordinate>? soughtBarcodeCoordinates;
-  Offset? soughtBarcodeOffset;
+
+  List<String> grids = coordinates.map((e) => e.gridID).toSet().toList();
 
   if (coordinates.any((element) => element.barcodeUID == selectedBarcodeUID)) {
-    soughtBarcodeCoordinate = coordinates
+    soughtContainerRelationship = relationshipTrees
         .firstWhere((element) => element.barcodeUID == selectedBarcodeUID);
-
-    soughtGridID = soughtBarcodeCoordinate.gridID;
-
-    soughtBarcodeCoordinates =
-        coordinates.where((element) => element.gridID == soughtGridID).toList();
-
-    soughtBarcodeUIDs =
-        soughtBarcodeCoordinates.map((e) => e.barcodeUID).toList();
-
-    soughtBarcodeOffset = Offset(
-      soughtBarcodeCoordinate.coordinate!.x,
-      soughtBarcodeCoordinate.coordinate!.y,
-    );
-
-    soughtContainerRelationship = relationshipTrees.firstWhere(
-        (element) => element.barcodeUID == soughtBarcodeCoordinate!.barcodeUID);
   } else {
     sendPort.send([
       'error', //[0] Identifier.
@@ -123,8 +107,11 @@ void imageProcessor(List init) {
       Offset? averageOffsetToBarcode;
 
       List<OnImageBarcodeData> onImageBarcodeDatas = [];
+      List<BarcodeObject> barcodeObjects = [];
 
-      bool? unkownPosition;
+      bool foundPath = false;
+      bool arrow = false;
+      Relationship? barcodeRelationship;
 
       for (Barcode barcode in barcodes) {
         ///1. Caluclate barcode OnScreen CornerPoints.
@@ -152,104 +139,57 @@ void imageProcessor(List init) {
           accelerometerData: imageDataMessage.accelerometerData,
         );
 
-        //Check if the soughtGrid is not null.
-        if (soughtGridID != null && soughtBarcodeUIDs != null) {
-          log('SoughtGrid Valid');
-          if (soughtBarcodeUIDs.contains(barcode.value.displayValue)) {
-            log('Calculating arrow');
-            //TODO: Calculate Arrow.
-            //i. Calculate phone angle.
-            double phoneAngle =
-                onImageBarcodeData.accelerometerData.calculatePhoneAngle();
+        //i. Calculate phone angle.
+        double phoneAngle =
+            onImageBarcodeData.accelerometerData.calculatePhoneAngle();
 
-            //ii. Calculate screenCenterPoint.
-            Offset screenCenterPoint = rotateOffset(
-                offset: Offset(inputImageData!.size.height / 2,
-                    inputImageData!.size.width / 2),
-                angleRadians: phoneAngle);
+        //ii. Calculate screenCenterPoint.
+        Offset screenCenterPoint = rotateOffset(
+            offset: Offset(inputImageData!.size.height / 2,
+                inputImageData!.size.width / 2),
+            angleRadians: phoneAngle);
 
-            //iii. Calculate Barcode Center Point.
-            Offset barcodeCenterPoint = rotateOffset(
-                offset: onImageBarcodeData.barcodeCenterPoint,
-                angleRadians: phoneAngle);
+        //iii. Calculate Barcode Center Point.
+        Offset barcodeCenterPoint = rotateOffset(
+            offset: onImageBarcodeData.barcodeCenterPoint,
+            angleRadians: phoneAngle);
 
-            //iv. Calculate offset to Screen Center.
-            Offset offsetToScreenCenter =
-                barcodeCenterPoint - screenCenterPoint;
+        //iv. Calculate offset to Screen Center.
+        Offset offsetToScreenCenter = barcodeCenterPoint - screenCenterPoint;
 
-            //v. Calculate OnImageDiagonalLength.
-            double onImageDiagonalLength =
-                onImageBarcodeData.barcodeDiagonalLength;
+        //v. Calculate OnImageDiagonalLength.
+        double onImageDiagonalLength = onImageBarcodeData.barcodeDiagonalLength;
 
-            if (averageOnImageBarcodeSize == null) {
-              averageOnImageBarcodeSize = onImageDiagonalLength;
-            } else {
-              averageOnImageBarcodeSize =
-                  (averageOnImageBarcodeSize + onImageDiagonalLength) / 2;
-            }
-
-            //vi. Find real barcode Size if it exists.
-            double barcodeDiagonalLength = defualtBarcodeSize;
-            if (barcodeProperties.any((element) =>
-                element.barcodeUID == barcode.value.displayValue)) {
-              barcodeDiagonalLength = barcodeProperties
-                  .firstWhere((element) =>
-                      element.barcodeUID == barcode.value.displayValue)
-                  .size;
-            }
-
-            //vii. Calculate the startBarcodeMMperPX.
-            double startBarcodeMMperPX =
-                onImageDiagonalLength / barcodeDiagonalLength;
-
-            //viii. Calcualte the realOffsetToScreenCenter.
-            Offset realOffsetToScreenCenter =
-                offsetToScreenCenter / startBarcodeMMperPX;
-
-            //ix. Find the barcode position.
-            Coordinate barcodePosition = coordinates.firstWhere(
-                (element) => element.barcodeUID == barcode.value.displayValue);
-
-            //x. Calculate the realScreenCenter.
-            Offset realScreenCenter = Offset(barcodePosition.coordinate!.x,
-                    barcodePosition.coordinate!.y) -
-                realOffsetToScreenCenter;
-
-            Offset offsetToBarcode = soughtBarcodeOffset! - realScreenCenter;
-
-            //Calculate the average offset to selectedBarcode.
-            if (averageOffsetToBarcode == null) {
-              averageOffsetToBarcode = offsetToBarcode;
-            } else {
-              averageOffsetToBarcode =
-                  (averageOffsetToBarcode + offsetToBarcode) / 2;
-            }
-
-            unkownPosition = false;
-          } else {
-            //1. Identify the Grid.
-            if (coordinates.any((element) =>
-                element.barcodeUID == barcode.value.displayValue)) {
-              //Find the coordinate of the barcode.
-              Coordinate currentCoordiante = coordinates.firstWhere((element) =>
-                  element.barcodeUID == barcode.value.displayValue);
-
-              if (relationshipTrees.any((element) =>
-                  element.barcodeUID == currentCoordiante.barcodeUID)) {
-                Relationship currentRelationship = relationshipTrees.firstWhere(
-                    (element) =>
-                        element.barcodeUID == currentCoordiante.barcodeUID);
-
-                log(currentRelationship.toString());
-                log(soughtContainerRelationship.toString());
-              }
-
-              unkownPosition = false;
-            }
-          }
+        if (averageOnImageBarcodeSize == null) {
+          averageOnImageBarcodeSize = onImageDiagonalLength;
+        } else {
+          averageOnImageBarcodeSize =
+              (averageOnImageBarcodeSize + onImageDiagonalLength) / 2;
         }
 
-        //////////////////////////
+        //vi. Find real barcode Size if it exists.
+        double barcodeDiagonalLength = defualtBarcodeSize;
+        if (barcodeProperties.any(
+            (element) => element.barcodeUID == barcode.value.displayValue)) {
+          barcodeDiagonalLength = barcodeProperties
+              .firstWhere(
+                  (element) => element.barcodeUID == barcode.value.displayValue)
+              .size;
+        }
+
+        //vii. Calculate the startBarcodeMMperPX.
+        double startBarcodeMMperPX =
+            onImageDiagonalLength / barcodeDiagonalLength;
+
+        //viii. Calcualte the realOffsetToScreenCenter.
+        Offset realOffsetToScreenCenter =
+            offsetToScreenCenter / startBarcodeMMperPX;
+
+        BarcodeObject barcodeObject = BarcodeObject(
+            barcodeUID: barcode.value.displayValue!,
+            realOffsetToScreenCenter: realOffsetToScreenCenter);
+
+        barcodeObjects.add(barcodeObject);
 
         onImageBarcodeDatas.add(onImageBarcodeData);
 
@@ -261,14 +201,109 @@ void imageProcessor(List init) {
         painterData.add(barcodePainterData);
       }
 
-      //TODO: Invertigate.
+      ///1. Identify the grid that the user is in.
+      int thevalue = 0;
+      String theGridId = '';
+      Map<String, int> map = {for (var v in grids) v: 0};
 
-      // if (unkownPosition == null && barcodes.isNotEmpty) {
-      //   sendPort.send([
-      //     'error', //[0] Identifier.
-      //     'unkownposition', //[1] Error Type.
-      //   ]);
-      // }
+      for (BarcodeObject barcodeObject in barcodeObjects) {
+        List<String> gridIDs = coordinates
+            .where((element) => element.barcodeUID == barcodeObject.barcodeUID)
+            .map((e) => e.gridID)
+            .toList();
+        for (String gridID in gridIDs) {
+          int value = map[gridID]! + 1;
+          map[gridID] = value;
+          if (thevalue <= value) {
+            thevalue = value;
+            theGridId = gridID;
+          }
+        }
+      }
+
+      ///2. Once Identified calculate arrow.
+      List<Coordinate> gridCoordinates =
+          coordinates.where((element) => element.gridID == theGridId).toList();
+
+      if (gridCoordinates
+          .any((element) => element.barcodeUID == selectedBarcodeUID)) {
+        //If the user is in the correct grid.
+
+        //ix. Find the barcode position.
+        Coordinate? barcodePosition = gridCoordinates.firstWhere(
+            (element) => element.barcodeUID == barcodeObjects.first.barcodeUID);
+
+        if (barcodePosition.coordinate != null) {
+          //x. Calculate the realScreenCenter.
+          Offset realScreenCenter = Offset(barcodePosition.coordinate!.x,
+                  barcodePosition.coordinate!.y) -
+              barcodeObjects.first.realOffsetToScreenCenter;
+
+          Coordinate selectedBarcodeCoordinate = gridCoordinates.firstWhere(
+              (element) => element.barcodeUID == selectedBarcodeUID);
+
+          if (selectedBarcodeCoordinate.coordinate != null) {
+            Offset offsetToBarcode = Offset(
+                  selectedBarcodeCoordinate.coordinate!.x,
+                  selectedBarcodeCoordinate.coordinate!.y,
+                ) -
+                realScreenCenter;
+
+            //Calculate the average offset to selectedBarcode.
+            if (averageOffsetToBarcode == null) {
+              averageOffsetToBarcode = offsetToBarcode;
+            } else {
+              averageOffsetToBarcode =
+                  (averageOffsetToBarcode + offsetToBarcode) / 2;
+            }
+            arrow = true;
+          } else {
+            if (relationshipTrees.any((element) => barcodeObjects
+                .map((e) => e.barcodeUID)
+                .contains(element.barcodeUID))) {
+              barcodeRelationship = relationshipTrees.firstWhere((element) =>
+                  barcodeObjects
+                      .map((e) => e.barcodeUID)
+                      .contains(element.barcodeUID));
+              //RelationShip found
+              foundPath = true;
+            }
+          }
+          foundPath = true;
+        }
+      } else {
+        //If the user is in another grid.
+        if (relationshipTrees.any((element) => barcodeObjects
+            .map((e) => e.barcodeUID)
+            .contains(element.barcodeUID))) {
+          barcodeRelationship = relationshipTrees.firstWhere((element) =>
+              barcodeObjects
+                  .map((e) => e.barcodeUID)
+                  .contains(element.barcodeUID));
+          //RelationShip found
+          foundPath = true;
+        }
+      }
+
+      //Check if barcodes have been scanned.
+      if (barcodes.isNotEmpty) {
+        if (foundPath == false) {
+          sendPort.send([
+            'error', //[0] Identifier.
+            'NoPath', //[1] Error Type.
+          ]);
+        } else if (foundPath == true &&
+            barcodeRelationship != null &&
+            soughtContainerRelationship != null &&
+            arrow == false) {
+          sendPort.send([
+            'error', //[0] Identifier.
+            'Path', //[1] Error Type.
+            barcodeRelationship.treeList, //[2]
+            soughtContainerRelationship.treeList, //[3]
+          ]);
+        }
+      }
 
       PainterMesssage painterMessage = PainterMesssage(
         averageDiagonalLength: averageOnImageBarcodeSize ?? 100,
@@ -287,4 +322,13 @@ void imageProcessor(List init) {
       processImage(message);
     }
   });
+}
+
+class BarcodeObject {
+  BarcodeObject({
+    required this.barcodeUID,
+    required this.realOffsetToScreenCenter,
+  });
+  final String barcodeUID;
+  final Offset realOffsetToScreenCenter;
 }
