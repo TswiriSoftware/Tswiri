@@ -1,5 +1,5 @@
+import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
@@ -13,6 +13,7 @@ import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart'
 import 'package:flutter_google_ml_kit/isar_database/tags/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
+import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/new_container_view.dart';
 import 'package:isar/isar.dart';
@@ -30,7 +31,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
   final FocusNode _focusNode = FocusNode();
   bool isFocused = false;
 
-  List<ContainerEntry> selectedContainers = [];
+  List<String> selectedContainers = [];
   bool isSelecting = false;
 
   //Containers//
@@ -121,8 +122,6 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
       children: [
         IconButton(
           onPressed: () {
-            //TODO: delete selection.
-
             deleteSelection();
           },
           icon: const Icon(Icons.delete),
@@ -130,7 +129,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
         IconButton(
           onPressed: () {
             if (selectedContainers.isEmpty) {
-              selectedContainers.addAll(containers.map((e) => e));
+              selectedContainers.addAll(containers.map((e) => e.containerUID));
             } else {
               selectedContainers = [];
             }
@@ -169,79 +168,85 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
         if (selectedContainers.isEmpty && !isSelecting) {
           setState(() {
             isSelecting = true;
-            selectedContainers.add(containerEntry);
+            selectedContainers.add(containerEntry.containerUID);
             HapticFeedback.lightImpact();
           });
-        } else if (selectedContainers.isNotEmpty && isSelecting) {
-          if (selectedContainers.contains(containerEntry)) {
-            setState(() {
-              selectedContainers.remove(containerEntry);
+        }
+      },
+      onTap: () async {
+        if (selectedContainers.isNotEmpty && isSelecting) {
+          if (selectedContainers.isNotEmpty && isSelecting) {
+            if (selectedContainers.contains(containerEntry.containerUID)) {
+              selectedContainers.remove(containerEntry.containerUID);
               HapticFeedback.lightImpact();
               if (selectedContainers.isEmpty) {
                 isSelecting = false;
               }
-            });
-          } else {
-            setState(() {
-              selectedContainers.add(containerEntry);
-              HapticFeedback.lightImpact();
-            });
+            } else {
+              setState(() {
+                selectedContainers.add(containerEntry.containerUID);
+                HapticFeedback.lightImpact();
+              });
+            }
           }
+          log(selectedContainers.toString());
+          setState(() {});
+        } else {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ContainerView(
+                containerEntry: containerEntry,
+              ),
+            ),
+          );
         }
+        search(null);
       },
-      onTap: () async {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ContainerView(
-              containerEntry: containerEntry,
+      child: Builder(builder: (context) {
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          color: Colors.white12,
+          elevation: 5,
+          shadowColor: Colors.black26,
+          shape: RoundedRectangleBorder(
+            side: selectedContainers.contains(containerEntry.containerUID)
+                ? const BorderSide(color: Colors.limeAccent, width: 3)
+                : BorderSide(color: color, width: 1.5),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ///NAME///
+                name(containerEntry.name, containerEntry.containerUID),
+                const Divider(),
+
+                ///DESCRIPTION///
+                description(containerEntry.description),
+                const Divider(),
+
+                ///BARCODE///
+                barcode(containerEntry.barcodeUID),
+                const Divider(),
+
+                //TODO: Add Tags
+                userTags(containerEntry.containerUID, color),
+
+                ///INFO///
+                Center(
+                  child: Text(
+                    'Hold To Select',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              ],
             ),
           ),
         );
-        search(null);
-      },
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-        color: Colors.white12,
-        elevation: 5,
-        shadowColor: Colors.black26,
-        shape: RoundedRectangleBorder(
-          side: (isSelecting && selectedContainers.contains(containerEntry))
-              ? const BorderSide(color: Colors.greenAccent, width: 3)
-              : BorderSide(color: color, width: 1.5),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ///NAME///
-              name(containerEntry.name, containerEntry.containerUID),
-              const Divider(),
-
-              ///DESCRIPTION///
-              description(containerEntry.description),
-              const Divider(),
-
-              ///BARCODE///
-              barcode(containerEntry.barcodeUID),
-              const Divider(),
-
-              //TODO: Add Tags
-              userTags(containerEntry.containerUID, color),
-
-              ///INFO///
-              Center(
-                child: Text(
-                  'Hold To Select',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      }),
     );
   }
 
@@ -408,83 +413,115 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
             .findAllSync();
       });
     } else {
-      setState(() {
-        containers = isarDatabase!.containerEntrys.where().findAllSync();
-      });
+      containers = isarDatabase!.containerEntrys.where().findAllSync();
+      setState(() {});
     }
   }
 
-  void deleteSelection() {
-    //TODO: update to work better :D.
-    List<Marker> markers = [];
-    List<InterBarcodeVectorEntry> interBarcodeData = [];
-    List<ContainerRelationship> containerRelationships = [];
-    List<ContainerTag> containerTags = [];
+  void deleteSelection() async {
+    //Delete Container Entry.
+    //Delete ContainerRelationships.
+    //Delete realInterBarcodeDataVectorEntry.
+    //Delete Marker.
+    //Delete ContainerTags.
+    //Delete Container Photos and Thumbnails. - delete physical photo
+    //Delete MlTags.
+    //Delete UserTags.
+    bool delete = true;
 
-    List<Photo> containerPhotos = [];
-    List<MlTag> photoTags = [];
+    //Throw Error when Deleting parent Container.
     List<ContainerEntry> containerEntries = [];
+    List<ContainerRelationship> containerRelationships = [];
+    List<InterBarcodeVectorEntry> interBarcodeVectorEntries = [];
+    List<Marker> containerMarkers = [];
+    List<ContainerTag> containerTags = [];
+    List<Photo> containerPhotos = [];
+    List<MlTag> containerMlTags = [];
+    List<UserTag> containerUserTags = [];
 
-    if (selectedContainers.isNotEmpty) {
-      List<ContainerEntry> containersToDelete = isarDatabase!.containerEntrys
+    for (String containerUID in selectedContainers) {
+      //Get ContainerEntry.
+      ContainerEntry container = isarDatabase!.containerEntrys
           .filter()
-          .repeat(selectedContainers,
-              (q, ContainerEntry element) => q.idEqualTo(element.id))
+          .containerUIDMatches(containerUID)
+          .findFirstSync()!;
+
+      containerEntries.add(container);
+
+      List<ContainerRelationship> children = isarDatabase!
+          .containerRelationships
+          .filter()
+          .parentUIDMatches(containerUID)
           .findAllSync();
 
-      containerEntries.addAll(containersToDelete);
-
-      for (ContainerEntry container in containersToDelete) {
-        //Markers
-        markers.addAll(isarDatabase!.markers
-            .filter()
-            .parentContainerUIDMatches(container.containerUID)
-            .findAllSync());
-
-        //InterBarcodeData
-        if (container.barcodeUID != null) {
-          interBarcodeData.addAll(isarDatabase!.interBarcodeVectorEntrys
-              .filter()
-              .endBarcodeUIDMatches(container.barcodeUID!)
-              .or()
-              .startBarcodeUIDMatches(container.barcodeUID!)
-              .findAllSync());
-        }
-
-        //Relationships
-        containerRelationships.addAll(isarDatabase!.containerRelationships
-            .filter()
-            .containerUIDMatches(container.containerUID)
-            .findAllSync());
-
-        //Container Tags
-        containerTags.addAll(isarDatabase!.containerTags
-            .filter()
-            .containerUIDEqualTo(container.containerUID)
-            .findAllSync());
-
-        //Container Photos
-        containerPhotos.addAll(isarDatabase!.photos
-            .filter()
-            .containerUIDEqualTo(container.containerUID)
-            .findAllSync());
-
-        //Photo Tags
-        photoTags.addAll(isarDatabase!.mlTags
-            .filter()
-            .repeat(containerPhotos,
-                (q, Photo element) => q.photoIDEqualTo(element.id))
-            .findAllSync());
+      if (children.isNotEmpty) {
+        delete = await showDeleteDialog(container, children.length);
       }
-    }
 
-    //Delete marker. *
-    //Delete realInterBarcodeData.*
-    //Container Relationships.*
-    //Delete Container Tags. *
-    //Delete photo tags. *
-    //Delete Container Photos and Photo.* - delete physical photo
-    //Delete Container Entry.
+      List<ContainerRelationship> parents = isarDatabase!.containerRelationships
+          .filter()
+          .containerUIDMatches(containerUID)
+          .findAllSync();
+
+      containerRelationships.addAll(parents);
+      containerRelationships.addAll(children);
+
+      List<InterBarcodeVectorEntry> vectors = isarDatabase!
+          .interBarcodeVectorEntrys
+          .filter()
+          .startBarcodeUIDMatches(container.barcodeUID!)
+          .or()
+          .endBarcodeUIDMatches(container.barcodeUID!)
+          .findAllSync();
+
+      interBarcodeVectorEntries.addAll(vectors);
+
+      List<Marker> markers = isarDatabase!.markers
+          .filter()
+          .parentContainerUIDMatches(containerUID)
+          .findAllSync();
+
+      for (Marker marker in markers) {
+        List<InterBarcodeVectorEntry> markerVectors = isarDatabase!
+            .interBarcodeVectorEntrys
+            .filter()
+            .startBarcodeUIDMatches(marker.barcodeUID)
+            .or()
+            .endBarcodeUIDMatches(marker.barcodeUID)
+            .findAllSync();
+        interBarcodeVectorEntries.addAll(markerVectors);
+      }
+
+      containerMarkers.addAll(markers);
+
+      List<ContainerTag> tags = isarDatabase!.containerTags
+          .filter()
+          .containerUIDMatches(containerUID)
+          .findAllSync();
+
+      containerTags.addAll(tags);
+
+      List<Photo> photos = isarDatabase!.photos
+          .filter()
+          .containerUIDMatches(containerUID)
+          .findAllSync();
+
+      containerPhotos.addAll(photos);
+
+      List<MlTag> mlTags = isarDatabase!.mlTags
+          .filter()
+          .repeat(photos, (q, Photo photo) => q.photoIDEqualTo(photo.id))
+          .findAllSync();
+
+      containerMlTags.addAll(mlTags);
+
+      List<UserTag> userTags = isarDatabase!.userTags
+          .filter()
+          .repeat(photos, (q, Photo photo) => q.photoIDEqualTo(photo.id))
+          .findAllSync();
+
+      containerUserTags.addAll(userTags);
+    }
 
     //Delete on device Photos
     for (Photo containerPhoto in containerPhotos) {
@@ -494,57 +531,98 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
       }
     }
 
-    isarDatabase!.writeTxnSync((isar) {
-      isar.markers
-          .filter()
-          .repeat(markers,
-              (q, Marker element) => q.barcodeUIDMatches(element.barcodeUID))
-          .deleteFirstSync();
-      isar.interBarcodeVectorEntrys
-          .filter()
-          .repeat(
-              markers,
-              (q, Marker element) => q.group((q) => q
-                  .endBarcodeUIDMatches(element.barcodeUID)
-                  .or()
-                  .startBarcodeUIDMatches(element.barcodeUID)))
-          .deleteAllSync();
-      isar.containerRelationships
-          .filter()
-          .repeat(
-              containerRelationships,
-              (q, ContainerRelationship element) =>
-                  q.containerUIDMatches(element.containerUID))
-          .deleteAllSync();
-      isar.containerTags
-          .filter()
-          .repeat(
-              containerTags,
-              (q, ContainerTag element) =>
-                  q.containerUIDEqualTo(element.containerUID))
-          .deleteAllSync();
+    if (delete == true) {
+      isarDatabase!.writeTxnSync((isar) {
+        isar.markers
+            .filter()
+            .repeat(containerMarkers,
+                (q, Marker element) => q.barcodeUIDMatches(element.barcodeUID))
+            .deleteFirstSync();
 
-      isar.photos
-          .filter()
-          .repeat(containerPhotos,
-              (q, Photo element) => q.photoPathMatches(element.photoPath))
-          .deleteAllSync();
+        isar.interBarcodeVectorEntrys
+            .filter()
+            .repeat(interBarcodeVectorEntries,
+                (q, InterBarcodeVectorEntry element) => q.idEqualTo(element.id))
+            .deleteAllSync();
 
-      isar.mlTags
-          .filter()
-          .repeat(photoTags, (q, MlTag element) => q.photoIDEqualTo(element.id))
-          .deleteAllSync();
+        isar.containerRelationships
+            .filter()
+            .repeat(
+                containerRelationships,
+                (q, ContainerRelationship element) =>
+                    q.containerUIDMatches(element.containerUID))
+            .deleteAllSync();
 
-      isar.containerEntrys
-          .filter()
-          .repeat(
-              containerEntries,
-              (q, ContainerEntry element) =>
-                  q.containerUIDMatches(element.containerUID))
-          .deleteAllSync();
-    });
+        isar.containerTags
+            .filter()
+            .repeat(
+                containerTags,
+                (q, ContainerTag element) =>
+                    q.containerUIDEqualTo(element.containerUID))
+            .deleteAllSync();
+
+        isar.photos
+            .filter()
+            .repeat(containerPhotos,
+                (q, Photo element) => q.photoPathMatches(element.photoPath))
+            .deleteAllSync();
+
+        isar.mlTags
+            .filter()
+            .repeat(containerMlTags,
+                (q, MlTag element) => q.photoIDEqualTo(element.id))
+            .deleteAllSync();
+
+        isar.containerEntrys
+            .filter()
+            .repeat(
+                containerEntries,
+                (q, ContainerEntry element) =>
+                    q.containerUIDMatches(element.containerUID))
+            .deleteAllSync();
+
+        isar.userTags
+            .filter()
+            .repeat(containerUserTags,
+                (q, UserTag element) => q.idEqualTo(element.id))
+            .deleteAllSync();
+      });
+    }
+
     isSelecting = false;
+    selectedContainers = [];
     search(null);
     setState(() {});
+  }
+
+  Future<bool> showDeleteDialog(
+      ContainerEntry container, int numberOfChildren) async {
+    bool delete = await showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (initialDialogContext) {
+        return AlertDialog(
+          title: Text('Delete ${container.name ?? container.containerUID}'),
+          content: Text(
+              'Are you sure you want to delete this container is has $numberOfChildren children.'),
+          actionsAlignment: MainAxisAlignment.spaceBetween,
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(initialDialogContext, true);
+              },
+              child: const Text('delete'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(initialDialogContext, false);
+              },
+              child: const Text('cancel'),
+            ),
+          ],
+        );
+      },
+    );
+    return delete;
   }
 }

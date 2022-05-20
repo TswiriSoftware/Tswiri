@@ -15,7 +15,7 @@ import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/default_card/d
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/dividers/dividers.dart';
 import 'package:isar/isar.dart';
 
-List<String> filters = ['Tags', 'AI Tags', 'Photos', 'User Tags'];
+List<String> filters = ['Tags', 'AI Tags', 'Photos'];
 
 class SearchView extends StatefulWidget {
   const SearchView({Key? key}) : super(key: key);
@@ -36,12 +36,12 @@ class _SearchViewState extends State<SearchView> {
     'Tags': 'Search by container Tags',
     'Photos': 'Search by Photos',
     'Photo Tags': 'Search by Photo Tags',
-    //'User Tags': 'Search by photo user tags',
     'Name': 'Search by container Name',
     'Description': 'Search by container Description',
     'Barcode': 'Search by container Barcodes'
   };
   List<SContainer> searchR = [];
+  Color highlightColor = Colors.blueAccent;
 
   @override
   void initState() {
@@ -231,7 +231,12 @@ class _SearchViewState extends State<SearchView> {
                   ),
                   Text(
                     name ?? '-',
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: filters.contains('Name')
+                        ? TextStyle(
+                            color: highlightColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18)
+                        : Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
               ),
@@ -460,7 +465,7 @@ class _SearchViewState extends State<SearchView> {
           ),
         ),
       ),
-      color: color,
+      color: highlightColor,
     );
   }
 

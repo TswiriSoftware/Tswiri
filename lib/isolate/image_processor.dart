@@ -5,15 +5,15 @@ import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.da
 import 'package:flutter_google_ml_kit/functions/translating/coordinates_translator.dart';
 import 'package:flutter_google_ml_kit/functions/translating/offset_rotation.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/barcode_property.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/isolates/messages/image_data.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/isolates/messages/image_processor_config.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/isolates/messages/painter_message.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/master_grid.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/messages/image_data.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/messages/image_processor_config.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/messages/painter_message.dart';
+import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
 import 'dart:math' as math;
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
 
-import '../../../objects/reworked/on_image_data.dart';
+import '../objects/reworked/on_image_data.dart';
 
 void imageProcessor(List init) {
   //1. InitalMessage.

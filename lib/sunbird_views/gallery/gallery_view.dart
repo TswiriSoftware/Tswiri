@@ -2,14 +2,18 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/extentions/capitalize_first_character.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
 
 import 'package:flutter_google_ml_kit/sunbird_views/gallery/image_painter.dart.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/widgets/dividers/dividers.dart';
 import 'package:isar/isar.dart';
 
 class GalleryView extends StatefulWidget {
@@ -74,6 +78,40 @@ class _GalleryViewState extends State<GalleryView> {
             });
           },
           icon: const Icon(Icons.arrow_back)),
+      actions: [
+        Visibility(
+          visible: selectedPhoto != null,
+          child: TextButton(
+            onPressed: () {
+              ContainerEntry container = isarDatabase!.containerEntrys
+                  .filter()
+                  .containerUIDMatches(selectedPhoto!.containerUID)
+                  .findFirstSync()!;
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ContainerView(
+                    containerEntry: container,
+                  ),
+                ),
+              );
+            },
+            child: Row(
+              children: [
+                Text(
+                  'Go to Container',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const Icon(
+                  Icons.navigate_next_sharp,
+                  color: Colors.white,
+                )
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -170,6 +208,7 @@ class _GalleryViewState extends State<GalleryView> {
                 children: [
                   _userTagsCard(),
                   imageViewer(snapshot.data!),
+                  _mlTagsCard(),
                 ],
               );
             } else {
@@ -285,6 +324,138 @@ class _GalleryViewState extends State<GalleryView> {
     });
   }
 
+  ///ML TAGS///
+  Widget _mlTagsCard() {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      color: Colors.white12,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: sunbirdOrange, width: 2),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _mlTagsHeading(),
+            _dividerHeading(),
+            _mlTagsBuilder(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _mlTagsHeading() {
+    return Text('AI Tags', style: Theme.of(context).textTheme.headlineSmall);
+  }
+
+  Builder _mlTagsBuilder() {
+    return Builder(builder: (context) {
+      //Photo's MlTags.
+      List<MlTag> mlTags = isarDatabase!.mlTags
+          .filter()
+          .photoIDEqualTo(selectedPhoto!.id)
+          .and()
+          .blackListedEqualTo(false)
+          .findAllSync();
+
+      //Blacklisted MlTags.
+      List<MlTag> blacklistedMlTags = isarDatabase!.mlTags
+          .filter()
+          .photoIDEqualTo(selectedPhoto!.id)
+          .and()
+          .blackListedEqualTo(true)
+          .findAllSync();
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 5,
+            runSpacing: 2.5,
+            children: mlTags
+                .map((e) => mlTagChip(e, mlTags, blacklistedMlTags))
+                .toList(),
+          ),
+          lightDivider(height: 16),
+          Text(
+            'Blacklist',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          headingDivider(),
+          Wrap(
+            spacing: 5,
+            runSpacing: 5,
+            children: blacklistedMlTags
+                .map((e) => mlTagChip(e, mlTags, blacklistedMlTags))
+                .toList(),
+          ),
+        ],
+      );
+    });
+  }
+
+  ActionChip mlTagChip(
+      MlTag mlTag, List<MlTag> mlTags, List<MlTag> blacklistedMlTags) {
+    return ActionChip(
+      avatar: Builder(builder: (context) {
+        switch (mlTag.tagType) {
+          case MlTagType.text:
+            return const Icon(
+              Icons.format_size,
+              size: 15,
+            );
+
+          case MlTagType.objectLabel:
+            return const Icon(
+              Icons.emoji_objects,
+              size: 15,
+            );
+
+          case MlTagType.imageLabel:
+            return const Icon(
+              Icons.image,
+              size: 15,
+            );
+        }
+      }),
+      label: Text(
+        isarDatabase!.tagTexts.getSync(mlTag.textID)?.text ?? 'error',
+      ),
+      onPressed: () {
+        if (mlTags.contains(mlTag)) {
+          setState(() {
+            //Move to blacklist.
+            mlTags.remove(mlTag);
+            blacklistedMlTags.add(mlTag);
+          });
+
+          //Write to database.
+          mlTag.blackListed = true;
+          isarDatabase!.writeTxn(
+              (isar) => isar.mlTags.put(mlTag, replaceOnConflict: true));
+        } else {
+          setState(() {
+            //Move to mlTags.
+            mlTags.add(mlTag);
+            blacklistedMlTags.remove(mlTag);
+          });
+
+          //Write to database.
+          mlTag.blackListed = false;
+          isarDatabase!.writeTxn(
+              (isar) => isar.mlTags.put(mlTag, replaceOnConflict: true));
+        }
+      },
+      tooltip: mlTag.tagType.name.toString().capitalize(),
+      backgroundColor: sunbirdOrange,
+    );
+  }
+
   ///NEW USER TAGS///
   Widget _bottomSheet() {
     return Visibility(
@@ -338,6 +509,7 @@ class _GalleryViewState extends State<GalleryView> {
       scrollDirection: Axis.horizontal,
       child: Builder(builder: (context) {
         List<TagText> tagTexts = [];
+
         if (tagsController.text.isNotEmpty) {
           tagTexts.addAll(isarDatabase!.tagTexts
               .filter()
@@ -358,7 +530,6 @@ class _GalleryViewState extends State<GalleryView> {
               .where((element) => !usr.contains(element.id)));
         }
 
-        // }
         return Wrap(
           spacing: 5,
           children: tagTexts.map((e) => tagText(e)).toList(),
@@ -371,14 +542,17 @@ class _GalleryViewState extends State<GalleryView> {
     return ActionChip(
       label: Text(tagText.text),
       onPressed: () {
-        setState(() {
+        List<int> usr = userTags.map((e) => e.textID).toList();
+        if (!usr.contains(tagText.id)) {
           UserTag newUserTag = UserTag()
             ..textID = tagText.id
             ..photoID = selectedPhoto!.id;
           userTags.add(newUserTag);
           isarDatabase!
               .writeTxnSync((isar) => isar.userTags.putSync(newUserTag));
-        });
+        }
+
+        setState(() {});
       },
       backgroundColor: sunbirdOrange,
     );
@@ -421,71 +595,6 @@ class _GalleryViewState extends State<GalleryView> {
     );
   }
 
-  Widget mlTag(int tagID) {
-    return Builder(builder: (context) {
-      MlTag currentMlTag = isarDatabase!.mlTags.getSync(tagID)!;
-      return ActionChip(
-        avatar: Builder(builder: (context) {
-          switch (currentMlTag.tagType) {
-            case MlTagType.text:
-              return const Icon(
-                Icons.format_size,
-                size: 15,
-              );
-
-            case MlTagType.objectLabel:
-              return const Icon(
-                Icons.emoji_objects,
-                size: 15,
-              );
-
-            case MlTagType.imageLabel:
-              return const Icon(
-                Icons.image,
-                size: 15,
-              );
-          }
-        }),
-        backgroundColor: sunbirdOrange,
-        label: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              ' a',
-              // currentMlTag.tag + ' ',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            Icon(
-              assignedTagIDs.contains(tagID) ? Icons.close : Icons.add,
-              size: 12.5,
-            ),
-          ],
-        ),
-        onPressed: () {
-          // if (assignedTagIDs.contains(tagID)) {
-          //   //Remove Tag
-          //   PhotoTag currentPhotoTag =
-          //       photoTags.where((element) => element.tagUID == tagID).first;
-          //   isarDatabase!.writeTxnSync(
-          //       (isar) => isar.photoTags.deleteSync(currentPhotoTag.id));
-          // } else {
-          //   //Add Tag
-          //   isarDatabase!
-          //       .writeTxnSync((isar) => isar.photoTags.putSync(PhotoTag()
-          //         ..photoPath = selectedPhoto!.photoPath
-          //         ..tagUID = tagID
-          //         ..confidence = 1.0
-          //         ..boundingBox = null));
-          //   tagsController.clear();
-          // }
-          //updateTags();
-          addTag();
-          setState(() {});
-        },
-      );
-    });
-  }
-
   void addTag() {
     if (tagsController.text.isNotEmpty) {
       //1. Get Text.
@@ -497,6 +606,7 @@ class _GalleryViewState extends State<GalleryView> {
 
       if (tagText != null) {
         List<int> usr = userTags.map((e) => e.textID).toList();
+
         if (!usr.contains(tagText.id)) {
           //Create new
           UserTag userTag = UserTag()
@@ -504,48 +614,27 @@ class _GalleryViewState extends State<GalleryView> {
             ..photoID = selectedPhoto!.id;
 
           isarDatabase!.writeTxnSync((isar) => isar.userTags.putSync(userTag));
+          _tagsNode.requestFocus();
+          setState(() {});
         }
-      } else {}
+      } else {
+        TagText newTagText = TagText()..text = text;
+        isarDatabase!.writeTxnSync((isar) => isar.tagTexts.putSync(newTagText));
+
+        //Create new
+        UserTag userTag = UserTag()
+          ..textID = newTagText.id
+          ..photoID = selectedPhoto!.id;
+
+        isarDatabase!.writeTxnSync((isar) => isar.userTags.putSync(userTag));
+        userTags.add(userTag);
+        _tagsNode.requestFocus();
+        setState(() {});
+      }
     }
-    // if (tagsController.text.isEmpty) {
-    //   _tagsNode.unfocus();
-    // } else {
-    //   //Should this be text only ?
-    //   MlTag? mltag = isarDatabase!.mlTags
-    //       .filter()
-    //       .tagMatches(tagsController.text.toLowerCase().trim(),
-    //           caseSensitive: false)
-    //       .and()
-    //       .tagTypeEqualTo(mlTagType.text)
-    //       .findFirstSync();
-
-    //   if (mltag != null) {
-    //     isarDatabase!.writeTxnSync((isar) => isar.mlTags.putSync(PhotoTag()
-    //       ..photoPath = selectedPhoto!.photoPath
-    //       ..tagUID = mltag.id
-    //       ..confidence = 1.0
-    //       ..boundingBox = null));
-    //   } else {
-    //     MlTag newMlTag = MlTag()
-    //       ..tag = tagsController.text.toLowerCase().trim()
-    //       ..tagType = mlTagType.text;
-
-    //     isarDatabase!.writeTxnSync((isar) => isar.mlTags.putSync(newMlTag));
-
-    //     isarDatabase!.writeTxnSync((isar) => isar.mlTags.putSync(PhotoTag()
-    //       ..photoPath = selectedPhoto!.photoPath
-    //       ..tagUID = newMlTag.id
-    //       ..confidence = 1.0
-    //       ..boundingBox = null));
-    //   }
-
-    //   tagsController.clear();
-    //   _tagsNode.requestFocus();
-
-    //   setState(() {});
-    // }
   }
 
+  ///FUNCTIONS///
   void updatePhotos() {
     setState(() {
       photos = isarDatabase!.photos.where().findAllSync();

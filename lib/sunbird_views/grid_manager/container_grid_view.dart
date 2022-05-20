@@ -195,21 +195,18 @@ class _ContainerGridViewState extends State<ContainerGridView> {
       style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(containerTypeColor)),
       onPressed: () {
-        List<InterBarcodeVectorEntry> allRelevantInterBarcodeData =
-            isarDatabase!.interBarcodeVectorEntrys
-                .filter()
-                .repeat(
-                    barcodesToScan,
-                    (q, String element) => q
-                        .startBarcodeUIDMatches(element)
-                        .or()
-                        .endBarcodeUIDMatches(element))
-                .findAllSync();
-        List<int> ids = [];
-        for (InterBarcodeVectorEntry realInterBarcodeVectorEntry
-            in allRelevantInterBarcodeData) {
-          ids.add(realInterBarcodeVectorEntry.id);
-        }
+        List<int> ids = isarDatabase!.interBarcodeVectorEntrys
+            .filter()
+            .repeat(
+                barcodesToScan,
+                (q, String start) => q
+                    .startBarcodeUIDMatches(start)
+                    .and()
+                    .repeat(barcodesToScan,
+                        (q, String end) => q.endBarcodeUIDMatches(end)))
+            .findAllSync()
+            .map((e) => e.id)
+            .toList();
 
         isarDatabase!.writeTxnSync(
             (isar) => isar.interBarcodeVectorEntrys.deleteAllSync(ids));
