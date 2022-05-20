@@ -10,6 +10,7 @@ import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/barcode_pos
 import 'package:flutter_google_ml_kit/isolate/image_processor.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/messages/image_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/messages/image_processor_config.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_navigator/navigator_painter.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/default_card/defualt_card.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
@@ -197,6 +198,13 @@ class _NavigatorViewState extends State<NavigatorView> {
         heroTag: null,
         onPressed: () {
           Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  ContainerView(containerEntry: selectedContainer),
+            ),
+          );
         },
         child: const Icon(Icons.check_circle_outline_rounded),
       ),

@@ -17,11 +17,11 @@ extension GetBarcodeGenerationEntryCollection on Isar {
 final BarcodeGenerationEntrySchema = CollectionSchema(
   name: 'BarcodeGenerationEntry',
   schema:
-      '{"name":"BarcodeGenerationEntry","idName":"id","properties":[{"name":"rangeEnd","type":"Long"},{"name":"rangeStart","type":"Long"},{"name":"timestamp","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"BarcodeGenerationEntry","idName":"id","properties":[{"name":"rangeEnd","type":"Long"},{"name":"rangeStart","type":"Long"},{"name":"size","type":"Double"},{"name":"timestamp","type":"Long"}],"indexes":[],"links":[]}',
   nativeAdapter: const _BarcodeGenerationEntryNativeAdapter(),
   webAdapter: const _BarcodeGenerationEntryWebAdapter(),
   idName: 'id',
-  propertyIds: {'rangeEnd': 0, 'rangeStart': 1, 'timestamp': 2},
+  propertyIds: {'rangeEnd': 0, 'rangeStart': 1, 'size': 2, 'timestamp': 3},
   listProperties: {},
   indexIds: {},
   indexTypes: {},
@@ -51,6 +51,7 @@ class _BarcodeGenerationEntryWebAdapter
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
     IsarNative.jsObjectSet(jsObj, 'rangeEnd', object.rangeEnd);
     IsarNative.jsObjectSet(jsObj, 'rangeStart', object.rangeStart);
+    IsarNative.jsObjectSet(jsObj, 'size', object.size);
     IsarNative.jsObjectSet(jsObj, 'timestamp', object.timestamp);
     return jsObj;
   }
@@ -64,6 +65,8 @@ class _BarcodeGenerationEntryWebAdapter
         IsarNative.jsObjectGet(jsObj, 'rangeEnd') ?? double.negativeInfinity;
     object.rangeStart =
         IsarNative.jsObjectGet(jsObj, 'rangeStart') ?? double.negativeInfinity;
+    object.size =
+        IsarNative.jsObjectGet(jsObj, 'size') ?? double.negativeInfinity;
     object.timestamp =
         IsarNative.jsObjectGet(jsObj, 'timestamp') ?? double.negativeInfinity;
     return object;
@@ -80,6 +83,9 @@ class _BarcodeGenerationEntryWebAdapter
             double.negativeInfinity) as P;
       case 'rangeStart':
         return (IsarNative.jsObjectGet(jsObj, 'rangeStart') ??
+            double.negativeInfinity) as P;
+      case 'size':
+        return (IsarNative.jsObjectGet(jsObj, 'size') ??
             double.negativeInfinity) as P;
       case 'timestamp':
         return (IsarNative.jsObjectGet(jsObj, 'timestamp') ??
@@ -110,8 +116,10 @@ class _BarcodeGenerationEntryNativeAdapter
     final _rangeEnd = value0;
     final value1 = object.rangeStart;
     final _rangeStart = value1;
-    final value2 = object.timestamp;
-    final _timestamp = value2;
+    final value2 = object.size;
+    final _size = value2;
+    final value3 = object.timestamp;
+    final _timestamp = value3;
     final size = staticSize + dynamicSize;
 
     rawObj.buffer = alloc(size);
@@ -120,7 +128,8 @@ class _BarcodeGenerationEntryNativeAdapter
     final writer = IsarBinaryWriter(buffer, staticSize);
     writer.writeLong(offsets[0], _rangeEnd);
     writer.writeLong(offsets[1], _rangeStart);
-    writer.writeLong(offsets[2], _timestamp);
+    writer.writeDouble(offsets[2], _size);
+    writer.writeLong(offsets[3], _timestamp);
   }
 
   @override
@@ -133,7 +142,8 @@ class _BarcodeGenerationEntryNativeAdapter
     object.id = id;
     object.rangeEnd = reader.readLong(offsets[0]);
     object.rangeStart = reader.readLong(offsets[1]);
-    object.timestamp = reader.readLong(offsets[2]);
+    object.size = reader.readDouble(offsets[2]);
+    object.timestamp = reader.readLong(offsets[3]);
     return object;
   }
 
@@ -148,6 +158,8 @@ class _BarcodeGenerationEntryNativeAdapter
       case 1:
         return (reader.readLong(offset)) as P;
       case 2:
+        return (reader.readDouble(offset)) as P;
+      case 3:
         return (reader.readLong(offset)) as P;
       default:
         throw 'Illegal propertyIndex';
@@ -401,6 +413,37 @@ extension BarcodeGenerationEntryQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<BarcodeGenerationEntry, BarcodeGenerationEntry,
+      QAfterFilterCondition> sizeGreaterThan(double value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: false,
+      property: 'size',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<BarcodeGenerationEntry, BarcodeGenerationEntry,
+      QAfterFilterCondition> sizeLessThan(double value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: false,
+      property: 'size',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<BarcodeGenerationEntry, BarcodeGenerationEntry,
+      QAfterFilterCondition> sizeBetween(double lower, double upper) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'size',
+      lower: lower,
+      includeLower: false,
+      upper: upper,
+      includeUpper: false,
+    ));
+  }
+
+  QueryBuilder<BarcodeGenerationEntry, BarcodeGenerationEntry,
       QAfterFilterCondition> timestampEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
@@ -488,6 +531,16 @@ extension BarcodeGenerationEntryQueryWhereSortBy
   }
 
   QueryBuilder<BarcodeGenerationEntry, BarcodeGenerationEntry, QAfterSortBy>
+      sortBySize() {
+    return addSortByInternal('size', Sort.asc);
+  }
+
+  QueryBuilder<BarcodeGenerationEntry, BarcodeGenerationEntry, QAfterSortBy>
+      sortBySizeDesc() {
+    return addSortByInternal('size', Sort.desc);
+  }
+
+  QueryBuilder<BarcodeGenerationEntry, BarcodeGenerationEntry, QAfterSortBy>
       sortByTimestamp() {
     return addSortByInternal('timestamp', Sort.asc);
   }
@@ -531,6 +584,16 @@ extension BarcodeGenerationEntryQueryWhereSortThenBy on QueryBuilder<
   }
 
   QueryBuilder<BarcodeGenerationEntry, BarcodeGenerationEntry, QAfterSortBy>
+      thenBySize() {
+    return addSortByInternal('size', Sort.asc);
+  }
+
+  QueryBuilder<BarcodeGenerationEntry, BarcodeGenerationEntry, QAfterSortBy>
+      thenBySizeDesc() {
+    return addSortByInternal('size', Sort.desc);
+  }
+
+  QueryBuilder<BarcodeGenerationEntry, BarcodeGenerationEntry, QAfterSortBy>
       thenByTimestamp() {
     return addSortByInternal('timestamp', Sort.asc);
   }
@@ -559,6 +622,11 @@ extension BarcodeGenerationEntryQueryWhereDistinct
   }
 
   QueryBuilder<BarcodeGenerationEntry, BarcodeGenerationEntry, QDistinct>
+      distinctBySize() {
+    return addDistinctByInternal('size');
+  }
+
+  QueryBuilder<BarcodeGenerationEntry, BarcodeGenerationEntry, QDistinct>
       distinctByTimestamp() {
     return addDistinctByInternal('timestamp');
   }
@@ -578,6 +646,11 @@ extension BarcodeGenerationEntryQueryProperty on QueryBuilder<
   QueryBuilder<BarcodeGenerationEntry, int, QQueryOperations>
       rangeStartProperty() {
     return addPropertyNameInternal('rangeStart');
+  }
+
+  QueryBuilder<BarcodeGenerationEntry, double, QQueryOperations>
+      sizeProperty() {
+    return addPropertyNameInternal('size');
   }
 
   QueryBuilder<BarcodeGenerationEntry, int, QQueryOperations>

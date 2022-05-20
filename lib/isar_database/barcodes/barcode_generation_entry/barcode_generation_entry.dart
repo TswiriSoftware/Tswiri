@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:isar/isar.dart';
 part 'barcode_generation_entry.g.dart';
 
@@ -15,9 +17,11 @@ class BarcodeGenerationEntry {
   ///ParentUID
   late int rangeEnd;
 
+  late double size;
+
   @override
   String toString() {
-    return 'timestamp: $timestamp,\n from: $rangeStart to $rangeEnd';
+    return '\ntimestamp: $timestamp, from: $rangeStart to $rangeEnd, size: $size';
   }
 
   Map toJson() => {

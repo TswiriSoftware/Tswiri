@@ -6,9 +6,11 @@ class BarcodeGenerationView extends StatefulWidget {
   const BarcodeGenerationView({
     Key? key,
     required this.barcodeUIDs,
+    required this.size,
   }) : super(key: key);
 
   final List<String> barcodeUIDs;
+  final double size;
 
   @override
   _BarcodeGenerationViewState createState() => _BarcodeGenerationViewState();
@@ -18,30 +20,17 @@ class _BarcodeGenerationViewState extends State<BarcodeGenerationView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Barcode Printer',
-          style: TextStyle(fontSize: 25),
+        appBar: AppBar(
+          title: const Text(
+            'Barcode Printer',
+            style: TextStyle(fontSize: 25),
+          ),
+          centerTitle: true,
+          elevation: 0,
         ),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: CustomCardQrCode(
-        barcodeUIDs: widget.barcodeUIDs,
-      ),
-    );
-  }
-}
-
-class CustomCardQrCode extends StatelessWidget {
-  const CustomCardQrCode({Key? key, required this.barcodeUIDs})
-      : super(key: key);
-  final List<String> barcodeUIDs;
-
-  @override
-  Widget build(BuildContext context) {
-    return PdfPreview(
-        maxPageWidth: MediaQuery.of(context).size.width,
-        build: (format) => barcodePdfGenerator(barcodeUIDs: barcodeUIDs));
+        body: PdfPreview(
+            maxPageWidth: MediaQuery.of(context).size.width,
+            build: (format) => barcodePdfGenerator(
+                barcodeUIDs: widget.barcodeUIDs, size: widget.size)));
   }
 }

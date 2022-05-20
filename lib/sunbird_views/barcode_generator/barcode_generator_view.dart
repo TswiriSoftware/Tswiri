@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_generation_entry/barcode_generation_entry.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/ba
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcode_scanning/multiple_barcode_scanner/multiple_barcode_scanner_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/default_card/defualt_card.dart';
 
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
@@ -28,6 +31,8 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
   BarcodeGenerationEntry? lastBarcodeGenerationEntry;
   List<BarcodeGenerationEntry> barcodeGenerationHistory = [];
 
+  final TextEditingController barcodeSizeController = TextEditingController();
+
   List<String> generatedBarcodeUIDs = [];
   List<BarcodeProperty> generatedBarcodeProperties = [];
 
@@ -37,7 +42,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
   @override
   void initState() {
     getHistory();
-
+    barcodeSizeController.text = '100.0';
     super.initState();
   }
 
@@ -62,8 +67,11 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
           children: [
             //RangeSelector
             _rangeSelector(),
+            //Size selector
+            _barcodeSize(),
             //GenerateBarcodes.
             _generateBarcodes(),
+
             //Add pre generated barcodes.
             _addPreviousBarcodes(),
             //Debugging delete all.
@@ -183,22 +191,84 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
     );
   }
 
+  Widget _barcodeSize() {
+    return defaultCard(
+        body: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Default Barcode Size: '),
+            SizedBox(
+              width: MediaQuery.of(context).size.width / 5,
+              child: TextFormField(
+                onFieldSubmitted: (value) {
+                  if (value.isNotEmpty) {
+                    barcodeSizeController.text = double.parse(value).toString();
+                  }
+                },
+                onChanged: (value) {},
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
+                controller: barcodeSizeController,
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                ),
+              ),
+            ),
+            Text(
+              'mm',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            Text(
+              'x',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width / 5,
+              child: TextFormField(
+                onFieldSubmitted: (value) {
+                  if (value.isNotEmpty) {
+                    barcodeSizeController.text = double.parse(value).toString();
+                    log(barcodeSizeController.text);
+                  }
+                },
+                onChanged: (value) {},
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
+                controller: barcodeSizeController,
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                ),
+              ),
+            ),
+            Text(
+              'mm',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
+        color: sunbirdOrange);
+  }
+
   Widget _generateBarcodes() {
     return ElevatedButton(
       onPressed: () async {
         int time = DateTime.now().millisecondsSinceEpoch;
 
-        generateBarcodes(rangeStart, rangeEnd, time);
+        generateBarcodes(rangeStart, rangeEnd, time,
+            double.parse(barcodeSizeController.text));
 
         writeToDatabase(time);
+
         await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => BarcodeGenerationView(
               barcodeUIDs: generatedBarcodeUIDs,
+              size: 100,
             ),
           ),
         );
+
         getHistory();
         setState(() {});
       },
@@ -321,18 +391,24 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
                   ' to ' +
                   e.rangeEnd.toString(),
             ),
+            Text(
+              'Barcode Size: ' + e.size.toString(),
+            ),
             const Divider(),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
                     onPressed: () {
-                      generateBarcodes(e.rangeStart, e.rangeEnd, e.timestamp);
+                      generateBarcodes(
+                          e.rangeStart, e.rangeEnd, e.timestamp, e.size);
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => BarcodeGenerationView(
                             barcodeUIDs: generatedBarcodeUIDs,
+                            size: 200,
                           ),
                         ),
                       );
@@ -349,18 +425,17 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
     );
   }
 
-  void generateBarcodes(int rangeStart1, int rangeEnd1, int timestamp) {
+  void generateBarcodes(
+      int rangeStart1, int rangeEnd1, int timestamp, double size) {
     generatedBarcodeUIDs = [];
-    //log(rangeStart1.toString() + '       ' + rangeEnd1.toString());
 
     for (var i = rangeStart1; i < rangeEnd1; i++) {
       String barcodeUID = '${i + 1}_' + timestamp.toString();
       generatedBarcodeUIDs.add(barcodeUID);
       generatedBarcodeProperties.add(BarcodeProperty()
         ..barcodeUID = barcodeUID
-        ..size = defaultBarcodeDiagonalLength!);
+        ..size = size);
     }
-    // log('generatedBarcodes: ' + generatedBarcodeUIDs.length.toString());
     setState(() {});
   }
 
@@ -381,10 +456,15 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
   void writeToDatabase(int time) {
     isarDatabase!.writeTxnSync((isar) {
       //Create a barcodeGenerationEntry.
+      double size = defaultBarcodeDiagonalLength!;
+      if (barcodeSizeController.text.isNotEmpty) {
+        size = double.parse(barcodeSizeController.text);
+      }
       isar.barcodeGenerationEntrys.putSync(BarcodeGenerationEntry()
         ..timestamp = time
         ..rangeStart = rangeStart
-        ..rangeEnd = rangeEnd);
+        ..rangeEnd = rangeEnd
+        ..size = size);
 
       //Create all the barcodeProperty entries.
       isar.barcodePropertys.putAllSync(generatedBarcodeProperties);
