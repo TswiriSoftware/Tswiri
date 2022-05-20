@@ -89,10 +89,10 @@ class _SettingsViewState extends State<SettingsView> {
                             hapticFeedback(snapshot.data!),
                             const Divider(),
                             //Tflite Models
-                            models(snapshot.data!),
+                            mlKitModels(snapshot.data!),
                             const Divider(),
                             //Account
-                            googleAccount(),
+                            //googleAccount(),
                           ],
                         ),
                       ),
@@ -266,7 +266,7 @@ class _SettingsViewState extends State<SettingsView> {
     );
   }
 
-  Widget models(Settings snapshot) {
+  Widget mlKitModels(Settings snapshot) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

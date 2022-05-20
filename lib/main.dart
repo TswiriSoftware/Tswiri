@@ -11,6 +11,7 @@ import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/camera_ca
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_manager_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_search/search_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_types/container_types_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/tree_visualizer/tree_visualizer_view.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -174,7 +175,6 @@ class HomeView extends StatelessWidget {
               featureCompleted: true,
               tileColor: sunbirdOrange,
             ),
-
             CustomCard(
               'Tags',
               TagManagerView(),
@@ -183,9 +183,9 @@ class HomeView extends StatelessWidget {
               tileColor: sunbirdOrange,
             ),
             CustomCard(
-              'Generate Barcodes',
-              BarcodeGeneratorView(),
-              Icons.qr_code_2_rounded,
+              'Gallery',
+              GalleryView(),
+              Icons.photo,
               featureCompleted: true,
               tileColor: sunbirdOrange,
             ),
@@ -204,23 +204,23 @@ class HomeView extends StatelessWidget {
               tileColor: sunbirdOrange,
             ),
             CustomCard(
-              'Gallery',
-              GalleryView(),
-              Icons.photo,
+              'Barcode Generator',
+              BarcodeGeneratorView(),
+              Icons.qr_code_2_rounded,
               featureCompleted: true,
               tileColor: sunbirdOrange,
             ),
-            // CustomCard(
-            //   'Tree Visualizer',
-            //   GridVisualizerView(),
-            //   Icons.grid_4x4_sharp,
-            //   featureCompleted: true,
-            //   tileColor: sunbirdOrange,
-            // ),
             CustomCard(
               'Barcodes',
               BarcodeManagerView(),
               Icons.list,
+              featureCompleted: true,
+              tileColor: sunbirdOrange,
+            ),
+            CustomCard(
+              'Tree Visualizer',
+              GridVisualizerView(),
+              Icons.grid_4x4_sharp,
               featureCompleted: true,
               tileColor: sunbirdOrange,
             ),
