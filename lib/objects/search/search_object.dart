@@ -5,7 +5,6 @@ import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart'
 import 'package:flutter_google_ml_kit/isar_database/tags/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart';
-import 'package:isar/isar.dart';
 
 class SContainer {
   SContainer({
