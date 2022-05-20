@@ -44,7 +44,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
   @override
   void initState() {
     getHistory();
-    barcodeSizeController.text = '100.0';
+    barcodeSizeController.text = '75.0';
     super.initState();
   }
 
@@ -269,11 +269,20 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
           ..rangeEnd = rangeEnd
           ..size = size;
 
+        List<String> newBarcodes =
+            generateBarcodes(newBarcodeGenerationObject!);
+
+        List<BarcodeProperty> newBarcodeProperties = newBarcodes
+            .map((e) => BarcodeProperty()
+              ..barcodeUID = e
+              ..size = newBarcodeGenerationObject!.size)
+            .toList();
+
         isarDatabase!.writeTxnSync((isar) {
           //BarcodeGenerationObject.
           isar.barcodeGenerationEntrys.putSync(newBarcodeGenerationObject!);
           //BarcodeProperty entries.
-          isar.barcodePropertys.putAllSync(generatedBarcodeProperties);
+          isar.barcodePropertys.putAllSync(newBarcodeProperties);
         });
 
         setState(() {
@@ -542,7 +551,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
     for (var i = generationEntry.rangeStart;
         i <= generationEntry.rangeEnd;
         i++) {
-      String barcodeUID = '${i}_' + timestamp.toString();
+      String barcodeUID = '${i}_' + generationEntry.timestamp.toString();
       generatedBarcodeUIDs.add(barcodeUID);
       generatedBarcodeProperties.add(BarcodeProperty()
         ..barcodeUID = barcodeUID

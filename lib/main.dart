@@ -17,6 +17,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'sunbird_views/app_settings/app_settings_functions.dart';
 import 'sunbird_views/app_settings/app_settings_view.dart';
+import 'sunbird_views/barcode_manager/barcode_manager_view.dart';
 import 'sunbird_views/gallery/gallery_view.dart';
 import 'sunbird_views/tag_manager/tag_manager_view.dart';
 
@@ -173,13 +174,7 @@ class HomeView extends StatelessWidget {
               featureCompleted: true,
               tileColor: sunbirdOrange,
             ),
-            // CustomCard(
-            //   'Barcodes',
-            //   BarcodeManagerView(),
-            //   Icons.list,
-            //   featureCompleted: true,
-            //   tileColor: sunbirdOrange,
-            // ),
+
             CustomCard(
               'Tags',
               TagManagerView(),
@@ -222,6 +217,13 @@ class HomeView extends StatelessWidget {
             //   featureCompleted: true,
             //   tileColor: sunbirdOrange,
             // ),
+            CustomCard(
+              'Barcodes',
+              BarcodeManagerView(),
+              Icons.list,
+              featureCompleted: true,
+              tileColor: sunbirdOrange,
+            ),
           ],
         ),
       ),

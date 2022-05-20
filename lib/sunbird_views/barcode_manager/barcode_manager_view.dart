@@ -1,291 +1,297 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
-// import 'package:flutter_google_ml_kit/isar_database/barcode_property/barcode_property.dart';
-// import 'package:flutter_google_ml_kit/isar_database/container_entry/container_entry.dart';
-// import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
-// import 'package:flutter_google_ml_kit/sunbird_views/container_manager/new_container_view.dart';
+import 'dart:developer';
 
-// import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
-// import 'package:isar/isar.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
+import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/barcode_property.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/new_container_view.dart';
 
-// class BarcodeManagerView extends StatefulWidget {
-//   const BarcodeManagerView({Key? key}) : super(key: key);
+import 'package:flutter_google_ml_kit/sunbird_views/container_manager/container_view.dart';
+import 'package:isar/isar.dart';
 
-//   @override
-//   State<BarcodeManagerView> createState() => _BarcodeManagerViewState();
-// }
+import '../../isar_database/containers/container_entry/container_entry.dart';
 
-// List<String> barcodeFilters = ['Assigned', 'Unassigned'];
+class BarcodeManagerView extends StatefulWidget {
+  const BarcodeManagerView({Key? key}) : super(key: key);
 
-// class _BarcodeManagerViewState extends State<BarcodeManagerView> {
-//   List<BarcodeProperty> allBarcodes = [];
+  @override
+  State<BarcodeManagerView> createState() => _BarcodeManagerViewState();
+}
 
-//   Map<String, String> barcodeFilterTypes = {
-//     'Assigned': 'Assigned Barcodes',
-//     'Unassigned': 'Unassigned Barcodes',
-//   };
+List<String> barcodeFilters = ['Assigned', 'Unassigned'];
 
-//   String enteredKeyword = '';
+class _BarcodeManagerViewState extends State<BarcodeManagerView> {
+  List<BarcodeProperty> allBarcodes = [];
 
-//   //Text Controller.
-//   TextEditingController searchController = TextEditingController();
+  Map<String, String> barcodeFilterTypes = {
+    'Assigned': 'Assigned Barcodes',
+    'Unassigned': 'Unassigned Barcodes',
+  };
 
-//   //Search FocusNode.
-//   final FocusNode _focusNode = FocusNode();
-//   bool isFocused = false;
+  String enteredKeyword = '';
 
-//   @override
-//   void initState() {
-//     search(enteredKeyword);
-//     super.initState();
-//   }
+  //Text Controller.
+  TextEditingController searchController = TextEditingController();
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: _appBar(),
-//       body: GestureDetector(
-//         onTap: () {
-//           setState(() {
-//             _focusNode.unfocus();
-//           });
-//         },
-//         child: Stack(
-//           alignment: AlignmentDirectional.topCenter,
-//           children: [
-//             _barcodes(),
-//             _filters(),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
+  //Search FocusNode.
+  final FocusNode _focusNode = FocusNode();
+  bool isFocused = false;
 
-//   ///APP BAR///
+  @override
+  void initState() {
+    search(enteredKeyword);
 
-//   AppBar _appBar() {
-//     return AppBar(
-//       title: _textField(),
-//       centerTitle: true,
-//       elevation: 0,
-//     );
-//   }
+    super.initState();
+  }
 
-//   ///SEARCH///
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: _appBar(),
+      body: GestureDetector(
+        onTap: () {
+          setState(() {
+            _focusNode.unfocus();
+          });
+        },
+        child: Stack(
+          alignment: AlignmentDirectional.topCenter,
+          children: [
+            _barcodes(),
+            _filters(),
+          ],
+        ),
+      ),
+    );
+  }
 
-//   Widget _textField() {
-//     return TextField(
-//       focusNode: _focusNode,
-//       controller: searchController,
-//       onChanged: (value) {
-//         search(value);
-//         setState(() {});
-//       },
-//       cursorColor: Colors.white,
-//       style: Theme.of(context).textTheme.labelLarge,
-//       decoration: InputDecoration(
-//         suffixIcon: isFocused ? null : _searchIcon(),
-//         hintText: 'Search',
-//         hintStyle: const TextStyle(fontSize: 18),
-//       ),
-//     );
-//   }
+  ///APP BAR///
 
-//   Widget _searchIcon() {
-//     return const Icon(
-//       Icons.search,
-//       color: Colors.white,
-//     );
-//   }
+  AppBar _appBar() {
+    return AppBar(
+      title: _textField(),
+      centerTitle: true,
+      elevation: 0,
+    );
+  }
 
-//   ///FILTER///
+  ///SEARCH///
 
-//   Widget _filters() {
-//     return SingleChildScrollView(
-//       padding: const EdgeInsets.symmetric(horizontal: 15),
-//       scrollDirection: Axis.horizontal,
-//       child: Wrap(
-//         spacing: 5,
-//         children: barcodeFilterTypes.entries
-//             .map((e) => fliterChip(filter: e.key, tooltip: e.value))
-//             .toList(),
-//       ),
-//     );
-//   }
+  Widget _textField() {
+    return TextField(
+      focusNode: _focusNode,
+      controller: searchController,
+      onChanged: (value) {
+        search(value);
+        setState(() {});
+      },
+      cursorColor: Colors.white,
+      style: Theme.of(context).textTheme.labelLarge,
+      decoration: InputDecoration(
+        suffixIcon: isFocused ? null : _searchIcon(),
+        hintText: 'Search',
+        hintStyle: const TextStyle(fontSize: 18),
+      ),
+    );
+  }
 
-//   FilterChip fliterChip({required String filter, required String tooltip}) {
-//     return FilterChip(
-//       label: Text(
-//         filter,
-//         style: Theme.of(context).textTheme.bodyLarge,
-//       ),
-//       onSelected: (selected) {
-//         _onSelected(selected, filter);
-//         setState(() {
-//           search(enteredKeyword);
-//         });
-//       },
-//       selected: barcodeFilters.contains(filter),
-//       selectedColor: sunbirdOrange,
-//       tooltip: tooltip,
-//       elevation: 5,
-//       shadowColor: Colors.black54,
-//     );
-//   }
+  Widget _searchIcon() {
+    return const Icon(
+      Icons.search,
+      color: Colors.white,
+    );
+  }
 
-//   void _onSelected(bool selected, String filter) {
-//     if (barcodeFilters.contains(filter)) {
-//       setState(() {
-//         barcodeFilters.removeWhere((element) => element == filter);
-//       });
-//     } else {
-//       setState(() {
-//         barcodeFilters.add(filter);
-//       });
-//     }
-//   }
+  ///FILTER///
 
-//   ///BARCODES///
+  Widget _filters() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      scrollDirection: Axis.horizontal,
+      child: Wrap(
+        spacing: 5,
+        children: barcodeFilterTypes.entries
+            .map((e) => fliterChip(filter: e.key, tooltip: e.value))
+            .toList(),
+      ),
+    );
+  }
 
-//   Widget _barcodes() {
-//     return ListView.builder(
-//       padding: const EdgeInsets.symmetric(vertical: 50),
-//       itemCount: allBarcodes.length,
-//       itemBuilder: (context, index) {
-//         return barcodeBuilder(allBarcodes[index]);
-//       },
-//     );
-//   }
+  FilterChip fliterChip({required String filter, required String tooltip}) {
+    return FilterChip(
+      label: Text(
+        filter,
+        style: Theme.of(context).textTheme.bodyLarge,
+      ),
+      onSelected: (selected) {
+        _onSelected(selected, filter);
+        setState(() {
+          search(enteredKeyword);
+        });
+      },
+      selected: barcodeFilters.contains(filter),
+      selectedColor: sunbirdOrange,
+      tooltip: tooltip,
+      elevation: 5,
+      shadowColor: Colors.black54,
+    );
+  }
 
-//   Widget barcodeBuilder(BarcodeProperty barcodeProperty) {
-//     return Builder(builder: (context) {
-//       ContainerEntry? containerEntry = isarDatabase!.containerEntrys
-//           .filter()
-//           .barcodeUIDMatches(barcodeProperty.barcodeUID)
-//           .findFirstSync();
-//       Color containerColor = Colors.grey;
-//       if (containerEntry != null) {
-//         containerColor =
-//             getContainerColor(containerUID: containerEntry.containerUID);
-//       }
+  void _onSelected(bool selected, String filter) {
+    if (barcodeFilters.contains(filter)) {
+      setState(() {
+        barcodeFilters.removeWhere((element) => element == filter);
+      });
+    } else {
+      setState(() {
+        barcodeFilters.add(filter);
+      });
+    }
+  }
 
-//       return Card(
-//         margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-//         color: Colors.white12,
-//         elevation: 5,
-//         shadowColor: Colors.black26,
-//         shape: RoundedRectangleBorder(
-//           side: BorderSide(color: containerColor, width: 2),
-//           borderRadius: BorderRadius.circular(10),
-//         ),
-//         child: Padding(
-//           padding: const EdgeInsets.all(8.0),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Text(
-//                 'UID',
-//                 style: Theme.of(context).textTheme.bodySmall,
-//               ),
-//               Text(
-//                 barcodeProperty.barcodeUID,
-//                 style: Theme.of(context).textTheme.bodyLarge,
-//               ),
-//               const Divider(),
-//               Text(
-//                 'Container',
-//                 style: Theme.of(context).textTheme.bodySmall,
-//               ),
-//               Text(
-//                 containerEntry?.name ??
-//                     containerEntry?.containerUID ??
-//                     'un-linked',
-//                 style: Theme.of(context).textTheme.bodyLarge,
-//               ),
-//               const Divider(),
-//               barcodeActions(containerEntry, containerColor, barcodeProperty),
-//             ],
-//           ),
-//         ),
-//       );
-//     });
-//   }
+  ///BARCODES///
 
-//   Widget barcodeActions(ContainerEntry? containerEntry, Color? color,
-//       BarcodeProperty barcodeProperty) {
-//     return Row(
-//       mainAxisAlignment: MainAxisAlignment.end,
-//       children: [
-//         Builder(builder: (context) {
-//           if (containerEntry != null) {
-//             return ElevatedButton(
-//               style: TextButton.styleFrom(backgroundColor: color),
-//               onPressed: () async {
-//                 await Navigator.push(
-//                   context,
-//                   MaterialPageRoute(
-//                     builder: (context) => ContainerView(
-//                       containerEntry: containerEntry,
-//                     ),
-//                   ),
-//                 );
-//                 search(enteredKeyword);
-//                 setState(() {});
-//               },
-//               child: const Text('Edit'),
-//             );
-//           } else {
-//             return ElevatedButton(
-//               onPressed: () async {
-//                 await Navigator.push(
-//                   context,
-//                   MaterialPageRoute(
-//                       builder: (context) => NewContainerView(
-//                             barcodeUID: barcodeProperty.barcodeUID,
-//                           )),
-//                 );
-//               },
-//               child: const Text('Link'),
-//             );
-//           }
-//         })
-//       ],
-//     );
-//   }
+  Widget _barcodes() {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 50),
+      itemCount: allBarcodes.length,
+      itemBuilder: (context, index) {
+        return barcodeBuilder(allBarcodes[index]);
+      },
+    );
+  }
 
-//   ///SEARCH///
-//   void search(String enteredKeyword) {
-//     allBarcodes = [];
-//     List<BarcodeProperty> barcodes = isarDatabase!.barcodePropertys
-//         .filter()
-//         .barcodeUIDContains(enteredKeyword)
-//         .findAllSync();
+  Widget barcodeBuilder(BarcodeProperty barcodeProperty) {
+    return Builder(builder: (context) {
+      ContainerEntry? containerEntry = isarDatabase!.containerEntrys
+          .filter()
+          .barcodeUIDMatches(barcodeProperty.barcodeUID)
+          .findFirstSync();
+      Color containerColor = Colors.grey;
+      if (containerEntry != null) {
+        containerColor =
+            getContainerColor(containerUID: containerEntry.containerUID);
+      }
 
-//     if (barcodeFilters.contains('Assigned')) {
-//       for (BarcodeProperty item in barcodes) {
-//         ContainerEntry? containerEntry = isarDatabase!.containerEntrys
-//             .filter()
-//             .barcodeUIDMatches(item.barcodeUID)
-//             .findFirstSync();
-//         if (containerEntry != null) {
-//           allBarcodes.add(item);
-//         }
-//       }
-//     }
+      return Card(
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        color: Colors.white12,
+        elevation: 5,
+        shadowColor: Colors.black26,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: containerColor, width: 2),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'UID',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              Text(
+                barcodeProperty.barcodeUID,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const Divider(),
+              Text(
+                'Container',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              Text(
+                containerEntry?.name ??
+                    containerEntry?.containerUID ??
+                    'un-linked',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const Divider(),
+              barcodeActions(containerEntry, containerColor, barcodeProperty),
+            ],
+          ),
+        ),
+      );
+    });
+  }
 
-//     if (barcodeFilters.contains('Unassigned')) {
-//       for (BarcodeProperty item in barcodes) {
-//         ContainerEntry? containerEntry = isarDatabase!.containerEntrys
-//             .filter()
-//             .barcodeUIDMatches(item.barcodeUID)
-//             .findFirstSync();
-//         if (containerEntry == null) {
-//           allBarcodes.add(item);
-//         }
-//       }
-//     }
-//     setState(() {});
+  Widget barcodeActions(ContainerEntry? containerEntry, Color? color,
+      BarcodeProperty barcodeProperty) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Builder(builder: (context) {
+          if (containerEntry != null) {
+            return ElevatedButton(
+              style: TextButton.styleFrom(backgroundColor: color),
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ContainerView(
+                      containerEntry: containerEntry,
+                    ),
+                  ),
+                );
+                search(enteredKeyword);
+                setState(() {});
+              },
+              child: const Text('Edit'),
+            );
+          } else {
+            return ElevatedButton(
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NewContainerView(
+                            barcodeUID: barcodeProperty.barcodeUID,
+                          )),
+                );
+              },
+              child: const Text('Link'),
+            );
+          }
+        })
+      ],
+    );
+  }
 
-//     //log(allBarcodes.toString());
-//   }
-// }
+  ///SEARCH///
+  void search(String enteredKeyword) {
+    allBarcodes = [];
+    List<BarcodeProperty> barcodes = isarDatabase!.barcodePropertys
+        .filter()
+        .barcodeUIDContains(enteredKeyword)
+        .findAllSync();
+
+    log(barcodes.toString());
+
+    if (barcodeFilters.contains('Assigned')) {
+      for (BarcodeProperty item in barcodes) {
+        ContainerEntry? containerEntry = isarDatabase!.containerEntrys
+            .filter()
+            .barcodeUIDMatches(item.barcodeUID)
+            .findFirstSync();
+        if (containerEntry != null) {
+          allBarcodes.add(item);
+        }
+      }
+    }
+
+    if (barcodeFilters.contains('Unassigned')) {
+      for (BarcodeProperty item in barcodes) {
+        ContainerEntry? containerEntry = isarDatabase!.containerEntrys
+            .filter()
+            .barcodeUIDMatches(item.barcodeUID)
+            .findFirstSync();
+        if (containerEntry == null) {
+          allBarcodes.add(item);
+        }
+      }
+    }
+    setState(() {});
+
+    //log(allBarcodes.toString());
+  }
+}

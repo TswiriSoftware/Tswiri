@@ -24,7 +24,7 @@ Future getCurrentAppSettings() async {
   //Get activated models
   googleImageLabeling = prefs.getBool(googleImageLabelingPreference) ?? true;
   googleImageLabelingConfidenceThreshold =
-      prefs.getInt(googleImageLabelingConfidenceThresholdPreference) ?? 50;
+      prefs.getInt(googleImageLabelingConfidenceThresholdPreference) ?? 75;
 
   // googleVisionProducts = prefs.getBool(googleVisionProductsPreference) ?? true;
   // googleVisionProductsConfidenceThreshold =
@@ -32,7 +32,7 @@ Future getCurrentAppSettings() async {
 
   inceptionV4 = prefs.getBool(inceptionV4Preference) ?? true;
   inceptionV4PreferenceConfidenceThreshold =
-      prefs.getInt(googleImageLabelingConfidenceThresholdPreference) ?? 50;
+      prefs.getInt(googleImageLabelingConfidenceThresholdPreference) ?? 75;
 }
 
 ///Returns the [ResolutionPreset]
@@ -102,7 +102,7 @@ Color getColor(Set<MaterialState> states) {
 
 double getDefaultBarcodeDiagonalLength(SharedPreferences prefs) {
   double defaultBarcodeDiagonalLength =
-      prefs.getDouble(defaultBarcodeDiagonalLengthPreference) ?? 100;
+      prefs.getDouble(defaultBarcodeDiagonalLengthPreference) ?? 75;
 
   return defaultBarcodeDiagonalLength;
 }
@@ -116,7 +116,7 @@ Future<void> setDefaultBarcodeDiagonalLength(double value) async {
 
 double getDefaultBarcodeSize(SharedPreferences prefs) {
   double defaultBarcodeSize =
-      prefs.getDouble(defaultBarcodeSizePeference) ?? 100;
+      prefs.getDouble(defaultBarcodeSizePeference) ?? 75;
   d.log(defaultBarcodeSize.toString());
 
   return defaultBarcodeSize;
