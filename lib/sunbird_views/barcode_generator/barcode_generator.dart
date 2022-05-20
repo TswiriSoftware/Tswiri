@@ -80,7 +80,7 @@ List<Widget> generatePageBarcodes(
   for (String barcodeUID in barcodeUIDs) {
     barcodes.add(
       pw.Padding(
-        padding: const EdgeInsets.all(0),
+        padding: const EdgeInsets.all(1),
         child: pw.Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.center,

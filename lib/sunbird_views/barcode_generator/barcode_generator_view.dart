@@ -25,7 +25,7 @@ class BarcodeGeneratorView extends StatefulWidget {
 class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
   int timestamp = 0;
 
-  int rangeStart = 0;
+  int rangeStart = 1;
   int rangeEnd = 1;
 
   BarcodeGenerationEntry? lastBarcodeGenerationEntry;
@@ -36,8 +36,10 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
   List<String> generatedBarcodeUIDs = [];
   List<BarcodeProperty> generatedBarcodeProperties = [];
 
-  int minValue = 0;
+  int minValue = 1;
   int maxValue = 100;
+
+  BarcodeGenerationEntry? newBarcodeGenerationObject;
 
   @override
   void initState() {
@@ -66,11 +68,11 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
         child: Column(
           children: [
             //RangeSelector
-            _rangeSelector(),
+            _rangeSelectorCard(),
             //Size selector
-            _barcodeSize(),
+            _barcodeSizeCard(),
             //GenerateBarcodes.
-            _generateBarcodes(),
+            _generateBarcodesButton(),
 
             //Add pre generated barcodes.
             _addPreviousBarcodes(),
@@ -85,7 +87,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
     );
   }
 
-  Widget _rangeSelector() {
+  Widget _rangeSelectorCard() {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       color: Colors.white12,
@@ -191,7 +193,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
     );
   }
 
-  Widget _barcodeSize() {
+  Widget _barcodeSizeCard() {
     return defaultCard(
         body: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -249,28 +251,47 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
         color: sunbirdOrange);
   }
 
-  Widget _generateBarcodes() {
+  Widget _generateBarcodesButton() {
     return ElevatedButton(
       onPressed: () async {
         int time = DateTime.now().millisecondsSinceEpoch;
 
-        generateBarcodes(rangeStart, rangeEnd, time,
-            double.parse(barcodeSizeController.text));
+        //Create a barcodeGenerationEntry.
 
-        writeToDatabase(time);
+        double size = defaultBarcodeDiagonalLength!;
+        if (barcodeSizeController.text.isNotEmpty) {
+          size = double.parse(barcodeSizeController.text);
+        }
 
-        await Navigator.push(
+        newBarcodeGenerationObject = BarcodeGenerationEntry()
+          ..timestamp = time
+          ..rangeStart = rangeStart
+          ..rangeEnd = rangeEnd
+          ..size = size;
+
+        isarDatabase!.writeTxnSync((isar) {
+          //BarcodeGenerationObject.
+          isar.barcodeGenerationEntrys.putSync(newBarcodeGenerationObject!);
+          //BarcodeProperty entries.
+          isar.barcodePropertys.putAllSync(generatedBarcodeProperties);
+        });
+
+        setState(() {
+          minValue = newBarcodeGenerationObject!.rangeEnd;
+          rangeStart = minValue;
+          rangeEnd = minValue + 1;
+          maxValue = minValue + 100;
+          barcodeGenerationHistory =
+              isarDatabase!.barcodeGenerationEntrys.where().findAllSync();
+        });
+
+        Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => BarcodeGenerationView(
-              barcodeUIDs: generatedBarcodeUIDs,
-              size: 100,
-            ),
-          ),
+              builder: (context) => BarcodeGenerationView(
+                  barcodeUIDs: generateBarcodes(newBarcodeGenerationObject!),
+                  size: newBarcodeGenerationObject!.size)),
         );
-
-        getHistory();
-        setState(() {});
       },
       child: Padding(
         padding: const EdgeInsets.all(5.0),
@@ -379,44 +400,134 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              DateFormat('yyyy-MM-dd, hh:mm a')
-                  .format(DateTime.fromMillisecondsSinceEpoch(e.timestamp))
-                  .toString(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Created on:',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                Text(
+                  DateFormat('yyyy-MM-dd, hh:mm a')
+                      .format(DateTime.fromMillisecondsSinceEpoch(e.timestamp))
+                      .toString(),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
             ),
-            Text(
-              'Barcode Range: ' +
-                  e.rangeStart.toString() +
-                  ' to ' +
-                  e.rangeEnd.toString(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Range:',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                Text(
+                  e.rangeStart.toString() + ' to ' + e.rangeEnd.toString(),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
             ),
-            Text(
-              'Barcode Size: ' + e.size.toString(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Barcode Size:',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    Text(
+                      e.size.toString(),
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+                IconButton(
+                    onPressed: () async {
+                      double? newSize = await sizeEditor(e.size);
+                      if (newSize != null && newSize != e.size) {
+                        e.size = newSize;
+                        //update size
+                        isarDatabase!.writeTxnSync((isar) => isar
+                            .barcodeGenerationEntrys
+                            .putSync(e, replaceOnConflict: true));
+
+                        List<String> barcodeUIDS = generateBarcodes(e);
+                        isarDatabase!.writeTxnSync((isar) => isar
+                            .barcodePropertys
+                            .filter()
+                            .repeat(
+                                barcodeUIDS,
+                                (q, String element) =>
+                                    q.barcodeUIDMatches(element))
+                            .deleteAllSync());
+
+                        List<BarcodeProperty> newBarcodeProperties = barcodeUIDS
+                            .map((e) => BarcodeProperty()
+                              ..barcodeUID = e
+                              ..size = newSize)
+                            .toList();
+
+                        isarDatabase!.writeTxnSync((isar) => isar
+                            .barcodePropertys
+                            .putAllSync(newBarcodeProperties));
+                      }
+                    },
+                    icon: const Icon(Icons.edit))
+              ],
             ),
             const Divider(),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
-                    onPressed: () {
-                      generateBarcodes(
-                          e.rangeStart, e.rangeEnd, e.timestamp, e.size);
-
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BarcodeGenerationView(
-                            barcodeUIDs: generatedBarcodeUIDs,
-                            size: 200,
-                          ),
+                  onPressed: () {
+                    isarDatabase!.writeTxnSync((isar) =>
+                        isar.barcodeGenerationEntrys.deleteSync(e.id));
+                    setState(() {
+                      barcodeGenerationHistory = isarDatabase!
+                          .barcodeGenerationEntrys
+                          .where()
+                          .findAllSync();
+                      if (barcodeGenerationHistory.isNotEmpty) {
+                        minValue = barcodeGenerationHistory.last.rangeEnd;
+                        rangeStart = minValue;
+                        rangeEnd = minValue + 1;
+                        maxValue = minValue + 100;
+                      } else {
+                        minValue = 1;
+                        rangeStart = minValue;
+                        rangeEnd = minValue + 1;
+                        maxValue = minValue + 100;
+                      }
+                    });
+                  },
+                  child: Text(
+                    'Delete',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BarcodeGenerationView(
+                          barcodeUIDs: generateBarcodes(e),
+                          size: e.size,
                         ),
-                      );
-                    },
-                    child: Text(
-                      'Reprint',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ))
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'Reprint',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
               ],
             )
           ],
@@ -425,18 +536,19 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
     );
   }
 
-  void generateBarcodes(
-      int rangeStart1, int rangeEnd1, int timestamp, double size) {
+  List<String> generateBarcodes(BarcodeGenerationEntry generationEntry) {
     generatedBarcodeUIDs = [];
 
-    for (var i = rangeStart1; i < rangeEnd1; i++) {
-      String barcodeUID = '${i + 1}_' + timestamp.toString();
+    for (var i = generationEntry.rangeStart;
+        i <= generationEntry.rangeEnd;
+        i++) {
+      String barcodeUID = '${i}_' + timestamp.toString();
       generatedBarcodeUIDs.add(barcodeUID);
       generatedBarcodeProperties.add(BarcodeProperty()
         ..barcodeUID = barcodeUID
-        ..size = size);
+        ..size = generationEntry.size);
     }
-    setState(() {});
+    return generatedBarcodeUIDs;
   }
 
   void createBarcodes(Set<String> scannedBarcodes) {
@@ -451,25 +563,6 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
 
     isarDatabase!
         .writeTxnSync((isar) => isar.barcodePropertys.putAllSync(scannedList));
-  }
-
-  void writeToDatabase(int time) {
-    isarDatabase!.writeTxnSync((isar) {
-      //Create a barcodeGenerationEntry.
-      double size = defaultBarcodeDiagonalLength!;
-      if (barcodeSizeController.text.isNotEmpty) {
-        size = double.parse(barcodeSizeController.text);
-      }
-      isar.barcodeGenerationEntrys.putSync(BarcodeGenerationEntry()
-        ..timestamp = time
-        ..rangeStart = rangeStart
-        ..rangeEnd = rangeEnd
-        ..size = size);
-
-      //Create all the barcodeProperty entries.
-      isar.barcodePropertys.putAllSync(generatedBarcodeProperties);
-    });
-    setState(() {});
   }
 
   void getHistory() {
@@ -488,5 +581,87 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
         .where()
         .sortByTimestampDesc()
         .findAllSync();
+  }
+
+  Future<double?> sizeEditor(double currentSize) async {
+    double? size = await showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (initialDialogContext) {
+        TextEditingController sizeContoller = TextEditingController();
+        sizeContoller.text = currentSize.toString();
+        return AlertDialog(
+          insetPadding: EdgeInsets.all(20),
+          contentPadding: EdgeInsets.all(5),
+          title: Text('Size'),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Size: '),
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 5,
+                child: TextFormField(
+                  onFieldSubmitted: (value) {
+                    if (value.isNotEmpty) {
+                      sizeContoller.text = double.parse(value).toString();
+                    }
+                  },
+                  onChanged: (value) {},
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  controller: sizeContoller,
+                  decoration: const InputDecoration(
+                    border: UnderlineInputBorder(),
+                  ),
+                ),
+              ),
+              Text(
+                'mm',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              Text(
+                'x',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 5,
+                child: TextFormField(
+                  onFieldSubmitted: (value) {
+                    if (value.isNotEmpty) {
+                      sizeContoller.text = double.parse(value).toString();
+                      log(sizeContoller.text);
+                    }
+                  },
+                  onChanged: (value) {},
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  controller: sizeContoller,
+                  decoration: const InputDecoration(
+                    border: UnderlineInputBorder(),
+                  ),
+                ),
+              ),
+              Text(
+                'mm',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                double newSize = currentSize;
+                if (sizeContoller.text.isNotEmpty) {
+                  newSize = double.parse(sizeContoller.text);
+                }
+                Navigator.pop(initialDialogContext, newSize);
+              },
+              child: const Text('ok'),
+            ),
+          ],
+        );
+      },
+    );
+    return size;
   }
 }
