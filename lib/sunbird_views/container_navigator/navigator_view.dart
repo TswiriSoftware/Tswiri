@@ -372,8 +372,8 @@ class _NavigatorViewState extends State<NavigatorView> {
         context: context,
         builder: (initialDialogContext) {
           return AlertDialog(
-            insetPadding: EdgeInsets.all(20),
-            contentPadding: EdgeInsets.all(5),
+            insetPadding: const EdgeInsets.all(20),
+            contentPadding: const EdgeInsets.all(5),
             title: Text(title),
             content: Builder(builder: (context) {
               ContainerEntry? currentContainer = isarDatabase!.containerEntrys

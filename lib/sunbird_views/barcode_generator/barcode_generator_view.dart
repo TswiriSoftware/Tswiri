@@ -591,9 +591,9 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
         TextEditingController sizeContoller = TextEditingController();
         sizeContoller.text = currentSize.toString();
         return AlertDialog(
-          insetPadding: EdgeInsets.all(20),
-          contentPadding: EdgeInsets.all(5),
-          title: Text('Size'),
+          insetPadding: const EdgeInsets.all(20),
+          contentPadding: const EdgeInsets.all(5),
+          title: const Text('Size'),
           content: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -629,7 +629,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
                   onFieldSubmitted: (value) {
                     if (value.isNotEmpty) {
                       sizeContoller.text = double.parse(value).toString();
-                      log(sizeContoller.text);
+                      // log(sizeContoller.text);
                     }
                   },
                   onChanged: (value) {},

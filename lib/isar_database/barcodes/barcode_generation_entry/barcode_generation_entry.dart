@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:isar/isar.dart';
 part 'barcode_generation_entry.g.dart';
 

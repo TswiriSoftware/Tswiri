@@ -75,6 +75,7 @@ class SContainer {
     }
   }
 
+  @override
   bool operator ==(Object other) {
     if (other is SContainer) {
       if (other.container.containerUID == container.containerUID) {
