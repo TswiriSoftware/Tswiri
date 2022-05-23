@@ -1,9 +1,7 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:isar/isar.dart';
 
-import '../../../sunbird_views/app_settings/google_drive_backup.dart';
 part 'photo.g.dart';
 
 @Collection()

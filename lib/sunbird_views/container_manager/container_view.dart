@@ -5,7 +5,9 @@ import 'package:flutter_google_ml_kit/isar_database/containers/container_relatio
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/container_tag/container_tag.dart';
+import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
+import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/photo_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/grid_manager/container_grid_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/container_manager/new_container_view.dart';
@@ -983,6 +985,9 @@ class _ContainerViewState extends State<ContainerView> {
           .filter()
           .photoPathMatches(containerPhoto.photoPath)
           .deleteAllSync();
+      isar.mlTags.filter().photoIDEqualTo(containerPhoto.id).deleteAllSync();
+
+      isar.userTags.filter().photoIDEqualTo(containerPhoto.id).deleteAllSync();
     });
   }
 

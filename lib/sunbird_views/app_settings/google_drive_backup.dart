@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:flutter_google_ml_kit/extentions/capitalize_first_character.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_generation_entry/barcode_generation_entry.dart';
@@ -22,7 +23,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:async';
-// import 'package:image/image.dart' as img;
+import 'package:image/image.dart' as img;
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -97,7 +98,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
         centerTitle: true,
         elevation: 0,
         leading: Builder(builder: (context) {
-          if (isBusyUploading) {
+          if (isBusyUploading || isBusyDownloading) {
             return Container();
           } else {
             return IconButton(
@@ -340,6 +341,9 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
   }
 
   Future<void> downloadFiles(user) async {
+    setState(() {
+      isBusyDownloading = true;
+    });
     final authHeaders = await user.authHeaders;
     final authenticateClient = GoogleAuthClient(authHeaders);
     final driveApi = drive.DriveApi(authenticateClient);
@@ -356,7 +360,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
 
       if (fileList.files!.isNotEmpty) {
         setState(() {
-          state = filename.split('.').first;
+          state = filename.split('.').first.capitalize();
           downloadProgess = downloadProgess + stepValue;
         });
 
@@ -490,67 +494,62 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
       }
     }
 
+    const mimeType = "application/vnd.google-apps.folder";
+    String folderName = "photos";
+
+    drive.FileList photoFolder = await driveApi.files.list(
+      q: "mimeType = '$mimeType' and name ='$folderName'",
+    );
+
+    if (photoFolder.files != null) {
+      drive.FileList photoFiles = await driveApi.files.list(
+        q: "'${photoFolder.files!.first.id}' in parents and trashed = false",
+      );
+
+      if (photoFiles.files != null) {
+        for (drive.File photo in photoFiles.files!) {
+          drive.Media test = await driveApi.files.get(photo.id!,
+              downloadOptions: drive.DownloadOptions.fullMedia) as drive.Media;
+
+          File photoFile = File(storagePath + '/sunbird/' + photo.name!);
+          log('path: ' + photoFile.path);
+          log('id: ' + photo.id!);
+          log('name: ' + photo.name.toString());
+
+          File thumbnailFile = File(storagePath +
+              '/sunbird/' +
+              photo.name.toString().split('.').first +
+              '_thumbnail' +
+              photo.name.toString().split('.').last);
+
+          if (await photoFile.exists()) {
+            log('file exisits');
+          } else {
+            await photoFile.create();
+            List<int> dataStore = [];
+
+            test.stream.listen(
+              (data) {
+                dataStore.insertAll(dataStore.length, data);
+              },
+              onDone: () async {
+                await photoFile.writeAsBytes(dataStore);
+
+                var image = img.decodeJpg(photoFile.readAsBytesSync());
+                var thumbnail = img.copyResize(image!, width: 120);
+
+                File(thumbnailFile.path)
+                    .writeAsBytesSync(img.encodeJpg(thumbnail));
+              },
+            );
+          }
+        }
+      }
+    }
     setState(() {
       isBusyDownloading = false;
       downloadProgess = 0;
     });
-
-    // //TODO: Sort out photo download etc @049er
-
-    // const mimeType = "application/vnd.google-apps.folder";
-    // String folderName = "photos";
-
-    // drive.FileList photoFolder = await driveApi.files.list(
-    //   q: "mimeType = '$mimeType' and name ='$folderName'",
-    // );
-
-    // if (photoFolder.files != null) {
-    //   drive.FileList photoFiles = await driveApi.files.list(
-    //     q: "'${photoFolder.files!.first.id}' in parents and trashed = false",
-    //   );
-
-    //   if (photoFiles.files != null) {
-    //     for (drive.File photo in photoFiles.files!) {
-    //       drive.Media test = await driveApi.files.get(photo.id!,
-    //           downloadOptions: drive.DownloadOptions.fullMedia) as drive.Media;
-
-    //       File photoFile =
-    //           File(storagePath + '/' + photo.name!.split('.').first);
-
-    //       // File thumbnailFile = File(storagePath +
-    //       //     '/' +
-    //       //     photo.name.toString().split('.').first +
-    //       //     '_thumbnail' +
-    //       //     photo.name.toString().split('.').last);
-
-    //       if (await photoFile.exists()) {
-    //         log('file exists');
-    //       } else {
-    //         await photoFile.create();
-    //         List<int> dataStore = [];
-    //         test.stream.listen(
-    //           (data) {
-    //             dataStore.insertAll(dataStore.length, data);
-    //           },
-    //           onDone: () {
-    //             photoFile.writeAsBytes(dataStore);
-    //           },
-    //         );
-
-    //         log(photoFile.path);
-
-    //         // var image = img.decodeJpg(photoFile.readAsBytesSync());
-    //         // var thumbnail = img.copyResize(image!, width: 120);
-
-    //         // await File(thumbnailFile.path)
-    //         //     .writeAsBytes(img.encodePng(thumbnail));
-    //       }
-
-    //       log(photo.id!);
-    //       log(photo.name.toString());
-    //     }
-    //   }
-    // }
   }
 
   Future<String> downloadFile(

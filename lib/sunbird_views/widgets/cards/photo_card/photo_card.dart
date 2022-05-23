@@ -57,6 +57,6 @@ Future<Size> getImageSize(Photo selectedPhoto) async {
 
   Size absoluteSize =
       Size(decodedImage.height.toDouble(), decodedImage.width.toDouble());
-
+  //Size absoluteSize = Size(720, 480);
   return absoluteSize;
 }
