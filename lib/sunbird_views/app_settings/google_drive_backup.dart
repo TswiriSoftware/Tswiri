@@ -918,24 +918,3 @@ Future<String> getStorageDirectory() async {
     return (await getApplicationDocumentsDirectory()).path;
   }
 }
-
-///DECOING JASON ?
-
-// var x = await driveApi.files.list(driveId: folderID);
-// log(x.toString());
-
-////////////////////////////////
-/// var myModels = jsonDecode(json) as List<dynamic>;
-
-// List<ContainerType> containerTypeList =
-//     myModels.map((e) => ContainerType().fromJson(e)).toList();
-
-///          log(containerTypeList.toString());
-
-// final Stream<List<int>> mediaStream =
-//     Future.value([104, 105]).asStream().asBroadcastStream();
-
-// var media = drive.Media(mediaStream, 2);
-
-// final result = await driveApi.files
-//     .create(fileToUpload..name = 'hi.txt', uploadMedia: media);
