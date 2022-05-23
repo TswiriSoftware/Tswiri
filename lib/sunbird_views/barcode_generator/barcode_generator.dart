@@ -32,6 +32,7 @@ Future<Uint8List> barcodePdfGenerator(
     if (i < numberOfPages) {
       document.addPage(
         pw.Page(
+          margin: const EdgeInsets.all(5),
           pageFormat: PdfPageFormat.a4,
           build: (pw.Context context) {
             return pw.GridView(
@@ -52,6 +53,7 @@ Future<Uint8List> barcodePdfGenerator(
     } else if (remainder > 0) {
       document.addPage(
         pw.Page(
+          margin: const EdgeInsets.all(5),
           pageFormat: PdfPageFormat.a4,
           build: (pw.Context context) {
             return pw.GridView(

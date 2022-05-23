@@ -16,14 +16,14 @@ class ObjectBoundingBox {
     return 'boundingBox: $boundingBox, mlTagID: $mlTagID';
   }
 
-  // Map toJson() => {
-  //       'id': id,
-  //       'boundingBox': boundingBox,
-  //     };
+  Map toJson() => {
+        'id': id,
+        'boundingBox': boundingBox,
+      };
 
-  // TagBoundingBox fromJson(Map<String, dynamic> json) {
-  //   return TagBoundingBox()
-  //     ..id = json['id']
-  //     ..boundingBox = (json['boundingBox'] as List<dynamic>).cast<double>();
-  // }
+  ObjectBoundingBox fromJson(Map<String, dynamic> json) {
+    return ObjectBoundingBox()
+      ..id = json['id']
+      ..boundingBox = (json['boundingBox'] as List<dynamic>).cast<double>();
+  }
 }

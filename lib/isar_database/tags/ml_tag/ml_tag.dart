@@ -29,17 +29,23 @@ class MlTag {
   }
 
   Map toJson() => {
-        // 'id': id,
-        // 'tagID': textTagID,
-        // 'tagType': tagType.name,
+        'id': id,
+        'photoID': photoID,
+        'textID': textID,
+        'confidence': confidence,
+        'blackListed': blackListed,
+        'tagType': tagType.name,
       };
 
-  // MlTag fromJson(Map<String, dynamic> json) {
-  //   return MlTag()
-  //     ..id = json['id']
-  //     ..textTagID = json['tag']
-  //     ..tagType = mlTagType.values.byName(json['tagType']);
-  // }
+  MlTag fromJson(Map<String, dynamic> json) {
+    return MlTag()
+      ..id = json['id']
+      ..photoID = json['photoID']
+      ..textID = json['textID']
+      ..confidence = json['confidence']
+      ..blackListed = json['blackListed']
+      ..tagType = MlTagType.values.byName(json['tagType']);
+  }
 }
 
 enum MlTagType {

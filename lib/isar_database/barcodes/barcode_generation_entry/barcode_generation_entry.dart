@@ -15,6 +15,7 @@ class BarcodeGenerationEntry {
   ///ParentUID
   late int rangeEnd;
 
+  //Barcode Size
   late double size;
 
   @override
@@ -27,6 +28,7 @@ class BarcodeGenerationEntry {
         'timestamp': timestamp,
         'rangeStart': rangeStart,
         'rangeEnd': rangeEnd,
+        'size': size,
       };
 
   BarcodeGenerationEntry fromJson(Map<String, dynamic> json) {
@@ -34,6 +36,7 @@ class BarcodeGenerationEntry {
       ..id = json['id']
       ..timestamp = json['timestamp'] as int
       ..rangeStart = json['rangeStart'] as int
-      ..rangeEnd = json['rangeEnd'] as int;
+      ..rangeEnd = json['rangeEnd'] as int
+      ..size = json['size'] as double;
   }
 }

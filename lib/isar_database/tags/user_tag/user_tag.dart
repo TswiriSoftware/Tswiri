@@ -14,14 +14,12 @@ class UserTag {
     return 'photoID: $photoID, textID: $textID';
   }
 
-  Map toJson() => {
-        'id': id,
-        'tagID': photoID,
-      };
+  Map toJson() => {'id': id, 'tagID': photoID, 'textID': textID};
 
   UserTag fromJson(Map<String, dynamic> json) {
     return UserTag()
       ..id = json['id']
-      ..photoID = json['tagID'];
+      ..photoID = json['tagID']
+      ..textID = json['textID'];
   }
 }

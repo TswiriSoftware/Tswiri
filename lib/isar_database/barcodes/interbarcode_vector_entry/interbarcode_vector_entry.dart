@@ -64,6 +64,7 @@ class InterBarcodeVectorEntry {
         'z': z,
         'timestamp': timestamp,
         'creationTimestamp': creationTimestamp,
+        'outDated': outDated
       };
 
   InterBarcodeVectorEntry fromJson(Map<String, dynamic> json) {
@@ -75,7 +76,8 @@ class InterBarcodeVectorEntry {
       ..y = json['y'] as double
       ..z = json['z'] as double
       ..timestamp = json['timestamp'] as int
-      ..creationTimestamp = json['creationTimestamp'] as int;
+      ..creationTimestamp = json['creationTimestamp'] as int
+      ..outDated = json['outDated'];
   }
 
   //Create From RawInterBarcodeData.

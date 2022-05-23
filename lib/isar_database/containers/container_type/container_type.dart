@@ -24,14 +24,12 @@ class ContainerType {
   ///Container color.
   late String containerColor;
 
-  ///A Origin
-
   @override
   String toString() {
     return '''-------------------------------------
 containerType: $containerType,
 containerDescription: $containerDescription,
-moveable: $moveable, canContain: $canContain,
+moveable: $moveable, canContain: $canContain
 color $containerColor
 -------------------------------------\n''';
   }
@@ -41,7 +39,7 @@ color $containerColor
         'containerType': containerType,
         'containerDescription': containerDescription,
         'moveable': moveable,
-        'markerToChilren': enclosing,
+        'enclosing': enclosing,
         'canContain': canContain,
         'containerColor': containerColor,
       };
@@ -49,11 +47,11 @@ color $containerColor
   ContainerType fromJson(Map<String, dynamic> json) {
     return ContainerType()
       ..id = json['id']
-      ..canContain = (json['canContain'] as List<dynamic>).cast<String>()
-      ..containerColor = json['containerColor']
-      ..containerDescription = json['containerDescription']
       ..containerType = json['containerType']
-      ..enclosing = json['markerToChilren']
-      ..moveable = json['moveable'];
+      ..containerDescription = json['containerDescription']
+      ..enclosing = json['enclosing']
+      ..canContain = (json['canContain'] as List<dynamic>).cast<String>()
+      ..moveable = json['moveable']
+      ..containerColor = json['containerColor'];
   }
 }

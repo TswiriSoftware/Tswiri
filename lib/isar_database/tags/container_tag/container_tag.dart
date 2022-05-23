@@ -19,13 +19,13 @@ class ContainerTag {
   Map toJson() => {
         'id': id,
         'containerUID': containerUID,
-        'tagID': textID,
+        'tagTextID': textID,
       };
 
   ContainerTag fromJson(Map<String, dynamic> json) {
     return ContainerTag()
       ..id = json['id']
       ..containerUID = json['containerUID']
-      ..textID = json['tagID'] as int;
+      ..textID = json['tagTextID'] as int;
   }
 }

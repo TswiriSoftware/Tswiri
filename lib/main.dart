@@ -37,6 +37,8 @@ Future<void> main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+  } else {
+    Firebase.app();
   }
 
   //debugRepaintRainbowEnabled = true;

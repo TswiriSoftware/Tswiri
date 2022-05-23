@@ -22,16 +22,12 @@
           }
         },
         {
-          "client_id": "607333885276-toa8apbr5hfser5tnr3j8ui6p01ul4u3.apps.googleusercontent.com",
+          "client_id": "607333885276-vlaev5oh7kvkd078uuibioh3nn5im36u.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.scholtz.sunbird",
-            "certificate_hash": "b90023338ecbc005c859cda30146f4498e8170f3"
+            "certificate_hash": "9a41f420571ed02ac05a1350e4bfc7f8d2950c1d"
           }
-        },
-        {
-          "client_id": "607333885276-pvplp1hrk9bd3v7kn2qbnjf13ocurvdb.apps.googleusercontent.com",
-          "client_type": 3
         }
       ],
       "api_key": [
@@ -41,12 +37,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "607333885276-pvplp1hrk9bd3v7kn2qbnjf13ocurvdb.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

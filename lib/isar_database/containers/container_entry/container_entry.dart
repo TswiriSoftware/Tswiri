@@ -35,7 +35,6 @@ class ContainerEntry {
       ..containerUID = json['containerUID']
       ..containerType = json['containerType']
       ..name = json['name']
-      ..containerType = json['containerType']
       ..description = json['description']
       ..barcodeUID = json['barcodeUID'];
   }

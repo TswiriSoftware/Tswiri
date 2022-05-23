@@ -25,21 +25,21 @@ Isar? isarDatabase;
 Isar openIsar({String? directory, bool? inspector}) {
   Isar isar = Isar.openSync(
     schemas: [
-      ContainerEntrySchema,
-      ContainerRelationshipSchema,
-      ContainerTypeSchema,
-      MarkerSchema,
-      BarcodePropertySchema,
-      BarcodeGenerationEntrySchema,
-      InterBarcodeVectorEntrySchema,
-      InterBarcodeTimeEntrySchema,
-      BarcodeSizeDistanceEntrySchema,
-      PhotoSchema,
-      ContainerTagSchema,
-      MlTagSchema,
-      ObjectBoundingBoxSchema,
-      TagTextSchema,
-      UserTagSchema,
+      ContainerEntrySchema, //1
+      ContainerRelationshipSchema, //2
+      ContainerTypeSchema, //3
+      MarkerSchema, //4
+      BarcodePropertySchema, //5
+      BarcodeGenerationEntrySchema, //6
+      InterBarcodeVectorEntrySchema, //7
+      InterBarcodeTimeEntrySchema, //8
+      BarcodeSizeDistanceEntrySchema, //9
+      PhotoSchema, //10
+      ContainerTagSchema, //11
+      MlTagSchema, //12
+      ObjectBoundingBoxSchema, //13
+      TagTextSchema, //14
+      UserTagSchema, //15
     ],
     directory: directory ?? isarDirectory!.path,
     inspector: inspector ?? true,

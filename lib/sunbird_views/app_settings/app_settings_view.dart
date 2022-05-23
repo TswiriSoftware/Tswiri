@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/app_settings/google_drive_backup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app_settings_functions.dart';
@@ -92,7 +93,7 @@ class _SettingsViewState extends State<SettingsView> {
                             mlKitModels(snapshot.data!),
                             const Divider(),
                             //Account
-                            //googleAccount(),
+                            googleAccount(),
                           ],
                         ),
                       ),
@@ -502,11 +503,10 @@ class _SettingsViewState extends State<SettingsView> {
   Widget googleAccount() {
     return ElevatedButton(
       onPressed: () {
-        //TODO: Google Backup
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const GoogleDriveBackup()),
-        // );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const GoogleDriveBackup()),
+        );
       },
       child: Row(
         mainAxisSize: MainAxisSize.min,
