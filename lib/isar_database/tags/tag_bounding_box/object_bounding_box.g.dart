@@ -6,154 +6,150 @@ part of 'object_bounding_box.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetObjectBoundingBoxCollection on Isar {
-  IsarCollection<ObjectBoundingBox> get objectBoundingBoxs {
-    return getCollection('ObjectBoundingBox');
-  }
+  IsarCollection<ObjectBoundingBox> get objectBoundingBoxs => getCollection();
 }
 
-final ObjectBoundingBoxSchema = CollectionSchema(
+const ObjectBoundingBoxSchema = CollectionSchema(
   name: 'ObjectBoundingBox',
   schema:
       '{"name":"ObjectBoundingBox","idName":"id","properties":[{"name":"boundingBox","type":"DoubleList"},{"name":"mlTagID","type":"Long"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _ObjectBoundingBoxNativeAdapter(),
-  webAdapter: const _ObjectBoundingBoxWebAdapter(),
   idName: 'id',
   propertyIds: {'boundingBox': 0, 'mlTagID': 1},
   listProperties: {'boundingBox'},
   indexIds: {},
-  indexTypes: {},
+  indexValueTypes: {},
   linkIds: {},
-  backlinkIds: {},
-  linkedCollections: [],
-  getId: (obj) {
-    if (obj.id == Isar.autoIncrement) {
-      return null;
-    } else {
-      return obj.id;
-    }
-  },
-  setId: (obj, id) => obj.id = id,
-  getLinks: (obj) => [],
-  version: 2,
+  backlinkLinkNames: {},
+  getId: _objectBoundingBoxGetId,
+  setId: _objectBoundingBoxSetId,
+  getLinks: _objectBoundingBoxGetLinks,
+  attachLinks: _objectBoundingBoxAttachLinks,
+  serializeNative: _objectBoundingBoxSerializeNative,
+  deserializeNative: _objectBoundingBoxDeserializeNative,
+  deserializePropNative: _objectBoundingBoxDeserializePropNative,
+  serializeWeb: _objectBoundingBoxSerializeWeb,
+  deserializeWeb: _objectBoundingBoxDeserializeWeb,
+  deserializePropWeb: _objectBoundingBoxDeserializePropWeb,
+  version: 3,
 );
 
-class _ObjectBoundingBoxWebAdapter
-    extends IsarWebTypeAdapter<ObjectBoundingBox> {
-  const _ObjectBoundingBoxWebAdapter();
-
-  @override
-  Object serialize(
-      IsarCollection<ObjectBoundingBox> collection, ObjectBoundingBox object) {
-    final jsObj = IsarNative.newJsObject();
-    IsarNative.jsObjectSet(jsObj, 'boundingBox', object.boundingBox);
-    IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'mlTagID', object.mlTagID);
-    return jsObj;
+int? _objectBoundingBoxGetId(ObjectBoundingBox object) {
+  if (object.id == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.id;
   }
-
-  @override
-  ObjectBoundingBox deserialize(
-      IsarCollection<ObjectBoundingBox> collection, dynamic jsObj) {
-    final object = ObjectBoundingBox();
-    object.boundingBox = (IsarNative.jsObjectGet(jsObj, 'boundingBox') as List?)
-            ?.map((e) => e ?? double.negativeInfinity)
-            .toList()
-            .cast<double>() ??
-        [];
-    object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.mlTagID =
-        IsarNative.jsObjectGet(jsObj, 'mlTagID') ?? double.negativeInfinity;
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(Object jsObj, String propertyName) {
-    switch (propertyName) {
-      case 'boundingBox':
-        return ((IsarNative.jsObjectGet(jsObj, 'boundingBox') as List?)
-                ?.map((e) => e ?? double.negativeInfinity)
-                .toList()
-                .cast<double>() ??
-            []) as P;
-      case 'id':
-        return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-            as P;
-      case 'mlTagID':
-        return (IsarNative.jsObjectGet(jsObj, 'mlTagID') ??
-            double.negativeInfinity) as P;
-      default:
-        throw 'Illegal propertyName';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, ObjectBoundingBox object) {}
 }
 
-class _ObjectBoundingBoxNativeAdapter
-    extends IsarNativeTypeAdapter<ObjectBoundingBox> {
-  const _ObjectBoundingBoxNativeAdapter();
-
-  @override
-  void serialize(
-      IsarCollection<ObjectBoundingBox> collection,
-      IsarRawObject rawObj,
-      ObjectBoundingBox object,
-      int staticSize,
-      List<int> offsets,
-      AdapterAlloc alloc) {
-    var dynamicSize = 0;
-    final value0 = object.boundingBox;
-    dynamicSize += (value0.length) * 8;
-    final _boundingBox = value0;
-    final value1 = object.mlTagID;
-    final _mlTagID = value1;
-    final size = staticSize + dynamicSize;
-
-    rawObj.buffer = alloc(size);
-    rawObj.buffer_length = size;
-    final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-    final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeDoubleList(offsets[0], _boundingBox);
-    writer.writeLong(offsets[1], _mlTagID);
-  }
-
-  @override
-  ObjectBoundingBox deserialize(IsarCollection<ObjectBoundingBox> collection,
-      int id, IsarBinaryReader reader, List<int> offsets) {
-    final object = ObjectBoundingBox();
-    object.boundingBox = reader.readDoubleList(offsets[0]) ?? [];
-    object.id = id;
-    object.mlTagID = reader.readLong(offsets[1]);
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(
-      int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-    switch (propertyIndex) {
-      case -1:
-        return id as P;
-      case 0:
-        return (reader.readDoubleList(offset) ?? []) as P;
-      case 1:
-        return (reader.readLong(offset)) as P;
-      default:
-        throw 'Illegal propertyIndex';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, ObjectBoundingBox object) {}
+void _objectBoundingBoxSetId(ObjectBoundingBox object, int id) {
+  object.id = id;
 }
+
+List<IsarLinkBase> _objectBoundingBoxGetLinks(ObjectBoundingBox object) {
+  return [];
+}
+
+void _objectBoundingBoxSerializeNative(
+    IsarCollection<ObjectBoundingBox> collection,
+    IsarRawObject rawObj,
+    ObjectBoundingBox object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.boundingBox;
+  dynamicSize += (value0.length) * 8;
+  final _boundingBox = value0;
+  final value1 = object.mlTagID;
+  final _mlTagID = value1;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeDoubleList(offsets[0], _boundingBox);
+  writer.writeLong(offsets[1], _mlTagID);
+}
+
+ObjectBoundingBox _objectBoundingBoxDeserializeNative(
+    IsarCollection<ObjectBoundingBox> collection,
+    int id,
+    IsarBinaryReader reader,
+    List<int> offsets) {
+  final object = ObjectBoundingBox();
+  object.boundingBox = reader.readDoubleList(offsets[0]) ?? [];
+  object.id = id;
+  object.mlTagID = reader.readLong(offsets[1]);
+  return object;
+}
+
+P _objectBoundingBoxDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
+    case 0:
+      return (reader.readDoubleList(offset) ?? []) as P;
+    case 1:
+      return (reader.readLong(offset)) as P;
+    default:
+      throw 'Illegal propertyIndex';
+  }
+}
+
+dynamic _objectBoundingBoxSerializeWeb(
+    IsarCollection<ObjectBoundingBox> collection, ObjectBoundingBox object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'boundingBox', object.boundingBox);
+  IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(jsObj, 'mlTagID', object.mlTagID);
+  return jsObj;
+}
+
+ObjectBoundingBox _objectBoundingBoxDeserializeWeb(
+    IsarCollection<ObjectBoundingBox> collection, dynamic jsObj) {
+  final object = ObjectBoundingBox();
+  object.boundingBox = (IsarNative.jsObjectGet(jsObj, 'boundingBox') as List?)
+          ?.map((e) => e ?? double.negativeInfinity)
+          .toList()
+          .cast<double>() ??
+      [];
+  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+  object.mlTagID =
+      IsarNative.jsObjectGet(jsObj, 'mlTagID') ?? double.negativeInfinity;
+  return object;
+}
+
+P _objectBoundingBoxDeserializePropWeb<P>(Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'boundingBox':
+      return ((IsarNative.jsObjectGet(jsObj, 'boundingBox') as List?)
+              ?.map((e) => e ?? double.negativeInfinity)
+              .toList()
+              .cast<double>() ??
+          []) as P;
+    case 'id':
+      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
+          as P;
+    case 'mlTagID':
+      return (IsarNative.jsObjectGet(jsObj, 'mlTagID') ??
+          double.negativeInfinity) as P;
+    default:
+      throw 'Illegal propertyName';
+  }
+}
+
+void _objectBoundingBoxAttachLinks(
+    IsarCollection col, int id, ObjectBoundingBox object) {}
 
 extension ObjectBoundingBoxQueryWhereSort
     on QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QWhere> {
   QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterWhere> anyId() {
-    return addWhereClauseInternal(const WhereClause(indexName: null));
+    return addWhereClauseInternal(const IdWhereClause.any());
   }
 }
 
@@ -161,11 +157,10 @@ extension ObjectBoundingBoxQueryWhere
     on QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QWhereClause> {
   QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterWhereClause>
       idEqualTo(int id) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: id,
       includeLower: true,
-      upper: [id],
+      upper: id,
       includeUpper: true,
     ));
   }
@@ -173,50 +168,32 @@ extension ObjectBoundingBoxQueryWhere
   QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterWhereClause>
       idNotEqualTo(int id) {
     if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      );
     } else {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      );
     }
   }
 
   QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterWhereClause>
-      idGreaterThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
-      includeLower: include,
-    ));
+      idGreaterThan(int id, {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: id, includeLower: include),
+    );
   }
 
   QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterWhereClause>
-      idLessThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      upper: [id],
-      includeUpper: include,
-    ));
+      idLessThan(int id, {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: id, includeUpper: include),
+    );
   }
 
   QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterWhereClause>
@@ -226,11 +203,10 @@ extension ObjectBoundingBoxQueryWhere
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [lowerId],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerId,
       includeLower: includeLower,
-      upper: [upperId],
+      upper: upperId,
       includeUpper: includeUpper,
     ));
   }

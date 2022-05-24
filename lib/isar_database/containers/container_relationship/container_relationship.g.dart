@@ -6,152 +6,149 @@ part of 'container_relationship.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetContainerRelationshipCollection on Isar {
-  IsarCollection<ContainerRelationship> get containerRelationships {
-    return getCollection('ContainerRelationship');
-  }
+  IsarCollection<ContainerRelationship> get containerRelationships =>
+      getCollection();
 }
 
-final ContainerRelationshipSchema = CollectionSchema(
+const ContainerRelationshipSchema = CollectionSchema(
   name: 'ContainerRelationship',
   schema:
       '{"name":"ContainerRelationship","idName":"id","properties":[{"name":"containerUID","type":"String"},{"name":"parentUID","type":"String"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _ContainerRelationshipNativeAdapter(),
-  webAdapter: const _ContainerRelationshipWebAdapter(),
   idName: 'id',
   propertyIds: {'containerUID': 0, 'parentUID': 1},
   listProperties: {},
   indexIds: {},
-  indexTypes: {},
+  indexValueTypes: {},
   linkIds: {},
-  backlinkIds: {},
-  linkedCollections: [],
-  getId: (obj) {
-    if (obj.id == Isar.autoIncrement) {
-      return null;
-    } else {
-      return obj.id;
-    }
-  },
-  setId: (obj, id) => obj.id = id,
-  getLinks: (obj) => [],
-  version: 2,
+  backlinkLinkNames: {},
+  getId: _containerRelationshipGetId,
+  setId: _containerRelationshipSetId,
+  getLinks: _containerRelationshipGetLinks,
+  attachLinks: _containerRelationshipAttachLinks,
+  serializeNative: _containerRelationshipSerializeNative,
+  deserializeNative: _containerRelationshipDeserializeNative,
+  deserializePropNative: _containerRelationshipDeserializePropNative,
+  serializeWeb: _containerRelationshipSerializeWeb,
+  deserializeWeb: _containerRelationshipDeserializeWeb,
+  deserializePropWeb: _containerRelationshipDeserializePropWeb,
+  version: 3,
 );
 
-class _ContainerRelationshipWebAdapter
-    extends IsarWebTypeAdapter<ContainerRelationship> {
-  const _ContainerRelationshipWebAdapter();
-
-  @override
-  Object serialize(IsarCollection<ContainerRelationship> collection,
-      ContainerRelationship object) {
-    final jsObj = IsarNative.newJsObject();
-    IsarNative.jsObjectSet(jsObj, 'containerUID', object.containerUID);
-    IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'parentUID', object.parentUID);
-    return jsObj;
+int? _containerRelationshipGetId(ContainerRelationship object) {
+  if (object.id == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.id;
   }
-
-  @override
-  ContainerRelationship deserialize(
-      IsarCollection<ContainerRelationship> collection, dynamic jsObj) {
-    final object = ContainerRelationship();
-    object.containerUID = IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '';
-    object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.parentUID = IsarNative.jsObjectGet(jsObj, 'parentUID');
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(Object jsObj, String propertyName) {
-    switch (propertyName) {
-      case 'containerUID':
-        return (IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '') as P;
-      case 'id':
-        return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-            as P;
-      case 'parentUID':
-        return (IsarNative.jsObjectGet(jsObj, 'parentUID')) as P;
-      default:
-        throw 'Illegal propertyName';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, ContainerRelationship object) {}
 }
 
-class _ContainerRelationshipNativeAdapter
-    extends IsarNativeTypeAdapter<ContainerRelationship> {
-  const _ContainerRelationshipNativeAdapter();
-
-  @override
-  void serialize(
-      IsarCollection<ContainerRelationship> collection,
-      IsarRawObject rawObj,
-      ContainerRelationship object,
-      int staticSize,
-      List<int> offsets,
-      AdapterAlloc alloc) {
-    var dynamicSize = 0;
-    final value0 = object.containerUID;
-    final _containerUID = IsarBinaryWriter.utf8Encoder.convert(value0);
-    dynamicSize += (_containerUID.length) as int;
-    final value1 = object.parentUID;
-    IsarUint8List? _parentUID;
-    if (value1 != null) {
-      _parentUID = IsarBinaryWriter.utf8Encoder.convert(value1);
-    }
-    dynamicSize += (_parentUID?.length ?? 0) as int;
-    final size = staticSize + dynamicSize;
-
-    rawObj.buffer = alloc(size);
-    rawObj.buffer_length = size;
-    final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-    final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeBytes(offsets[0], _containerUID);
-    writer.writeBytes(offsets[1], _parentUID);
-  }
-
-  @override
-  ContainerRelationship deserialize(
-      IsarCollection<ContainerRelationship> collection,
-      int id,
-      IsarBinaryReader reader,
-      List<int> offsets) {
-    final object = ContainerRelationship();
-    object.containerUID = reader.readString(offsets[0]);
-    object.id = id;
-    object.parentUID = reader.readStringOrNull(offsets[1]);
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(
-      int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-    switch (propertyIndex) {
-      case -1:
-        return id as P;
-      case 0:
-        return (reader.readString(offset)) as P;
-      case 1:
-        return (reader.readStringOrNull(offset)) as P;
-      default:
-        throw 'Illegal propertyIndex';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, ContainerRelationship object) {}
+void _containerRelationshipSetId(ContainerRelationship object, int id) {
+  object.id = id;
 }
+
+List<IsarLinkBase> _containerRelationshipGetLinks(
+    ContainerRelationship object) {
+  return [];
+}
+
+void _containerRelationshipSerializeNative(
+    IsarCollection<ContainerRelationship> collection,
+    IsarRawObject rawObj,
+    ContainerRelationship object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.containerUID;
+  final _containerUID = IsarBinaryWriter.utf8Encoder.convert(value0);
+  dynamicSize += (_containerUID.length) as int;
+  final value1 = object.parentUID;
+  IsarUint8List? _parentUID;
+  if (value1 != null) {
+    _parentUID = IsarBinaryWriter.utf8Encoder.convert(value1);
+  }
+  dynamicSize += (_parentUID?.length ?? 0) as int;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeBytes(offsets[0], _containerUID);
+  writer.writeBytes(offsets[1], _parentUID);
+}
+
+ContainerRelationship _containerRelationshipDeserializeNative(
+    IsarCollection<ContainerRelationship> collection,
+    int id,
+    IsarBinaryReader reader,
+    List<int> offsets) {
+  final object = ContainerRelationship();
+  object.containerUID = reader.readString(offsets[0]);
+  object.id = id;
+  object.parentUID = reader.readStringOrNull(offsets[1]);
+  return object;
+}
+
+P _containerRelationshipDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
+    case 0:
+      return (reader.readString(offset)) as P;
+    case 1:
+      return (reader.readStringOrNull(offset)) as P;
+    default:
+      throw 'Illegal propertyIndex';
+  }
+}
+
+dynamic _containerRelationshipSerializeWeb(
+    IsarCollection<ContainerRelationship> collection,
+    ContainerRelationship object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'containerUID', object.containerUID);
+  IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(jsObj, 'parentUID', object.parentUID);
+  return jsObj;
+}
+
+ContainerRelationship _containerRelationshipDeserializeWeb(
+    IsarCollection<ContainerRelationship> collection, dynamic jsObj) {
+  final object = ContainerRelationship();
+  object.containerUID = IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '';
+  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+  object.parentUID = IsarNative.jsObjectGet(jsObj, 'parentUID');
+  return object;
+}
+
+P _containerRelationshipDeserializePropWeb<P>(
+    Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'containerUID':
+      return (IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '') as P;
+    case 'id':
+      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
+          as P;
+    case 'parentUID':
+      return (IsarNative.jsObjectGet(jsObj, 'parentUID')) as P;
+    default:
+      throw 'Illegal propertyName';
+  }
+}
+
+void _containerRelationshipAttachLinks(
+    IsarCollection col, int id, ContainerRelationship object) {}
 
 extension ContainerRelationshipQueryWhereSort
     on QueryBuilder<ContainerRelationship, ContainerRelationship, QWhere> {
   QueryBuilder<ContainerRelationship, ContainerRelationship, QAfterWhere>
       anyId() {
-    return addWhereClauseInternal(const WhereClause(indexName: null));
+    return addWhereClauseInternal(const IdWhereClause.any());
   }
 }
 
@@ -159,11 +156,10 @@ extension ContainerRelationshipQueryWhere on QueryBuilder<ContainerRelationship,
     ContainerRelationship, QWhereClause> {
   QueryBuilder<ContainerRelationship, ContainerRelationship, QAfterWhereClause>
       idEqualTo(int id) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: id,
       includeLower: true,
-      upper: [id],
+      upper: id,
       includeUpper: true,
     ));
   }
@@ -171,50 +167,32 @@ extension ContainerRelationshipQueryWhere on QueryBuilder<ContainerRelationship,
   QueryBuilder<ContainerRelationship, ContainerRelationship, QAfterWhereClause>
       idNotEqualTo(int id) {
     if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      );
     } else {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      );
     }
   }
 
   QueryBuilder<ContainerRelationship, ContainerRelationship, QAfterWhereClause>
-      idGreaterThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
-      includeLower: include,
-    ));
+      idGreaterThan(int id, {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: id, includeLower: include),
+    );
   }
 
   QueryBuilder<ContainerRelationship, ContainerRelationship, QAfterWhereClause>
-      idLessThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      upper: [id],
-      includeUpper: include,
-    ));
+      idLessThan(int id, {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: id, includeUpper: include),
+    );
   }
 
   QueryBuilder<ContainerRelationship, ContainerRelationship, QAfterWhereClause>
@@ -224,11 +202,10 @@ extension ContainerRelationshipQueryWhere on QueryBuilder<ContainerRelationship,
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [lowerId],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerId,
       includeLower: includeLower,
-      upper: [upperId],
+      upper: upperId,
       includeUpper: includeUpper,
     ));
   }

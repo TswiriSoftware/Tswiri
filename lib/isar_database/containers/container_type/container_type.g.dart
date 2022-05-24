@@ -6,20 +6,16 @@ part of 'container_type.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetContainerTypeCollection on Isar {
-  IsarCollection<ContainerType> get containerTypes {
-    return getCollection('ContainerType');
-  }
+  IsarCollection<ContainerType> get containerTypes => getCollection();
 }
 
-final ContainerTypeSchema = CollectionSchema(
+const ContainerTypeSchema = CollectionSchema(
   name: 'ContainerType',
   schema:
       '{"name":"ContainerType","idName":"id","properties":[{"name":"canContain","type":"StringList"},{"name":"containerColor","type":"String"},{"name":"containerDescription","type":"String"},{"name":"containerType","type":"String"},{"name":"enclosing","type":"Bool"},{"name":"moveable","type":"Bool"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _ContainerTypeNativeAdapter(),
-  webAdapter: const _ContainerTypeWebAdapter(),
   idName: 'id',
   propertyIds: {
     'canContain': 0,
@@ -31,185 +27,185 @@ final ContainerTypeSchema = CollectionSchema(
   },
   listProperties: {'canContain'},
   indexIds: {},
-  indexTypes: {},
+  indexValueTypes: {},
   linkIds: {},
-  backlinkIds: {},
-  linkedCollections: [],
-  getId: (obj) {
-    if (obj.id == Isar.autoIncrement) {
-      return null;
-    } else {
-      return obj.id;
-    }
-  },
-  setId: (obj, id) => obj.id = id,
-  getLinks: (obj) => [],
-  version: 2,
+  backlinkLinkNames: {},
+  getId: _containerTypeGetId,
+  setId: _containerTypeSetId,
+  getLinks: _containerTypeGetLinks,
+  attachLinks: _containerTypeAttachLinks,
+  serializeNative: _containerTypeSerializeNative,
+  deserializeNative: _containerTypeDeserializeNative,
+  deserializePropNative: _containerTypeDeserializePropNative,
+  serializeWeb: _containerTypeSerializeWeb,
+  deserializeWeb: _containerTypeDeserializeWeb,
+  deserializePropWeb: _containerTypeDeserializePropWeb,
+  version: 3,
 );
 
-class _ContainerTypeWebAdapter extends IsarWebTypeAdapter<ContainerType> {
-  const _ContainerTypeWebAdapter();
-
-  @override
-  Object serialize(
-      IsarCollection<ContainerType> collection, ContainerType object) {
-    final jsObj = IsarNative.newJsObject();
-    IsarNative.jsObjectSet(jsObj, 'canContain', object.canContain);
-    IsarNative.jsObjectSet(jsObj, 'containerColor', object.containerColor);
-    IsarNative.jsObjectSet(
-        jsObj, 'containerDescription', object.containerDescription);
-    IsarNative.jsObjectSet(jsObj, 'containerType', object.containerType);
-    IsarNative.jsObjectSet(jsObj, 'enclosing', object.enclosing);
-    IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'moveable', object.moveable);
-    return jsObj;
+int? _containerTypeGetId(ContainerType object) {
+  if (object.id == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.id;
   }
-
-  @override
-  ContainerType deserialize(
-      IsarCollection<ContainerType> collection, dynamic jsObj) {
-    final object = ContainerType();
-    object.canContain = (IsarNative.jsObjectGet(jsObj, 'canContain') as List?)
-            ?.map((e) => e ?? '')
-            .toList()
-            .cast<String>() ??
-        [];
-    object.containerColor =
-        IsarNative.jsObjectGet(jsObj, 'containerColor') ?? '';
-    object.containerDescription =
-        IsarNative.jsObjectGet(jsObj, 'containerDescription') ?? '';
-    object.containerType = IsarNative.jsObjectGet(jsObj, 'containerType') ?? '';
-    object.enclosing = IsarNative.jsObjectGet(jsObj, 'enclosing') ?? false;
-    object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.moveable = IsarNative.jsObjectGet(jsObj, 'moveable') ?? false;
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(Object jsObj, String propertyName) {
-    switch (propertyName) {
-      case 'canContain':
-        return ((IsarNative.jsObjectGet(jsObj, 'canContain') as List?)
-                ?.map((e) => e ?? '')
-                .toList()
-                .cast<String>() ??
-            []) as P;
-      case 'containerColor':
-        return (IsarNative.jsObjectGet(jsObj, 'containerColor') ?? '') as P;
-      case 'containerDescription':
-        return (IsarNative.jsObjectGet(jsObj, 'containerDescription') ?? '')
-            as P;
-      case 'containerType':
-        return (IsarNative.jsObjectGet(jsObj, 'containerType') ?? '') as P;
-      case 'enclosing':
-        return (IsarNative.jsObjectGet(jsObj, 'enclosing') ?? false) as P;
-      case 'id':
-        return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-            as P;
-      case 'moveable':
-        return (IsarNative.jsObjectGet(jsObj, 'moveable') ?? false) as P;
-      default:
-        throw 'Illegal propertyName';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, ContainerType object) {}
 }
 
-class _ContainerTypeNativeAdapter extends IsarNativeTypeAdapter<ContainerType> {
-  const _ContainerTypeNativeAdapter();
-
-  @override
-  void serialize(
-      IsarCollection<ContainerType> collection,
-      IsarRawObject rawObj,
-      ContainerType object,
-      int staticSize,
-      List<int> offsets,
-      AdapterAlloc alloc) {
-    var dynamicSize = 0;
-    final value0 = object.canContain;
-    dynamicSize += (value0.length) * 8;
-    final bytesList0 = <IsarUint8List>[];
-    for (var str in value0) {
-      final bytes = IsarBinaryWriter.utf8Encoder.convert(str);
-      bytesList0.add(bytes);
-      dynamicSize += bytes.length as int;
-    }
-    final _canContain = bytesList0;
-    final value1 = object.containerColor;
-    final _containerColor = IsarBinaryWriter.utf8Encoder.convert(value1);
-    dynamicSize += (_containerColor.length) as int;
-    final value2 = object.containerDescription;
-    final _containerDescription = IsarBinaryWriter.utf8Encoder.convert(value2);
-    dynamicSize += (_containerDescription.length) as int;
-    final value3 = object.containerType;
-    final _containerType = IsarBinaryWriter.utf8Encoder.convert(value3);
-    dynamicSize += (_containerType.length) as int;
-    final value4 = object.enclosing;
-    final _enclosing = value4;
-    final value5 = object.moveable;
-    final _moveable = value5;
-    final size = staticSize + dynamicSize;
-
-    rawObj.buffer = alloc(size);
-    rawObj.buffer_length = size;
-    final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-    final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeStringList(offsets[0], _canContain);
-    writer.writeBytes(offsets[1], _containerColor);
-    writer.writeBytes(offsets[2], _containerDescription);
-    writer.writeBytes(offsets[3], _containerType);
-    writer.writeBool(offsets[4], _enclosing);
-    writer.writeBool(offsets[5], _moveable);
-  }
-
-  @override
-  ContainerType deserialize(IsarCollection<ContainerType> collection, int id,
-      IsarBinaryReader reader, List<int> offsets) {
-    final object = ContainerType();
-    object.canContain = reader.readStringList(offsets[0]) ?? [];
-    object.containerColor = reader.readString(offsets[1]);
-    object.containerDescription = reader.readString(offsets[2]);
-    object.containerType = reader.readString(offsets[3]);
-    object.enclosing = reader.readBool(offsets[4]);
-    object.id = id;
-    object.moveable = reader.readBool(offsets[5]);
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(
-      int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-    switch (propertyIndex) {
-      case -1:
-        return id as P;
-      case 0:
-        return (reader.readStringList(offset) ?? []) as P;
-      case 1:
-        return (reader.readString(offset)) as P;
-      case 2:
-        return (reader.readString(offset)) as P;
-      case 3:
-        return (reader.readString(offset)) as P;
-      case 4:
-        return (reader.readBool(offset)) as P;
-      case 5:
-        return (reader.readBool(offset)) as P;
-      default:
-        throw 'Illegal propertyIndex';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, ContainerType object) {}
+void _containerTypeSetId(ContainerType object, int id) {
+  object.id = id;
 }
+
+List<IsarLinkBase> _containerTypeGetLinks(ContainerType object) {
+  return [];
+}
+
+void _containerTypeSerializeNative(
+    IsarCollection<ContainerType> collection,
+    IsarRawObject rawObj,
+    ContainerType object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.canContain;
+  dynamicSize += (value0.length) * 8;
+  final bytesList0 = <IsarUint8List>[];
+  for (var str in value0) {
+    final bytes = IsarBinaryWriter.utf8Encoder.convert(str);
+    bytesList0.add(bytes);
+    dynamicSize += bytes.length as int;
+  }
+  final _canContain = bytesList0;
+  final value1 = object.containerColor;
+  final _containerColor = IsarBinaryWriter.utf8Encoder.convert(value1);
+  dynamicSize += (_containerColor.length) as int;
+  final value2 = object.containerDescription;
+  final _containerDescription = IsarBinaryWriter.utf8Encoder.convert(value2);
+  dynamicSize += (_containerDescription.length) as int;
+  final value3 = object.containerType;
+  final _containerType = IsarBinaryWriter.utf8Encoder.convert(value3);
+  dynamicSize += (_containerType.length) as int;
+  final value4 = object.enclosing;
+  final _enclosing = value4;
+  final value5 = object.moveable;
+  final _moveable = value5;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeStringList(offsets[0], _canContain);
+  writer.writeBytes(offsets[1], _containerColor);
+  writer.writeBytes(offsets[2], _containerDescription);
+  writer.writeBytes(offsets[3], _containerType);
+  writer.writeBool(offsets[4], _enclosing);
+  writer.writeBool(offsets[5], _moveable);
+}
+
+ContainerType _containerTypeDeserializeNative(
+    IsarCollection<ContainerType> collection,
+    int id,
+    IsarBinaryReader reader,
+    List<int> offsets) {
+  final object = ContainerType();
+  object.canContain = reader.readStringList(offsets[0]) ?? [];
+  object.containerColor = reader.readString(offsets[1]);
+  object.containerDescription = reader.readString(offsets[2]);
+  object.containerType = reader.readString(offsets[3]);
+  object.enclosing = reader.readBool(offsets[4]);
+  object.id = id;
+  object.moveable = reader.readBool(offsets[5]);
+  return object;
+}
+
+P _containerTypeDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
+    case 0:
+      return (reader.readStringList(offset) ?? []) as P;
+    case 1:
+      return (reader.readString(offset)) as P;
+    case 2:
+      return (reader.readString(offset)) as P;
+    case 3:
+      return (reader.readString(offset)) as P;
+    case 4:
+      return (reader.readBool(offset)) as P;
+    case 5:
+      return (reader.readBool(offset)) as P;
+    default:
+      throw 'Illegal propertyIndex';
+  }
+}
+
+dynamic _containerTypeSerializeWeb(
+    IsarCollection<ContainerType> collection, ContainerType object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'canContain', object.canContain);
+  IsarNative.jsObjectSet(jsObj, 'containerColor', object.containerColor);
+  IsarNative.jsObjectSet(
+      jsObj, 'containerDescription', object.containerDescription);
+  IsarNative.jsObjectSet(jsObj, 'containerType', object.containerType);
+  IsarNative.jsObjectSet(jsObj, 'enclosing', object.enclosing);
+  IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(jsObj, 'moveable', object.moveable);
+  return jsObj;
+}
+
+ContainerType _containerTypeDeserializeWeb(
+    IsarCollection<ContainerType> collection, dynamic jsObj) {
+  final object = ContainerType();
+  object.canContain = (IsarNative.jsObjectGet(jsObj, 'canContain') as List?)
+          ?.map((e) => e ?? '')
+          .toList()
+          .cast<String>() ??
+      [];
+  object.containerColor = IsarNative.jsObjectGet(jsObj, 'containerColor') ?? '';
+  object.containerDescription =
+      IsarNative.jsObjectGet(jsObj, 'containerDescription') ?? '';
+  object.containerType = IsarNative.jsObjectGet(jsObj, 'containerType') ?? '';
+  object.enclosing = IsarNative.jsObjectGet(jsObj, 'enclosing') ?? false;
+  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+  object.moveable = IsarNative.jsObjectGet(jsObj, 'moveable') ?? false;
+  return object;
+}
+
+P _containerTypeDeserializePropWeb<P>(Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'canContain':
+      return ((IsarNative.jsObjectGet(jsObj, 'canContain') as List?)
+              ?.map((e) => e ?? '')
+              .toList()
+              .cast<String>() ??
+          []) as P;
+    case 'containerColor':
+      return (IsarNative.jsObjectGet(jsObj, 'containerColor') ?? '') as P;
+    case 'containerDescription':
+      return (IsarNative.jsObjectGet(jsObj, 'containerDescription') ?? '') as P;
+    case 'containerType':
+      return (IsarNative.jsObjectGet(jsObj, 'containerType') ?? '') as P;
+    case 'enclosing':
+      return (IsarNative.jsObjectGet(jsObj, 'enclosing') ?? false) as P;
+    case 'id':
+      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
+          as P;
+    case 'moveable':
+      return (IsarNative.jsObjectGet(jsObj, 'moveable') ?? false) as P;
+    default:
+      throw 'Illegal propertyName';
+  }
+}
+
+void _containerTypeAttachLinks(
+    IsarCollection col, int id, ContainerType object) {}
 
 extension ContainerTypeQueryWhereSort
     on QueryBuilder<ContainerType, ContainerType, QWhere> {
   QueryBuilder<ContainerType, ContainerType, QAfterWhere> anyId() {
-    return addWhereClauseInternal(const WhereClause(indexName: null));
+    return addWhereClauseInternal(const IdWhereClause.any());
   }
 }
 
@@ -217,11 +213,10 @@ extension ContainerTypeQueryWhere
     on QueryBuilder<ContainerType, ContainerType, QWhereClause> {
   QueryBuilder<ContainerType, ContainerType, QAfterWhereClause> idEqualTo(
       int id) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: id,
       includeLower: true,
-      upper: [id],
+      upper: id,
       includeUpper: true,
     ));
   }
@@ -229,48 +224,34 @@ extension ContainerTypeQueryWhere
   QueryBuilder<ContainerType, ContainerType, QAfterWhereClause> idNotEqualTo(
       int id) {
     if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      );
     } else {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      );
     }
   }
 
   QueryBuilder<ContainerType, ContainerType, QAfterWhereClause> idGreaterThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
-      includeLower: include,
-    ));
+      int id,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: id, includeLower: include),
+    );
   }
 
   QueryBuilder<ContainerType, ContainerType, QAfterWhereClause> idLessThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      upper: [id],
-      includeUpper: include,
-    ));
+      int id,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: id, includeUpper: include),
+    );
   }
 
   QueryBuilder<ContainerType, ContainerType, QAfterWhereClause> idBetween(
@@ -279,11 +260,10 @@ extension ContainerTypeQueryWhere
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [lowerId],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerId,
       includeLower: includeLower,
-      upper: [upperId],
+      upper: upperId,
       includeUpper: includeUpper,
     ));
   }

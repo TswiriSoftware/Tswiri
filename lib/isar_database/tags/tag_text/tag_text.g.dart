@@ -6,182 +6,166 @@ part of 'tag_text.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetTagTextCollection on Isar {
-  IsarCollection<TagText> get tagTexts {
-    return getCollection('TagText');
-  }
+  IsarCollection<TagText> get tagTexts => getCollection();
 }
 
-final TagTextSchema = CollectionSchema(
+const TagTextSchema = CollectionSchema(
   name: 'TagText',
   schema:
       '{"name":"TagText","idName":"id","properties":[{"name":"text","type":"String"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _TagTextNativeAdapter(),
-  webAdapter: const _TagTextWebAdapter(),
   idName: 'id',
   propertyIds: {'text': 0},
   listProperties: {},
   indexIds: {},
-  indexTypes: {},
+  indexValueTypes: {},
   linkIds: {},
-  backlinkIds: {},
-  linkedCollections: [],
-  getId: (obj) {
-    if (obj.id == Isar.autoIncrement) {
-      return null;
-    } else {
-      return obj.id;
-    }
-  },
-  setId: (obj, id) => obj.id = id,
-  getLinks: (obj) => [],
-  version: 2,
+  backlinkLinkNames: {},
+  getId: _tagTextGetId,
+  setId: _tagTextSetId,
+  getLinks: _tagTextGetLinks,
+  attachLinks: _tagTextAttachLinks,
+  serializeNative: _tagTextSerializeNative,
+  deserializeNative: _tagTextDeserializeNative,
+  deserializePropNative: _tagTextDeserializePropNative,
+  serializeWeb: _tagTextSerializeWeb,
+  deserializeWeb: _tagTextDeserializeWeb,
+  deserializePropWeb: _tagTextDeserializePropWeb,
+  version: 3,
 );
 
-class _TagTextWebAdapter extends IsarWebTypeAdapter<TagText> {
-  const _TagTextWebAdapter();
-
-  @override
-  Object serialize(IsarCollection<TagText> collection, TagText object) {
-    final jsObj = IsarNative.newJsObject();
-    IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'text', object.text);
-    return jsObj;
+int? _tagTextGetId(TagText object) {
+  if (object.id == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.id;
   }
-
-  @override
-  TagText deserialize(IsarCollection<TagText> collection, dynamic jsObj) {
-    final object = TagText();
-    object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.text = IsarNative.jsObjectGet(jsObj, 'text') ?? '';
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(Object jsObj, String propertyName) {
-    switch (propertyName) {
-      case 'id':
-        return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-            as P;
-      case 'text':
-        return (IsarNative.jsObjectGet(jsObj, 'text') ?? '') as P;
-      default:
-        throw 'Illegal propertyName';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, TagText object) {}
 }
 
-class _TagTextNativeAdapter extends IsarNativeTypeAdapter<TagText> {
-  const _TagTextNativeAdapter();
-
-  @override
-  void serialize(IsarCollection<TagText> collection, IsarRawObject rawObj,
-      TagText object, int staticSize, List<int> offsets, AdapterAlloc alloc) {
-    var dynamicSize = 0;
-    final value0 = object.text;
-    final _text = IsarBinaryWriter.utf8Encoder.convert(value0);
-    dynamicSize += (_text.length) as int;
-    final size = staticSize + dynamicSize;
-
-    rawObj.buffer = alloc(size);
-    rawObj.buffer_length = size;
-    final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-    final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeBytes(offsets[0], _text);
-  }
-
-  @override
-  TagText deserialize(IsarCollection<TagText> collection, int id,
-      IsarBinaryReader reader, List<int> offsets) {
-    final object = TagText();
-    object.id = id;
-    object.text = reader.readString(offsets[0]);
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(
-      int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-    switch (propertyIndex) {
-      case -1:
-        return id as P;
-      case 0:
-        return (reader.readString(offset)) as P;
-      default:
-        throw 'Illegal propertyIndex';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, TagText object) {}
+void _tagTextSetId(TagText object, int id) {
+  object.id = id;
 }
+
+List<IsarLinkBase> _tagTextGetLinks(TagText object) {
+  return [];
+}
+
+void _tagTextSerializeNative(
+    IsarCollection<TagText> collection,
+    IsarRawObject rawObj,
+    TagText object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.text;
+  final _text = IsarBinaryWriter.utf8Encoder.convert(value0);
+  dynamicSize += (_text.length) as int;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeBytes(offsets[0], _text);
+}
+
+TagText _tagTextDeserializeNative(IsarCollection<TagText> collection, int id,
+    IsarBinaryReader reader, List<int> offsets) {
+  final object = TagText();
+  object.id = id;
+  object.text = reader.readString(offsets[0]);
+  return object;
+}
+
+P _tagTextDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
+    case 0:
+      return (reader.readString(offset)) as P;
+    default:
+      throw 'Illegal propertyIndex';
+  }
+}
+
+dynamic _tagTextSerializeWeb(
+    IsarCollection<TagText> collection, TagText object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(jsObj, 'text', object.text);
+  return jsObj;
+}
+
+TagText _tagTextDeserializeWeb(
+    IsarCollection<TagText> collection, dynamic jsObj) {
+  final object = TagText();
+  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+  object.text = IsarNative.jsObjectGet(jsObj, 'text') ?? '';
+  return object;
+}
+
+P _tagTextDeserializePropWeb<P>(Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'id':
+      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
+          as P;
+    case 'text':
+      return (IsarNative.jsObjectGet(jsObj, 'text') ?? '') as P;
+    default:
+      throw 'Illegal propertyName';
+  }
+}
+
+void _tagTextAttachLinks(IsarCollection col, int id, TagText object) {}
 
 extension TagTextQueryWhereSort on QueryBuilder<TagText, TagText, QWhere> {
   QueryBuilder<TagText, TagText, QAfterWhere> anyId() {
-    return addWhereClauseInternal(const WhereClause(indexName: null));
+    return addWhereClauseInternal(const IdWhereClause.any());
   }
 }
 
 extension TagTextQueryWhere on QueryBuilder<TagText, TagText, QWhereClause> {
   QueryBuilder<TagText, TagText, QAfterWhereClause> idEqualTo(int id) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: id,
       includeLower: true,
-      upper: [id],
+      upper: id,
       includeUpper: true,
     ));
   }
 
   QueryBuilder<TagText, TagText, QAfterWhereClause> idNotEqualTo(int id) {
     if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      );
     } else {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      );
     }
   }
 
-  QueryBuilder<TagText, TagText, QAfterWhereClause> idGreaterThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
-      includeLower: include,
-    ));
+  QueryBuilder<TagText, TagText, QAfterWhereClause> idGreaterThan(int id,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: id, includeLower: include),
+    );
   }
 
-  QueryBuilder<TagText, TagText, QAfterWhereClause> idLessThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      upper: [id],
-      includeUpper: include,
-    ));
+  QueryBuilder<TagText, TagText, QAfterWhereClause> idLessThan(int id,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: id, includeUpper: include),
+    );
   }
 
   QueryBuilder<TagText, TagText, QAfterWhereClause> idBetween(
@@ -190,11 +174,10 @@ extension TagTextQueryWhere on QueryBuilder<TagText, TagText, QWhereClause> {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [lowerId],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerId,
       includeLower: includeLower,
-      upper: [upperId],
+      upper: upperId,
       includeUpper: includeUpper,
     ));
   }

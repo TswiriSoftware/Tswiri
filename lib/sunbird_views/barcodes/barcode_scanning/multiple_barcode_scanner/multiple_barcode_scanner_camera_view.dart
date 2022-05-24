@@ -63,26 +63,13 @@ class _CameraViewState extends State<MultipleBarcodeScannerCameraView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
-        // actions: [
-        //   Padding(
-        //     padding: const EdgeInsets.only(right: 20.0),
-        //     child: GestureDetector(
-        //       onTap: _switchScreenMode,
-        //       child: Icon(
-        //         _mode == ScreenMode.liveFeed
-        //             ? Icons.photo_library_outlined
-        //             : (Platform.isIOS
-        //                 ? Icons.camera_alt_outlined
-        //                 : Icons.camera),
-        //       ),
-        //     ),
-        //   ),
-        // ],
+        centerTitle: true,
+        title: Text(
+          widget.title,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
       ),
       body: _body(),
-      // floatingActionButton: _floatingActionButton(),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 

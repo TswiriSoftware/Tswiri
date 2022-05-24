@@ -1,19 +1,16 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_generation_entry/barcode_generation_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/barcode_property.dart';
-import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/multiple_barcode_scanner/multiple_barcode_scanner_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_generator/generated_barcodes_pdf_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/default_card/defualt_card.dart';
-
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 import 'package:numberpicker/numberpicker.dart';
 
-import 'generated_barcodes_pdf_view.dart';
+import '../barcode_scanning/multiple_barcode_scanner/multiple_barcode_scanner_view.dart';
 
 class BarcodeGeneratorView extends StatefulWidget {
   const BarcodeGeneratorView({Key? key}) : super(key: key);
@@ -23,655 +20,592 @@ class BarcodeGeneratorView extends StatefulWidget {
 }
 
 class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
-  int maximumBarcodes = 250;
-  int timestamp = 0;
-
-  int rangeStart = 1;
-  int rangeEnd = 1;
-
-  BarcodeGenerationEntry? lastBarcodeGenerationEntry;
-  List<BarcodeGenerationEntry> barcodeGenerationHistory = [];
+  final int maxBarcodes = 1000;
 
   final TextEditingController barcodeSizeController = TextEditingController();
 
-  List<String> generatedBarcodeUIDs = [];
-  List<BarcodeProperty> generatedBarcodeProperties = [];
+  final Map<String, double> barcodeSizes = {
+    'Extra Small': 20,
+    'Small': 30,
+    'Medium': 50,
+    'Large': 60,
+    'Extra Large': 75,
+    'Custom': 100,
+  };
 
-  int minValue = 1;
-  late int maxValue = maximumBarcodes;
+  final Map<String, int> barcodesPerPage = {
+    'Extra Small': 80,
+    'Small': 35,
+    'Medium': 12,
+    'Large': 6,
+    'Extra Large': 6,
+    'Custom': 100,
+  };
 
-  BarcodeGenerationEntry? newBarcodeGenerationObject;
+  late List<BarcodeGenerationEntry> generationHistory =
+      isarDatabase!.barcodeGenerationEntrys.where().findAllSync();
+
+  late int rangeStart = 0;
+  late int rangeEnd = rangeStart + 1;
+
+  //Max value on the numberPicker
+  late int maxValue = rangeStart + maxBarcodes;
+
+  late List<DropdownMenuItem<String>> menuItems = barcodeSizes.keys
+      .map((e) => DropdownMenuItem<String>(
+            child: Text(e),
+            value: e,
+          ))
+      .toList();
+
+  late String selectedBarcodeSize = menuItems.first.value!;
 
   @override
   void initState() {
-    getHistory();
-    barcodeSizeController.text = '75.0';
+    barcodeSizeController.text = '100.0';
+    _updateRange();
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Barcode Generator',
-          style: TextStyle(fontSize: 25),
-        ),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            //RangeSelector
-            _rangeSelectorCard(),
-            //Size selector
-            _barcodeSizeCard(),
-            //GenerateBarcodes.
-            _generateBarcodesButton(),
+      appBar: _appBar(),
+      body: _body(),
+    );
+  }
 
-            //Add pre generated barcodes.
-            _addPreviousBarcodes(),
-            //Debugging delete all.
-            _deleteAll(),
-            //Generatiom history.
-            _barcodeHistory(),
-            // barcodeGenerationHistoryWidget(),
-          ],
+  AppBar _appBar() {
+    return AppBar(
+      centerTitle: true,
+      title: Text(
+        'Barcode Generator',
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+      actions: [
+        PopupMenuButton<String>(
+          tooltip: 'More Options',
+          onSelected: (value) async {
+            switch (value) {
+              case 'import':
+                Set<String>? scannedBarcodes = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MultipleBarcodeScannerView()),
+                );
+                if (scannedBarcodes != null && scannedBarcodes.isNotEmpty) {
+                  List<int> range = scannedBarcodes
+                      .map((e) => int.parse(e.split('_').first))
+                      .toList();
+                  range.sort();
+
+                  int timestamp =
+                      int.parse(scannedBarcodes.first.split('_').last);
+                  BarcodeGenerationEntry importedBarcodeEntry =
+                      BarcodeGenerationEntry()
+                        ..rangeStart = range.first
+                        ..rangeEnd = range.last
+                        ..size = defaultBarcodeDiagonalLength!
+                        ..timestamp = timestamp
+                        ..barcodeUIDs = scannedBarcodes.toList();
+
+                  List<BarcodeProperty> barcodeProperties = scannedBarcodes
+                      .map((e) => BarcodeProperty()
+                        ..barcodeUID = e
+                        ..size = defaultBarcodeDiagonalLength!)
+                      .toList();
+                  isarDatabase!.writeTxnSync((isar) {
+                    isar.barcodeGenerationEntrys.putSync(importedBarcodeEntry);
+                    isar.barcodePropertys.putAllSync(barcodeProperties);
+                  });
+                  _updateHitory();
+                  _updateRange();
+                }
+                break;
+              default:
+            }
+          },
+          itemBuilder: (BuildContext context) {
+            return [
+              PopupMenuItem(
+                child: Text(
+                  'Import Barcodes',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                value: 'import',
+              ),
+            ];
+          },
         ),
+      ],
+    );
+  }
+
+  Widget _body() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          _rangeSelectorCard(),
+          _barcodeSizeCard(),
+          _history(),
+        ],
       ),
     );
   }
 
-  Widget _rangeSelectorCard() {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      color: Colors.white12,
-      elevation: 5,
-      shadowColor: Colors.black26,
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(color: sunbirdOrange, width: 2),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
+  ///Range///
+  Card _rangeSelectorCard() {
+    return defaultCard(
+        body: Column(
           children: [
             Text(
-              'Select range to generate',
-              style: Theme.of(context).textTheme.bodyLarge,
+              'Select Barcode Range',
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             const Divider(
               color: Colors.deepOrange,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
-                  'Range: ',
+                  'Start: ',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                Card(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  color: Colors.black38,
-                  elevation: 5,
-                  shadowColor: Colors.black26,
-                  shape: RoundedRectangleBorder(
-                    side: const BorderSide(color: sunbirdOrange, width: 1.5),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: NumberPicker(
-                      haptics: true,
-                      selectedTextStyle: TextStyle(
-                          color: Colors.deepOrange[300], fontSize: 22),
-                      itemHeight: 50,
-                      itemWidth: 60,
-                      minValue: minValue,
-                      maxValue: maxValue,
-                      value: rangeStart,
-                      onChanged: (value) {
-                        if (value >= rangeEnd) {
-                          rangeEnd = value;
-                        }
-                        rangeStart = value;
-                        setState(() {});
-                      },
-                    ),
-                  ),
-                ),
-                //RangeStart
-
                 Text(
-                  'to',
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  '$rangeStart',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
-
-                Card(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  color: Colors.black38,
-                  elevation: 5,
-                  shadowColor: Colors.black26,
-                  shape: RoundedRectangleBorder(
-                    side: const BorderSide(color: sunbirdOrange, width: 1.5),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: NumberPicker(
-                      haptics: true,
-                      selectedTextStyle: TextStyle(
-                          color: Colors.deepOrange[300], fontSize: 22),
-                      itemHeight: 50,
-                      itemWidth: 60,
-                      minValue: minValue,
-                      maxValue: maxValue,
-                      value: rangeEnd,
-                      onChanged: (value) {
-                        if (value <= rangeStart) {
-                          rangeStart = value;
-                        }
-                        rangeEnd = value;
-                        //log(rangeEnd.toString());
-                        setState(() {});
-                      },
-                    ),
-                  ),
-                ),
+                _numberPicker()
               ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _barcodeSizeCard() {
-    return defaultCard(
-        body: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Barcode Size: '),
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 5,
-              child: TextFormField(
-                onFieldSubmitted: (value) {
-                  if (value.isNotEmpty) {
-                    barcodeSizeController.text = double.parse(value).toString();
-                  }
-                },
-                onChanged: (value) {},
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                controller: barcodeSizeController,
-                decoration: const InputDecoration(
-                  border: UnderlineInputBorder(),
-                ),
-              ),
-            ),
-            Text(
-              'mm',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            Text(
-              'x',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 5,
-              child: TextFormField(
-                onFieldSubmitted: (value) {
-                  if (value.isNotEmpty) {
-                    barcodeSizeController.text = double.parse(value).toString();
-                    log(barcodeSizeController.text);
-                  }
-                },
-                onChanged: (value) {},
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                controller: barcodeSizeController,
-                decoration: const InputDecoration(
-                  border: UnderlineInputBorder(),
-                ),
-              ),
-            ),
-            Text(
-              'mm',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            )
           ],
         ),
         color: sunbirdOrange);
   }
 
-  Widget _generateBarcodesButton() {
-    return ElevatedButton(
-      onPressed: () async {
-        int time = DateTime.now().millisecondsSinceEpoch;
-
-        //Create a barcodeGenerationEntry.
-
-        double size = defaultBarcodeDiagonalLength!;
-        if (barcodeSizeController.text.isNotEmpty) {
-          size = double.parse(barcodeSizeController.text);
-        }
-
-        newBarcodeGenerationObject = BarcodeGenerationEntry()
-          ..timestamp = time
-          ..rangeStart = rangeStart
-          ..rangeEnd = rangeEnd
-          ..size = size;
-
-        List<String> newBarcodes =
-            generateBarcodes(newBarcodeGenerationObject!);
-
-        List<BarcodeProperty> newBarcodeProperties = newBarcodes
-            .map((e) => BarcodeProperty()
-              ..barcodeUID = e
-              ..size = newBarcodeGenerationObject!.size)
-            .toList();
-
-        isarDatabase!.writeTxnSync((isar) {
-          //BarcodeGenerationObject.
-          isar.barcodeGenerationEntrys.putSync(newBarcodeGenerationObject!);
-          //BarcodeProperty entries.
-          isar.barcodePropertys.putAllSync(newBarcodeProperties);
-        });
-
-        setState(() {
-          minValue = newBarcodeGenerationObject!.rangeEnd;
-          rangeStart = minValue;
-          rangeEnd = minValue + 1;
-          maxValue = minValue + maximumBarcodes;
-          barcodeGenerationHistory =
-              isarDatabase!.barcodeGenerationEntrys.where().findAllSync();
-        });
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => BarcodeGenerationView(
-                  barcodeUIDs: generateBarcodes(newBarcodeGenerationObject!),
-                  size: newBarcodeGenerationObject!.size)),
-        );
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
+  Row _numberPicker() {
+    return Row(
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Generate Barcodes',
-              style: Theme.of(context).textTheme.bodyLarge,
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  rangeEnd = rangeStart;
+                });
+              },
+              icon: const Icon(Icons.arrow_drop_up),
             ),
-            const Icon(Icons.add)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 25),
+              child: Text(
+                'to',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  rangeEnd = maxValue;
+                });
+              },
+              icon: const Icon(Icons.arrow_drop_down),
+            ),
           ],
         ),
-      ),
+        defaultCard(
+            body: NumberPicker(
+              haptics: true,
+              selectedTextStyle:
+                  const TextStyle(color: sunbirdOrange, fontSize: 22),
+              itemHeight: 50,
+              itemWidth: 50,
+              minValue: rangeStart,
+              maxValue: maxValue,
+              value: rangeEnd,
+              onChanged: (value) {
+                setState(() {
+                  rangeEnd = value;
+                });
+              },
+            ),
+            color: sunbirdOrange),
+      ],
     );
   }
 
-  Widget _deleteAll() {
-    return ElevatedButton(
-      onPressed: () {
-        isarDatabase!.writeTxnSync((isar) {
-          isar.barcodeGenerationEntrys.where().deleteAllSync();
-          isar.barcodePropertys.where().deleteAllSync();
-          getHistory();
-          setState(() {});
-        });
-      },
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+  ///Size///
+  Card _barcodeSizeCard() {
+    return defaultCard(
+      body: Column(
         children: [
           Text(
-            'Delete All',
-            style: Theme.of(context).textTheme.bodyLarge,
+            'Select Barcode Size',
+            style: Theme.of(context).textTheme.titleMedium,
           ),
-          const Icon(Icons.delete)
-        ],
-      ),
-    );
-  }
-
-  Widget _addPreviousBarcodes() {
-    return ElevatedButton(
-      onPressed: () async {
-        Set<String>? scannedBarcodes = await Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const MultipleBarcodeScannerView()),
-        );
-        if (scannedBarcodes != null && scannedBarcodes.isNotEmpty) {
-          createBarcodes(scannedBarcodes);
-        }
-      },
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Add Other',
-            style: Theme.of(context).textTheme.bodyLarge,
+          const Divider(
+            color: Colors.deepOrange,
           ),
-          const Icon(Icons.add)
-        ],
-      ),
-    );
-  }
-
-  Widget _barcodeHistory() {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      color: Colors.white12,
-      elevation: 5,
-      shadowColor: Colors.black26,
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(color: sunbirdOrange, width: 2),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Builder(builder: (context) {
-          List<Widget> widgets = [
-            Text(
-              'History',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const Divider(),
-          ];
-          widgets.addAll(
-              barcodeGenerationHistory.map((e) => historyWidget(e)).toList());
-          return Column(
-            children: widgets,
-          );
-        }),
-      ),
-    );
-  }
-
-  Widget historyWidget(BarcodeGenerationEntry e) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      color: Colors.white12,
-      elevation: 5,
-      shadowColor: Colors.black26,
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(color: sunbirdOrange, width: 2),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Created on:',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                Text(
-                  DateFormat('yyyy-MM-dd, hh:mm a')
-                      .format(DateTime.fromMillisecondsSinceEpoch(e.timestamp))
-                      .toString(),
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Range:',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                Text(
-                  e.rangeStart.toString() + ' to ' + e.rangeEnd.toString(),
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(
+                'Select Size: ',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              DropdownButton<String>(
+                value: selectedBarcodeSize,
+                items: menuItems,
+                onChanged: (String? item) {
+                  setState(() {
+                    selectedBarcodeSize = item!;
+                  });
+                },
+              ),
+            ],
+          ),
+          defaultCard(
+            body: Builder(builder: (context) {
+              if (selectedBarcodeSize != 'Custom') {
+                return Column(
                   children: [
                     Text(
-                      'Barcode Size:',
-                      style: Theme.of(context).textTheme.bodySmall,
+                      'Barcode Size: ${barcodeSizes[selectedBarcodeSize]} mm',
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     Text(
-                      e.size.toString(),
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      'Barcodes Per Page: ${barcodesPerPage[selectedBarcodeSize]}',
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ],
-                ),
-                IconButton(
-                    onPressed: () async {
-                      double? newSize = await sizeEditor(e.size);
-                      if (newSize != null && newSize != e.size) {
-                        e.size = newSize;
-                        //update size
-                        isarDatabase!.writeTxnSync((isar) => isar
-                            .barcodeGenerationEntrys
-                            .putSync(e, replaceOnConflict: true));
+                );
+              } else {
+                return _customBarcodeSize();
+              }
+            }),
+            color: sunbirdOrange,
+          ),
+          _generateBarcodes(),
+        ],
+      ),
+      color: sunbirdOrange,
+    );
+  }
 
-                        List<String> barcodeUIDS = generateBarcodes(e);
-                        isarDatabase!.writeTxnSync((isar) => isar
-                            .barcodePropertys
-                            .filter()
-                            .repeat(
-                                barcodeUIDS,
-                                (q, String element) =>
-                                    q.barcodeUIDMatches(element))
-                            .deleteAllSync());
-
-                        List<BarcodeProperty> newBarcodeProperties = barcodeUIDS
-                            .map((e) => BarcodeProperty()
-                              ..barcodeUID = e
-                              ..size = newSize)
-                            .toList();
-
-                        isarDatabase!.writeTxnSync((isar) => isar
-                            .barcodePropertys
-                            .putAllSync(newBarcodeProperties));
-                      }
-                    },
-                    icon: const Icon(Icons.edit))
-              ],
+  Row _customBarcodeSize() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Text('Barcode Size: '),
+        SizedBox(
+          width: MediaQuery.of(context).size.width / 5,
+          child: TextFormField(
+            onFieldSubmitted: (value) {
+              if (value.isNotEmpty) {
+                barcodeSizeController.text = double.parse(value).toString();
+              }
+            },
+            onChanged: (value) {},
+            textAlign: TextAlign.center,
+            keyboardType: TextInputType.number,
+            controller: barcodeSizeController,
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
             ),
-            const Divider(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    isarDatabase!.writeTxnSync((isar) =>
-                        isar.barcodeGenerationEntrys.deleteSync(e.id));
-                    setState(() {
-                      barcodeGenerationHistory = isarDatabase!
-                          .barcodeGenerationEntrys
-                          .where()
-                          .findAllSync();
-                      if (barcodeGenerationHistory.isNotEmpty) {
-                        minValue = barcodeGenerationHistory.last.rangeEnd;
-                        rangeStart = minValue;
-                        rangeEnd = minValue + 1;
-                        maxValue = minValue + maximumBarcodes;
-                      } else {
-                        minValue = 1;
-                        rangeStart = minValue;
-                        rangeEnd = minValue + 1;
-                        maxValue = minValue + maximumBarcodes;
-                      }
-                    });
-                  },
-                  child: Text(
-                    'Delete',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BarcodeGenerationView(
-                          barcodeUIDs: generateBarcodes(e),
-                          size: e.size,
-                        ),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    'Reprint',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ),
-              ],
-            )
-          ],
+          ),
         ),
+        Text(
+          'mm',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        Text(
+          'x',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        SizedBox(
+          width: MediaQuery.of(context).size.width / 5,
+          child: TextFormField(
+            onFieldSubmitted: (value) {
+              if (value.isNotEmpty) {
+                barcodeSizeController.text = double.parse(value).toString();
+              }
+            },
+            onChanged: (value) {},
+            textAlign: TextAlign.center,
+            keyboardType: TextInputType.number,
+            controller: barcodeSizeController,
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+            ),
+          ),
+        ),
+        Text(
+          'mm',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      ],
+    );
+  }
+
+  ///Generate///
+  ElevatedButton _generateBarcodes() {
+    return ElevatedButton(
+      onPressed: () {
+        _createBarcodeGenerationEntry();
+      },
+      child: Text(
+        'Generate Barcodes',
+        style: Theme.of(context).textTheme.bodyLarge,
       ),
     );
   }
 
-  List<String> generateBarcodes(BarcodeGenerationEntry generationEntry) {
-    generatedBarcodeUIDs = [];
-
-    for (var i = generationEntry.rangeStart;
-        i <= generationEntry.rangeEnd;
-        i++) {
-      String barcodeUID = '${i}_' + generationEntry.timestamp.toString();
-      generatedBarcodeUIDs.add(barcodeUID);
-      generatedBarcodeProperties.add(BarcodeProperty()
-        ..barcodeUID = barcodeUID
-        ..size = generationEntry.size);
-    }
-    return generatedBarcodeUIDs;
+  ///History///
+  Widget _history() {
+    return defaultCard(
+      body: Column(
+        children: [
+          Text(
+            'History',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const Divider(
+            color: Colors.deepOrange,
+          ),
+          for (BarcodeGenerationEntry e in generationHistory) _historyWidget(e)
+        ],
+      ),
+      color: sunbirdOrange,
+    );
   }
 
-  void createBarcodes(Set<String> scannedBarcodes) {
-    List<BarcodeProperty> scannedList = [];
-
-    for (String barcode in scannedBarcodes) {
-      String barcodeUID = barcode;
-      scannedList.add(BarcodeProperty()
-        ..barcodeUID = barcodeUID
-        ..size = defaultBarcodeDiagonalLength!);
-    }
-
-    isarDatabase!
-        .writeTxnSync((isar) => isar.barcodePropertys.putAllSync(scannedList));
-  }
-
-  void getHistory() {
-    lastBarcodeGenerationEntry = isarDatabase!.barcodeGenerationEntrys
-        .where()
-        .sortByTimestampDesc()
-        .findFirstSync();
-
-    if (lastBarcodeGenerationEntry != null) {
-      rangeStart = lastBarcodeGenerationEntry!.rangeEnd + 1;
-      rangeEnd = rangeStart;
-      minValue = lastBarcodeGenerationEntry!.rangeEnd + 1;
-      maxValue = minValue + maximumBarcodes;
-    }
-    barcodeGenerationHistory = isarDatabase!.barcodeGenerationEntrys
-        .where()
-        .sortByTimestampDesc()
-        .findAllSync();
-  }
-
-  Future<double?> sizeEditor(double currentSize) async {
-    double? size = await showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (initialDialogContext) {
-        TextEditingController sizeContoller = TextEditingController();
-        sizeContoller.text = currentSize.toString();
-        return AlertDialog(
-          insetPadding: const EdgeInsets.all(20),
-          contentPadding: const EdgeInsets.all(5),
-          title: const Text('Size'),
-          content: Row(
+  Widget _historyWidget(BarcodeGenerationEntry e) {
+    return defaultCard(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Size: '),
-              SizedBox(
-                width: MediaQuery.of(context).size.width / 5,
-                child: TextFormField(
-                  onFieldSubmitted: (value) {
-                    if (value.isNotEmpty) {
-                      sizeContoller.text = double.parse(value).toString();
-                    }
-                  },
-                  onChanged: (value) {},
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  controller: sizeContoller,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Created on:',
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
-                ),
-              ),
-              Text(
-                'mm',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              Text(
-                'x',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width / 5,
-                child: TextFormField(
-                  onFieldSubmitted: (value) {
-                    if (value.isNotEmpty) {
-                      sizeContoller.text = double.parse(value).toString();
-                      // log(sizeContoller.text);
-                    }
-                  },
-                  onChanged: (value) {},
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  controller: sizeContoller,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
+                  Text(
+                    DateFormat('yyyy-MM-dd, hh:mm a')
+                        .format(
+                            DateTime.fromMillisecondsSinceEpoch(e.timestamp))
+                        .toString(),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                ),
+                ],
               ),
               Text(
-                'mm',
+                'ID: ${e.id}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
           ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                double newSize = currentSize;
-                if (sizeContoller.text.isNotEmpty) {
-                  newSize = double.parse(sizeContoller.text);
-                }
-                Navigator.pop(initialDialogContext, newSize);
-              },
-              child: const Text('ok'),
+          const Divider(
+            thickness: 0.2,
+            color: Colors.deepOrange,
+          ),
+          _historyRange(e.rangeStart, e.rangeEnd),
+          const Divider(
+            thickness: 0.2,
+            color: Colors.deepOrange,
+          ),
+          _historySize(e.size),
+          const Divider(
+            thickness: 0.2,
+            color: Colors.deepOrange,
+          ),
+          _historyActions(e),
+        ],
+      ),
+      color: sunbirdOrange,
+    );
+  }
+
+  Column _historyRange(int start, int end) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Range:',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        Text(
+          start.toString() + ' to ' + end.toString(),
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+      ],
+    );
+  }
+
+  Row _historySize(double size) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Barcode Size:',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            Text(
+              size.toString(),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],
-        );
-      },
+        ),
+        IconButton(
+            onPressed: () async {
+              // double? newSize = await sizeEditor(e.size);
+              // if (newSize != null && newSize != e.size) {
+              //   e.size = newSize;
+              //   //update size
+              //   isarDatabase!.writeTxnSync((isar) => isar
+              //       .barcodeGenerationEntrys
+              //       .putSync(e, replaceOnConflict: true));
+
+              //   List<String> barcodeUIDS = generateBarcodes(e);
+              //   isarDatabase!.writeTxnSync((isar) => isar.barcodePropertys
+              //       .filter()
+              //       .repeat(
+              //           barcodeUIDS,
+              //           (q, String element) =>
+              //               q.barcodeUIDMatches(element))
+              //       .deleteAllSync());
+
+              //   List<BarcodeProperty> newBarcodeProperties = barcodeUIDS
+              //       .map((e) => BarcodeProperty()
+              //         ..barcodeUID = e
+              //         ..size = newSize)
+              //       .toList();
+
+              //   isarDatabase!.writeTxnSync((isar) => isar.barcodePropertys
+              //       .putAllSync(newBarcodeProperties));
+              // }
+            },
+            icon: const Icon(Icons.edit))
+      ],
     );
-    return size;
+  }
+
+  Row _historyActions(BarcodeGenerationEntry e) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        ElevatedButton(
+          onPressed: () {
+            isarDatabase!.writeTxnSync((isar) {
+              isar.barcodeGenerationEntrys.deleteSync(e.id);
+              isar.barcodePropertys
+                  .filter()
+                  .repeat(e.barcodeUIDs,
+                      (q, String element) => q.barcodeUIDMatches(element))
+                  .deleteAllSync();
+            });
+            _updateHitory();
+            _updateRange();
+          },
+          child: Text(
+            'Delete',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            _createPDF(e);
+          },
+          child: Text(
+            'Reprint',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        ),
+      ],
+    );
+  }
+
+  ///Functions///
+  void _createBarcodeGenerationEntry() {
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
+
+    double size = barcodeSizes[selectedBarcodeSize]!;
+
+    if (selectedBarcodeSize == 'Custom') {
+      size = double.parse(barcodeSizeController.text);
+    }
+    //Generate BarcodeProperties
+    List<String> generatedBarcodeUIDs = [];
+    List<BarcodeProperty> generatedBarcodeProperties = [];
+
+    for (var i = rangeStart; i <= rangeEnd; i++) {
+      String barcodeUID = '${i}_' + timestamp.toString();
+      generatedBarcodeUIDs.add(barcodeUID);
+      generatedBarcodeProperties.add(BarcodeProperty()
+        ..barcodeUID = barcodeUID
+        ..size = size);
+    }
+
+    BarcodeGenerationEntry newBarcodeGenerationEntry = BarcodeGenerationEntry()
+      ..rangeStart = rangeStart
+      ..rangeEnd = rangeEnd
+      ..timestamp = timestamp
+      ..size = size
+      ..barcodeUIDs = generatedBarcodeUIDs;
+
+    //Write to database.
+    isarDatabase!.writeTxnSync((isar) {
+      isar.barcodePropertys.putAllSync(generatedBarcodeProperties);
+      isar.barcodeGenerationEntrys.putSync(newBarcodeGenerationEntry);
+    });
+
+    _createPDF(newBarcodeGenerationEntry);
+    _updateRange();
+  }
+
+  void _updateRange() {
+    if (generationHistory.isNotEmpty) {
+      setState(() {
+        rangeStart = generationHistory.last.rangeEnd + 1;
+        rangeEnd = rangeStart + 1;
+      });
+    } else {
+      setState(() {
+        rangeStart = 1;
+        rangeEnd = rangeStart + 1;
+      });
+    }
+  }
+
+  void _createPDF(BarcodeGenerationEntry barcodeGenerationEntry) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BarcodeGenerationView(
+          barcodeUIDs: barcodeGenerationEntry.barcodeUIDs,
+          size: barcodeGenerationEntry.size,
+          start: barcodeGenerationEntry.rangeStart,
+          end: barcodeGenerationEntry.rangeEnd,
+        ),
+      ),
+    );
+
+    _updateHitory();
+  }
+
+  void _updateHitory() {
+    setState(() {
+      generationHistory =
+          isarDatabase!.barcodeGenerationEntrys.where().findAllSync();
+    });
   }
 }

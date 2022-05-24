@@ -1,19 +1,21 @@
-import 'dart:developer';
+import 'dart:io';
 import 'dart:typed_data';
-
+import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart';
-
 import 'package:pdf/widgets.dart' as pw;
 
-Future<Uint8List> barcodePdfGenerator(
-    {required List<String> barcodeUIDs, required double size}) {
-  final document = Document();
+Future<Uint8List> barcodePdfGenerator({
+  required List<String> barcodeUIDs,
+  required double size,
+  required int start,
+  required int end,
+}) async {
+  final pdf = pw.Document();
 
   double convertionWidth = PdfPageFormat.a4.width / 210;
   double convertionHeight = PdfPageFormat.a4.height / 297;
   double realWidth = size * convertionWidth;
-  double realHeight = size * convertionHeight + (10 * convertionWidth);
+  double realHeight = size * convertionHeight + (5 * convertionWidth);
 
   int crossAxisCount = PdfPageFormat.a4.availableWidth ~/ realWidth;
   int mainAxisCount = (PdfPageFormat.a4.availableHeight ~/ realHeight);
@@ -25,13 +27,12 @@ Future<Uint8List> barcodePdfGenerator(
 
   for (var i = 0; i <= numberOfPages; i++) {
     if (i < numberOfPages) {
-      document.addPage(
+      pdf.addPage(
         pw.Page(
-          margin: const EdgeInsets.all(5),
-          pageFormat: PdfPageFormat.a4,
+          margin: pw.EdgeInsets.zero,
           build: (pw.Context context) {
             return pw.GridView(
-              direction: Axis.vertical,
+              direction: pw.Axis.vertical,
               crossAxisCount: crossAxisCount,
               children: generatePageBarcodes(
                 6,
@@ -46,13 +47,12 @@ Future<Uint8List> barcodePdfGenerator(
         ),
       );
     } else if (remainder > 0) {
-      document.addPage(
+      pdf.addPage(
         pw.Page(
-          margin: const EdgeInsets.all(5),
-          pageFormat: PdfPageFormat.a4,
+          margin: pw.EdgeInsets.zero,
           build: (pw.Context context) {
             return pw.GridView(
-              direction: Axis.vertical,
+              direction: pw.Axis.vertical,
               crossAxisCount: crossAxisCount,
               children: generatePageBarcodes(
                 remainder,
@@ -68,22 +68,22 @@ Future<Uint8List> barcodePdfGenerator(
     }
   }
 
-  return document.save();
+  return await pdf.save();
 }
 
-List<Widget> generatePageBarcodes(
+List<pw.Widget> generatePageBarcodes(
     int numberOfBarcodes, List<String> barcodeUIDs, double size) {
-  List<Widget> barcodes = [];
+  List<pw.Widget> barcodes = [];
   for (String barcodeUID in barcodeUIDs) {
     barcodes.add(
       pw.Padding(
-        padding: const EdgeInsets.all(1),
+        padding: const pw.EdgeInsets.all(1),
         child: pw.Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: pw.MainAxisSize.max,
+          crossAxisAlignment: pw.CrossAxisAlignment.center,
+          mainAxisAlignment: pw.MainAxisAlignment.center,
           children: [
-            pw.Text(barcodeUID, style: TextStyle(fontSize: (size / 15))),
+            pw.Text(barcodeUID, style: pw.TextStyle(fontSize: (size / 15))),
             pw.BarcodeWidget(
               height: size,
               width: size,

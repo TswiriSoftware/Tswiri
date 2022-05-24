@@ -6,198 +6,180 @@ part of 'marker.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetMarkerCollection on Isar {
-  IsarCollection<Marker> get markers {
-    return getCollection('Marker');
-  }
+  IsarCollection<Marker> get markers => getCollection();
 }
 
-final MarkerSchema = CollectionSchema(
+const MarkerSchema = CollectionSchema(
   name: 'Marker',
   schema:
       '{"name":"Marker","idName":"id","properties":[{"name":"barcodeUID","type":"String"},{"name":"parentContainerUID","type":"String"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _MarkerNativeAdapter(),
-  webAdapter: const _MarkerWebAdapter(),
   idName: 'id',
   propertyIds: {'barcodeUID': 0, 'parentContainerUID': 1},
   listProperties: {},
   indexIds: {},
-  indexTypes: {},
+  indexValueTypes: {},
   linkIds: {},
-  backlinkIds: {},
-  linkedCollections: [],
-  getId: (obj) {
-    if (obj.id == Isar.autoIncrement) {
-      return null;
-    } else {
-      return obj.id;
-    }
-  },
-  setId: (obj, id) => obj.id = id,
-  getLinks: (obj) => [],
-  version: 2,
+  backlinkLinkNames: {},
+  getId: _markerGetId,
+  setId: _markerSetId,
+  getLinks: _markerGetLinks,
+  attachLinks: _markerAttachLinks,
+  serializeNative: _markerSerializeNative,
+  deserializeNative: _markerDeserializeNative,
+  deserializePropNative: _markerDeserializePropNative,
+  serializeWeb: _markerSerializeWeb,
+  deserializeWeb: _markerDeserializeWeb,
+  deserializePropWeb: _markerDeserializePropWeb,
+  version: 3,
 );
 
-class _MarkerWebAdapter extends IsarWebTypeAdapter<Marker> {
-  const _MarkerWebAdapter();
-
-  @override
-  Object serialize(IsarCollection<Marker> collection, Marker object) {
-    final jsObj = IsarNative.newJsObject();
-    IsarNative.jsObjectSet(jsObj, 'barcodeUID', object.barcodeUID);
-    IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(
-        jsObj, 'parentContainerUID', object.parentContainerUID);
-    return jsObj;
+int? _markerGetId(Marker object) {
+  if (object.id == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.id;
   }
-
-  @override
-  Marker deserialize(IsarCollection<Marker> collection, dynamic jsObj) {
-    final object = Marker();
-    object.barcodeUID = IsarNative.jsObjectGet(jsObj, 'barcodeUID') ?? '';
-    object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.parentContainerUID =
-        IsarNative.jsObjectGet(jsObj, 'parentContainerUID');
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(Object jsObj, String propertyName) {
-    switch (propertyName) {
-      case 'barcodeUID':
-        return (IsarNative.jsObjectGet(jsObj, 'barcodeUID') ?? '') as P;
-      case 'id':
-        return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-            as P;
-      case 'parentContainerUID':
-        return (IsarNative.jsObjectGet(jsObj, 'parentContainerUID')) as P;
-      default:
-        throw 'Illegal propertyName';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, Marker object) {}
 }
 
-class _MarkerNativeAdapter extends IsarNativeTypeAdapter<Marker> {
-  const _MarkerNativeAdapter();
-
-  @override
-  void serialize(IsarCollection<Marker> collection, IsarRawObject rawObj,
-      Marker object, int staticSize, List<int> offsets, AdapterAlloc alloc) {
-    var dynamicSize = 0;
-    final value0 = object.barcodeUID;
-    final _barcodeUID = IsarBinaryWriter.utf8Encoder.convert(value0);
-    dynamicSize += (_barcodeUID.length) as int;
-    final value1 = object.parentContainerUID;
-    IsarUint8List? _parentContainerUID;
-    if (value1 != null) {
-      _parentContainerUID = IsarBinaryWriter.utf8Encoder.convert(value1);
-    }
-    dynamicSize += (_parentContainerUID?.length ?? 0) as int;
-    final size = staticSize + dynamicSize;
-
-    rawObj.buffer = alloc(size);
-    rawObj.buffer_length = size;
-    final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-    final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeBytes(offsets[0], _barcodeUID);
-    writer.writeBytes(offsets[1], _parentContainerUID);
-  }
-
-  @override
-  Marker deserialize(IsarCollection<Marker> collection, int id,
-      IsarBinaryReader reader, List<int> offsets) {
-    final object = Marker();
-    object.barcodeUID = reader.readString(offsets[0]);
-    object.id = id;
-    object.parentContainerUID = reader.readStringOrNull(offsets[1]);
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(
-      int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-    switch (propertyIndex) {
-      case -1:
-        return id as P;
-      case 0:
-        return (reader.readString(offset)) as P;
-      case 1:
-        return (reader.readStringOrNull(offset)) as P;
-      default:
-        throw 'Illegal propertyIndex';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, Marker object) {}
+void _markerSetId(Marker object, int id) {
+  object.id = id;
 }
+
+List<IsarLinkBase> _markerGetLinks(Marker object) {
+  return [];
+}
+
+void _markerSerializeNative(
+    IsarCollection<Marker> collection,
+    IsarRawObject rawObj,
+    Marker object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.barcodeUID;
+  final _barcodeUID = IsarBinaryWriter.utf8Encoder.convert(value0);
+  dynamicSize += (_barcodeUID.length) as int;
+  final value1 = object.parentContainerUID;
+  IsarUint8List? _parentContainerUID;
+  if (value1 != null) {
+    _parentContainerUID = IsarBinaryWriter.utf8Encoder.convert(value1);
+  }
+  dynamicSize += (_parentContainerUID?.length ?? 0) as int;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeBytes(offsets[0], _barcodeUID);
+  writer.writeBytes(offsets[1], _parentContainerUID);
+}
+
+Marker _markerDeserializeNative(IsarCollection<Marker> collection, int id,
+    IsarBinaryReader reader, List<int> offsets) {
+  final object = Marker();
+  object.barcodeUID = reader.readString(offsets[0]);
+  object.id = id;
+  object.parentContainerUID = reader.readStringOrNull(offsets[1]);
+  return object;
+}
+
+P _markerDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
+    case 0:
+      return (reader.readString(offset)) as P;
+    case 1:
+      return (reader.readStringOrNull(offset)) as P;
+    default:
+      throw 'Illegal propertyIndex';
+  }
+}
+
+dynamic _markerSerializeWeb(IsarCollection<Marker> collection, Marker object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'barcodeUID', object.barcodeUID);
+  IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(
+      jsObj, 'parentContainerUID', object.parentContainerUID);
+  return jsObj;
+}
+
+Marker _markerDeserializeWeb(IsarCollection<Marker> collection, dynamic jsObj) {
+  final object = Marker();
+  object.barcodeUID = IsarNative.jsObjectGet(jsObj, 'barcodeUID') ?? '';
+  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+  object.parentContainerUID =
+      IsarNative.jsObjectGet(jsObj, 'parentContainerUID');
+  return object;
+}
+
+P _markerDeserializePropWeb<P>(Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'barcodeUID':
+      return (IsarNative.jsObjectGet(jsObj, 'barcodeUID') ?? '') as P;
+    case 'id':
+      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
+          as P;
+    case 'parentContainerUID':
+      return (IsarNative.jsObjectGet(jsObj, 'parentContainerUID')) as P;
+    default:
+      throw 'Illegal propertyName';
+  }
+}
+
+void _markerAttachLinks(IsarCollection col, int id, Marker object) {}
 
 extension MarkerQueryWhereSort on QueryBuilder<Marker, Marker, QWhere> {
   QueryBuilder<Marker, Marker, QAfterWhere> anyId() {
-    return addWhereClauseInternal(const WhereClause(indexName: null));
+    return addWhereClauseInternal(const IdWhereClause.any());
   }
 }
 
 extension MarkerQueryWhere on QueryBuilder<Marker, Marker, QWhereClause> {
   QueryBuilder<Marker, Marker, QAfterWhereClause> idEqualTo(int id) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: id,
       includeLower: true,
-      upper: [id],
+      upper: id,
       includeUpper: true,
     ));
   }
 
   QueryBuilder<Marker, Marker, QAfterWhereClause> idNotEqualTo(int id) {
     if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      );
     } else {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      );
     }
   }
 
-  QueryBuilder<Marker, Marker, QAfterWhereClause> idGreaterThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
-      includeLower: include,
-    ));
+  QueryBuilder<Marker, Marker, QAfterWhereClause> idGreaterThan(int id,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: id, includeLower: include),
+    );
   }
 
-  QueryBuilder<Marker, Marker, QAfterWhereClause> idLessThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      upper: [id],
-      includeUpper: include,
-    ));
+  QueryBuilder<Marker, Marker, QAfterWhereClause> idLessThan(int id,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: id, includeUpper: include),
+    );
   }
 
   QueryBuilder<Marker, Marker, QAfterWhereClause> idBetween(
@@ -206,11 +188,10 @@ extension MarkerQueryWhere on QueryBuilder<Marker, Marker, QWhereClause> {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [lowerId],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerId,
       includeLower: includeLower,
-      upper: [upperId],
+      upper: upperId,
       includeUpper: includeUpper,
     ));
   }

@@ -6,145 +6,142 @@ part of 'barcode_property.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetBarcodePropertyCollection on Isar {
-  IsarCollection<BarcodeProperty> get barcodePropertys {
-    return getCollection('BarcodeProperty');
-  }
+  IsarCollection<BarcodeProperty> get barcodePropertys => getCollection();
 }
 
-final BarcodePropertySchema = CollectionSchema(
+const BarcodePropertySchema = CollectionSchema(
   name: 'BarcodeProperty',
   schema:
       '{"name":"BarcodeProperty","idName":"id","properties":[{"name":"barcodeUID","type":"String"},{"name":"size","type":"Double"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _BarcodePropertyNativeAdapter(),
-  webAdapter: const _BarcodePropertyWebAdapter(),
   idName: 'id',
   propertyIds: {'barcodeUID': 0, 'size': 1},
   listProperties: {},
   indexIds: {},
-  indexTypes: {},
+  indexValueTypes: {},
   linkIds: {},
-  backlinkIds: {},
-  linkedCollections: [],
-  getId: (obj) {
-    if (obj.id == Isar.autoIncrement) {
-      return null;
-    } else {
-      return obj.id;
-    }
-  },
-  setId: (obj, id) => obj.id = id,
-  getLinks: (obj) => [],
-  version: 2,
+  backlinkLinkNames: {},
+  getId: _barcodePropertyGetId,
+  setId: _barcodePropertySetId,
+  getLinks: _barcodePropertyGetLinks,
+  attachLinks: _barcodePropertyAttachLinks,
+  serializeNative: _barcodePropertySerializeNative,
+  deserializeNative: _barcodePropertyDeserializeNative,
+  deserializePropNative: _barcodePropertyDeserializePropNative,
+  serializeWeb: _barcodePropertySerializeWeb,
+  deserializeWeb: _barcodePropertyDeserializeWeb,
+  deserializePropWeb: _barcodePropertyDeserializePropWeb,
+  version: 3,
 );
 
-class _BarcodePropertyWebAdapter extends IsarWebTypeAdapter<BarcodeProperty> {
-  const _BarcodePropertyWebAdapter();
-
-  @override
-  Object serialize(
-      IsarCollection<BarcodeProperty> collection, BarcodeProperty object) {
-    final jsObj = IsarNative.newJsObject();
-    IsarNative.jsObjectSet(jsObj, 'barcodeUID', object.barcodeUID);
-    IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'size', object.size);
-    return jsObj;
+int? _barcodePropertyGetId(BarcodeProperty object) {
+  if (object.id == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.id;
   }
-
-  @override
-  BarcodeProperty deserialize(
-      IsarCollection<BarcodeProperty> collection, dynamic jsObj) {
-    final object = BarcodeProperty();
-    object.barcodeUID = IsarNative.jsObjectGet(jsObj, 'barcodeUID') ?? '';
-    object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.size =
-        IsarNative.jsObjectGet(jsObj, 'size') ?? double.negativeInfinity;
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(Object jsObj, String propertyName) {
-    switch (propertyName) {
-      case 'barcodeUID':
-        return (IsarNative.jsObjectGet(jsObj, 'barcodeUID') ?? '') as P;
-      case 'id':
-        return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-            as P;
-      case 'size':
-        return (IsarNative.jsObjectGet(jsObj, 'size') ??
-            double.negativeInfinity) as P;
-      default:
-        throw 'Illegal propertyName';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, BarcodeProperty object) {}
 }
 
-class _BarcodePropertyNativeAdapter
-    extends IsarNativeTypeAdapter<BarcodeProperty> {
-  const _BarcodePropertyNativeAdapter();
-
-  @override
-  void serialize(
-      IsarCollection<BarcodeProperty> collection,
-      IsarRawObject rawObj,
-      BarcodeProperty object,
-      int staticSize,
-      List<int> offsets,
-      AdapterAlloc alloc) {
-    var dynamicSize = 0;
-    final value0 = object.barcodeUID;
-    final _barcodeUID = IsarBinaryWriter.utf8Encoder.convert(value0);
-    dynamicSize += (_barcodeUID.length) as int;
-    final value1 = object.size;
-    final _size = value1;
-    final size = staticSize + dynamicSize;
-
-    rawObj.buffer = alloc(size);
-    rawObj.buffer_length = size;
-    final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-    final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeBytes(offsets[0], _barcodeUID);
-    writer.writeDouble(offsets[1], _size);
-  }
-
-  @override
-  BarcodeProperty deserialize(IsarCollection<BarcodeProperty> collection,
-      int id, IsarBinaryReader reader, List<int> offsets) {
-    final object = BarcodeProperty();
-    object.barcodeUID = reader.readString(offsets[0]);
-    object.id = id;
-    object.size = reader.readDouble(offsets[1]);
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(
-      int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-    switch (propertyIndex) {
-      case -1:
-        return id as P;
-      case 0:
-        return (reader.readString(offset)) as P;
-      case 1:
-        return (reader.readDouble(offset)) as P;
-      default:
-        throw 'Illegal propertyIndex';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, BarcodeProperty object) {}
+void _barcodePropertySetId(BarcodeProperty object, int id) {
+  object.id = id;
 }
+
+List<IsarLinkBase> _barcodePropertyGetLinks(BarcodeProperty object) {
+  return [];
+}
+
+void _barcodePropertySerializeNative(
+    IsarCollection<BarcodeProperty> collection,
+    IsarRawObject rawObj,
+    BarcodeProperty object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.barcodeUID;
+  final _barcodeUID = IsarBinaryWriter.utf8Encoder.convert(value0);
+  dynamicSize += (_barcodeUID.length) as int;
+  final value1 = object.size;
+  final _size = value1;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeBytes(offsets[0], _barcodeUID);
+  writer.writeDouble(offsets[1], _size);
+}
+
+BarcodeProperty _barcodePropertyDeserializeNative(
+    IsarCollection<BarcodeProperty> collection,
+    int id,
+    IsarBinaryReader reader,
+    List<int> offsets) {
+  final object = BarcodeProperty();
+  object.barcodeUID = reader.readString(offsets[0]);
+  object.id = id;
+  object.size = reader.readDouble(offsets[1]);
+  return object;
+}
+
+P _barcodePropertyDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
+    case 0:
+      return (reader.readString(offset)) as P;
+    case 1:
+      return (reader.readDouble(offset)) as P;
+    default:
+      throw 'Illegal propertyIndex';
+  }
+}
+
+dynamic _barcodePropertySerializeWeb(
+    IsarCollection<BarcodeProperty> collection, BarcodeProperty object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'barcodeUID', object.barcodeUID);
+  IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(jsObj, 'size', object.size);
+  return jsObj;
+}
+
+BarcodeProperty _barcodePropertyDeserializeWeb(
+    IsarCollection<BarcodeProperty> collection, dynamic jsObj) {
+  final object = BarcodeProperty();
+  object.barcodeUID = IsarNative.jsObjectGet(jsObj, 'barcodeUID') ?? '';
+  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+  object.size =
+      IsarNative.jsObjectGet(jsObj, 'size') ?? double.negativeInfinity;
+  return object;
+}
+
+P _barcodePropertyDeserializePropWeb<P>(Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'barcodeUID':
+      return (IsarNative.jsObjectGet(jsObj, 'barcodeUID') ?? '') as P;
+    case 'id':
+      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
+          as P;
+    case 'size':
+      return (IsarNative.jsObjectGet(jsObj, 'size') ?? double.negativeInfinity)
+          as P;
+    default:
+      throw 'Illegal propertyName';
+  }
+}
+
+void _barcodePropertyAttachLinks(
+    IsarCollection col, int id, BarcodeProperty object) {}
 
 extension BarcodePropertyQueryWhereSort
     on QueryBuilder<BarcodeProperty, BarcodeProperty, QWhere> {
   QueryBuilder<BarcodeProperty, BarcodeProperty, QAfterWhere> anyId() {
-    return addWhereClauseInternal(const WhereClause(indexName: null));
+    return addWhereClauseInternal(const IdWhereClause.any());
   }
 }
 
@@ -152,11 +149,10 @@ extension BarcodePropertyQueryWhere
     on QueryBuilder<BarcodeProperty, BarcodeProperty, QWhereClause> {
   QueryBuilder<BarcodeProperty, BarcodeProperty, QAfterWhereClause> idEqualTo(
       int id) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: id,
       includeLower: true,
-      upper: [id],
+      upper: id,
       includeUpper: true,
     ));
   }
@@ -164,49 +160,33 @@ extension BarcodePropertyQueryWhere
   QueryBuilder<BarcodeProperty, BarcodeProperty, QAfterWhereClause>
       idNotEqualTo(int id) {
     if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      );
     } else {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      );
     }
   }
 
   QueryBuilder<BarcodeProperty, BarcodeProperty, QAfterWhereClause>
-      idGreaterThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
-      includeLower: include,
-    ));
+      idGreaterThan(int id, {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: id, includeLower: include),
+    );
   }
 
   QueryBuilder<BarcodeProperty, BarcodeProperty, QAfterWhereClause> idLessThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      upper: [id],
-      includeUpper: include,
-    ));
+      int id,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: id, includeUpper: include),
+    );
   }
 
   QueryBuilder<BarcodeProperty, BarcodeProperty, QAfterWhereClause> idBetween(
@@ -215,11 +195,10 @@ extension BarcodePropertyQueryWhere
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [lowerId],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerId,
       includeLower: includeLower,
-      upper: [upperId],
+      upper: upperId,
       includeUpper: includeUpper,
     ));
   }

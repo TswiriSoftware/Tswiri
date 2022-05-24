@@ -6,153 +6,150 @@ part of 'barcode_size_distance_entry.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetBarcodeSizeDistanceEntryCollection on Isar {
-  IsarCollection<BarcodeSizeDistanceEntry> get barcodeSizeDistanceEntrys {
-    return getCollection('BarcodeSizeDistanceEntry');
-  }
+  IsarCollection<BarcodeSizeDistanceEntry> get barcodeSizeDistanceEntrys =>
+      getCollection();
 }
 
-final BarcodeSizeDistanceEntrySchema = CollectionSchema(
+const BarcodeSizeDistanceEntrySchema = CollectionSchema(
   name: 'BarcodeSizeDistanceEntry',
   schema:
       '{"name":"BarcodeSizeDistanceEntry","idName":"id","properties":[{"name":"diagonalSize","type":"Double"},{"name":"distanceFromCamera","type":"Double"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _BarcodeSizeDistanceEntryNativeAdapter(),
-  webAdapter: const _BarcodeSizeDistanceEntryWebAdapter(),
   idName: 'id',
   propertyIds: {'diagonalSize': 0, 'distanceFromCamera': 1},
   listProperties: {},
   indexIds: {},
-  indexTypes: {},
+  indexValueTypes: {},
   linkIds: {},
-  backlinkIds: {},
-  linkedCollections: [],
-  getId: (obj) {
-    if (obj.id == Isar.autoIncrement) {
-      return null;
-    } else {
-      return obj.id;
-    }
-  },
-  setId: (obj, id) => obj.id = id,
-  getLinks: (obj) => [],
-  version: 2,
+  backlinkLinkNames: {},
+  getId: _barcodeSizeDistanceEntryGetId,
+  setId: _barcodeSizeDistanceEntrySetId,
+  getLinks: _barcodeSizeDistanceEntryGetLinks,
+  attachLinks: _barcodeSizeDistanceEntryAttachLinks,
+  serializeNative: _barcodeSizeDistanceEntrySerializeNative,
+  deserializeNative: _barcodeSizeDistanceEntryDeserializeNative,
+  deserializePropNative: _barcodeSizeDistanceEntryDeserializePropNative,
+  serializeWeb: _barcodeSizeDistanceEntrySerializeWeb,
+  deserializeWeb: _barcodeSizeDistanceEntryDeserializeWeb,
+  deserializePropWeb: _barcodeSizeDistanceEntryDeserializePropWeb,
+  version: 3,
 );
 
-class _BarcodeSizeDistanceEntryWebAdapter
-    extends IsarWebTypeAdapter<BarcodeSizeDistanceEntry> {
-  const _BarcodeSizeDistanceEntryWebAdapter();
-
-  @override
-  Object serialize(IsarCollection<BarcodeSizeDistanceEntry> collection,
-      BarcodeSizeDistanceEntry object) {
-    final jsObj = IsarNative.newJsObject();
-    IsarNative.jsObjectSet(jsObj, 'diagonalSize', object.diagonalSize);
-    IsarNative.jsObjectSet(
-        jsObj, 'distanceFromCamera', object.distanceFromCamera);
-    IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    return jsObj;
+int? _barcodeSizeDistanceEntryGetId(BarcodeSizeDistanceEntry object) {
+  if (object.id == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.id;
   }
-
-  @override
-  BarcodeSizeDistanceEntry deserialize(
-      IsarCollection<BarcodeSizeDistanceEntry> collection, dynamic jsObj) {
-    final object = BarcodeSizeDistanceEntry();
-    object.diagonalSize = IsarNative.jsObjectGet(jsObj, 'diagonalSize') ??
-        double.negativeInfinity;
-    object.distanceFromCamera =
-        IsarNative.jsObjectGet(jsObj, 'distanceFromCamera') ??
-            double.negativeInfinity;
-    object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(Object jsObj, String propertyName) {
-    switch (propertyName) {
-      case 'diagonalSize':
-        return (IsarNative.jsObjectGet(jsObj, 'diagonalSize') ??
-            double.negativeInfinity) as P;
-      case 'distanceFromCamera':
-        return (IsarNative.jsObjectGet(jsObj, 'distanceFromCamera') ??
-            double.negativeInfinity) as P;
-      case 'id':
-        return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-            as P;
-      default:
-        throw 'Illegal propertyName';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, BarcodeSizeDistanceEntry object) {}
 }
 
-class _BarcodeSizeDistanceEntryNativeAdapter
-    extends IsarNativeTypeAdapter<BarcodeSizeDistanceEntry> {
-  const _BarcodeSizeDistanceEntryNativeAdapter();
-
-  @override
-  void serialize(
-      IsarCollection<BarcodeSizeDistanceEntry> collection,
-      IsarRawObject rawObj,
-      BarcodeSizeDistanceEntry object,
-      int staticSize,
-      List<int> offsets,
-      AdapterAlloc alloc) {
-    var dynamicSize = 0;
-    final value0 = object.diagonalSize;
-    final _diagonalSize = value0;
-    final value1 = object.distanceFromCamera;
-    final _distanceFromCamera = value1;
-    final size = staticSize + dynamicSize;
-
-    rawObj.buffer = alloc(size);
-    rawObj.buffer_length = size;
-    final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-    final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeDouble(offsets[0], _diagonalSize);
-    writer.writeDouble(offsets[1], _distanceFromCamera);
-  }
-
-  @override
-  BarcodeSizeDistanceEntry deserialize(
-      IsarCollection<BarcodeSizeDistanceEntry> collection,
-      int id,
-      IsarBinaryReader reader,
-      List<int> offsets) {
-    final object = BarcodeSizeDistanceEntry();
-    object.diagonalSize = reader.readDouble(offsets[0]);
-    object.distanceFromCamera = reader.readDouble(offsets[1]);
-    object.id = id;
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(
-      int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-    switch (propertyIndex) {
-      case -1:
-        return id as P;
-      case 0:
-        return (reader.readDouble(offset)) as P;
-      case 1:
-        return (reader.readDouble(offset)) as P;
-      default:
-        throw 'Illegal propertyIndex';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, BarcodeSizeDistanceEntry object) {}
+void _barcodeSizeDistanceEntrySetId(BarcodeSizeDistanceEntry object, int id) {
+  object.id = id;
 }
+
+List<IsarLinkBase> _barcodeSizeDistanceEntryGetLinks(
+    BarcodeSizeDistanceEntry object) {
+  return [];
+}
+
+void _barcodeSizeDistanceEntrySerializeNative(
+    IsarCollection<BarcodeSizeDistanceEntry> collection,
+    IsarRawObject rawObj,
+    BarcodeSizeDistanceEntry object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.diagonalSize;
+  final _diagonalSize = value0;
+  final value1 = object.distanceFromCamera;
+  final _distanceFromCamera = value1;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeDouble(offsets[0], _diagonalSize);
+  writer.writeDouble(offsets[1], _distanceFromCamera);
+}
+
+BarcodeSizeDistanceEntry _barcodeSizeDistanceEntryDeserializeNative(
+    IsarCollection<BarcodeSizeDistanceEntry> collection,
+    int id,
+    IsarBinaryReader reader,
+    List<int> offsets) {
+  final object = BarcodeSizeDistanceEntry();
+  object.diagonalSize = reader.readDouble(offsets[0]);
+  object.distanceFromCamera = reader.readDouble(offsets[1]);
+  object.id = id;
+  return object;
+}
+
+P _barcodeSizeDistanceEntryDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
+    case 0:
+      return (reader.readDouble(offset)) as P;
+    case 1:
+      return (reader.readDouble(offset)) as P;
+    default:
+      throw 'Illegal propertyIndex';
+  }
+}
+
+dynamic _barcodeSizeDistanceEntrySerializeWeb(
+    IsarCollection<BarcodeSizeDistanceEntry> collection,
+    BarcodeSizeDistanceEntry object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'diagonalSize', object.diagonalSize);
+  IsarNative.jsObjectSet(
+      jsObj, 'distanceFromCamera', object.distanceFromCamera);
+  IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  return jsObj;
+}
+
+BarcodeSizeDistanceEntry _barcodeSizeDistanceEntryDeserializeWeb(
+    IsarCollection<BarcodeSizeDistanceEntry> collection, dynamic jsObj) {
+  final object = BarcodeSizeDistanceEntry();
+  object.diagonalSize =
+      IsarNative.jsObjectGet(jsObj, 'diagonalSize') ?? double.negativeInfinity;
+  object.distanceFromCamera =
+      IsarNative.jsObjectGet(jsObj, 'distanceFromCamera') ??
+          double.negativeInfinity;
+  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+  return object;
+}
+
+P _barcodeSizeDistanceEntryDeserializePropWeb<P>(
+    Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'diagonalSize':
+      return (IsarNative.jsObjectGet(jsObj, 'diagonalSize') ??
+          double.negativeInfinity) as P;
+    case 'distanceFromCamera':
+      return (IsarNative.jsObjectGet(jsObj, 'distanceFromCamera') ??
+          double.negativeInfinity) as P;
+    case 'id':
+      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
+          as P;
+    default:
+      throw 'Illegal propertyName';
+  }
+}
+
+void _barcodeSizeDistanceEntryAttachLinks(
+    IsarCollection col, int id, BarcodeSizeDistanceEntry object) {}
 
 extension BarcodeSizeDistanceEntryQueryWhereSort on QueryBuilder<
     BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry, QWhere> {
   QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry, QAfterWhere>
       anyId() {
-    return addWhereClauseInternal(const WhereClause(indexName: null));
+    return addWhereClauseInternal(const IdWhereClause.any());
   }
 }
 
@@ -160,11 +157,10 @@ extension BarcodeSizeDistanceEntryQueryWhere on QueryBuilder<
     BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry, QWhereClause> {
   QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry,
       QAfterWhereClause> idEqualTo(int id) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: id,
       includeLower: true,
-      upper: [id],
+      upper: id,
       includeUpper: true,
     ));
   }
@@ -172,50 +168,32 @@ extension BarcodeSizeDistanceEntryQueryWhere on QueryBuilder<
   QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry,
       QAfterWhereClause> idNotEqualTo(int id) {
     if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      );
     } else {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      );
     }
   }
 
   QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry,
-      QAfterWhereClause> idGreaterThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
-      includeLower: include,
-    ));
+      QAfterWhereClause> idGreaterThan(int id, {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: id, includeLower: include),
+    );
   }
 
   QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry,
-      QAfterWhereClause> idLessThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      upper: [id],
-      includeUpper: include,
-    ));
+      QAfterWhereClause> idLessThan(int id, {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: id, includeUpper: include),
+    );
   }
 
   QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry,
@@ -225,11 +203,10 @@ extension BarcodeSizeDistanceEntryQueryWhere on QueryBuilder<
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [lowerId],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerId,
       includeLower: includeLower,
-      upper: [upperId],
+      upper: upperId,
       includeUpper: includeUpper,
     ));
   }

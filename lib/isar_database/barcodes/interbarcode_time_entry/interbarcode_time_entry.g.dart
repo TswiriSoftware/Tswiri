@@ -6,20 +6,17 @@ part of 'interbarcode_time_entry.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetInterBarcodeTimeEntryCollection on Isar {
-  IsarCollection<InterBarcodeTimeEntry> get interBarcodeTimeEntrys {
-    return getCollection('InterBarcodeTimeEntry');
-  }
+  IsarCollection<InterBarcodeTimeEntry> get interBarcodeTimeEntrys =>
+      getCollection();
 }
 
-final InterBarcodeTimeEntrySchema = CollectionSchema(
+const InterBarcodeTimeEntrySchema = CollectionSchema(
   name: 'InterBarcodeTimeEntry',
   schema:
       '{"name":"InterBarcodeTimeEntry","idName":"id","properties":[{"name":"creationTimestamp","type":"Long"},{"name":"deltaT","type":"Double"},{"name":"endBarcodeUID","type":"String"},{"name":"hashCode","type":"Long"},{"name":"startBarcodeUID","type":"String"},{"name":"timestamp","type":"Long"},{"name":"uid","type":"String"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _InterBarcodeTimeEntryNativeAdapter(),
-  webAdapter: const _InterBarcodeTimeEntryWebAdapter(),
   idName: 'id',
   propertyIds: {
     'creationTimestamp': 0,
@@ -32,188 +29,187 @@ final InterBarcodeTimeEntrySchema = CollectionSchema(
   },
   listProperties: {},
   indexIds: {},
-  indexTypes: {},
+  indexValueTypes: {},
   linkIds: {},
-  backlinkIds: {},
-  linkedCollections: [],
-  getId: (obj) {
-    if (obj.id == Isar.autoIncrement) {
-      return null;
-    } else {
-      return obj.id;
-    }
-  },
-  setId: (obj, id) => obj.id = id,
-  getLinks: (obj) => [],
-  version: 2,
+  backlinkLinkNames: {},
+  getId: _interBarcodeTimeEntryGetId,
+  setId: _interBarcodeTimeEntrySetId,
+  getLinks: _interBarcodeTimeEntryGetLinks,
+  attachLinks: _interBarcodeTimeEntryAttachLinks,
+  serializeNative: _interBarcodeTimeEntrySerializeNative,
+  deserializeNative: _interBarcodeTimeEntryDeserializeNative,
+  deserializePropNative: _interBarcodeTimeEntryDeserializePropNative,
+  serializeWeb: _interBarcodeTimeEntrySerializeWeb,
+  deserializeWeb: _interBarcodeTimeEntryDeserializeWeb,
+  deserializePropWeb: _interBarcodeTimeEntryDeserializePropWeb,
+  version: 3,
 );
 
-class _InterBarcodeTimeEntryWebAdapter
-    extends IsarWebTypeAdapter<InterBarcodeTimeEntry> {
-  const _InterBarcodeTimeEntryWebAdapter();
-
-  @override
-  Object serialize(IsarCollection<InterBarcodeTimeEntry> collection,
-      InterBarcodeTimeEntry object) {
-    final jsObj = IsarNative.newJsObject();
-    IsarNative.jsObjectSet(
-        jsObj, 'creationTimestamp', object.creationTimestamp);
-    IsarNative.jsObjectSet(jsObj, 'deltaT', object.deltaT);
-    IsarNative.jsObjectSet(jsObj, 'endBarcodeUID', object.endBarcodeUID);
-    IsarNative.jsObjectSet(jsObj, 'hashCode', object.hashCode);
-    IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'startBarcodeUID', object.startBarcodeUID);
-    IsarNative.jsObjectSet(jsObj, 'timestamp', object.timestamp);
-    IsarNative.jsObjectSet(jsObj, 'uid', object.uid);
-    return jsObj;
+int? _interBarcodeTimeEntryGetId(InterBarcodeTimeEntry object) {
+  if (object.id == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.id;
   }
-
-  @override
-  InterBarcodeTimeEntry deserialize(
-      IsarCollection<InterBarcodeTimeEntry> collection, dynamic jsObj) {
-    final object = InterBarcodeTimeEntry();
-    object.creationTimestamp =
-        IsarNative.jsObjectGet(jsObj, 'creationTimestamp') ??
-            double.negativeInfinity;
-    object.deltaT =
-        IsarNative.jsObjectGet(jsObj, 'deltaT') ?? double.negativeInfinity;
-    object.endBarcodeUID = IsarNative.jsObjectGet(jsObj, 'endBarcodeUID') ?? '';
-    object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.startBarcodeUID =
-        IsarNative.jsObjectGet(jsObj, 'startBarcodeUID') ?? '';
-    object.timestamp =
-        IsarNative.jsObjectGet(jsObj, 'timestamp') ?? double.negativeInfinity;
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(Object jsObj, String propertyName) {
-    switch (propertyName) {
-      case 'creationTimestamp':
-        return (IsarNative.jsObjectGet(jsObj, 'creationTimestamp') ??
-            double.negativeInfinity) as P;
-      case 'deltaT':
-        return (IsarNative.jsObjectGet(jsObj, 'deltaT') ??
-            double.negativeInfinity) as P;
-      case 'endBarcodeUID':
-        return (IsarNative.jsObjectGet(jsObj, 'endBarcodeUID') ?? '') as P;
-      case 'hashCode':
-        return (IsarNative.jsObjectGet(jsObj, 'hashCode') ??
-            double.negativeInfinity) as P;
-      case 'id':
-        return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-            as P;
-      case 'startBarcodeUID':
-        return (IsarNative.jsObjectGet(jsObj, 'startBarcodeUID') ?? '') as P;
-      case 'timestamp':
-        return (IsarNative.jsObjectGet(jsObj, 'timestamp') ??
-            double.negativeInfinity) as P;
-      case 'uid':
-        return (IsarNative.jsObjectGet(jsObj, 'uid') ?? '') as P;
-      default:
-        throw 'Illegal propertyName';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, InterBarcodeTimeEntry object) {}
 }
 
-class _InterBarcodeTimeEntryNativeAdapter
-    extends IsarNativeTypeAdapter<InterBarcodeTimeEntry> {
-  const _InterBarcodeTimeEntryNativeAdapter();
-
-  @override
-  void serialize(
-      IsarCollection<InterBarcodeTimeEntry> collection,
-      IsarRawObject rawObj,
-      InterBarcodeTimeEntry object,
-      int staticSize,
-      List<int> offsets,
-      AdapterAlloc alloc) {
-    var dynamicSize = 0;
-    final value0 = object.creationTimestamp;
-    final _creationTimestamp = value0;
-    final value1 = object.deltaT;
-    final _deltaT = value1;
-    final value2 = object.endBarcodeUID;
-    final _endBarcodeUID = IsarBinaryWriter.utf8Encoder.convert(value2);
-    dynamicSize += (_endBarcodeUID.length) as int;
-    final value3 = object.hashCode;
-    final _hashCode = value3;
-    final value4 = object.startBarcodeUID;
-    final _startBarcodeUID = IsarBinaryWriter.utf8Encoder.convert(value4);
-    dynamicSize += (_startBarcodeUID.length) as int;
-    final value5 = object.timestamp;
-    final _timestamp = value5;
-    final value6 = object.uid;
-    final _uid = IsarBinaryWriter.utf8Encoder.convert(value6);
-    dynamicSize += (_uid.length) as int;
-    final size = staticSize + dynamicSize;
-
-    rawObj.buffer = alloc(size);
-    rawObj.buffer_length = size;
-    final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-    final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeLong(offsets[0], _creationTimestamp);
-    writer.writeDouble(offsets[1], _deltaT);
-    writer.writeBytes(offsets[2], _endBarcodeUID);
-    writer.writeLong(offsets[3], _hashCode);
-    writer.writeBytes(offsets[4], _startBarcodeUID);
-    writer.writeLong(offsets[5], _timestamp);
-    writer.writeBytes(offsets[6], _uid);
-  }
-
-  @override
-  InterBarcodeTimeEntry deserialize(
-      IsarCollection<InterBarcodeTimeEntry> collection,
-      int id,
-      IsarBinaryReader reader,
-      List<int> offsets) {
-    final object = InterBarcodeTimeEntry();
-    object.creationTimestamp = reader.readLong(offsets[0]);
-    object.deltaT = reader.readDouble(offsets[1]);
-    object.endBarcodeUID = reader.readString(offsets[2]);
-    object.id = id;
-    object.startBarcodeUID = reader.readString(offsets[4]);
-    object.timestamp = reader.readLong(offsets[5]);
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(
-      int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-    switch (propertyIndex) {
-      case -1:
-        return id as P;
-      case 0:
-        return (reader.readLong(offset)) as P;
-      case 1:
-        return (reader.readDouble(offset)) as P;
-      case 2:
-        return (reader.readString(offset)) as P;
-      case 3:
-        return (reader.readLong(offset)) as P;
-      case 4:
-        return (reader.readString(offset)) as P;
-      case 5:
-        return (reader.readLong(offset)) as P;
-      case 6:
-        return (reader.readString(offset)) as P;
-      default:
-        throw 'Illegal propertyIndex';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, InterBarcodeTimeEntry object) {}
+void _interBarcodeTimeEntrySetId(InterBarcodeTimeEntry object, int id) {
+  object.id = id;
 }
+
+List<IsarLinkBase> _interBarcodeTimeEntryGetLinks(
+    InterBarcodeTimeEntry object) {
+  return [];
+}
+
+void _interBarcodeTimeEntrySerializeNative(
+    IsarCollection<InterBarcodeTimeEntry> collection,
+    IsarRawObject rawObj,
+    InterBarcodeTimeEntry object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.creationTimestamp;
+  final _creationTimestamp = value0;
+  final value1 = object.deltaT;
+  final _deltaT = value1;
+  final value2 = object.endBarcodeUID;
+  final _endBarcodeUID = IsarBinaryWriter.utf8Encoder.convert(value2);
+  dynamicSize += (_endBarcodeUID.length) as int;
+  final value3 = object.hashCode;
+  final _hashCode = value3;
+  final value4 = object.startBarcodeUID;
+  final _startBarcodeUID = IsarBinaryWriter.utf8Encoder.convert(value4);
+  dynamicSize += (_startBarcodeUID.length) as int;
+  final value5 = object.timestamp;
+  final _timestamp = value5;
+  final value6 = object.uid;
+  final _uid = IsarBinaryWriter.utf8Encoder.convert(value6);
+  dynamicSize += (_uid.length) as int;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeLong(offsets[0], _creationTimestamp);
+  writer.writeDouble(offsets[1], _deltaT);
+  writer.writeBytes(offsets[2], _endBarcodeUID);
+  writer.writeLong(offsets[3], _hashCode);
+  writer.writeBytes(offsets[4], _startBarcodeUID);
+  writer.writeLong(offsets[5], _timestamp);
+  writer.writeBytes(offsets[6], _uid);
+}
+
+InterBarcodeTimeEntry _interBarcodeTimeEntryDeserializeNative(
+    IsarCollection<InterBarcodeTimeEntry> collection,
+    int id,
+    IsarBinaryReader reader,
+    List<int> offsets) {
+  final object = InterBarcodeTimeEntry();
+  object.creationTimestamp = reader.readLong(offsets[0]);
+  object.deltaT = reader.readDouble(offsets[1]);
+  object.endBarcodeUID = reader.readString(offsets[2]);
+  object.id = id;
+  object.startBarcodeUID = reader.readString(offsets[4]);
+  object.timestamp = reader.readLong(offsets[5]);
+  return object;
+}
+
+P _interBarcodeTimeEntryDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
+    case 0:
+      return (reader.readLong(offset)) as P;
+    case 1:
+      return (reader.readDouble(offset)) as P;
+    case 2:
+      return (reader.readString(offset)) as P;
+    case 3:
+      return (reader.readLong(offset)) as P;
+    case 4:
+      return (reader.readString(offset)) as P;
+    case 5:
+      return (reader.readLong(offset)) as P;
+    case 6:
+      return (reader.readString(offset)) as P;
+    default:
+      throw 'Illegal propertyIndex';
+  }
+}
+
+dynamic _interBarcodeTimeEntrySerializeWeb(
+    IsarCollection<InterBarcodeTimeEntry> collection,
+    InterBarcodeTimeEntry object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'creationTimestamp', object.creationTimestamp);
+  IsarNative.jsObjectSet(jsObj, 'deltaT', object.deltaT);
+  IsarNative.jsObjectSet(jsObj, 'endBarcodeUID', object.endBarcodeUID);
+  IsarNative.jsObjectSet(jsObj, 'hashCode', object.hashCode);
+  IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(jsObj, 'startBarcodeUID', object.startBarcodeUID);
+  IsarNative.jsObjectSet(jsObj, 'timestamp', object.timestamp);
+  IsarNative.jsObjectSet(jsObj, 'uid', object.uid);
+  return jsObj;
+}
+
+InterBarcodeTimeEntry _interBarcodeTimeEntryDeserializeWeb(
+    IsarCollection<InterBarcodeTimeEntry> collection, dynamic jsObj) {
+  final object = InterBarcodeTimeEntry();
+  object.creationTimestamp =
+      IsarNative.jsObjectGet(jsObj, 'creationTimestamp') ??
+          double.negativeInfinity;
+  object.deltaT =
+      IsarNative.jsObjectGet(jsObj, 'deltaT') ?? double.negativeInfinity;
+  object.endBarcodeUID = IsarNative.jsObjectGet(jsObj, 'endBarcodeUID') ?? '';
+  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+  object.startBarcodeUID =
+      IsarNative.jsObjectGet(jsObj, 'startBarcodeUID') ?? '';
+  object.timestamp =
+      IsarNative.jsObjectGet(jsObj, 'timestamp') ?? double.negativeInfinity;
+  return object;
+}
+
+P _interBarcodeTimeEntryDeserializePropWeb<P>(
+    Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'creationTimestamp':
+      return (IsarNative.jsObjectGet(jsObj, 'creationTimestamp') ??
+          double.negativeInfinity) as P;
+    case 'deltaT':
+      return (IsarNative.jsObjectGet(jsObj, 'deltaT') ??
+          double.negativeInfinity) as P;
+    case 'endBarcodeUID':
+      return (IsarNative.jsObjectGet(jsObj, 'endBarcodeUID') ?? '') as P;
+    case 'hashCode':
+      return (IsarNative.jsObjectGet(jsObj, 'hashCode') ??
+          double.negativeInfinity) as P;
+    case 'id':
+      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
+          as P;
+    case 'startBarcodeUID':
+      return (IsarNative.jsObjectGet(jsObj, 'startBarcodeUID') ?? '') as P;
+    case 'timestamp':
+      return (IsarNative.jsObjectGet(jsObj, 'timestamp') ??
+          double.negativeInfinity) as P;
+    case 'uid':
+      return (IsarNative.jsObjectGet(jsObj, 'uid') ?? '') as P;
+    default:
+      throw 'Illegal propertyName';
+  }
+}
+
+void _interBarcodeTimeEntryAttachLinks(
+    IsarCollection col, int id, InterBarcodeTimeEntry object) {}
 
 extension InterBarcodeTimeEntryQueryWhereSort
     on QueryBuilder<InterBarcodeTimeEntry, InterBarcodeTimeEntry, QWhere> {
   QueryBuilder<InterBarcodeTimeEntry, InterBarcodeTimeEntry, QAfterWhere>
       anyId() {
-    return addWhereClauseInternal(const WhereClause(indexName: null));
+    return addWhereClauseInternal(const IdWhereClause.any());
   }
 }
 
@@ -221,11 +217,10 @@ extension InterBarcodeTimeEntryQueryWhere on QueryBuilder<InterBarcodeTimeEntry,
     InterBarcodeTimeEntry, QWhereClause> {
   QueryBuilder<InterBarcodeTimeEntry, InterBarcodeTimeEntry, QAfterWhereClause>
       idEqualTo(int id) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: id,
       includeLower: true,
-      upper: [id],
+      upper: id,
       includeUpper: true,
     ));
   }
@@ -233,50 +228,32 @@ extension InterBarcodeTimeEntryQueryWhere on QueryBuilder<InterBarcodeTimeEntry,
   QueryBuilder<InterBarcodeTimeEntry, InterBarcodeTimeEntry, QAfterWhereClause>
       idNotEqualTo(int id) {
     if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      );
     } else {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      );
     }
   }
 
   QueryBuilder<InterBarcodeTimeEntry, InterBarcodeTimeEntry, QAfterWhereClause>
-      idGreaterThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
-      includeLower: include,
-    ));
+      idGreaterThan(int id, {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: id, includeLower: include),
+    );
   }
 
   QueryBuilder<InterBarcodeTimeEntry, InterBarcodeTimeEntry, QAfterWhereClause>
-      idLessThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      upper: [id],
-      includeUpper: include,
-    ));
+      idLessThan(int id, {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: id, includeUpper: include),
+    );
   }
 
   QueryBuilder<InterBarcodeTimeEntry, InterBarcodeTimeEntry, QAfterWhereClause>
@@ -286,11 +263,10 @@ extension InterBarcodeTimeEntryQueryWhere on QueryBuilder<InterBarcodeTimeEntry,
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [lowerId],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerId,
       includeLower: includeLower,
-      upper: [upperId],
+      upper: upperId,
       includeUpper: includeUpper,
     ));
   }

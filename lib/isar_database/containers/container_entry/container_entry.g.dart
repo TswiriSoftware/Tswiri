@@ -6,20 +6,16 @@ part of 'container_entry.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetContainerEntryCollection on Isar {
-  IsarCollection<ContainerEntry> get containerEntrys {
-    return getCollection('ContainerEntry');
-  }
+  IsarCollection<ContainerEntry> get containerEntrys => getCollection();
 }
 
-final ContainerEntrySchema = CollectionSchema(
+const ContainerEntrySchema = CollectionSchema(
   name: 'ContainerEntry',
   schema:
       '{"name":"ContainerEntry","idName":"id","properties":[{"name":"barcodeUID","type":"String"},{"name":"containerType","type":"String"},{"name":"containerUID","type":"String"},{"name":"description","type":"String"},{"name":"name","type":"String"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _ContainerEntryNativeAdapter(),
-  webAdapter: const _ContainerEntryWebAdapter(),
   idName: 'id',
   propertyIds: {
     'barcodeUID': 0,
@@ -30,168 +26,169 @@ final ContainerEntrySchema = CollectionSchema(
   },
   listProperties: {},
   indexIds: {},
-  indexTypes: {},
+  indexValueTypes: {},
   linkIds: {},
-  backlinkIds: {},
-  linkedCollections: [],
-  getId: (obj) {
-    if (obj.id == Isar.autoIncrement) {
-      return null;
-    } else {
-      return obj.id;
-    }
-  },
-  setId: (obj, id) => obj.id = id,
-  getLinks: (obj) => [],
-  version: 2,
+  backlinkLinkNames: {},
+  getId: _containerEntryGetId,
+  setId: _containerEntrySetId,
+  getLinks: _containerEntryGetLinks,
+  attachLinks: _containerEntryAttachLinks,
+  serializeNative: _containerEntrySerializeNative,
+  deserializeNative: _containerEntryDeserializeNative,
+  deserializePropNative: _containerEntryDeserializePropNative,
+  serializeWeb: _containerEntrySerializeWeb,
+  deserializeWeb: _containerEntryDeserializeWeb,
+  deserializePropWeb: _containerEntryDeserializePropWeb,
+  version: 3,
 );
 
-class _ContainerEntryWebAdapter extends IsarWebTypeAdapter<ContainerEntry> {
-  const _ContainerEntryWebAdapter();
-
-  @override
-  Object serialize(
-      IsarCollection<ContainerEntry> collection, ContainerEntry object) {
-    final jsObj = IsarNative.newJsObject();
-    IsarNative.jsObjectSet(jsObj, 'barcodeUID', object.barcodeUID);
-    IsarNative.jsObjectSet(jsObj, 'containerType', object.containerType);
-    IsarNative.jsObjectSet(jsObj, 'containerUID', object.containerUID);
-    IsarNative.jsObjectSet(jsObj, 'description', object.description);
-    IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'name', object.name);
-    return jsObj;
+int? _containerEntryGetId(ContainerEntry object) {
+  if (object.id == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.id;
   }
-
-  @override
-  ContainerEntry deserialize(
-      IsarCollection<ContainerEntry> collection, dynamic jsObj) {
-    final object = ContainerEntry();
-    object.barcodeUID = IsarNative.jsObjectGet(jsObj, 'barcodeUID');
-    object.containerType = IsarNative.jsObjectGet(jsObj, 'containerType') ?? '';
-    object.containerUID = IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '';
-    object.description = IsarNative.jsObjectGet(jsObj, 'description');
-    object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.name = IsarNative.jsObjectGet(jsObj, 'name');
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(Object jsObj, String propertyName) {
-    switch (propertyName) {
-      case 'barcodeUID':
-        return (IsarNative.jsObjectGet(jsObj, 'barcodeUID')) as P;
-      case 'containerType':
-        return (IsarNative.jsObjectGet(jsObj, 'containerType') ?? '') as P;
-      case 'containerUID':
-        return (IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '') as P;
-      case 'description':
-        return (IsarNative.jsObjectGet(jsObj, 'description')) as P;
-      case 'id':
-        return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-            as P;
-      case 'name':
-        return (IsarNative.jsObjectGet(jsObj, 'name')) as P;
-      default:
-        throw 'Illegal propertyName';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, ContainerEntry object) {}
 }
 
-class _ContainerEntryNativeAdapter
-    extends IsarNativeTypeAdapter<ContainerEntry> {
-  const _ContainerEntryNativeAdapter();
-
-  @override
-  void serialize(
-      IsarCollection<ContainerEntry> collection,
-      IsarRawObject rawObj,
-      ContainerEntry object,
-      int staticSize,
-      List<int> offsets,
-      AdapterAlloc alloc) {
-    var dynamicSize = 0;
-    final value0 = object.barcodeUID;
-    IsarUint8List? _barcodeUID;
-    if (value0 != null) {
-      _barcodeUID = IsarBinaryWriter.utf8Encoder.convert(value0);
-    }
-    dynamicSize += (_barcodeUID?.length ?? 0) as int;
-    final value1 = object.containerType;
-    final _containerType = IsarBinaryWriter.utf8Encoder.convert(value1);
-    dynamicSize += (_containerType.length) as int;
-    final value2 = object.containerUID;
-    final _containerUID = IsarBinaryWriter.utf8Encoder.convert(value2);
-    dynamicSize += (_containerUID.length) as int;
-    final value3 = object.description;
-    IsarUint8List? _description;
-    if (value3 != null) {
-      _description = IsarBinaryWriter.utf8Encoder.convert(value3);
-    }
-    dynamicSize += (_description?.length ?? 0) as int;
-    final value4 = object.name;
-    IsarUint8List? _name;
-    if (value4 != null) {
-      _name = IsarBinaryWriter.utf8Encoder.convert(value4);
-    }
-    dynamicSize += (_name?.length ?? 0) as int;
-    final size = staticSize + dynamicSize;
-
-    rawObj.buffer = alloc(size);
-    rawObj.buffer_length = size;
-    final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-    final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeBytes(offsets[0], _barcodeUID);
-    writer.writeBytes(offsets[1], _containerType);
-    writer.writeBytes(offsets[2], _containerUID);
-    writer.writeBytes(offsets[3], _description);
-    writer.writeBytes(offsets[4], _name);
-  }
-
-  @override
-  ContainerEntry deserialize(IsarCollection<ContainerEntry> collection, int id,
-      IsarBinaryReader reader, List<int> offsets) {
-    final object = ContainerEntry();
-    object.barcodeUID = reader.readStringOrNull(offsets[0]);
-    object.containerType = reader.readString(offsets[1]);
-    object.containerUID = reader.readString(offsets[2]);
-    object.description = reader.readStringOrNull(offsets[3]);
-    object.id = id;
-    object.name = reader.readStringOrNull(offsets[4]);
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(
-      int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-    switch (propertyIndex) {
-      case -1:
-        return id as P;
-      case 0:
-        return (reader.readStringOrNull(offset)) as P;
-      case 1:
-        return (reader.readString(offset)) as P;
-      case 2:
-        return (reader.readString(offset)) as P;
-      case 3:
-        return (reader.readStringOrNull(offset)) as P;
-      case 4:
-        return (reader.readStringOrNull(offset)) as P;
-      default:
-        throw 'Illegal propertyIndex';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, ContainerEntry object) {}
+void _containerEntrySetId(ContainerEntry object, int id) {
+  object.id = id;
 }
+
+List<IsarLinkBase> _containerEntryGetLinks(ContainerEntry object) {
+  return [];
+}
+
+void _containerEntrySerializeNative(
+    IsarCollection<ContainerEntry> collection,
+    IsarRawObject rawObj,
+    ContainerEntry object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.barcodeUID;
+  IsarUint8List? _barcodeUID;
+  if (value0 != null) {
+    _barcodeUID = IsarBinaryWriter.utf8Encoder.convert(value0);
+  }
+  dynamicSize += (_barcodeUID?.length ?? 0) as int;
+  final value1 = object.containerType;
+  final _containerType = IsarBinaryWriter.utf8Encoder.convert(value1);
+  dynamicSize += (_containerType.length) as int;
+  final value2 = object.containerUID;
+  final _containerUID = IsarBinaryWriter.utf8Encoder.convert(value2);
+  dynamicSize += (_containerUID.length) as int;
+  final value3 = object.description;
+  IsarUint8List? _description;
+  if (value3 != null) {
+    _description = IsarBinaryWriter.utf8Encoder.convert(value3);
+  }
+  dynamicSize += (_description?.length ?? 0) as int;
+  final value4 = object.name;
+  IsarUint8List? _name;
+  if (value4 != null) {
+    _name = IsarBinaryWriter.utf8Encoder.convert(value4);
+  }
+  dynamicSize += (_name?.length ?? 0) as int;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeBytes(offsets[0], _barcodeUID);
+  writer.writeBytes(offsets[1], _containerType);
+  writer.writeBytes(offsets[2], _containerUID);
+  writer.writeBytes(offsets[3], _description);
+  writer.writeBytes(offsets[4], _name);
+}
+
+ContainerEntry _containerEntryDeserializeNative(
+    IsarCollection<ContainerEntry> collection,
+    int id,
+    IsarBinaryReader reader,
+    List<int> offsets) {
+  final object = ContainerEntry();
+  object.barcodeUID = reader.readStringOrNull(offsets[0]);
+  object.containerType = reader.readString(offsets[1]);
+  object.containerUID = reader.readString(offsets[2]);
+  object.description = reader.readStringOrNull(offsets[3]);
+  object.id = id;
+  object.name = reader.readStringOrNull(offsets[4]);
+  return object;
+}
+
+P _containerEntryDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
+    case 0:
+      return (reader.readStringOrNull(offset)) as P;
+    case 1:
+      return (reader.readString(offset)) as P;
+    case 2:
+      return (reader.readString(offset)) as P;
+    case 3:
+      return (reader.readStringOrNull(offset)) as P;
+    case 4:
+      return (reader.readStringOrNull(offset)) as P;
+    default:
+      throw 'Illegal propertyIndex';
+  }
+}
+
+dynamic _containerEntrySerializeWeb(
+    IsarCollection<ContainerEntry> collection, ContainerEntry object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'barcodeUID', object.barcodeUID);
+  IsarNative.jsObjectSet(jsObj, 'containerType', object.containerType);
+  IsarNative.jsObjectSet(jsObj, 'containerUID', object.containerUID);
+  IsarNative.jsObjectSet(jsObj, 'description', object.description);
+  IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(jsObj, 'name', object.name);
+  return jsObj;
+}
+
+ContainerEntry _containerEntryDeserializeWeb(
+    IsarCollection<ContainerEntry> collection, dynamic jsObj) {
+  final object = ContainerEntry();
+  object.barcodeUID = IsarNative.jsObjectGet(jsObj, 'barcodeUID');
+  object.containerType = IsarNative.jsObjectGet(jsObj, 'containerType') ?? '';
+  object.containerUID = IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '';
+  object.description = IsarNative.jsObjectGet(jsObj, 'description');
+  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+  object.name = IsarNative.jsObjectGet(jsObj, 'name');
+  return object;
+}
+
+P _containerEntryDeserializePropWeb<P>(Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'barcodeUID':
+      return (IsarNative.jsObjectGet(jsObj, 'barcodeUID')) as P;
+    case 'containerType':
+      return (IsarNative.jsObjectGet(jsObj, 'containerType') ?? '') as P;
+    case 'containerUID':
+      return (IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '') as P;
+    case 'description':
+      return (IsarNative.jsObjectGet(jsObj, 'description')) as P;
+    case 'id':
+      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
+          as P;
+    case 'name':
+      return (IsarNative.jsObjectGet(jsObj, 'name')) as P;
+    default:
+      throw 'Illegal propertyName';
+  }
+}
+
+void _containerEntryAttachLinks(
+    IsarCollection col, int id, ContainerEntry object) {}
 
 extension ContainerEntryQueryWhereSort
     on QueryBuilder<ContainerEntry, ContainerEntry, QWhere> {
   QueryBuilder<ContainerEntry, ContainerEntry, QAfterWhere> anyId() {
-    return addWhereClauseInternal(const WhereClause(indexName: null));
+    return addWhereClauseInternal(const IdWhereClause.any());
   }
 }
 
@@ -199,11 +196,10 @@ extension ContainerEntryQueryWhere
     on QueryBuilder<ContainerEntry, ContainerEntry, QWhereClause> {
   QueryBuilder<ContainerEntry, ContainerEntry, QAfterWhereClause> idEqualTo(
       int id) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: id,
       includeLower: true,
-      upper: [id],
+      upper: id,
       includeUpper: true,
     ));
   }
@@ -211,48 +207,34 @@ extension ContainerEntryQueryWhere
   QueryBuilder<ContainerEntry, ContainerEntry, QAfterWhereClause> idNotEqualTo(
       int id) {
     if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      );
     } else {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      );
     }
   }
 
   QueryBuilder<ContainerEntry, ContainerEntry, QAfterWhereClause> idGreaterThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
-      includeLower: include,
-    ));
+      int id,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: id, includeLower: include),
+    );
   }
 
   QueryBuilder<ContainerEntry, ContainerEntry, QAfterWhereClause> idLessThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      upper: [id],
-      includeUpper: include,
-    ));
+      int id,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: id, includeUpper: include),
+    );
   }
 
   QueryBuilder<ContainerEntry, ContainerEntry, QAfterWhereClause> idBetween(
@@ -261,11 +243,10 @@ extension ContainerEntryQueryWhere
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [lowerId],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerId,
       includeLower: includeLower,
-      upper: [upperId],
+      upper: upperId,
       includeUpper: includeUpper,
     ));
   }

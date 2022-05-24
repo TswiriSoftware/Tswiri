@@ -6,204 +6,186 @@ part of 'photo.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetPhotoCollection on Isar {
-  IsarCollection<Photo> get photos {
-    return getCollection('Photo');
-  }
+  IsarCollection<Photo> get photos => getCollection();
 }
 
-final PhotoSchema = CollectionSchema(
+const PhotoSchema = CollectionSchema(
   name: 'Photo',
   schema:
       '{"name":"Photo","idName":"id","properties":[{"name":"containerUID","type":"String"},{"name":"photoPath","type":"String"},{"name":"thumbnailPath","type":"String"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _PhotoNativeAdapter(),
-  webAdapter: const _PhotoWebAdapter(),
   idName: 'id',
   propertyIds: {'containerUID': 0, 'photoPath': 1, 'thumbnailPath': 2},
   listProperties: {},
   indexIds: {},
-  indexTypes: {},
+  indexValueTypes: {},
   linkIds: {},
-  backlinkIds: {},
-  linkedCollections: [],
-  getId: (obj) {
-    if (obj.id == Isar.autoIncrement) {
-      return null;
-    } else {
-      return obj.id;
-    }
-  },
-  setId: (obj, id) => obj.id = id,
-  getLinks: (obj) => [],
-  version: 2,
+  backlinkLinkNames: {},
+  getId: _photoGetId,
+  setId: _photoSetId,
+  getLinks: _photoGetLinks,
+  attachLinks: _photoAttachLinks,
+  serializeNative: _photoSerializeNative,
+  deserializeNative: _photoDeserializeNative,
+  deserializePropNative: _photoDeserializePropNative,
+  serializeWeb: _photoSerializeWeb,
+  deserializeWeb: _photoDeserializeWeb,
+  deserializePropWeb: _photoDeserializePropWeb,
+  version: 3,
 );
 
-class _PhotoWebAdapter extends IsarWebTypeAdapter<Photo> {
-  const _PhotoWebAdapter();
-
-  @override
-  Object serialize(IsarCollection<Photo> collection, Photo object) {
-    final jsObj = IsarNative.newJsObject();
-    IsarNative.jsObjectSet(jsObj, 'containerUID', object.containerUID);
-    IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'photoPath', object.photoPath);
-    IsarNative.jsObjectSet(jsObj, 'thumbnailPath', object.thumbnailPath);
-    return jsObj;
+int? _photoGetId(Photo object) {
+  if (object.id == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.id;
   }
-
-  @override
-  Photo deserialize(IsarCollection<Photo> collection, dynamic jsObj) {
-    final object = Photo();
-    object.containerUID = IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '';
-    object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.photoPath = IsarNative.jsObjectGet(jsObj, 'photoPath') ?? '';
-    object.thumbnailPath = IsarNative.jsObjectGet(jsObj, 'thumbnailPath') ?? '';
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(Object jsObj, String propertyName) {
-    switch (propertyName) {
-      case 'containerUID':
-        return (IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '') as P;
-      case 'id':
-        return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-            as P;
-      case 'photoPath':
-        return (IsarNative.jsObjectGet(jsObj, 'photoPath') ?? '') as P;
-      case 'thumbnailPath':
-        return (IsarNative.jsObjectGet(jsObj, 'thumbnailPath') ?? '') as P;
-      default:
-        throw 'Illegal propertyName';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, Photo object) {}
 }
 
-class _PhotoNativeAdapter extends IsarNativeTypeAdapter<Photo> {
-  const _PhotoNativeAdapter();
-
-  @override
-  void serialize(IsarCollection<Photo> collection, IsarRawObject rawObj,
-      Photo object, int staticSize, List<int> offsets, AdapterAlloc alloc) {
-    var dynamicSize = 0;
-    final value0 = object.containerUID;
-    final _containerUID = IsarBinaryWriter.utf8Encoder.convert(value0);
-    dynamicSize += (_containerUID.length) as int;
-    final value1 = object.photoPath;
-    final _photoPath = IsarBinaryWriter.utf8Encoder.convert(value1);
-    dynamicSize += (_photoPath.length) as int;
-    final value2 = object.thumbnailPath;
-    final _thumbnailPath = IsarBinaryWriter.utf8Encoder.convert(value2);
-    dynamicSize += (_thumbnailPath.length) as int;
-    final size = staticSize + dynamicSize;
-
-    rawObj.buffer = alloc(size);
-    rawObj.buffer_length = size;
-    final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-    final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeBytes(offsets[0], _containerUID);
-    writer.writeBytes(offsets[1], _photoPath);
-    writer.writeBytes(offsets[2], _thumbnailPath);
-  }
-
-  @override
-  Photo deserialize(IsarCollection<Photo> collection, int id,
-      IsarBinaryReader reader, List<int> offsets) {
-    final object = Photo();
-    object.containerUID = reader.readString(offsets[0]);
-    object.id = id;
-    object.photoPath = reader.readString(offsets[1]);
-    object.thumbnailPath = reader.readString(offsets[2]);
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(
-      int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-    switch (propertyIndex) {
-      case -1:
-        return id as P;
-      case 0:
-        return (reader.readString(offset)) as P;
-      case 1:
-        return (reader.readString(offset)) as P;
-      case 2:
-        return (reader.readString(offset)) as P;
-      default:
-        throw 'Illegal propertyIndex';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, Photo object) {}
+void _photoSetId(Photo object, int id) {
+  object.id = id;
 }
+
+List<IsarLinkBase> _photoGetLinks(Photo object) {
+  return [];
+}
+
+void _photoSerializeNative(
+    IsarCollection<Photo> collection,
+    IsarRawObject rawObj,
+    Photo object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.containerUID;
+  final _containerUID = IsarBinaryWriter.utf8Encoder.convert(value0);
+  dynamicSize += (_containerUID.length) as int;
+  final value1 = object.photoPath;
+  final _photoPath = IsarBinaryWriter.utf8Encoder.convert(value1);
+  dynamicSize += (_photoPath.length) as int;
+  final value2 = object.thumbnailPath;
+  final _thumbnailPath = IsarBinaryWriter.utf8Encoder.convert(value2);
+  dynamicSize += (_thumbnailPath.length) as int;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeBytes(offsets[0], _containerUID);
+  writer.writeBytes(offsets[1], _photoPath);
+  writer.writeBytes(offsets[2], _thumbnailPath);
+}
+
+Photo _photoDeserializeNative(IsarCollection<Photo> collection, int id,
+    IsarBinaryReader reader, List<int> offsets) {
+  final object = Photo();
+  object.containerUID = reader.readString(offsets[0]);
+  object.id = id;
+  object.photoPath = reader.readString(offsets[1]);
+  object.thumbnailPath = reader.readString(offsets[2]);
+  return object;
+}
+
+P _photoDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
+    case 0:
+      return (reader.readString(offset)) as P;
+    case 1:
+      return (reader.readString(offset)) as P;
+    case 2:
+      return (reader.readString(offset)) as P;
+    default:
+      throw 'Illegal propertyIndex';
+  }
+}
+
+dynamic _photoSerializeWeb(IsarCollection<Photo> collection, Photo object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'containerUID', object.containerUID);
+  IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(jsObj, 'photoPath', object.photoPath);
+  IsarNative.jsObjectSet(jsObj, 'thumbnailPath', object.thumbnailPath);
+  return jsObj;
+}
+
+Photo _photoDeserializeWeb(IsarCollection<Photo> collection, dynamic jsObj) {
+  final object = Photo();
+  object.containerUID = IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '';
+  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+  object.photoPath = IsarNative.jsObjectGet(jsObj, 'photoPath') ?? '';
+  object.thumbnailPath = IsarNative.jsObjectGet(jsObj, 'thumbnailPath') ?? '';
+  return object;
+}
+
+P _photoDeserializePropWeb<P>(Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'containerUID':
+      return (IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '') as P;
+    case 'id':
+      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
+          as P;
+    case 'photoPath':
+      return (IsarNative.jsObjectGet(jsObj, 'photoPath') ?? '') as P;
+    case 'thumbnailPath':
+      return (IsarNative.jsObjectGet(jsObj, 'thumbnailPath') ?? '') as P;
+    default:
+      throw 'Illegal propertyName';
+  }
+}
+
+void _photoAttachLinks(IsarCollection col, int id, Photo object) {}
 
 extension PhotoQueryWhereSort on QueryBuilder<Photo, Photo, QWhere> {
   QueryBuilder<Photo, Photo, QAfterWhere> anyId() {
-    return addWhereClauseInternal(const WhereClause(indexName: null));
+    return addWhereClauseInternal(const IdWhereClause.any());
   }
 }
 
 extension PhotoQueryWhere on QueryBuilder<Photo, Photo, QWhereClause> {
   QueryBuilder<Photo, Photo, QAfterWhereClause> idEqualTo(int id) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: id,
       includeLower: true,
-      upper: [id],
+      upper: id,
       includeUpper: true,
     ));
   }
 
   QueryBuilder<Photo, Photo, QAfterWhereClause> idNotEqualTo(int id) {
     if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      );
     } else {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      );
     }
   }
 
-  QueryBuilder<Photo, Photo, QAfterWhereClause> idGreaterThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
-      includeLower: include,
-    ));
+  QueryBuilder<Photo, Photo, QAfterWhereClause> idGreaterThan(int id,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: id, includeLower: include),
+    );
   }
 
-  QueryBuilder<Photo, Photo, QAfterWhereClause> idLessThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      upper: [id],
-      includeUpper: include,
-    ));
+  QueryBuilder<Photo, Photo, QAfterWhereClause> idLessThan(int id,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: id, includeUpper: include),
+    );
   }
 
   QueryBuilder<Photo, Photo, QAfterWhereClause> idBetween(
@@ -212,11 +194,10 @@ extension PhotoQueryWhere on QueryBuilder<Photo, Photo, QWhereClause> {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [lowerId],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerId,
       includeLower: includeLower,
-      upper: [upperId],
+      upper: upperId,
       includeUpper: includeUpper,
     ));
   }
