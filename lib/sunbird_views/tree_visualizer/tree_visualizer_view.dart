@@ -4,7 +4,7 @@ import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/containers/container_manager/container_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/containers/container_view/container_view.dart';
 import 'package:isar/isar.dart';
 
 class GridVisualizerView extends StatefulWidget {

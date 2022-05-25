@@ -10,7 +10,7 @@ import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart'
 import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/containers/container_manager/container_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/containers/container_view/container_view.dart';
 
 import 'package:flutter_google_ml_kit/sunbird_views/gallery/image_painter.dart.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/dividers/dividers.dart';

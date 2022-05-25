@@ -14,8 +14,8 @@ import 'package:flutter_google_ml_kit/isar_database/tags/container_tag/container
 import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/containers/container_manager/container_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/containers/container_manager/new_container_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/containers/container_view/container_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/containers/container_view/new_container_view.dart';
 import 'package:isar/isar.dart';
 
 class ContainerManagerView extends StatefulWidget {

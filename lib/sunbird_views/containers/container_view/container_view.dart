@@ -8,9 +8,9 @@ import 'package:flutter_google_ml_kit/isar_database/tags/container_tag/container
 import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/containers/container_manager/photo_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/grid_manager/container_grid_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/containers/container_manager/new_container_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/containers/container_view/photo_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/containers/container_grid/container_grid_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/containers/container_view/new_container_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_view.dart';
 import 'package:isar/isar.dart';
 
