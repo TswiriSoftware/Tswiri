@@ -34,8 +34,6 @@ void gridProcessor(List init) {
   MasterGrid masterGrid = MasterGrid(isarDatabase: isarDatabase);
   masterGrid.calculateCoordinates();
 
-  List<Coordinate> coordinates = masterGrid.coordinates!;
-
   //5. Setup the Rolling grid.
   RollingGrid rollingGrid = RollingGrid(isarDatabase: isarDatabase);
   rollingGrid.initiate(masterGrid);
@@ -44,45 +42,13 @@ void gridProcessor(List init) {
 
   List<InterBarcodeVectorEntry> realInterBarcodeVectors = [];
   List<InterBarcodeVectorEntry> averagedInterBarcodeVectors = [];
+  List<InterBarcodeVectorEntry> usedInterBarcodeVectors = [];
 
   void processBarcodes(List message) {
-    //1. Create OnImageBarcodeData
-    List<OnImageBarcodeData> barcodeData = [];
-    if (message.isNotEmpty) {
-      for (List item in message) {
-        barcodeData.add(OnImageBarcodeData.fromMessage(item));
-      }
-    }
+    //1. Create realInterBarcodeVectors.
+    realInterBarcodeVectors.addAll(tripleXXX(message, isarDatabase));
 
-    //2. Create OnImageInterBarcodeData.
-    List<OnImageInterBarcodeData> onImageInterBarcodeDatas = [];
-    for (var x = 0; x < barcodeData.length; x++) {
-      for (var i = 0; i < barcodeData.length; i++) {
-        if (i != x) {
-          OnImageInterBarcodeData onImageInterBarcodeData =
-              OnImageInterBarcodeData.fromBarcodeDataPair(
-                  barcodeData[i], barcodeData[x]);
-
-          if (!onImageInterBarcodeDatas.contains(onImageInterBarcodeData)) {
-            onImageInterBarcodeDatas.add(onImageInterBarcodeData);
-          }
-        }
-      }
-    }
-
-    //3. Create RealInterBarcodeVectos and add to list :D.
-    for (OnImageInterBarcodeData gridOnImageInterBarcodeData
-        in onImageInterBarcodeDatas) {
-      InterBarcodeVectorEntry realInterBarcodeVector = InterBarcodeVectorEntry()
-          .fromRawInterBarcodeData(gridOnImageInterBarcodeData,
-              gridOnImageInterBarcodeData.startBarcode.timestamp, isarDatabase);
-      if (!averagedInterBarcodeVectors.contains(realInterBarcodeVector)) {
-        realInterBarcodeVectors.add(realInterBarcodeVector);
-      }
-    }
-
-    //4. Do the averageing thing.
-
+    //2. Average realInterBarcodeVectors
     List<InterBarcodeVectorEntry> uniqueVectors =
         realInterBarcodeVectors.toSet().toList();
 
@@ -131,10 +97,37 @@ void gridProcessor(List init) {
       }
 
       //vi. Add the vector to list.
-      averagedInterBarcodeVectors.add(vector);
+      if (!averagedInterBarcodeVectors.contains(vector)) {
+        averagedInterBarcodeVectors.add(vector);
+      }
     }
 
-    log(averagedInterBarcodeVectors.toString());
+    //log(averagedInterBarcodeVectors.toString());
+
+    //Now take these vectors and possibly map them into the independant grids...
+    //I suspect i will loop through each grid and check if it can be expaned.
+    //I will have to make sure that I do not build onto an existing grid....
+    //Maybe maybe maybe.
+
+    for (IndependantRollingGrid independantRollingGrid
+        in rollingGrid.independantRollingGrids) {
+      log(independantRollingGrid.toString());
+
+      for (InterBarcodeVectorEntry vector in averagedInterBarcodeVectors
+          .where((element) => !usedInterBarcodeVectors.contains(element))
+          .toList()) {
+        List<String> legalCoordinates = independantRollingGrid.coordinates
+            .map((e) => e.barcodeUID)
+            .toList();
+        if (legalCoordinates.contains(vector.startBarcodeUID) ||
+            legalCoordinates.contains(vector.endBarcodeUID)) {
+          independantRollingGrid.addCoordinate(vector);
+          usedInterBarcodeVectors.add(vector);
+        }
+      }
+
+      log(independantRollingGrid.toString());
+    }
   }
 
   receivePort.listen((message) {
@@ -145,4 +138,45 @@ void gridProcessor(List init) {
       }
     }
   });
+}
+
+List<InterBarcodeVectorEntry> tripleXXX(
+  List message,
+  Isar isarDatabase,
+) {
+  List<OnImageBarcodeData> barcodeData = [];
+  if (message.isNotEmpty) {
+    for (List item in message) {
+      barcodeData.add(OnImageBarcodeData.fromMessage(item));
+    }
+  }
+
+  //2. Create OnImageInterBarcodeData.
+  List<OnImageInterBarcodeData> onImageInterBarcodeDatas = [];
+  for (var x = 0; x < barcodeData.length; x++) {
+    for (var i = 0; i < barcodeData.length; i++) {
+      if (i != x) {
+        OnImageInterBarcodeData onImageInterBarcodeData =
+            OnImageInterBarcodeData.fromBarcodeDataPair(
+                barcodeData[i], barcodeData[x]);
+
+        if (!onImageInterBarcodeDatas.contains(onImageInterBarcodeData)) {
+          onImageInterBarcodeDatas.add(onImageInterBarcodeData);
+        }
+      }
+    }
+  }
+
+  List<InterBarcodeVectorEntry> realInterBarcodeVectors = [];
+  //3. Create RealInterBarcodeVectos and add to list :D.
+  for (OnImageInterBarcodeData gridOnImageInterBarcodeData
+      in onImageInterBarcodeDatas) {
+    InterBarcodeVectorEntry realInterBarcodeVector = InterBarcodeVectorEntry()
+        .fromRawInterBarcodeData(gridOnImageInterBarcodeData,
+            gridOnImageInterBarcodeData.startBarcode.timestamp, isarDatabase);
+
+    realInterBarcodeVectors.add(realInterBarcodeVector);
+  }
+
+  return realInterBarcodeVectors;
 }

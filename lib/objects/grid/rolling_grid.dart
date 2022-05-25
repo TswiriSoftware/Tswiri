@@ -1,12 +1,14 @@
 import 'dart:developer';
 
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcodes/interbarcode_vector_entry/interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
 import 'package:isar/isar.dart';
+import 'package:vector_math/vector_math.dart';
 
 class RollingGrid {
   RollingGrid({
@@ -29,6 +31,8 @@ class RollingGrid {
   ///Master List of Markers.
   late final List<Marker> markers = isarDatabase.markers.where().findAllSync();
 
+  late List<IndependantRollingGrid> independantRollingGrids = [];
+
   //1. Require a List of grids containing parents and markers.
 
   void initiate(MasterGrid masterGrid) {
@@ -47,14 +51,14 @@ class RollingGrid {
         .toList();
 
     //iii. List the independantRolling Grids.
-    List<IndependantRollingGrid> independantRollingGrids =
+    List<IndependantRollingGrid> newIndependantRollingGrids =
         originContainers.map((e) => IndependantRollingGrid(parent: e)).toList();
 
     //iv. Populate Origin and Markers
     masterGrid.calculateCoordinates();
     List<Coordinate> coordinates = masterGrid.coordinates ?? [];
     for (IndependantRollingGrid independantRollingGrid
-        in independantRollingGrids) {
+        in newIndependantRollingGrids) {
       independantRollingGrid.markers.addAll(markers.where((marker) =>
           marker.parentContainerUID == independantRollingGrid.gridID));
 
@@ -79,20 +83,7 @@ class RollingGrid {
 
       independantRollingGrid.coordinates.addAll(currentCoordinates);
     }
-
-    // if (coordinates != null && coordinates.isNotEmpty) {
-    //   for (Coordinate coordinate in coordinates) {
-    //     if (originContainerBarcodes.contains(coordinate.barcodeUID)) {
-    //       independantRollingGrids
-    //           .where((element) => element.gridID == coordinate.gridID)
-    //           .first
-    //           .coordinates
-    //           .add(coordinate);
-    //     }
-    //   }
-    // }
-
-    log(independantRollingGrids.toString());
+    independantRollingGrids.addAll(newIndependantRollingGrids);
   }
 }
 
@@ -107,6 +98,34 @@ class IndependantRollingGrid {
     List<String> markersBarcodes = markers.map((e) => e.barcodeUID).toList();
     markersBarcodes.add(parent.barcodeUID!);
     return markersBarcodes;
+  }
+
+  void addCoordinate(InterBarcodeVectorEntry interBarcodeVectorEntry) {
+    Coordinate referenceCoordiante = coordinates
+        .where((element) =>
+            element.barcodeUID == interBarcodeVectorEntry.startBarcodeUID ||
+            element.barcodeUID == interBarcodeVectorEntry.endBarcodeUID)
+        .first;
+    Coordinate? newCoordinate;
+    if (referenceCoordiante.barcodeUID ==
+        interBarcodeVectorEntry.startBarcodeUID) {
+      Vector3 vector3 =
+          referenceCoordiante.coordinate! + interBarcodeVectorEntry.vector3;
+      newCoordinate = Coordinate(
+          barcodeUID: interBarcodeVectorEntry.endBarcodeUID,
+          coordinate: vector3,
+          gridID: gridID);
+    } else {
+      Vector3 vector3 =
+          referenceCoordiante.coordinate! - interBarcodeVectorEntry.vector3;
+      newCoordinate = Coordinate(
+          barcodeUID: interBarcodeVectorEntry.startBarcodeUID,
+          coordinate: vector3,
+          gridID: gridID);
+    }
+    if (!coordinates.contains(newCoordinate)) {
+      coordinates.add(newCoordinate);
+    }
   }
 
   @override

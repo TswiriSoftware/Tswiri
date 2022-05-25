@@ -294,6 +294,18 @@ class Coordinate {
   final String gridID;
 
   @override
+  bool operator ==(Object other) {
+    if (other is Coordinate) {
+      return hashCode == other.hashCode;
+    } else {
+      return hashCode == other.hashCode;
+    }
+  }
+
+  @override
+  int get hashCode => barcodeUID.hashCode;
+
+  @override
   String toString() {
     return '\nGridID: $gridID, barcodeUID: $barcodeUID, X: ${coordinate?.x}, Y: ${coordinate?.y}, Z: ${coordinate?.z}';
   }

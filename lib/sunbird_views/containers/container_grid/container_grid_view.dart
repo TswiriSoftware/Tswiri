@@ -180,6 +180,8 @@ class _ContainerGridViewState extends State<ContainerGridView> {
       onPressed: () async {
         //await FlutterIsolate.killAll();
         MasterGrid masterGrid = MasterGrid(isarDatabase: isarDatabase!);
+        masterGrid.calculateCoordinates();
+        log(masterGrid.coordinates.toString());
         RollingGrid rollingGrid = RollingGrid(isarDatabase: isarDatabase!);
         rollingGrid.initiate(masterGrid);
       },
@@ -194,6 +196,11 @@ class _ContainerGridViewState extends State<ContainerGridView> {
       ),
     );
   }
+
+  //   GridID: shelf_1653477635075, barcodeUID: 15_1648321996363, X: 64.04536437988281, Y: -0.5496104955673218, Z: -0.005101589020341635,
+  //   GridID: shelf_1653477635075, barcodeUID: 20_1648321996363, X: 128.24557495117188, Y: -1.2776228189468384, Z: -0.015257690101861954,
+  //   GridID: shelf_1653477635075, barcodeUID: 21_1648321996363, X: 192.1835479736328, Y: -0.04005849361419678, Z: -0.02023148350417614,
+  //   GridID: shelf_1653477635075, barcodeUID: 24_1648321996363, X: 129.07171630859375, Y: 128.75350952148438, Z: 0.007043429184705019]
 
   Widget _deleteButton() {
     return ElevatedButton(
