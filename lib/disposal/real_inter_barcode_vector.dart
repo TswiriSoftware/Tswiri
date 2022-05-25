@@ -1,10 +1,10 @@
 // import 'package:flutter/material.dart';
+// import 'package:flutter_google_ml_kit/disposal/on_image_inter_barcode_data.dart';
 // import 'package:flutter_google_ml_kit/functions/translating/offset_rotation.dart';
-// import 'package:flutter_google_ml_kit/objects/navigation/isolate/on_image_inter_barcode_data.dart';
 // import 'package:vector_math/vector_math.dart';
 
-// class RealInterBarcodeVector {
-//   RealInterBarcodeVector({
+// class RealInterBarcodeVectorOld {
+//   RealInterBarcodeVectorOld({
 //     required this.startBarcodeUID,
 //     required this.endBarcodeUID,
 //     required this.vector,
@@ -38,13 +38,13 @@
 //   }
 
 //   void averageInterBarcodeVector(
-//       RealInterBarcodeVector isolateRealInterBarcodeVector) {
+//       RealInterBarcodeVectorOld isolateRealInterBarcodeVector) {
 //     Vector3 newVector = (vector + isolateRealInterBarcodeVector.vector) / 2;
 //     vector = newVector;
 //   }
 
-//   factory RealInterBarcodeVector.fromIsolateInterBarcodeData(
-//       OnImageInterBarcodeData interBarcodeData, int creationTimestamp) {
+//   factory RealInterBarcodeVectorOld.fromIsolateInterBarcodeData(
+//       OnImageInterBarcodeDataOld interBarcodeData, int creationTimestamp) {
 //     ///1. Calculate RealInterBarcodeOffset
 //     double phoneAngleRadians =
 //         interBarcodeData.startBarcode.accelerometerData.calculatePhoneAngle();
@@ -75,7 +75,7 @@
 //     Offset averageRealInterBarcodeOffset =
 //         (realOffsetStartBarcode + realOffsetEndBarcode) / 2;
 
-//     return RealInterBarcodeVector(
+//     return RealInterBarcodeVectorOld(
 //         startBarcodeUID: interBarcodeData.startBarcode.barcodeUID,
 //         endBarcodeUID: interBarcodeData.endBarcode.barcodeUID,
 //         vector: Vector3(averageRealInterBarcodeOffset.dx,

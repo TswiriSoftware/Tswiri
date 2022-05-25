@@ -1,4 +1,4 @@
-import 'package:flutter_google_ml_kit/objects/reworked/on_image_data.dart';
+import 'package:flutter_google_ml_kit/objects/grid/processing/on_Image_barcode_data.dart';
 
 ///Describes the "Offset" between two barcodes.
 class OnImageInterBarcodeData {

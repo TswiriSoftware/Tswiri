@@ -1,4 +1,4 @@
-import 'package:flutter_google_ml_kit/objects/navigation/isolate/real_inter_barcode_vector.dart';
+import 'package:flutter_google_ml_kit/disposal/real_inter_barcode_vector.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 
 class Position {

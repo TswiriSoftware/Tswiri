@@ -1,22 +1,22 @@
-// import 'package:flutter_google_ml_kit/objects/navigation/isolate/on_image_data.dart';
+// import 'package:flutter_google_ml_kit/disposal/on_image_data.dart';
 
 // ///Describes the "Offset" between two barcodes.
-// class OnImageInterBarcodeData {
-//   OnImageInterBarcodeData({
+// class OnImageInterBarcodeDataOld {
+//   OnImageInterBarcodeDataOld({
 //     required this.startBarcode,
 //     required this.endBarcode,
 //   });
 
 //   ///Data related to the start barcode.
-//   final OnImageBarcodeData startBarcode;
+//   final OnImageBarcodeDataOld startBarcode;
 
 //   ///Data related to the end barcode.
-//   final OnImageBarcodeData endBarcode;
+//   final OnImageBarcodeDataOld endBarcode;
 
 //   ///This takes 2 IsolateRawOnImageBarcodeData and returns them so that the smaller barcode is always first.
-//   factory OnImageInterBarcodeData.fromBarcodeDataPair(
-//     OnImageBarcodeData rawOnImageBarcodeData1,
-//     OnImageBarcodeData rawOnImageBarcodeData2,
+//   factory OnImageInterBarcodeDataOld.fromBarcodeDataPair(
+//     OnImageBarcodeDataOld rawOnImageBarcodeData1,
+//     OnImageBarcodeDataOld rawOnImageBarcodeData2,
 //   ) {
 //     int startBarcode =
 //         int.parse(rawOnImageBarcodeData1.barcodeUID.split('_').first);
@@ -24,12 +24,12 @@
 //         int.parse(rawOnImageBarcodeData2.barcodeUID.split('_').first);
 
 //     if (startBarcode < endBarcode) {
-//       return OnImageInterBarcodeData(
+//       return OnImageInterBarcodeDataOld(
 //         startBarcode: rawOnImageBarcodeData1,
 //         endBarcode: rawOnImageBarcodeData2,
 //       );
 //     } else {
-//       return OnImageInterBarcodeData(
+//       return OnImageInterBarcodeDataOld(
 //         startBarcode: rawOnImageBarcodeData2,
 //         endBarcode: rawOnImageBarcodeData1,
 //       );
@@ -43,7 +43,7 @@
 
 //   @override
 //   bool operator ==(Object other) {
-//     return other is OnImageInterBarcodeData && hashCode == other.hashCode;
+//     return other is OnImageInterBarcodeDataOld && hashCode == other.hashCode;
 //   }
 
 //   @override

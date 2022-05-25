@@ -15,7 +15,6 @@ class PainterMesssage {
 
   List toMessage() {
     List messagePainterData = painterData.map((e) => e.toMessage()).toList();
-
     return [
       identifier,
       averageDiagonalLength,

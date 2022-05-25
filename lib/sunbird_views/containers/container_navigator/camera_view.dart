@@ -1,13 +1,8 @@
-// ignore_for_file: curly_braces_in_flow_control_structures
-
 import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-//import 'package:image_picker/image_picker.dart';
-
 import '../../../../sunbird_views/app_settings/app_settings.dart';
 import '../../../../main.dart';
 

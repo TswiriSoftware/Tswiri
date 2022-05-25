@@ -5,15 +5,15 @@ import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.da
 import 'package:flutter_google_ml_kit/functions/translating/coordinates_translator.dart';
 import 'package:flutter_google_ml_kit/functions/translating/offset_rotation.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/barcode_property.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/messages/image_data.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/messages/image_processor_config.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/messages/painter_message.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/image_data.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/image_processor_config.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/painter_message.dart';
 import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
 import 'dart:math' as math;
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
 
-import '../objects/reworked/on_image_data.dart';
+import '../objects/grid/processing/on_Image_barcode_data.dart';
 
 void imageProcessor(List init) {
   //1. InitalMessage.
@@ -72,6 +72,9 @@ void imageProcessor(List init) {
   Size? absoluteSize;
   Size? canvasSize;
 
+  //7. GridProcessor
+  SendPort? gridProcessor;
+
   void configureInputImageData(message) {
     //Decode Message.
     ImageProcessorConfig config = ImageProcessorConfig.fromMessage(message);
@@ -84,6 +87,7 @@ void imageProcessor(List init) {
     );
     absoluteSize = config.absoluteSize;
     canvasSize = config.canvasSize;
+    gridProcessor = config.gridProcessor;
 
     log('I$id: InputImageData Configured');
   }
@@ -107,6 +111,7 @@ void imageProcessor(List init) {
       Offset? averageOffsetToBarcode;
 
       List<OnImageBarcodeData> onImageBarcodeDatas = [];
+      List gridProcessorData = [];
       List<BarcodeObject> barcodeObjects = [];
 
       bool foundPath = false;
@@ -192,6 +197,7 @@ void imageProcessor(List init) {
         barcodeObjects.add(barcodeObject);
 
         onImageBarcodeDatas.add(onImageBarcodeData);
+        gridProcessorData.add(onImageBarcodeData.toMessage());
 
         PainterBarcodeObject barcodePainterData = PainterBarcodeObject(
           barcodeUID: barcode.value.displayValue!,
@@ -199,6 +205,10 @@ void imageProcessor(List init) {
         );
 
         painterData.add(barcodePainterData);
+      }
+
+      if (gridProcessor != null) {
+        gridProcessor!.send(gridProcessorData);
       }
 
       ///1. Identify the grid that the user is in.

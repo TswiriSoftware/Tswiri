@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
 import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/messages/painter_message.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/painter_message.dart';
 
 Offset? averageOffsetToBarcode;
 
@@ -41,7 +41,7 @@ class NavigatorPainter extends CustomPainter {
     }
 
     double finderCircleRadius = painterMesssage.averageDiagonalLength / 3;
-    log('averageOffsetToBarcode ' + averageOffsetToBarcode.toString());
+    //log('averageOffsetToBarcode ' + averageOffsetToBarcode.toString());
     if (painterMesssage.averageOffsetToBarcode.distance <= finderCircleRadius) {
       //Draw Finder Circle
       canvas.drawCircle(
@@ -65,7 +65,7 @@ class NavigatorPainter extends CustomPainter {
     if (painterMesssage.averageOffsetToBarcode != const Offset(0, 0) &&
         painterMesssage.averageOffsetToBarcode.distance >= finderCircleRadius) {
       averageOffsetToBarcode = painterMesssage.averageOffsetToBarcode;
-      log('averageOffsetToBarcode Set ' + averageOffsetToBarcode.toString());
+      //log('averageOffsetToBarcode Set ' + averageOffsetToBarcode.toString());
       drawArrow(screenCenter, finderCircleRadius,
           painterMesssage.averageOffsetToBarcode, size, canvas);
     } else {

@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
+import 'package:flutter_google_ml_kit/isolate/grid_processor.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/barcode_position_scanner_camera_view.dart';
 import 'package:flutter_google_ml_kit/isolate/image_processor.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/messages/image_data.dart';
-import 'package:flutter_google_ml_kit/objects/navigation/messages/image_processor_config.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/image_data.dart';
+import 'package:flutter_google_ml_kit/objects/navigation/image_processor_config.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_view/container_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_navigator/navigator_painter.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/default_card/defualt_card.dart';
@@ -44,12 +45,14 @@ class _NavigatorViewState extends State<NavigatorView> {
   CustomPaint? customPaint;
 
   //UI-Ports (multiple-ports are snappier)
-  ReceivePort uiPort1 = ReceivePort('uiPort1');
-  ReceivePort uiPort2 = ReceivePort('uiPort2');
+  ReceivePort uiPort1 = ReceivePort('uiPort1'); //ImageProcessor
+  ReceivePort uiPort2 = ReceivePort('uiPort2'); //ImageProcessor
+  ReceivePort uiPort3 = ReceivePort('uiPort3'); //GridProcessor
 
   //Isolate-Ports
   SendPort? imageProcessor1;
   SendPort? imageProcessor2;
+  SendPort? gridProcessor1;
 
   bool hasConfiguredIPs = false;
 
@@ -87,24 +90,40 @@ class _NavigatorViewState extends State<NavigatorView> {
 
   //Initiate Isolates and uiPort listener.
   void initiateIsolates() {
-    FlutterIsolate.killAll();
-    FlutterIsolate.spawn(imageProcessor, [
-      1, //[0] ID
-      uiPort1.sendPort, //[1] SendPort
-      isarDirectory!.path, //[2] Isar Directory
-      focalLength, //[3] focalLength
-      selectedContainer.barcodeUID, //[4] selectedContainer BarcodeUID
-      defaultBarcodeDiagonalLength ?? 100, //[5]  Default Barcode Size.
-    ]);
+    //FlutterIsolate.killAll();
+    FlutterIsolate.spawn(
+      imageProcessor,
+      [
+        1, //[0] ID
+        uiPort1.sendPort, //[1] SendPort
+        isarDirectory!.path, //[2] Isar Directory
+        focalLength, //[3] focalLength
+        selectedContainer.barcodeUID, //[4] selectedContainer BarcodeUID
+        defaultBarcodeDiagonalLength ?? 100, //[5]  Default Barcode Size.
+      ],
+    );
 
-    FlutterIsolate.spawn(imageProcessor, [
-      2, //[0] ID
-      uiPort2.sendPort, //[1] SendPort
-      isarDirectory!.path, //[2] Isar Directory
-      focalLength, //[3] focalLength
-      selectedContainer.barcodeUID, //[4] selectedContainer BarcodeUID
-      defaultBarcodeDiagonalLength ?? 100, //[5]  Default Barcode Size.
-    ]);
+    FlutterIsolate.spawn(
+      imageProcessor,
+      [
+        2, //[0] ID
+        uiPort2.sendPort, //[1] SendPort
+        isarDirectory!.path, //[2] Isar Directory
+        focalLength, //[3] focalLength
+        selectedContainer.barcodeUID, //[4] selectedContainer BarcodeUID
+        defaultBarcodeDiagonalLength ?? 100, //[5]  Default Barcode Size.
+      ],
+    );
+
+    FlutterIsolate.spawn(
+      gridProcessor,
+      [
+        uiPort3.sendPort,
+        isarDirectory!.path,
+        focalLength,
+        defaultBarcodeDiagonalLength ?? 70
+      ],
+    );
 
     uiPort1.listen((message) {
       if (message[0] == 'Sendport') {
@@ -125,6 +144,13 @@ class _NavigatorViewState extends State<NavigatorView> {
         drawImage(message);
       } else if (message[0] == 'error') {
         errorHandler(message);
+      }
+    });
+
+    uiPort3.listen((message) {
+      if (message[0] == 'Sendport') {
+        gridProcessor1 = message[1];
+        log('UI: GridProcessor1 Port Set');
       }
     });
   }
@@ -232,7 +258,9 @@ class _NavigatorViewState extends State<NavigatorView> {
 
   ///Configures the ImageProcessor(s) so they can receive ImageBytes.
   void configureImageProcessors(InputImage inputImage) {
-    if (imageProcessor1 != null && imageProcessor2 != null) {
+    if (imageProcessor1 != null &&
+        imageProcessor2 != null &&
+        gridProcessor1 != null) {
       //1. Abosulte Image Size.
       Size absoluteSize = inputImage.inputImageData!.size;
 
@@ -252,6 +280,7 @@ class _NavigatorViewState extends State<NavigatorView> {
         absoluteSize: absoluteSize,
         canvasSize: canvasSize,
         inputImageFormat: inputImageFormat,
+        gridProcessor: gridProcessor1!,
       );
 
       //5. Send Config(s).

@@ -41,7 +41,7 @@ void imageProcessorIsolate(SendPort sendPort) {
         barcodeData.add([
           barcode.value.displayValue, //Display value. [0]
           [
-            //On Screen Points [1]
+            //On Screen Points [1][]
             offsetPoints[0].dx,
             offsetPoints[0].dy,
             offsetPoints[1].dx,
@@ -52,7 +52,7 @@ void imageProcessorIsolate(SendPort sendPort) {
             offsetPoints[3].dy,
           ],
           [
-            //On Image Points [2]
+            //On Image Points [2][]
             cornerPoints[0].x.toDouble(), // Point1. x
             cornerPoints[0].y.toDouble(), // Point1. y
             cornerPoints[1].x.toDouble(), // Point2. x

@@ -3,15 +3,12 @@
 // import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
 // import 'package:vector_math/vector_math.dart' as vm;
 
-// class OnImageBarcodeData {
-//   OnImageBarcodeData({
+// class OnImageBarcodeDataOld {
+//   OnImageBarcodeDataOld({
 //     required this.barcodeUID,
 //     required this.onImageCornerPoints,
 //     required this.timestamp,
 //     required this.accelerometerData,
-//     required this.onImageDiagonalLength,
-//     required this.barcodeDiagonalLength,
-//     required this.barcodeMMperPX,
 //   });
 
 //   ///BarcodeUID.
@@ -25,14 +22,8 @@
 //   ///Accelerometer Data.
 //   final AccelerometerData accelerometerData;
 
-//   final double barcodeMMperPX;
-
-//   final double barcodeDiagonalLength;
-
-//   final double onImageDiagonalLength;
-
 //   ///Create a Isolate Barcode from a List.
-//   factory OnImageBarcodeData.fromMessage(List<dynamic> item) {
+//   factory OnImageBarcodeDataOld.fromMessage(List<dynamic> item) {
 //     AccelerometerData accelerometerData = AccelerometerData(
 //         accelerometerEvent: vm.Vector3(
 //           item[2][0] as double,
@@ -52,14 +43,11 @@
 //       Offset(item[1][6] as double, item[1][7] as double),
 //     ];
 
-//     return OnImageBarcodeData(
+//     return OnImageBarcodeDataOld(
 //       barcodeUID: item[0],
 //       onImageCornerPoints: onImageCornerPoints,
-//       timestamp: item[6],
 //       accelerometerData: accelerometerData,
-//       onImageDiagonalLength: item[3],
-//       barcodeDiagonalLength: item[4],
-//       barcodeMMperPX: item[5],
+//       timestamp: item[3],
 //     );
 //   }
 
@@ -83,6 +71,6 @@
 
 //   @override
 //   String toString() {
-//     return '\nUID: $barcodeUID, timestamp: $timestamp, centerPoint: (${barcodeCenterPoint.dx}, ${barcodeCenterPoint.dy}), diagonalLength: $barcodeDiagonalLength), diag: $barcodeDiagonalLength, diagO: $onImageDiagonalLength, mmX: $barcodeMMperPX';
+//     return '\nUID: $barcodeUID, timestamp: $timestamp, centerPoint: (${barcodeCenterPoint.dx}, ${barcodeCenterPoint.dy})';
 //   }
 // }

@@ -1,3 +1,4 @@
+import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:google_ml_kit/google_ml_kit.dart';
@@ -7,10 +8,12 @@ class ImageProcessorConfig {
     required this.absoluteSize,
     required this.canvasSize,
     required this.inputImageFormat,
+    required this.gridProcessor,
   });
   Size absoluteSize;
   Size canvasSize;
   InputImageFormat inputImageFormat;
+  SendPort gridProcessor;
 
   List toMessage() {
     return [
@@ -24,6 +27,7 @@ class ImageProcessorConfig {
         canvasSize.height, //[2][1]
       ], //Canvas size [2]
       inputImageFormat.index, //InputImageFormat [3]
+      gridProcessor, [4]
     ];
   }
 
@@ -32,6 +36,7 @@ class ImageProcessorConfig {
       absoluteSize: Size(message[1][0] as double, message[1][1] as double),
       canvasSize: Size(message[2][0] as double, message[2][1] as double),
       inputImageFormat: InputImageFormat.values.elementAt(message[3] as int),
+      gridProcessor: message[4],
     );
   }
 }
