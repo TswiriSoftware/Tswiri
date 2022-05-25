@@ -17,18 +17,18 @@ class Position {
     position = (position! + vector) / 2;
   }
 
-  //Comparison
-  @override
-  // ignore: hash_and_equals
-  bool operator ==(Object other) {
-    if (other is String) {
-      return barcodeUID == other;
-    } else if (other is RealInterBarcodeVector) {
-      return barcodeUID == other.startBarcodeUID;
-    } else {
-      return false;
-    }
-  }
+  // //Comparison
+  // @override
+  // // ignore: hash_and_equals
+  // bool operator ==(Object other) {
+  //   if (other is String) {
+  //     return barcodeUID == other;
+  //   } else if (other is RealInterBarcodeVector) {
+  //     return barcodeUID == other.startBarcodeUID;
+  //   } else {
+  //     return false;
+  //   }
+  // }
 
   Map toJson() => {
         'barcodeUID': barcodeUID,
