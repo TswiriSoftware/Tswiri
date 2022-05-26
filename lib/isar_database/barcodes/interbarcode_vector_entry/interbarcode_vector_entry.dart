@@ -81,6 +81,7 @@ class InterBarcodeVectorEntry {
       ..outDated = json['outDated'];
   }
 
+  //TODO: dont take from isar , keep list in memory.
   //Create From RawInterBarcodeData.
   InterBarcodeVectorEntry fromRawInterBarcodeData(
       OnImageInterBarcodeData interBarcodeData,
