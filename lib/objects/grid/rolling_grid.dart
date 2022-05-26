@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/interbarcode_vector_entry/interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
@@ -110,14 +107,14 @@ class IndependantRollingGrid {
     if (referenceCoordiante.barcodeUID ==
         interBarcodeVectorEntry.startBarcodeUID) {
       Vector3 vector3 =
-          referenceCoordiante.coordinate! + interBarcodeVectorEntry.vector3;
+          referenceCoordiante.coordinate! - interBarcodeVectorEntry.vector3;
       newCoordinate = Coordinate(
           barcodeUID: interBarcodeVectorEntry.endBarcodeUID,
           coordinate: vector3,
           gridID: gridID);
     } else {
       Vector3 vector3 =
-          referenceCoordiante.coordinate! - interBarcodeVectorEntry.vector3;
+          referenceCoordiante.coordinate! + interBarcodeVectorEntry.vector3;
       newCoordinate = Coordinate(
           barcodeUID: interBarcodeVectorEntry.startBarcodeUID,
           coordinate: vector3,

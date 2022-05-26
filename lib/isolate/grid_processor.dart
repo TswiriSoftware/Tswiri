@@ -6,7 +6,6 @@ import 'package:flutter_google_ml_kit/isar_database/barcodes/interbarcode_vector
 import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
 import 'package:flutter_google_ml_kit/objects/grid/processing/on_Image_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/grid/processing/on_image_inter_barcode_data.dart';
-import 'package:flutter_google_ml_kit/objects/grid/processing/real_interbarcode_vector.dart';
 import 'package:flutter_google_ml_kit/objects/grid/rolling_grid.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/barcode_position_scanner_processing_view.dart';
 import 'package:isar/isar.dart';
@@ -59,11 +58,11 @@ void gridProcessor(List init) {
 
       //i. IF more than 5 do stuff
       if (similarVectors.length >= 5) {
-        //iii. Sort similarInterBarcodeOffsets by the length of the vector.
+        //ii. Sort similarInterBarcodeOffsets by the length of the vector.
         similarVectors
             .sort((a, b) => a.vector3.length.compareTo(b.vector3.length));
 
-        //iv. Remove any outliers.
+        //iii. Remove any outliers.
         //Indexes (Stats).
         int medianIndex = (similarVectors.length ~/ 2);
         int quartile1Index = ((similarVectors.length / 2) ~/ 2);
@@ -109,10 +108,10 @@ void gridProcessor(List init) {
     //I will have to make sure that I do not build onto an existing grid....
     //Maybe maybe maybe.
 
+    log(averagedInterBarcodeVectors.toString());
+
     for (IndependantRollingGrid independantRollingGrid
         in rollingGrid.independantRollingGrids) {
-      log(independantRollingGrid.toString());
-
       for (InterBarcodeVectorEntry vector in averagedInterBarcodeVectors
           .where((element) => !usedInterBarcodeVectors.contains(element))
           .toList()) {
