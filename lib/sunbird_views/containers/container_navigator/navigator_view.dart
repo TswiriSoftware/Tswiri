@@ -163,7 +163,7 @@ class _NavigatorViewState extends State<NavigatorView> {
         imageProcessor1!.send(message);
         imageProcessor2!.send(message);
 
-        //TODO: send to image processors.
+        //TODO: Update InterBarcodeVectors in database...
       }
     });
   }
