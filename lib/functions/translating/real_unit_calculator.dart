@@ -1,20 +1,20 @@
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
-import 'package:isar/isar.dart';
 
 ///Calculate the milimeter value of 1 on image unit (OIU). (Pixel ?)
-double calculateRealUnit(
-    {required double diagonalLength,
-    required String barcodeUID,
-    required Isar isarDatabase}) {
-  //If the barcode has not been generated. use default barcode size.
-  double barcodeDiagonalLength = isarDatabase.barcodePropertys
-          .filter()
-          .barcodeUIDMatches(barcodeUID)
-          .findFirstSync()
-          ?.size ??
-      defaultBarcodeDiagonalLength ??
-      100;
+double calculateRealUnit({
+  required double diagonalLength,
+  required String barcodeUID,
+  required List<BarcodeProperty> barcodeProperties,
+}) {
+  double barcodeDiagonalLength = defaultBarcodeDiagonalLength ?? 100;
+
+  int index = barcodeProperties
+      .indexWhere((element) => element.barcodeUID == barcodeUID);
+
+  if (index != -1) {
+    barcodeDiagonalLength = barcodeProperties[index].size;
+  }
 
   return diagonalLength / barcodeDiagonalLength;
 }

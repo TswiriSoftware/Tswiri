@@ -62,11 +62,11 @@ Future<void> main() async {
     Permission.storage.request();
   }
   //Get App Settings. From Shared Prefernces.
-  getCurrentAppSettings();
-  //Edit
+  getStoredAppSettings();
+
   //Get support directory
   isarDirectory = await getApplicationSupportDirectory();
-
+  //Open Isar.
   isarDatabase = openIsar();
 
   createBasicContainerTypes();

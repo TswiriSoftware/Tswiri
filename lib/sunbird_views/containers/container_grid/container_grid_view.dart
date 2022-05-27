@@ -182,7 +182,7 @@ class _ContainerGridViewState extends State<ContainerGridView> {
         MasterGrid masterGrid = MasterGrid(isarDatabase: isarDatabase!);
         masterGrid.calculateCoordinates();
         log(masterGrid.coordinates.toString());
-        RollingGrid rollingGrid = RollingGrid(isarDatabase: isarDatabase!);
+        Grid rollingGrid = Grid(isarDatabase: isarDatabase!);
         rollingGrid.initiate(masterGrid);
       },
       child: Row(

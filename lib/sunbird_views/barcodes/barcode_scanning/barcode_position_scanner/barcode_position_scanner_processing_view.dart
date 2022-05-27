@@ -1,4 +1,6 @@
 import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.dart';
+import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/interbarcode_vector_entry/interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/objects/grid/processing/on_Image_barcode_data.dart';
@@ -153,6 +155,9 @@ class _BarcodePositionScannerProcessingViewState
   Future<List<InterBarcodeVectorEntry>> processData({
     required List barcodeDataBatches,
   }) async {
+    List<BarcodeProperty> barcodeProperties =
+        isarDatabase!.barcodePropertys.where().findAllSync();
+
     ///1. Generate a list of OnImageInterBarcodeData from barcodeDataBatches.
     List<OnImageInterBarcodeData> onImageInterBarcodeData = [];
     for (int i = 0; i < barcodeDataBatches.length; i++) {
@@ -187,7 +192,10 @@ class _BarcodePositionScannerProcessingViewState
       // i. Iterate through onImageInterBarcodeData and generate IsolateRealInterBarcodeData.
       realInterBarcodeVectors.add(InterBarcodeVectorEntry()
           .fromRawInterBarcodeData(
-              interBarcodeData, creationTimestamp, isarDatabase!));
+              interBarcodeData: interBarcodeData,
+              creationTimestamp: creationTimestamp,
+              barcodeProperties: barcodeProperties,
+              focalLength: focalLength));
     }
 
     ///3. Remove outliers and calculate the average.

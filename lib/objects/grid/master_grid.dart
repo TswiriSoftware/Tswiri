@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.dart';
@@ -244,6 +245,14 @@ class MasterGrid {
     }
     return orphans;
   }
+
+  //TODO: Compare coordinates
+  bool compareCoordinates() {
+    return false;
+  }
+
+  //TODO: Update coordinate.
+  void updateCoordinate() {}
 
   ///This is for grid display Purposes ONLY.
   List<IndependantGrid> get independantGrids {

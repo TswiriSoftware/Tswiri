@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app_settings.dart';
 
-Future getCurrentAppSettings() async {
+Future getStoredAppSettings() async {
   //Get SharedPreferences.
   final prefs = await SharedPreferences.getInstance();
   //Get Camera Resolution.

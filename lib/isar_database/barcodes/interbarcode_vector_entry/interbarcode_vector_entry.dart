@@ -1,5 +1,6 @@
 import 'dart:ui';
-import 'package:flutter_google_ml_kit/disposal/on_image_inter_barcode_data.dart';
+import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.dart';
+import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/barcode_property.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 import 'package:flutter_google_ml_kit/functions/translating/distance_from_camera.dart';
 import 'package:flutter_google_ml_kit/functions/translating/offset_rotation.dart';
@@ -45,15 +46,17 @@ class InterBarcodeVectorEntry {
   //Comparison
   @override
   bool operator ==(Object other) {
-    return other is InterBarcodeVectorEntry && hashCode == other.hashCode;
+    return other is InterBarcodeVectorEntry &&
+        other.startBarcodeUID == startBarcodeUID &&
+        other.endBarcodeUID == endBarcodeUID;
   }
 
   @override
-  int get hashCode => (uid).hashCode;
+  int get hashCode => ('${startBarcodeUID}_$endBarcodeUID').hashCode;
 
   @override
   String toString() {
-    return '\nstartBarcodeUID: $startBarcodeUID, endBarcodeUID: $endBarcodeUID,X: $x, Y: $y, Z: $z, time: $timestamp, creation: $creationTimestamp,';
+    return '\nStart: ${startBarcodeUID.split('_').first}, End: ${endBarcodeUID.split('_').first}, X: ${roundDouble(x, 2)}, Y: ${roundDouble(y, 2)}, Z: ${roundDouble(z, 2)}, time: $timestamp, hascode: $hashCode';
   }
 
   Map toJson() => {
@@ -81,37 +84,44 @@ class InterBarcodeVectorEntry {
       ..outDated = json['outDated'];
   }
 
-  //TODO: dont take from isar , keep list in memory.
-  //Create From RawInterBarcodeData.
-  InterBarcodeVectorEntry fromRawInterBarcodeData(
-      OnImageInterBarcodeData interBarcodeData,
-      int creationTimestamp,
-      Isar isarDatabase) {
-    ///1. Calculate RealInterBarcodeOffset
+  ///Create from RawInterBarcodeData.
+  InterBarcodeVectorEntry fromRawInterBarcodeData({
+    required OnImageInterBarcodeData interBarcodeData,
+    required int creationTimestamp,
+    required List<BarcodeProperty> barcodeProperties,
+    required double focalLength,
+  }) {
+    //1. Calculate RealInterBarcodeOffset.
+    //i. Calculate phone angle.
     double phoneAngleRadians =
         interBarcodeData.startBarcode.accelerometerData.calculatePhoneAngle();
 
+    //ii. rotate StartBarcodeCenter.
     Offset rotatedStartBarcodeCenter = rotateOffset(
         offset: interBarcodeData.startBarcode.barcodeCenterPoint,
         angleRadians: phoneAngleRadians);
-
+    //iii. rotate EndBarcodeCenter.
     Offset rotatedEndBarcodeCenter = rotateOffset(
         offset: interBarcodeData.endBarcode.barcodeCenterPoint,
         angleRadians: phoneAngleRadians);
 
+    //iv. calculate interBarcodeOffset.
     Offset interBarcodeOffset =
         rotatedEndBarcodeCenter - rotatedStartBarcodeCenter;
 
+    //v. Calculate MMperPX.
+    //Start.
     double startBarcodeMMperPX = calculateRealUnit(
         diagonalLength: interBarcodeData.startBarcode.barcodeDiagonalLength,
         barcodeUID: interBarcodeData.startBarcode.barcodeUID,
-        isarDatabase: isarDatabase);
-
+        barcodeProperties: barcodeProperties);
+    //End.
     double endBarcodeMMperPX = calculateRealUnit(
         diagonalLength: interBarcodeData.endBarcode.barcodeDiagonalLength,
         barcodeUID: interBarcodeData.endBarcode.barcodeUID,
-        isarDatabase: isarDatabase);
+        barcodeProperties: barcodeProperties);
 
+    //vi. Calculate RealOffsets.
     Offset realOffsetStartBarcode = interBarcodeOffset / startBarcodeMMperPX;
     Offset realOffsetEndBarcode = interBarcodeOffset / endBarcodeMMperPX;
 
@@ -119,27 +129,30 @@ class InterBarcodeVectorEntry {
     Offset averageRealInterBarcodeOffset =
         (realOffsetStartBarcode + realOffsetEndBarcode) / 2;
 
-    ///2. Find the distance bewteen the camera and barcodes using the camera's focal length.
-    //StartBarcode
+    //2. Find the distance bewteen the camera and barcodes using the camera's focal length.
+    //StartBarcode.
     double startBarcodeDistanceFromCamera = calculateDistanceFromCamera(
-        barcodeOnImageDiagonalLength:
-            interBarcodeData.startBarcode.barcodeDiagonalLength,
-        barcodeUID: interBarcodeData.startBarcode.barcodeUID,
-        focalLength: focalLength,
-        isarDatabase: isarDatabase);
+      barcodeOnImageDiagonalLength:
+          interBarcodeData.startBarcode.barcodeDiagonalLength,
+      barcodeUID: interBarcodeData.startBarcode.barcodeUID,
+      focalLength: focalLength,
+      barcodeProperties: barcodeProperties,
+    );
 
-    //EndBarcode
+    //EndBarcode.
     double endBarcodeDistanceFromCamera = calculateDistanceFromCamera(
-        barcodeOnImageDiagonalLength:
-            interBarcodeData.endBarcode.barcodeDiagonalLength,
-        barcodeUID: interBarcodeData.endBarcode.barcodeUID,
-        focalLength: focalLength,
-        isarDatabase: isarDatabase);
+      barcodeOnImageDiagonalLength:
+          interBarcodeData.endBarcode.barcodeDiagonalLength,
+      barcodeUID: interBarcodeData.endBarcode.barcodeUID,
+      focalLength: focalLength,
+      barcodeProperties: barcodeProperties,
+    );
 
-    //Calculate the zOffset
+    //3. Calculate the zOffset.
     double zOffset =
         endBarcodeDistanceFromCamera - startBarcodeDistanceFromCamera;
 
+    //4. Build InterBarcodeVectorEntry.
     return InterBarcodeVectorEntry()
       ..startBarcodeUID = interBarcodeData.startBarcode.barcodeUID
       ..endBarcodeUID = interBarcodeData.endBarcode.barcodeUID

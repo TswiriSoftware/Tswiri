@@ -7,8 +7,8 @@ import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
 import 'package:isar/isar.dart';
 import 'package:vector_math/vector_math.dart';
 
-class RollingGrid {
-  RollingGrid({
+class Grid {
+  Grid({
     required this.isarDatabase,
   });
   final Isar isarDatabase;
@@ -28,7 +28,7 @@ class RollingGrid {
   ///Master List of Markers.
   late final List<Marker> markers = isarDatabase.markers.where().findAllSync();
 
-  late List<IndependantRollingGrid> independantRollingGrids = [];
+  late List<IndependantRollingGrid> independantGrids = [];
 
   //1. Require a List of grids containing parents and markers.
 
@@ -80,7 +80,7 @@ class RollingGrid {
 
       independantRollingGrid.coordinates.addAll(currentCoordinates);
     }
-    independantRollingGrids.addAll(newIndependantRollingGrids);
+    independantGrids.addAll(newIndependantRollingGrids);
   }
 }
 
@@ -97,7 +97,7 @@ class IndependantRollingGrid {
     return markersBarcodes;
   }
 
-  void addCoordinate(InterBarcodeVectorEntry interBarcodeVectorEntry) {
+  Coordinate addCoordinate(InterBarcodeVectorEntry interBarcodeVectorEntry) {
     Coordinate referenceCoordiante = coordinates
         .where((element) =>
             element.barcodeUID == interBarcodeVectorEntry.startBarcodeUID ||
@@ -107,14 +107,14 @@ class IndependantRollingGrid {
     if (referenceCoordiante.barcodeUID ==
         interBarcodeVectorEntry.startBarcodeUID) {
       Vector3 vector3 =
-          referenceCoordiante.coordinate! - interBarcodeVectorEntry.vector3;
+          referenceCoordiante.coordinate! + interBarcodeVectorEntry.vector3;
       newCoordinate = Coordinate(
           barcodeUID: interBarcodeVectorEntry.endBarcodeUID,
           coordinate: vector3,
           gridID: gridID);
     } else {
       Vector3 vector3 =
-          referenceCoordiante.coordinate! + interBarcodeVectorEntry.vector3;
+          referenceCoordiante.coordinate! - interBarcodeVectorEntry.vector3;
       newCoordinate = Coordinate(
           barcodeUID: interBarcodeVectorEntry.startBarcodeUID,
           coordinate: vector3,
@@ -123,6 +123,8 @@ class IndependantRollingGrid {
     if (!coordinates.contains(newCoordinate)) {
       coordinates.add(newCoordinate);
     }
+
+    return newCoordinate;
   }
 
   @override
