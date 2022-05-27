@@ -5,7 +5,6 @@ import 'package:vector_math/vector_math.dart' as vm;
 import 'package:flutter_google_ml_kit/functions/translating/distance_from_camera.dart';
 import 'package:flutter_google_ml_kit/functions/translating/offset_rotation.dart';
 import 'package:flutter_google_ml_kit/functions/translating/real_unit_calculator.dart';
-import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/objects/grid/processing/on_image_inter_barcode_data.dart';
 import 'package:isar/isar.dart';
 part 'interbarcode_vector_entry.g.dart';

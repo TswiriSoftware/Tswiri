@@ -13,7 +13,6 @@ import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/ba
 import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_grid/container_new_markers.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_grid/grid_visualizer_painter.dart';
-import 'package:flutter_isolate/flutter_isolate.dart';
 import 'package:isar/isar.dart';
 import '../../../isar_database/containers/container_relationship/container_relationship.dart';
 

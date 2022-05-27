@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.dart';
