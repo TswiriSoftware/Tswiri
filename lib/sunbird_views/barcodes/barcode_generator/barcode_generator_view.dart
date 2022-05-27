@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
@@ -469,7 +468,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
             onPressed: () async {
               double? newSize = await _sizeEditor(e.size);
 
-              if (newSize != null && newSize != e.size) {
+              if (newSize != e.size) {
                 e.size = newSize;
 
                 isarDatabase!.writeTxnSync((isar) => isar
