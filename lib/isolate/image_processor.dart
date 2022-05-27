@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
 import 'package:flutter/painting.dart';
@@ -330,6 +331,9 @@ void imageProcessor(List init) {
       configureInputImageData(message);
     } else if (message[0] == 'ImageDataMessage') {
       processImage(message);
+    } else if (message[0] == 'Update') {
+      Coordinate coordinate = Coordinate.fromJson(jsonDecode(message[1]));
+      masterGrid.updateCoordinate(coordinate);
     }
   });
 }

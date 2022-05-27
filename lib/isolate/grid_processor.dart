@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
 import 'package:flutter_google_ml_kit/extentions/distinct.dart';
@@ -103,17 +104,23 @@ void gridProcessor(List init) {
             if (storedCoordinate.coordinate != null) {
               //Check if the coordinate has moved.
               if (hasMoved(newCoordinate, storedCoordinate, 10)) {
+                masterGrid.updateCoordinate(newCoordinate);
+
                 //TODO: If the coordinate has moved within the current grid.
-                log('coordiante has moved within current grid.');
-                log('new coordinate: $newCoordinate');
-                log('old coordinate: $storedCoordinate');
+
+                // log('coordiante has moved within current grid.');
+                // log('new coordinate: $newCoordinate');
+                // log('old coordinate: $storedCoordinate');
+
+                sendPort.send(['Update', jsonEncode(newCoordinate.toJson())]);
               }
             } else {
               //viii. Do something if it's coordinate is null.
               //TODO: if the Coordinates Position is null
-              log('coordiante needs to be given a position within current grid.');
-              log('new coordinate: $newCoordinate');
-              log('old coordinate: $storedCoordinate');
+
+              // log('coordiante needs to be given a position within current grid.');
+              // log('new coordinate: $newCoordinate');
+              // log('old coordinate: $storedCoordinate');
             }
           } else {
             //vi. It does not exist in the same grid.
@@ -124,12 +131,14 @@ void gridProcessor(List init) {
             if (foundCoordinates.isNotEmpty) {
               //vii. Coordinate has been found in a different grid.
               //TODO: Code to update a coordinates grid and Position.
-              log('Coordinate has not been found in current grid.');
-              log('However it has been found somewhere else.');
-              log(foundCoordinates.toString());
+
+              // log('Coordinate has not been found in current grid.');
+              // log('However it has been found somewhere else.');
+              // log(foundCoordinates.toString());
             } else {
               //Coordinate has not been found anywhere.
-              log('This coordinate has not been found anywhere.');
+              //log('This coordinate has not been found anywhere.');
+              //TODO: Maybe ignore this ?
             }
           }
         }

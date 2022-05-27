@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.da
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isolate/grid_processor.dart';
+import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/barcode_position_scanner_camera_view.dart';
@@ -15,6 +17,7 @@ import 'package:flutter_google_ml_kit/sunbird_views/containers/container_view/co
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_navigator/navigator_painter.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/default_card/defualt_card.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
+import 'package:googleapis/calendar/v3.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:isolate';
 import 'package:vector_math/vector_math.dart' as vm;
@@ -65,6 +68,9 @@ class _NavigatorViewState extends State<NavigatorView> {
 
   //Dialogs
   bool showingDialog = false;
+
+  //Coordinate Updates
+  List<Coordinate> updatedCoordinates = [];
 
   @override
   void initState() {
@@ -151,6 +157,13 @@ class _NavigatorViewState extends State<NavigatorView> {
       if (message[0] == 'Sendport') {
         gridProcessor1 = message[1];
         log('UI: GridProcessor1 Port Set');
+      } else if (message[0] == 'Update') {
+        Coordinate coordinate = Coordinate.fromJson(jsonDecode(message[1]));
+        updatedCoordinates.add(coordinate);
+        imageProcessor1!.send(message);
+        imageProcessor2!.send(message);
+
+        //TODO: send to image processors.
       }
     });
   }

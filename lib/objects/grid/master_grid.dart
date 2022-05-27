@@ -251,7 +251,15 @@ class MasterGrid {
   }
 
   //TODO: Update coordinate.
-  void updateCoordinate() {}
+  void updateCoordinate(Coordinate coordinate) {
+    int index = coordinates!.indexWhere((element) =>
+        element.barcodeUID == coordinate.barcodeUID &&
+        element.gridID == coordinate.gridID);
+    if (index != -1) {
+      coordinates!.removeAt(index);
+      coordinates!.add(coordinate);
+    }
+  }
 
   ///This is for grid display Purposes ONLY.
   List<IndependantGrid> get independantGrids {
@@ -316,6 +324,25 @@ class Coordinate {
   @override
   String toString() {
     return '\nGridID: $gridID, barcodeUID: $barcodeUID, X: ${coordinate?.x}, Y: ${coordinate?.y}, Z: ${coordinate?.z}';
+  }
+
+  Map toJson() => {
+        'barcodeUID': barcodeUID,
+        'x': coordinate?.x,
+        'y': coordinate?.y,
+        'z': coordinate?.z,
+        'gridID': gridID,
+      };
+
+  factory Coordinate.fromJson(json) {
+    return Coordinate(
+        barcodeUID: json['barcodeUID'],
+        coordinate: Vector3(
+          json['x'] as double,
+          json['y'] as double,
+          json['z'] as double,
+        ),
+        gridID: json['gridID']);
   }
 }
 
