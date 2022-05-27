@@ -50,20 +50,20 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
   List<Photo> allPhotos = [];
 
   List<String> relevantFiles = [
-    // 'tagText.json', //1 [TagText] Shwap
-    // 'containerTypes.json', //2 [ContainerType] Shwap
-    // 'containerEntries.json', //3 [ContainerEntry] Shwap
-    // 'containerRelationships.json', //4 [ContainerRelationship] Shwap
-    // 'containerTags.json', //5 [ContainerTags] Shwap
-    // 'markers.json', // 6
-    // 'mlTags.json', // 7
-    // 'objectBoundingBox.json', // 8
+    'tagText.json', //1 [TagText] Shwap
+    'containerTypes.json', //2 [ContainerType] Shwap
+    'containerEntries.json', //3 [ContainerEntry] Shwap
+    'containerRelationships.json', //4 [ContainerRelationship] Shwap
+    'containerTags.json', //5 [ContainerTags] Shwap
+    'markers.json', // 6
+    'mlTags.json', // 7
+    'objectBoundingBox.json', // 8
     'realInterBarcodeVectorEntry.json', // 9
-    // 'barcodeSizeDistanceEntrys.json', // 10
-    // 'barcodePropertys.json', // 11
-    // 'barcodeGenerationEntrys.json', // 12
-    // 'photos.json', //13
-    // 'userTags.json', //14
+    'barcodeSizeDistanceEntrys.json', // 10
+    'barcodePropertys.json', // 11
+    'barcodeGenerationEntrys.json', // 12
+    'photos.json', //13
+    'userTags.json', //14
     //InterbarcodeTimeSchema required later
     //Physical Photos
   ];
@@ -443,7 +443,15 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
                     .putAllSync(realInterBarcodeVectorEntrys);
               });
               break;
-
+            case 'objectBoundingBox.json':
+              List<ObjectBoundingBox> objectBoundingBoxes =
+                  json.map((e) => ObjectBoundingBox().fromJson(e)).toList();
+              //log(barcodeSizeDistanceEntries.toString());
+              isarDatabase!.writeTxnSync((isar) {
+                isar.objectBoundingBoxs.where().deleteAllSync();
+                isar.objectBoundingBoxs.putAllSync(objectBoundingBoxes);
+              });
+              break;
             case 'barcodeSizeDistanceEntrys.json':
               List<BarcodeSizeDistanceEntry> barcodeSizeDistanceEntries = json
                   .map((e) => BarcodeSizeDistanceEntry().fromJson(e))
