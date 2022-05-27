@@ -17,7 +17,6 @@ import 'package:flutter_google_ml_kit/sunbird_views/containers/container_view/co
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_navigator/navigator_painter.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/default_card/defualt_card.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
-import 'package:googleapis/calendar/v3.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:isolate';
 import 'package:vector_math/vector_math.dart' as vm;
