@@ -207,6 +207,15 @@ class _BarcodeManagerViewState extends State<BarcodeManagerView> {
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               const Divider(),
+              Text(
+                'Size',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              Text(
+                barcodeProperty.size.toString(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const Divider(),
               barcodeActions(containerEntry, containerColor, barcodeProperty),
             ],
           ),
