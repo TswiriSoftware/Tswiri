@@ -50,20 +50,20 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
   List<Photo> allPhotos = [];
 
   List<String> relevantFiles = [
-    'tagText.json', //1 [TagText] Shwap
-    'containerTypes.json', //2 [ContainerType] Shwap
-    'containerEntries.json', //3 [ContainerEntry] Shwap
-    'containerRelationships.json', //4 [ContainerRelationship] Shwap
-    'containerTags.json', //5 [ContainerTags] Shwap
-    'markers.json', // 6
-    'mlTags.json', // 7
-    'objectBoundingBox.json', // 8
+    // 'tagText.json', //1 [TagText] Shwap
+    // 'containerTypes.json', //2 [ContainerType] Shwap
+    // 'containerEntries.json', //3 [ContainerEntry] Shwap
+    // 'containerRelationships.json', //4 [ContainerRelationship] Shwap
+    // 'containerTags.json', //5 [ContainerTags] Shwap
+    // 'markers.json', // 6
+    // 'mlTags.json', // 7
+    // 'objectBoundingBox.json', // 8
     'realInterBarcodeVectorEntry.json', // 9
-    'barcodeSizeDistanceEntrys.json', // 10
-    'barcodePropertys.json', // 11
-    'barcodeGenerationEntrys.json', // 12
-    'photos.json', //13
-    'userTags.json', //14
+    // 'barcodeSizeDistanceEntrys.json', // 10
+    // 'barcodePropertys.json', // 11
+    // 'barcodeGenerationEntrys.json', // 12
+    // 'photos.json', //13
+    // 'userTags.json', //14
     //InterbarcodeTimeSchema required later
     //Physical Photos
   ];
@@ -430,9 +430,12 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
               });
               break;
             case 'realInterBarcodeVectorEntry.json':
+              //TODO: FIX THIS [1]
               List<InterBarcodeVectorEntry> realInterBarcodeVectorEntrys = json
                   .map((e) => InterBarcodeVectorEntry().fromJson(e))
                   .toList();
+
+              log(realInterBarcodeVectorEntrys.toString());
               // log(realInterBarcodeVectorEntrys.toString());
               isarDatabase!.writeTxnSync((isar) {
                 isar.interBarcodeVectorEntrys.where().deleteAllSync();
@@ -519,7 +522,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
           File thumbnailFile = File(storagePath +
               '/sunbird/' +
               photo.name.toString().split('.').first +
-              '_thumbnail' +
+              '_thumbnail.' +
               photo.name.toString().split('.').last);
 
           if (await photoFile.exists()) {

@@ -75,7 +75,7 @@ class InterBarcodeVectorEntry {
       ..id = json['id']
       ..startBarcodeUID = json['startBarcodeUID']
       ..endBarcodeUID = json['endBarcodeUID']
-      ..x = json['z'] as double
+      ..x = json['x'] as double
       ..y = json['y'] as double
       ..z = json['z'] as double
       ..timestamp = json['timestamp'] as int
