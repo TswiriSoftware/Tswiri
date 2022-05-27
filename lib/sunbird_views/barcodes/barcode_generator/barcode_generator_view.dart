@@ -9,7 +9,6 @@ import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/default_card/d
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 import 'package:numberpicker/numberpicker.dart';
-
 import '../barcode_scanning/multiple_barcode_scanner/multiple_barcode_scanner_view.dart';
 
 class BarcodeGeneratorView extends StatefulWidget {
@@ -420,7 +419,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
             thickness: 0.2,
             color: Colors.deepOrange,
           ),
-          _historySize(e.size),
+          _historySize(e),
           const Divider(
             thickness: 0.2,
             color: Colors.deepOrange,
@@ -448,7 +447,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
     );
   }
 
-  Row _historySize(double size) {
+  Row _historySize(BarcodeGenerationEntry e) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -460,39 +459,28 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
               style: Theme.of(context).textTheme.bodySmall,
             ),
             Text(
-              size.toString(),
+              e.size.toString(),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],
         ),
         IconButton(
             onPressed: () async {
-              // double? newSize = await sizeEditor(e.size);
-              // if (newSize != null && newSize != e.size) {
-              //   e.size = newSize;
-              //   //update size
-              //   isarDatabase!.writeTxnSync((isar) => isar
-              //       .barcodeGenerationEntrys
-              //       .putSync(e, replaceOnConflict: true));
+              double? newSize = await _sizeEditor(e.size);
 
-              //   List<String> barcodeUIDS = generateBarcodes(e);
-              //   isarDatabase!.writeTxnSync((isar) => isar.barcodePropertys
-              //       .filter()
-              //       .repeat(
-              //           barcodeUIDS,
-              //           (q, String element) =>
-              //               q.barcodeUIDMatches(element))
-              //       .deleteAllSync());
+              if (newSize != e.size) {
+                e.size = newSize;
 
-              //   List<BarcodeProperty> newBarcodeProperties = barcodeUIDS
-              //       .map((e) => BarcodeProperty()
-              //         ..barcodeUID = e
-              //         ..size = newSize)
-              //       .toList();
+                isarDatabase!.writeTxnSync((isar) => isar
+                    .barcodeGenerationEntrys
+                    .putSync(e, replaceOnConflict: true));
 
-              //   isarDatabase!.writeTxnSync((isar) => isar.barcodePropertys
-              //       .putAllSync(newBarcodeProperties));
-              // }
+                setState(() {
+                  generationHistory = isarDatabase!.barcodeGenerationEntrys
+                      .where()
+                      .findAllSync();
+                });
+              }
             },
             icon: const Icon(Icons.edit))
       ],
@@ -607,5 +595,87 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
       generationHistory =
           isarDatabase!.barcodeGenerationEntrys.where().findAllSync();
     });
+  }
+
+  Future<double> _sizeEditor(double size) async {
+    double size = await showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (initialDialogContext) {
+        return AlertDialog(
+          title: Text('Edit Barcode Size'),
+          content: Row(
+            children: [
+              const Text('Size: '),
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 5,
+                child: TextFormField(
+                  onFieldSubmitted: (value) {
+                    if (value.isNotEmpty) {
+                      barcodeSizeController.text =
+                          double.parse(value).toString();
+                    }
+                  },
+                  onChanged: (value) {},
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  controller: barcodeSizeController,
+                  decoration: const InputDecoration(
+                    border: UnderlineInputBorder(),
+                  ),
+                ),
+              ),
+              Text(
+                'mm',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              Text(
+                ' x',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 5,
+                child: TextFormField(
+                  onFieldSubmitted: (value) {
+                    if (value.isNotEmpty) {
+                      barcodeSizeController.text =
+                          double.parse(value).toString();
+                    }
+                  },
+                  onChanged: (value) {},
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  controller: barcodeSizeController,
+                  decoration: const InputDecoration(
+                    border: UnderlineInputBorder(),
+                  ),
+                ),
+              ),
+              Text(
+                'mm',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+          actionsAlignment: MainAxisAlignment.spaceBetween,
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(initialDialogContext);
+              },
+              child: const Text('close'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(initialDialogContext,
+                    double.parse(barcodeSizeController.text));
+              },
+              child: const Text('ok'),
+            ),
+          ],
+        );
+      },
+    );
+    return size;
   }
 }

@@ -47,7 +47,6 @@ void gridProcessor(List init) {
   List<InterBarcodeVectorEntry> averagedInterBarcodeVectors = [];
   List<InterBarcodeVectorEntry> usedInterBarcodeVectors = [];
 
-  //TODO:split up process barcodes into smaller functions with code documentation.
   /// this function is called by
   void processBarcodes(List message) {
     //1. Create realInterBarcodeVectors.
@@ -128,6 +127,7 @@ void gridProcessor(List init) {
                 .where(
                     (element) => element.barcodeUID == newCoordinate.barcodeUID)
                 .toList();
+
             if (foundCoordinates.isNotEmpty) {
               //vii. Coordinate has been found in a different grid.
               //TODO: Code to update a coordinates grid and Position.
@@ -143,8 +143,6 @@ void gridProcessor(List init) {
           }
         }
       }
-
-      //log(independantGrid.toString());
     }
   }
 

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +25,6 @@ class _SingleBarcodeScannerViewState extends State<SingleBarcodeScannerView> {
   bool isBusy = false;
   CustomPaint? customPaint;
   String? barcodeID;
-  String? autoBarcodeID;
   int? timestamp;
   bool isBusy2 = false;
 
@@ -72,8 +73,8 @@ class _SingleBarcodeScannerViewState extends State<SingleBarcodeScannerView> {
     isBusy = true;
 
     //Closest barcode to center distance.
-    double? clostesBarcodeDistance;
-
+    double? closestBarcodeDistance;
+    String? closestBarcodeID;
     final List<Barcode> barcodes =
         await barcodeScanner.processImage(inputImage);
 
@@ -85,50 +86,34 @@ class _SingleBarcodeScannerViewState extends State<SingleBarcodeScannerView> {
 
       //Run through all barcodes.
       for (Barcode barcode in barcodes) {
-        if (barcodes.isNotEmpty &&
-            barcodes.first.value.displayValue != null &&
-            mounted) {
+        if (barcodes.isNotEmpty && mounted) {
           //Calculate distance from screen center
           double distanceFromCenter =
               (imageCenter - calculateBarcodeCenterOffset(barcode)).distance;
 
-          if (clostesBarcodeDistance == null) {
-            setState(() {
-              clostesBarcodeDistance = distanceFromCenter;
-              barcodeID = barcode.value.displayValue;
-            });
-          } else if (clostesBarcodeDistance! > distanceFromCenter) {
-            clostesBarcodeDistance = distanceFromCenter;
-            barcodeID = barcode.value.displayValue;
-
-            if (autoBarcodeID == barcodeID) {
-              if (timestamp == null) {
-                setState(() {
-                  timestamp = DateTime.now().millisecondsSinceEpoch;
-                });
-              } else if ((timestamp! + 1000) <
-                  DateTime.now().millisecondsSinceEpoch) {
-                autoSelect();
-                break;
-              }
-            } else {
-              if (timestamp == null) {
-                setState(() {
-                  timestamp = DateTime.now().millisecondsSinceEpoch;
-                  autoBarcodeID = barcodeID;
-                });
-              } else {
-                setState(() {
-                  timestamp = DateTime.now().millisecondsSinceEpoch;
-                  autoBarcodeID = barcodeID;
-                });
-              }
-            }
-            setState(() {});
+          if (closestBarcodeDistance == null) {
+            closestBarcodeDistance = distanceFromCenter;
+            closestBarcodeID = barcode.value.displayValue;
+          } else if (closestBarcodeDistance > distanceFromCenter) {
+            closestBarcodeID = barcode.value.displayValue;
           }
+        } else if (mounted) {
+          barcodeID = null;
         }
       }
 
+      barcodeID = closestBarcodeID;
+      if (timestamp == null) {
+        timestamp = DateTime.now().millisecondsSinceEpoch;
+      } else if (barcodeID != closestBarcodeID || barcodeID == null) {
+        timestamp = DateTime.now().millisecondsSinceEpoch;
+      } else if (barcodeID != null &&
+          barcodeID == closestBarcodeID &&
+          (timestamp! + 2000) <= DateTime.now().millisecondsSinceEpoch) {
+        autoSelect();
+      }
+
+      log(barcodeID.toString());
       final painter = SingleBarcodeScannerPainter(
           barcodes: barcodes,
           absoluteImageSize: inputImage.inputImageData!.size,
