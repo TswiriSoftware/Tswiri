@@ -77,44 +77,48 @@ class NavigatorPainter extends CustomPainter {
 
   void drawArrow(Offset screenCenter, double finderCircleRadius,
       Offset averageOffsetToBarcode, Size size, Canvas canvas) {
-    //Draw arrow
-    //Start position of the arrow line.
-    Offset arrowLineStart =
-        Offset(screenCenter.dx + finderCircleRadius, screenCenter.dy);
+    if (averageOffsetToBarcode.dx > finderCircleRadius) {
+      //Draw arrow
+      //Start position of the arrow line.
+      Offset arrowLineStart =
+          Offset(screenCenter.dx + finderCircleRadius, screenCenter.dy);
 
-    //End position of the arrow line
-    Offset arrowLineHead = Offset(
-        arrowLineStart.dx +
-            averageOffsetToBarcode.distance -
-            finderCircleRadius,
-        screenCenter.dy);
-
-    //Confine arrow to screen size.
-    if (arrowLineHead.dx > (size.width)) {
-      arrowLineHead = Offset(
-          arrowLineStart.dx + (size.width / 2) - finderCircleRadius,
+      //End position of the arrow line
+      Offset arrowLineHead = Offset(
+          arrowLineStart.dx +
+              averageOffsetToBarcode.distance -
+              finderCircleRadius,
           screenCenter.dy);
+
+      //Confine arrow to screen size.
+      if (arrowLineHead.dx > (size.width)) {
+        arrowLineHead = Offset(
+            arrowLineStart.dx + (size.width / 2) - finderCircleRadius,
+            screenCenter.dy);
+      }
+
+      //ArrowHeadtop
+      Offset arrowHeadtop =
+          Offset(arrowLineHead.dx - 30, arrowLineHead.dy + 20);
+
+      //ArrowHeadBottom
+      Offset arrowHeadbottom =
+          Offset(arrowLineHead.dx - 30, arrowLineHead.dy - 20);
+
+      //Translate canvas to screen center.
+      canvas.translate(screenCenter.dx, screenCenter.dy);
+      //Rotate the canvas.
+      canvas.rotate(averageOffsetToBarcode.direction);
+      //Translate the canvas back to original position
+      canvas.translate(-screenCenter.dx, -screenCenter.dy);
+
+      //Draw the arrow
+      canvas.drawLine(
+          arrowLineStart, arrowLineHead, paintEasy(Colors.blue, 3.0));
+      canvas.drawLine(arrowLineHead, arrowHeadtop, paintEasy(Colors.blue, 3.0));
+      canvas.drawLine(
+          arrowLineHead, arrowHeadbottom, paintEasy(Colors.blue, 3.0));
     }
-
-    //ArrowHeadtop
-    Offset arrowHeadtop = Offset(arrowLineHead.dx - 30, arrowLineHead.dy + 20);
-
-    //ArrowHeadBottom
-    Offset arrowHeadbottom =
-        Offset(arrowLineHead.dx - 30, arrowLineHead.dy - 20);
-
-    //Translate canvas to screen center.
-    canvas.translate(screenCenter.dx, screenCenter.dy);
-    //Rotate the canvas.
-    canvas.rotate(averageOffsetToBarcode.direction);
-    //Translate the canvas back to original position
-    canvas.translate(-screenCenter.dx, -screenCenter.dy);
-
-    //Draw the arrow
-    canvas.drawLine(arrowLineStart, arrowLineHead, paintEasy(Colors.blue, 3.0));
-    canvas.drawLine(arrowLineHead, arrowHeadtop, paintEasy(Colors.blue, 3.0));
-    canvas.drawLine(
-        arrowLineHead, arrowHeadbottom, paintEasy(Colors.blue, 3.0));
   }
 
   @override
