@@ -81,7 +81,7 @@ void imageProcessor(List init) {
     //Configure InputImageData.
     inputImageData = InputImageData(
       size: config.absoluteSize,
-      imageRotation: InputImageRotation.Rotation_90deg,
+      imageRotation: InputImageRotation.rotation90deg,
       inputImageFormat: config.inputImageFormat,
       planeData: null,
     );
@@ -121,7 +121,7 @@ void imageProcessor(List init) {
       for (Barcode barcode in barcodes) {
         ///1. Caluclate barcode OnScreen CornerPoints.
         List<Offset> conrnerPoints = <Offset>[];
-        List<math.Point<num>> cornerPoints = barcode.value.cornerPoints!;
+        List<math.Point<num>> cornerPoints = barcode.cornerPoints!;
         for (var point in cornerPoints) {
           double x = translateX(point.x.toDouble(),
               inputImageData!.imageRotation, canvasSize!, inputImageData!.size);
@@ -133,7 +133,7 @@ void imageProcessor(List init) {
 
         //2. Build onImageBarcodeData.
         OnImageBarcodeData onImageBarcodeData = OnImageBarcodeData(
-          barcodeUID: barcode.value.displayValue!,
+          barcodeUID: barcode.displayValue!,
           onImageCornerPoints: [
             Offset(cornerPoints[0].x.toDouble(), cornerPoints[0].y.toDouble()),
             Offset(cornerPoints[1].x.toDouble(), cornerPoints[1].y.toDouble()),
@@ -174,11 +174,11 @@ void imageProcessor(List init) {
 
         //vi. Find real barcode Size if it exists.
         double barcodeDiagonalLength = defualtBarcodeSize;
-        if (barcodeProperties.any(
-            (element) => element.barcodeUID == barcode.value.displayValue)) {
+        if (barcodeProperties
+            .any((element) => element.barcodeUID == barcode.displayValue)) {
           barcodeDiagonalLength = barcodeProperties
               .firstWhere(
-                  (element) => element.barcodeUID == barcode.value.displayValue)
+                  (element) => element.barcodeUID == barcode.displayValue)
               .size;
         }
 
@@ -191,7 +191,7 @@ void imageProcessor(List init) {
             offsetToScreenCenter / startBarcodeMMperPX;
 
         BarcodeObject barcodeObject = BarcodeObject(
-            barcodeUID: barcode.value.displayValue!,
+            barcodeUID: barcode.displayValue!,
             realOffsetToScreenCenter: realOffsetToScreenCenter);
 
         barcodeObjects.add(barcodeObject);
@@ -200,7 +200,7 @@ void imageProcessor(List init) {
         gridProcessorData.add(onImageBarcodeData.toMessage());
 
         PainterBarcodeObject barcodePainterData = PainterBarcodeObject(
-          barcodeUID: barcode.value.displayValue!,
+          barcodeUID: barcode.displayValue!,
           conrnerPoints: conrnerPoints,
         );
 

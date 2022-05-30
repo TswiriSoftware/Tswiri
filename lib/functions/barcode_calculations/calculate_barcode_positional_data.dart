@@ -10,7 +10,7 @@ OnScreenBarcodeData calculateScreenBarcodeData({
   required Size size,
   required Size absoluteImageSize,
 }) {
-  var cornerPoints = barcode.value.cornerPoints;
+  var cornerPoints = barcode.cornerPoints;
 
   List<Offset> offsetPoints = <Offset>[];
   for (var point in cornerPoints!) {
@@ -27,7 +27,7 @@ OnScreenBarcodeData calculateScreenBarcodeData({
   //Calculate barcode on screen center.
   final Offset barcodeCenter = calculateCenterFromCornerPoints(offsetPoints);
   //BarcodeID.
-  final String displayValue = barcode.value.displayValue!;
+  final String displayValue = barcode.displayValue!;
 
   //Calculate the barcodes on screen size.
   double diagonal1 = (offsetPoints[0] - offsetPoints[2]).distance;

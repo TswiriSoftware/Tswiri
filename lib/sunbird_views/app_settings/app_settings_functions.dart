@@ -22,16 +22,12 @@ Future getStoredAppSettings() async {
   focalLength = prefs.getDouble(focalLengthPreference) ?? 1;
 
   //Get activated models
-  googleImageLabeling = prefs.getBool(googleImageLabelingPreference) ?? true;
-  googleImageLabelingConfidenceThreshold =
+  googleVision = prefs.getBool(googleImageLabelingPreference) ?? true;
+  googleVisionConfidenceThreshold =
       prefs.getInt(googleImageLabelingConfidenceThresholdPreference) ?? 75;
 
-  // googleVisionProducts = prefs.getBool(googleVisionProductsPreference) ?? true;
-  // googleVisionProductsConfidenceThreshold =
-  //     prefs.getInt(googleImageLabelingConfidenceThresholdPreference) ?? 50;
-
   inceptionV4 = prefs.getBool(inceptionV4Preference) ?? true;
-  inceptionV4PreferenceConfidenceThreshold =
+  inceptionV4ConfidenceThreshold =
       prefs.getInt(googleImageLabelingConfidenceThresholdPreference) ?? 75;
 }
 

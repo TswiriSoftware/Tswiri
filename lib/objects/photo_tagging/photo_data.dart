@@ -22,5 +22,5 @@ class PhotoData {
   final List<DetectedObject> photoObjects;
 
   ///Photo Text Labels [RecognisedText]
-  final RecognisedText recognisedTexts;
+  final RecognizedText recognisedTexts;
 }

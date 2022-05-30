@@ -22,12 +22,8 @@ bool hapticFeedBack = true;
 double? defaultBarcodeDiagonalLength;
 
 //ImageLabeling
-bool googleImageLabeling = true;
-int googleImageLabelingConfidenceThreshold = 50;
-
-// //Object Labeling
-// bool googleVisionProducts = true;
-// int googleVisionProductsConfidenceThreshold = 50;
+bool googleVision = true;
+int googleVisionConfidenceThreshold = 75;
 
 bool inceptionV4 = true;
-int inceptionV4PreferenceConfidenceThreshold = 50;
+int inceptionV4ConfidenceThreshold = 50;

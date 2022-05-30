@@ -392,7 +392,7 @@ class _ContainerViewState extends State<ContainerView> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text('Contains', style: Theme.of(context).textTheme.headlineSmall),
-        _gridButton()
+        _newContainer(),
       ],
     );
   }
@@ -494,10 +494,7 @@ class _ContainerViewState extends State<ContainerView> {
 
   Widget _childrenActions() {
     return Row(
-      children: [
-        _multipleContainers(),
-        _newContainer(),
-      ],
+      children: [_multipleContainers(), _gridButton()],
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
     );
   }

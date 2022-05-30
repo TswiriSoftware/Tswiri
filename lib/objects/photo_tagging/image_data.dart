@@ -23,7 +23,7 @@ class ImageData {
   final List<ImageLabel> detectedLabels;
 
   ///List of detected Text.
-  final RecognisedText? detectedText;
+  final RecognizedText? detectedText;
 
   ///Image rotation.
   final InputImageRotation imageRotation;

@@ -1,20 +1,15 @@
-// ignore_for_file: curly_braces_in_flow_control_structures
-
 import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-//import 'package:image_picker/image_picker.dart';
-
 import '../../../../main.dart';
 import '../../../app_settings/app_settings.dart';
 
 enum ScreenMode { liveFeed, gallery }
 
-class SingleBarcodeScannerCameraView extends StatefulWidget {
-  const SingleBarcodeScannerCameraView(
+class MarkerCameraView extends StatefulWidget {
+  const MarkerCameraView(
       {Key? key,
       required this.title,
       required this.customPaint,
@@ -30,12 +25,10 @@ class SingleBarcodeScannerCameraView extends StatefulWidget {
   final Color color;
 
   @override
-  _SingleBarcodeScannerCameraViewState createState() =>
-      _SingleBarcodeScannerCameraViewState();
+  _MarkerCameraViewState createState() => _MarkerCameraViewState();
 }
 
-class _SingleBarcodeScannerCameraViewState
-    extends State<SingleBarcodeScannerCameraView> {
+class _MarkerCameraViewState extends State<MarkerCameraView> {
   CameraController? _controller;
   int _cameraIndex = 0;
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
@@ -61,17 +54,7 @@ class _SingleBarcodeScannerCameraViewState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        backgroundColor: widget.color,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.info_outline_rounded),
-          ),
-        ],
-      ),
-      body: _body(),
+      body: _liveFeedBody(),
       floatingActionButton: _floatingActionButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
@@ -100,36 +83,8 @@ class _SingleBarcodeScannerCameraViewState
             }
           },
         ),
-        // Padding(
-        //   padding: const EdgeInsets.only(left: 16, right: 16),
-        //   child: SizedBox(
-        //     height: 70.0,
-        //     width: 70.0,
-        //     child: FloatingActionButton(
-        //       heroTag: 'camera selection',
-        //       child: Icon(
-        //         Platform.isIOS
-        //             ? Icons.flip_camera_ios_outlined
-        //             : Icons.flip_camera_android_outlined,
-        //         size: 30,
-        //       ),
-        //       onPressed: _switchLiveCamera,
-        //     ),
-        //   ),
-        // ),
-        // const SizedBox(
-        //   width: 86,
-        // ),
       ],
     );
-  }
-
-  Widget _body() {
-    Widget body;
-
-    body = _liveFeedBody();
-
-    return body;
   }
 
   Widget _liveFeedBody() {
@@ -189,13 +144,12 @@ class _SingleBarcodeScannerCameraViewState
 
     final camera = cameras[_cameraIndex];
     final imageRotation =
-        InputImageRotationMethods.fromRawValue(camera.sensorOrientation) ??
-            InputImageRotation.Rotation_0deg;
-    //print(camera.sensorOrientation);
+        InputImageRotationValue.fromRawValue(camera.sensorOrientation) ??
+            InputImageRotation.rotation0deg;
 
     final inputImageFormat =
-        InputImageFormatMethods.fromRawValue(image.format.raw) ??
-            InputImageFormat.NV21;
+        InputImageFormatValue.fromRawValue(image.format.raw) ??
+            InputImageFormat.nv21;
 
     final planeData = image.planes.map(
       (Plane plane) {

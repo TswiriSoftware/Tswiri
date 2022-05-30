@@ -3,22 +3,21 @@ import 'dart:developer';
 import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/single_barcode_scanner/single_barcode_scanner_camera_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/single_barcode_scanner/single_barcode_scanner_painter.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/single_barcode_scanner/single_camera_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/single_barcode_scanner/single_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 ///Will return a String? BarcodeUID
-class SingleBarcodeScannerView extends StatefulWidget {
-  const SingleBarcodeScannerView({Key? key, this.color}) : super(key: key);
+class SingleScannerView extends StatefulWidget {
+  const SingleScannerView({Key? key, this.color}) : super(key: key);
 
   final Color? color;
 
   @override
-  _SingleBarcodeScannerViewState createState() =>
-      _SingleBarcodeScannerViewState();
+  _SingleScannerViewState createState() => _SingleScannerViewState();
 }
 
-class _SingleBarcodeScannerViewState extends State<SingleBarcodeScannerView> {
+class _SingleScannerViewState extends State<SingleScannerView> {
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
 
@@ -58,7 +57,7 @@ class _SingleBarcodeScannerViewState extends State<SingleBarcodeScannerView> {
             ),
           ],
         ),
-        body: SingleBarcodeScannerCameraView(
+        body: SingleCameraView(
           color: widget.color ?? sunbirdOrange,
           title: 'Barcode Scanner',
           customPaint: customPaint,
@@ -93,9 +92,9 @@ class _SingleBarcodeScannerViewState extends State<SingleBarcodeScannerView> {
 
           if (closestBarcodeDistance == null) {
             closestBarcodeDistance = distanceFromCenter;
-            closestBarcodeID = barcode.value.displayValue;
+            closestBarcodeID = barcode.displayValue;
           } else if (closestBarcodeDistance > distanceFromCenter) {
-            closestBarcodeID = barcode.value.displayValue;
+            closestBarcodeID = barcode.displayValue;
           }
         } else if (mounted) {
           barcodeID = null;
@@ -114,7 +113,7 @@ class _SingleBarcodeScannerViewState extends State<SingleBarcodeScannerView> {
       }
 
       log(barcodeID.toString());
-      final painter = SingleBarcodeScannerPainter(
+      final painter = SinglePainter(
           barcodes: barcodes,
           absoluteImageSize: inputImage.inputImageData!.size,
           rotation: inputImage.inputImageData!.imageRotation,
@@ -139,10 +138,10 @@ class _SingleBarcodeScannerViewState extends State<SingleBarcodeScannerView> {
 }
 
 Offset calculateBarcodeCenterOffset(Barcode barcode) {
-  double top = barcode.value.boundingBox!.top;
-  double bottom = barcode.value.boundingBox!.bottom;
-  double left = barcode.value.boundingBox!.left;
-  double right = barcode.value.boundingBox!.right;
+  double top = barcode.boundingBox!.top;
+  double bottom = barcode.boundingBox!.bottom;
+  double left = barcode.boundingBox!.left;
+  double right = barcode.boundingBox!.right;
 
   Rect boundingBox = Rect.fromLTRB(left, top, right, bottom);
   return boundingBox.center;

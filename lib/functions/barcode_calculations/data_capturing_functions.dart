@@ -2,8 +2,8 @@ import 'dart:ui';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 ///Calculates the absolute side length of a single barcode
-double calculateAverageBarcodeDiagonalLength(BarcodeValue barcodeValue) {
-  var cornerPoints = barcodeValue.cornerPoints;
+double calculateAverageBarcodeDiagonalLength(Barcode barcode) {
+  var cornerPoints = barcode.cornerPoints;
   List<Offset> offsetPoints = <Offset>[];
   if (cornerPoints != null) {
     for (var point in cornerPoints) {
@@ -20,11 +20,11 @@ double calculateAverageBarcodeDiagonalLength(BarcodeValue barcodeValue) {
 }
 
 ///Calculates the OnImage center point of the barcode given the barcode and inputImageData
-Offset calculateBarcodeCenterPoint(BarcodeValue barcodeValue) {
+Offset calculateBarcodeCenterPoint(Barcode barcode) {
   final barcodeCentreX =
-      (barcodeValue.boundingBox!.left + barcodeValue.boundingBox!.right) / 2;
+      (barcode.boundingBox!.left + barcode.boundingBox!.right) / 2;
   final barcodeCentreY =
-      (barcodeValue.boundingBox!.top + barcodeValue.boundingBox!.bottom) / 2;
+      (barcode.boundingBox!.top + barcode.boundingBox!.bottom) / 2;
 
   final Offset centerOffset = Offset(barcodeCentreX, barcodeCentreY);
 

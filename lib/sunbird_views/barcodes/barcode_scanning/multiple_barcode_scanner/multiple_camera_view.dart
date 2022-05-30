@@ -13,8 +13,8 @@ import '../../../app_settings/app_settings.dart';
 
 enum ScreenMode { liveFeed, gallery }
 
-class MultipleBarcodeScannerCameraView extends StatefulWidget {
-  const MultipleBarcodeScannerCameraView(
+class MultipleCameraView extends StatefulWidget {
+  const MultipleCameraView(
       {Key? key,
       required this.title,
       required this.customPaint,
@@ -31,7 +31,7 @@ class MultipleBarcodeScannerCameraView extends StatefulWidget {
   _CameraViewState createState() => _CameraViewState();
 }
 
-class _CameraViewState extends State<MultipleBarcodeScannerCameraView> {
+class _CameraViewState extends State<MultipleCameraView> {
   final ScreenMode _mode = ScreenMode.liveFeed;
   CameraController? _controller;
   File? _image;
@@ -208,13 +208,12 @@ class _CameraViewState extends State<MultipleBarcodeScannerCameraView> {
 
     final camera = cameras[_cameraIndex];
     final imageRotation =
-        InputImageRotationMethods.fromRawValue(camera.sensorOrientation) ??
-            InputImageRotation.Rotation_0deg;
-    //print(camera.sensorOrientation);
+        InputImageRotationValue.fromRawValue(camera.sensorOrientation) ??
+            InputImageRotation.rotation0deg;
 
     final inputImageFormat =
-        InputImageFormatMethods.fromRawValue(image.format.raw) ??
-            InputImageFormat.NV21;
+        InputImageFormatValue.fromRawValue(image.format.raw) ??
+            InputImageFormat.nv21;
 
     final planeData = image.planes.map(
       (Plane plane) {

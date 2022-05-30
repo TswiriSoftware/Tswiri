@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/objects/photo_tagging/photo_data.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_image_processing.dart';
@@ -109,6 +110,7 @@ class _ObjectDetectorCameraViewState extends State<ObjectDetectorCameraView> {
                     // Get the photo's location.
                     final image = await _controller.takePicture();
                     _controller.setFlashMode(FlashMode.off);
+
                     PhotoData? result = await Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => ObjectDetectorProcessingView(

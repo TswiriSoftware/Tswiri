@@ -16,7 +16,7 @@ class BarcodeData {
 
   double get averageBarcodeDiagonalLength {
     double averageBarcodeDiagonalLength =
-        calculateAverageBarcodeDiagonalLength(barcode.value);
+        calculateAverageBarcodeDiagonalLength(barcode);
 
     return averageBarcodeDiagonalLength;
   }

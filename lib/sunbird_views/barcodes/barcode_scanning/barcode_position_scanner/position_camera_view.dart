@@ -1,15 +1,20 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
+//import 'package:image_picker/image_picker.dart';
+
 import '../../../../main.dart';
-import '../../../app_settings/app_settings.dart';
 
 enum ScreenMode { liveFeed, gallery }
 
-class MarkerBarcodeScannerCameraView extends StatefulWidget {
-  const MarkerBarcodeScannerCameraView(
+class PositionCameraView extends StatefulWidget {
+  const PositionCameraView(
       {Key? key,
       required this.title,
       required this.customPaint,
@@ -25,12 +30,10 @@ class MarkerBarcodeScannerCameraView extends StatefulWidget {
   final Color color;
 
   @override
-  _MarkerBarcodeScannerCameraViewState createState() =>
-      _MarkerBarcodeScannerCameraViewState();
+  _PositionCameraViewState createState() => _PositionCameraViewState();
 }
 
-class _MarkerBarcodeScannerCameraViewState
-    extends State<MarkerBarcodeScannerCameraView> {
+class _PositionCameraViewState extends State<PositionCameraView> {
   CameraController? _controller;
   int _cameraIndex = 0;
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
@@ -56,7 +59,21 @@ class _MarkerBarcodeScannerCameraViewState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _liveFeedBody(),
+      appBar: AppBar(
+        title: Text(
+          widget.title,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        centerTitle: true,
+        backgroundColor: widget.color,
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.info_outline_rounded),
+          ),
+        ],
+      ),
+      body: _body(),
       floatingActionButton: _floatingActionButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
@@ -64,29 +81,32 @@ class _MarkerBarcodeScannerCameraViewState
 
   Widget? _floatingActionButton() {
     if (cameras.length == 1) return null;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        FloatingActionButton(
-          backgroundColor: widget.color,
-          heroTag: 'flash',
-          child: Icon(
-            Platform.isIOS
-                ? Icons.flip_camera_ios_outlined
-                : Icons.flash_on_rounded,
-          ),
-          onPressed: () {
-            if (flash == true) {
-              _controller!.setFlashMode(FlashMode.off);
-              flash = false;
-            } else {
-              flash = true;
-              _controller!.setFlashMode(FlashMode.torch);
-            }
-          },
-        ),
-      ],
+    return FloatingActionButton(
+      backgroundColor: widget.color,
+      heroTag: 'flash',
+      child: Icon(
+        Platform.isIOS
+            ? Icons.flip_camera_ios_outlined
+            : Icons.flash_on_rounded,
+      ),
+      onPressed: () {
+        if (flash == true) {
+          _controller!.setFlashMode(FlashMode.off);
+          flash = false;
+        } else {
+          flash = true;
+          _controller!.setFlashMode(FlashMode.torch);
+        }
+      },
     );
+  }
+
+  Widget _body() {
+    Widget body;
+
+    body = _liveFeedBody();
+
+    return body;
   }
 
   Widget _liveFeedBody() {
@@ -146,13 +166,12 @@ class _MarkerBarcodeScannerCameraViewState
 
     final camera = cameras[_cameraIndex];
     final imageRotation =
-        InputImageRotationMethods.fromRawValue(camera.sensorOrientation) ??
-            InputImageRotation.Rotation_0deg;
-    //print(camera.sensorOrientation);
+        InputImageRotationValue.fromRawValue(camera.sensorOrientation) ??
+            InputImageRotation.rotation0deg;
 
     final inputImageFormat =
-        InputImageFormatMethods.fromRawValue(image.format.raw) ??
-            InputImageFormat.NV21;
+        InputImageFormatValue.fromRawValue(image.format.raw) ??
+            InputImageFormat.nv21;
 
     final planeData = image.planes.map(
       (Plane plane) {

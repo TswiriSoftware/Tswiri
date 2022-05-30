@@ -3,24 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_camera_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_painter.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/marker_barcode_scanner/marker_camera_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/marker_barcode_scanner/marker_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
 
-///Will return a String? BarcodeUID
-class MarkerBarcodeScannerView extends StatefulWidget {
-  const MarkerBarcodeScannerView(
-      {Key? key, required this.parentContainer, this.color})
+class MarkerScannerView extends StatefulWidget {
+  const MarkerScannerView({Key? key, required this.parentContainer, this.color})
       : super(key: key);
   final ContainerEntry parentContainer;
   final Color? color;
   @override
-  _MarkerBarcodeScannerViewState createState() =>
-      _MarkerBarcodeScannerViewState();
+  _MarkerScannerViewState createState() => _MarkerScannerViewState();
 }
 
-class _MarkerBarcodeScannerViewState extends State<MarkerBarcodeScannerView> {
+class _MarkerScannerViewState extends State<MarkerScannerView> {
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
 
@@ -58,7 +55,7 @@ class _MarkerBarcodeScannerViewState extends State<MarkerBarcodeScannerView> {
       body: Column(
         children: [
           Expanded(
-            child: MarkerBarcodeScannerCameraView(
+            child: MarkerCameraView(
               color: widget.color ?? sunbirdOrange,
               title: 'Barcode Scanner',
               customPaint: customPaint,
@@ -141,7 +138,7 @@ class _MarkerBarcodeScannerViewState extends State<MarkerBarcodeScannerView> {
       //Run through all barcodes.
       for (Barcode barcode in barcodes) {
         if (barcodes.isNotEmpty &&
-            barcodes.first.value.displayValue != null &&
+            barcodes.first.displayValue != null &&
             mounted) {
           //Calculate distance from screen center
           double distanceFromCenter =
@@ -151,18 +148,18 @@ class _MarkerBarcodeScannerViewState extends State<MarkerBarcodeScannerView> {
           if (clostesBarcodeDistance == null) {
             clostesBarcodeDistance = distanceFromCenter;
             setState(() {
-              currentBarcodeUID = barcode.value.displayValue;
+              currentBarcodeUID = barcode.displayValue;
             });
           } else if (clostesBarcodeDistance > distanceFromCenter) {
             clostesBarcodeDistance = distanceFromCenter;
             setState(() {
-              currentBarcodeUID = barcode.value.displayValue;
+              currentBarcodeUID = barcode.displayValue;
             });
           }
         }
       }
 
-      final painter = MarkerBarcodeScannerPainter(
+      final painter = MarkerPainter(
           barcodes: barcodes,
           absoluteImageSize: inputImage.inputImageData!.size,
           rotation: inputImage.inputImageData!.imageRotation,
@@ -181,10 +178,10 @@ class _MarkerBarcodeScannerViewState extends State<MarkerBarcodeScannerView> {
 }
 
 Offset calculateBarcodeCenterOffset(Barcode barcode) {
-  double top = barcode.value.boundingBox!.top;
-  double bottom = barcode.value.boundingBox!.bottom;
-  double left = barcode.value.boundingBox!.left;
-  double right = barcode.value.boundingBox!.right;
+  double top = barcode.boundingBox!.top;
+  double bottom = barcode.boundingBox!.bottom;
+  double left = barcode.boundingBox!.left;
+  double right = barcode.boundingBox!.right;
 
   Rect boundingBox = Rect.fromLTRB(left, top, right, bottom);
   return boundingBox.center;

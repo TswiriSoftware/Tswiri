@@ -10,7 +10,7 @@ import 'package:flutter_google_ml_kit/isar_database/containers/container_type/co
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/single_barcode_scanner/single_barcode_scanner_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/single_barcode_scanner/single_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_view/container_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_view/photo_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/photo_tagging/object_detector_view.dart';
@@ -365,7 +365,7 @@ class _NewContainerViewState extends State<NewContainerView> {
     String? scannedBarcodeUID = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SingleBarcodeScannerView(
+        builder: (context) => SingleScannerView(
           color: _containerColor,
         ),
       ),

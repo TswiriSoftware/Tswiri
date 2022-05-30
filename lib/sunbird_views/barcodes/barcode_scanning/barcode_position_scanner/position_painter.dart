@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
 import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
 
-class BarcodePositionPainterIsolate extends CustomPainter {
-  BarcodePositionPainterIsolate({
+class PositionPainter extends CustomPainter {
+  PositionPainter({
     required this.message,
   });
   final List message;
@@ -26,7 +26,7 @@ class BarcodePositionPainterIsolate extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(BarcodePositionPainterIsolate oldDelegate) {
+  bool shouldRepaint(PositionPainter oldDelegate) {
     return oldDelegate.message != message;
   }
 }

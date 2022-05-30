@@ -4,7 +4,7 @@ class Settings {
     required this.cameraPreset,
     required this.hapticFeedback,
     required this.defaultBarcodeSize,
-    required this.googleImageLabeling,
+    required this.googleVision,
     required this.googleImageLabelingConfidenceThreshold,
     //required this.googleVisionProducts,
     //required this.googleVisionProductsConfidenceThreshold,
@@ -22,7 +22,7 @@ class Settings {
   double defaultBarcodeSize;
 
   ///googleImageLabeling and confidence
-  bool googleImageLabeling;
+  bool googleVision;
   int googleImageLabelingConfidenceThreshold;
 
   // ///googleVisionProducts and confidence

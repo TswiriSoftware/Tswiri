@@ -11,8 +11,8 @@ import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.da
 
 import 'package:isar/isar.dart';
 
-class BarcodePositionScannerProcessingView extends StatefulWidget {
-  const BarcodePositionScannerProcessingView({
+class PositionProcessingView extends StatefulWidget {
+  const PositionProcessingView({
     Key? key,
     required this.barcodeDataBatches,
     required this.parentContainer,
@@ -23,12 +23,10 @@ class BarcodePositionScannerProcessingView extends StatefulWidget {
   final ContainerEntry parentContainer;
 
   @override
-  _BarcodePositionScannerProcessingViewState createState() =>
-      _BarcodePositionScannerProcessingViewState();
+  _PositionProcessingViewState createState() => _PositionProcessingViewState();
 }
 
-class _BarcodePositionScannerProcessingViewState
-    extends State<BarcodePositionScannerProcessingView> {
+class _PositionProcessingViewState extends State<PositionProcessingView> {
   late Future<List<InterBarcodeVectorEntry>> _future;
 
   @override

@@ -9,7 +9,7 @@ import 'package:flutter_google_ml_kit/isolate/grid_processor.dart';
 import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/barcode_position_scanner_camera_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/position_camera_view.dart';
 import 'package:flutter_google_ml_kit/isolate/image_processor.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/image_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/image_processor_config.dart';
@@ -205,9 +205,9 @@ class _NavigatorViewState extends State<NavigatorView> {
     return Stack(
       children: [
         RepaintBoundary(
-          child: BarcodePositionScannerCameraView(
-            color: color,
+          child: PositionCameraView(
             title: 'Position Scanner',
+            color: color,
             customPaint: customPaint,
             onImage: (inputImage) {
               if (hasConfiguredIPs == false) {

@@ -9,7 +9,7 @@ import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/default_card/d
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 import 'package:numberpicker/numberpicker.dart';
-import '../barcode_scanning/multiple_barcode_scanner/multiple_barcode_scanner_view.dart';
+import '../barcode_scanning/multiple_barcode_scanner/multiple_scanner_view.dart';
 
 class BarcodeGeneratorView extends StatefulWidget {
   const BarcodeGeneratorView({Key? key}) : super(key: key);
@@ -90,7 +90,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
                 Set<String>? scannedBarcodes = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const MultipleBarcodeScannerView()),
+                      builder: (context) => const MultipleScannerView()),
                 );
                 if (scannedBarcodes != null && scannedBarcodes.isNotEmpty) {
                   List<int> range = scannedBarcodes

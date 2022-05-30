@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
-import 'package:flutter_google_ml_kit/main.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/camera_calibration_view.dart';
-
+import '../widgets/cards/custom_card/custom_card.dart';
 import 'calibration_data_visualizer_view.dart';
 
 ///Shows camera calibration tools.

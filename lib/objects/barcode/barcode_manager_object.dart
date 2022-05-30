@@ -6,7 +6,4 @@ class BarcodeManagerObject {
       {required this.barcodeProperty, required this.containerEntry});
   final BarcodeProperty barcodeProperty;
   final ContainerEntry? containerEntry;
-
-  //Filtering and searching these objects :D
-
 }

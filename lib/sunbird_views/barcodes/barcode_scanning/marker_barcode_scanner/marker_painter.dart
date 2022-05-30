@@ -2,23 +2,26 @@ import 'dart:ui';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/functions/barcode_calculations/calculate_barcode_positional_data.dart';
 import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
-import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
+import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
 
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 import '../../../../functions/translating/coordinates_translator.dart';
 
-class SingleBarcodeScannerPainter extends CustomPainter {
-  SingleBarcodeScannerPainter({
+class MarkerPainter extends CustomPainter {
+  MarkerPainter({
     required this.barcodes,
     required this.absoluteImageSize,
     required this.rotation,
+    required this.selectedBarcodeUIDs,
     this.barcodeID,
   });
   final List<Barcode> barcodes;
   final Size absoluteImageSize;
   final InputImageRotation rotation;
+  final List<String> selectedBarcodeUIDs;
   final String? barcodeID;
 
   @override
@@ -42,11 +45,13 @@ class SingleBarcodeScannerPainter extends CustomPainter {
             textDirection: TextDirection.ltr),
       );
       builder.pushStyle(ui.TextStyle(
-          color: Colors.lightGreenAccent, background: background, fontSize: 9));
-      builder.addText('${barcode.value.displayValue}');
+          color: Colors.lightGreenAccent,
+          background: background,
+          fontSize: 20));
+      builder.addText('${barcode.displayValue}');
       builder.pop();
 
-      var cornerPoints = barcode.value.cornerPoints;
+      var cornerPoints = barcode.cornerPoints;
       if (cornerPoints != null) {
         List<Offset> offsetPoints = <Offset>[];
 
@@ -61,37 +66,39 @@ class SingleBarcodeScannerPainter extends CustomPainter {
 
         offsetPoints.add(offsetPoints.first);
 
-        //Offset centerPoint = calculateCenterFromCornerPoints(offsetPoints);
+        Offset centerPoint = calculateCenterFromCornerPoints(offsetPoints);
 
         canvas.drawParagraph(
-          builder.build()..layout(const ParagraphConstraints(width: 100)),
-          offsetPoints.first,
+          builder.build()..layout(const ParagraphConstraints(width: 300)),
+          centerPoint,
         );
 
-        canvas.drawPoints(PointMode.polygon, offsetPoints, paint);
-        if (barcodeID == barcode.value.displayValue) {
+        if (barcodeID == barcode.displayValue) {
           canvas.drawPoints(
-              PointMode.polygon, offsetPoints, paintEasy(Colors.blueAccent, 3));
+              PointMode.polygon, offsetPoints, paintEasy(barcodeFocusColor, 3));
+        } else if (selectedBarcodeUIDs.contains(barcode.displayValue)) {
+          canvas.drawPoints(PointMode.polygon, offsetPoints,
+              paintEasy(barcodeMarkerColor, 3));
         } else {
-          canvas.drawPoints(
-              PointMode.polygon, offsetPoints, paintEasy(springGreen, 3));
+          canvas.drawPoints(PointMode.polygon, offsetPoints,
+              paintEasy(barcodeDefaultColor, 3));
         }
       }
     }
   }
 
   TextPainter text(String text) {
-    TextSpan span =
-        TextSpan(style: const TextStyle(color: Colors.red), text: text);
+    TextSpan span = TextSpan(
+        style: const TextStyle(color: Colors.red, fontSize: 10), text: text);
     TextPainter tp = TextPainter(
         text: span,
-        textAlign: TextAlign.left,
+        textAlign: TextAlign.right,
         textDirection: TextDirection.ltr);
     return tp;
   }
 
   @override
-  bool shouldRepaint(SingleBarcodeScannerPainter oldDelegate) {
+  bool shouldRepaint(MarkerPainter oldDelegate) {
     return oldDelegate.absoluteImageSize != absoluteImageSize ||
         oldDelegate.barcodes != barcodes;
   }

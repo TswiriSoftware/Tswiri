@@ -26,17 +26,17 @@ class BarcodeDetectorPainterCalibration extends CustomPainter {
       );
       builder.pushStyle(
           ui.TextStyle(color: Colors.lightGreenAccent, background: background));
-      builder.addText('${barcode.value.displayValue}');
+      builder.addText('${barcode.displayValue}');
       builder.pop();
 
       final boundingBoxLeft = translateX(
-          barcode.value.boundingBox!.left, rotation, size, absoluteImageSize);
+          barcode.boundingBox!.left, rotation, size, absoluteImageSize);
       final boundingBoxTop = translateY(
-          barcode.value.boundingBox!.top, rotation, size, absoluteImageSize);
+          barcode.boundingBox!.top, rotation, size, absoluteImageSize);
       final boundingBoxRight = translateX(
-          barcode.value.boundingBox!.right, rotation, size, absoluteImageSize);
+          barcode.boundingBox!.right, rotation, size, absoluteImageSize);
       final boundingBoxBottom = translateY(
-          barcode.value.boundingBox!.bottom, rotation, size, absoluteImageSize);
+          barcode.boundingBox!.bottom, rotation, size, absoluteImageSize);
 
       canvas.drawParagraph(
         builder.build()

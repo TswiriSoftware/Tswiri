@@ -1,18 +1,19 @@
 import 'dart:isolate';
+import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isolate/image_processing_isolate.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/barcode_position_painter_isolate.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/position_camera_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/position_painter.dart';
 import 'package:vector_math/vector_math.dart' as vm;
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/barcode_position_scanner_camera_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/barcode_position_scanner_processing_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/position_processing_view.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
-class BarcodePositionScannerView extends StatefulWidget {
-  const BarcodePositionScannerView({
+class PositionScannerView extends StatefulWidget {
+  const PositionScannerView({
     Key? key,
     required this.parentContainer,
     this.customColor,
@@ -22,12 +23,10 @@ class BarcodePositionScannerView extends StatefulWidget {
   final Color? customColor;
 
   @override
-  _BarcodePositionScannerViewState createState() =>
-      _BarcodePositionScannerViewState();
+  _PositionScannerViewState createState() => _PositionScannerViewState();
 }
 
-class _BarcodePositionScannerViewState
-    extends State<BarcodePositionScannerView> {
+class _PositionScannerViewState extends State<PositionScannerView> {
   bool isBusy = false;
   CustomPaint? customPaint;
 
@@ -117,7 +116,7 @@ class _BarcodePositionScannerViewState
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => BarcodePositionScannerProcessingView(
+                builder: (context) => PositionProcessingView(
                   barcodeDataBatches: barcodeDataBatches,
                   parentContainer: widget.parentContainer,
                 ),
@@ -126,9 +125,9 @@ class _BarcodePositionScannerViewState
           },
           child: const Icon(Icons.check_circle_outline_rounded),
         ),
-        body: BarcodePositionScannerCameraView(
-          color: widget.customColor ?? Colors.deepOrange,
+        body: PositionCameraView(
           title: 'Position Scanner',
+          color: widget.customColor ?? sunbirdOrange,
           customPaint: customPaint,
           onImage: (inputImage) async {
             //Configure the Isolate.
@@ -211,7 +210,7 @@ class _BarcodePositionScannerViewState
     if (isBusy) return;
     isBusy = true;
 
-    final painter = BarcodePositionPainterIsolate(message: barcodeDataBatch);
+    final painter = PositionPainter(message: barcodeDataBatch);
     customPaint = CustomPaint(painter: painter);
 
     barcodeDataBatches.add(barcodeDataBatch);

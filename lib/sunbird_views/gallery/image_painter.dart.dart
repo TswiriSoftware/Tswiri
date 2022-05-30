@@ -41,14 +41,14 @@ class ObjectPainter extends CustomPainter {
           .boundingBoxProperty()
           .findFirstSync()!;
 
-      final left = translateX(boundingBox[0], InputImageRotation.Rotation_90deg,
-          size, absoluteSize);
-      final top = translateY(boundingBox[1], InputImageRotation.Rotation_90deg,
-          size, absoluteSize);
-      final right = translateX(boundingBox[2],
-          InputImageRotation.Rotation_90deg, size, absoluteSize);
-      final bottom = translateY(boundingBox[3],
-          InputImageRotation.Rotation_90deg, size, absoluteSize);
+      final left = translateX(
+          boundingBox[0], InputImageRotation.rotation90deg, size, absoluteSize);
+      final top = translateY(
+          boundingBox[1], InputImageRotation.rotation90deg, size, absoluteSize);
+      final right = translateX(
+          boundingBox[2], InputImageRotation.rotation90deg, size, absoluteSize);
+      final bottom = translateY(
+          boundingBox[3], InputImageRotation.rotation90deg, size, absoluteSize);
 
       //3. Construct the Rect.
       Rect rect = Rect.fromLTRB(

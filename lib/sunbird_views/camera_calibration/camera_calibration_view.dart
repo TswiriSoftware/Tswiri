@@ -151,7 +151,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
         rawBarcodesData
             .add(BarcodeData(timestamp: timestamp, barcode: barcodes.first));
       }
-      barcodeUID = barcodes.first.value.displayValue;
+      barcodeUID = barcodes.first.displayValue;
 
       //Initialize the painter.
       final painter = BarcodeDetectorPainterCalibration(

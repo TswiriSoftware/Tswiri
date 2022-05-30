@@ -9,8 +9,8 @@ import 'package:flutter_google_ml_kit/isar_database/barcodes/interbarcode_vector
 import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
 import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
 import 'package:flutter_google_ml_kit/objects/grid/rolling_grid.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/barcode_position_scanner_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/marker_barcode_scanner/marker_barcode_scanner_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/position_scanner_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/marker_barcode_scanner/marker_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_grid/container_new_markers.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_grid/grid_visualizer_painter.dart';
 import 'package:isar/isar.dart';
@@ -150,7 +150,7 @@ class _ContainerGridViewState extends State<ContainerGridView> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => BarcodePositionScannerView(
+            builder: (context) => PositionScannerView(
               parentContainer: containerEntry,
               customColor: containerTypeColor,
             ),
@@ -339,7 +339,7 @@ class _ContainerGridViewState extends State<ContainerGridView> {
     List<String> newMarkers = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MarkerBarcodeScannerView(
+            builder: (context) => MarkerScannerView(
               parentContainer: containerEntry,
               color: containerTypeColor,
             ),

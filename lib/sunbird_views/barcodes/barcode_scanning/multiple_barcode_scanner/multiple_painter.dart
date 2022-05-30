@@ -6,9 +6,8 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 
 import '../../../../functions/translating/coordinates_translator.dart';
 
-class MultipleBarcodeScannerDetectorPainter extends CustomPainter {
-  MultipleBarcodeScannerDetectorPainter(
-      this.barcodes, this.absoluteImageSize, this.rotation);
+class MultiplePainter extends CustomPainter {
+  MultiplePainter(this.barcodes, this.absoluteImageSize, this.rotation);
 
   final List<Barcode> barcodes;
   final Size absoluteImageSize;
@@ -32,17 +31,17 @@ class MultipleBarcodeScannerDetectorPainter extends CustomPainter {
       );
       builder.pushStyle(
           ui.TextStyle(color: Colors.lightGreenAccent, background: background));
-      builder.addText('${barcode.value.displayValue}');
+      builder.addText('${barcode.displayValue}');
       builder.pop();
 
       final left = translateX(
-          barcode.value.boundingBox!.left, rotation, size, absoluteImageSize);
+          barcode.boundingBox!.left, rotation, size, absoluteImageSize);
       final top = translateY(
-          barcode.value.boundingBox!.top, rotation, size, absoluteImageSize);
+          barcode.boundingBox!.top, rotation, size, absoluteImageSize);
       final right = translateX(
-          barcode.value.boundingBox!.right, rotation, size, absoluteImageSize);
+          barcode.boundingBox!.right, rotation, size, absoluteImageSize);
       final bottom = translateY(
-          barcode.value.boundingBox!.bottom, rotation, size, absoluteImageSize);
+          barcode.boundingBox!.bottom, rotation, size, absoluteImageSize);
 
       canvas.drawParagraph(
         builder.build()
@@ -60,7 +59,7 @@ class MultipleBarcodeScannerDetectorPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(MultipleBarcodeScannerDetectorPainter oldDelegate) {
+  bool shouldRepaint(MultiplePainter oldDelegate) {
     return oldDelegate.absoluteImageSize != absoluteImageSize ||
         oldDelegate.barcodes != barcodes;
   }

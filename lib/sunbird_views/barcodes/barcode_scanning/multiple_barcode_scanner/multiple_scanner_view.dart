@@ -1,19 +1,17 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/multiple_barcode_scanner/multiple_barcode_scanner_camera_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/multiple_barcode_scanner/multiple_barcode_scanner_detector_painter.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/multiple_barcode_scanner/multiple_camera_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/multiple_barcode_scanner/multiple_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-class MultipleBarcodeScannerView extends StatefulWidget {
-  const MultipleBarcodeScannerView({Key? key}) : super(key: key);
+class MultipleScannerView extends StatefulWidget {
+  const MultipleScannerView({Key? key}) : super(key: key);
 
   @override
-  _MultipleBarcodeScannerViewState createState() =>
-      _MultipleBarcodeScannerViewState();
+  _MultipleScannerViewState createState() => _MultipleScannerViewState();
 }
 
-class _MultipleBarcodeScannerViewState
-    extends State<MultipleBarcodeScannerView> {
+class _MultipleScannerViewState extends State<MultipleScannerView> {
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
 
@@ -57,7 +55,7 @@ class _MultipleBarcodeScannerViewState
             ],
           ),
         ),
-        body: MultipleBarcodeScannerCameraView(
+        body: MultipleCameraView(
           title: 'Barcode Scanner',
           customPaint: customPaint,
           onImage: (inputImage) {
@@ -76,12 +74,10 @@ class _MultipleBarcodeScannerViewState
         inputImage.inputImageData?.imageRotation != null) {
       //Dont bother if we haven't detected more than one barcode on a image.
       for (Barcode barcode in barcodes) {
-        scannedBarcodes.add(barcode.value.displayValue!);
+        scannedBarcodes.add(barcode.displayValue!);
       }
       //Paint square on screen around barcode.
-      final painter = MultipleBarcodeScannerDetectorPainter(
-          barcodes,
-          inputImage.inputImageData!.size,
+      final painter = MultiplePainter(barcodes, inputImage.inputImageData!.size,
           inputImage.inputImageData!.imageRotation);
 
       customPaint = CustomPaint(painter: painter);

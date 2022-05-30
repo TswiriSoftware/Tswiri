@@ -28,7 +28,7 @@ void imageProcessorIsolate(SendPort sendPort) {
 
       for (Barcode barcode in barcodes) {
         List<Offset> offsetPoints = <Offset>[];
-        List<math.Point<num>> cornerPoints = barcode.value.cornerPoints!;
+        List<math.Point<num>> cornerPoints = barcode.cornerPoints!;
         for (var point in cornerPoints) {
           double x = translateX(point.x.toDouble(),
               inputImageData!.imageRotation, screenSize!, inputImageData!.size);
@@ -39,7 +39,7 @@ void imageProcessorIsolate(SendPort sendPort) {
         }
 
         barcodeData.add([
-          barcode.value.displayValue, //Display value. [0]
+          barcode.displayValue, //Display value. [0]
           [
             //On Screen Points [1][]
             offsetPoints[0].dx,
@@ -90,7 +90,7 @@ void imageProcessorIsolate(SendPort sendPort) {
         //Configure InputImageData.
         inputImageData = InputImageData(
           size: Size(message[1], message[0]),
-          imageRotation: InputImageRotation.Rotation_90deg,
+          imageRotation: InputImageRotation.rotation90deg,
           inputImageFormat: InputImageFormat.values.elementAt(message[2]),
           planeData: null,
         );
