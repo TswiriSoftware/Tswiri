@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/user_accelerometer_z_axis_data_objects.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/barcode_size_objects.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/data_processing/camera_calibration_data_processing_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/camera_view/camera_calibration_camera_view.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/calibration_camera_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/camera_calibration/painters/barcode_calibration_painter.dart';
 
 import 'package:google_ml_kit/google_ml_kit.dart';
@@ -87,7 +87,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
         }
         return const Center();
       }),
-      body: CameraViewCameraCalibration(
+      body: CalibrationCameraView(
         title: 'Camera Calibration',
         customPaint: customPaint,
         onImage: (inputImage) {

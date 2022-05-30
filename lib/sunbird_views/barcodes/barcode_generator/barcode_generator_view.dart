@@ -180,7 +180,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
             )
           ],
         ),
-        color: sunbirdOrange);
+        borderColor: sunbirdOrange);
   }
 
   Row _numberPicker() {
@@ -230,7 +230,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
                 });
               },
             ),
-            color: sunbirdOrange),
+            borderColor: sunbirdOrange),
       ],
     );
   }
@@ -284,12 +284,12 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
                 return _customBarcodeSize();
               }
             }),
-            color: sunbirdOrange,
+            borderColor: sunbirdOrange,
           ),
           _generateBarcodes(),
         ],
       ),
-      color: sunbirdOrange,
+      borderColor: sunbirdOrange,
     );
   }
 
@@ -376,7 +376,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
           for (BarcodeGenerationEntry e in generationHistory) _historyWidget(e)
         ],
       ),
-      color: sunbirdOrange,
+      borderColor: sunbirdOrange,
     );
   }
 
@@ -427,7 +427,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
           _historyActions(e),
         ],
       ),
-      color: sunbirdOrange,
+      borderColor: sunbirdOrange,
     );
   }
 

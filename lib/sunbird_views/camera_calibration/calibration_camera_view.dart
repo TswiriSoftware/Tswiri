@@ -8,13 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../app_settings/app_settings.dart';
-import '../../../main.dart';
+import '../app_settings/app_settings.dart';
+import '../../main.dart';
 
 enum ScreenMode { liveFeed, gallery }
 
-class CameraViewCameraCalibration extends StatefulWidget {
-  const CameraViewCameraCalibration(
+class CalibrationCameraView extends StatefulWidget {
+  const CalibrationCameraView(
       {Key? key,
       required this.title,
       required this.customPaint,
@@ -28,12 +28,10 @@ class CameraViewCameraCalibration extends StatefulWidget {
   final CameraLensDirection initialDirection;
 
   @override
-  _CameraViewCameraCalibrationState createState() =>
-      _CameraViewCameraCalibrationState();
+  _CalibrationCameraViewState createState() => _CalibrationCameraViewState();
 }
 
-class _CameraViewCameraCalibrationState
-    extends State<CameraViewCameraCalibration> {
+class _CalibrationCameraViewState extends State<CalibrationCameraView> {
   final ScreenMode _mode = ScreenMode.liveFeed;
   CameraController? _controller;
   File? _image;

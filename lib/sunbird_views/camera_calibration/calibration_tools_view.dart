@@ -5,16 +5,14 @@ import '../widgets/cards/custom_card/custom_card.dart';
 import 'calibration_data_visualizer_view.dart';
 
 ///Shows camera calibration tools.
-class CameraCalibrationToolsView extends StatefulWidget {
-  const CameraCalibrationToolsView({Key? key}) : super(key: key);
+class CalibrationToolsView extends StatefulWidget {
+  const CalibrationToolsView({Key? key}) : super(key: key);
 
   @override
-  _CameraCalibrationToolsViewState createState() =>
-      _CameraCalibrationToolsViewState();
+  _CalibrationToolsViewState createState() => _CalibrationToolsViewState();
 }
 
-class _CameraCalibrationToolsViewState
-    extends State<CameraCalibrationToolsView> {
+class _CalibrationToolsViewState extends State<CalibrationToolsView> {
   @override
   void initState() {
     super.initState();

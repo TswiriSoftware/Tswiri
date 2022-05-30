@@ -577,7 +577,6 @@ class IndependantGrid {
   ///Calculate the onScreenPoints.
   List<DisplayPoint> displayPoints(Size screenSize) {
     List<Position> positions = allPositions;
-    //log(allPositions.toString());
 
     List<double> unitVector = unitVectors(
         realBarcodePositions: positions,

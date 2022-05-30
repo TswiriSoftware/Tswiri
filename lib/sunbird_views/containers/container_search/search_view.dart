@@ -191,7 +191,7 @@ class _SearchViewState extends State<SearchView> {
         //
         //log(searchObject.toString());
         return defaultCard(
-            body: container(searchObject), color: searchObject.color);
+            body: container(searchObject), borderColor: searchObject.color);
       },
     );
   }
@@ -465,7 +465,7 @@ class _SearchViewState extends State<SearchView> {
           ),
         ),
       ),
-      color: highlightColor,
+      borderColor: highlightColor,
     );
   }
 

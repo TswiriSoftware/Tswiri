@@ -453,7 +453,7 @@ class _NavigatorViewState extends State<NavigatorView> {
                                 Text(currentContainer?.name ?? 'no name'),
                               ],
                             ),
-                            color: color),
+                            borderColor: color),
                         defaultCard(
                             body: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -472,7 +472,7 @@ class _NavigatorViewState extends State<NavigatorView> {
                                 Text(selectedContainer?.name ?? 'no name'),
                               ],
                             ),
-                            color: color),
+                            borderColor: color),
                       ],
                     ),
                     Row(
@@ -485,7 +485,7 @@ class _NavigatorViewState extends State<NavigatorView> {
                                 for (String x in currentBarcodeTree) Text(x)
                               ],
                             ),
-                            color: color),
+                            borderColor: color),
                         defaultCard(
                             body: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -494,7 +494,7 @@ class _NavigatorViewState extends State<NavigatorView> {
                                 for (String x in selectedBarcodeTree) Text(x)
                               ],
                             ),
-                            color: color),
+                            borderColor: color),
                       ],
                     ),
                   ],

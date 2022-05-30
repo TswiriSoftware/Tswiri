@@ -10,8 +10,10 @@ import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
 import 'package:flutter_google_ml_kit/objects/grid/processing/on_image_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/grid/processing/on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/grid/rolling_grid.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/position_processing_view.dart';
+
 import 'package:isar/isar.dart';
+
+import '../functions/averageing_functions/calculate_quartile_value.dart';
 
 ///This is a isolate that updates positions (improve this over time.)
 void gridProcessor(List init) {

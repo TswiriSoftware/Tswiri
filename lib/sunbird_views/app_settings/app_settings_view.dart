@@ -287,79 +287,71 @@ class _SettingsViewState extends State<SettingsView> {
           ),
         ],
       ),
+      borderColor: sunbirdOrange,
       color: Colors.black38,
     );
   }
 
   Widget inceptionV4Settings(Settings snapshot) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      color: Colors.black38,
-      elevation: 5,
-      shadowColor: Colors.black26,
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(color: sunbirdOrange, width: 1.5),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'InceptionV4 ',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                Checkbox(
-                  checkColor: Colors.white,
-                  fillColor: MaterialStateProperty.resolveWith(getColor),
-                  value: snapshot.inceptionV4,
-                  onChanged: (bool? value) async {
+    return defaultCard(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'InceptionV4 ',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              Checkbox(
+                checkColor: Colors.white,
+                fillColor: MaterialStateProperty.resolveWith(getColor),
+                value: snapshot.inceptionV4,
+                onChanged: (bool? value) async {
+                  final prefs = await SharedPreferences.getInstance();
+                  setState(() {
+                    inceptionV4 = value!;
+                    prefs.setBool(inceptionV4Preference, inceptionV4);
+                  });
+                },
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Google Vision Products Confidnce: ',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.15,
+                child: TextFormField(
+                  controller:
+                      inceptionV4PreferenceConfidenceThresholdController,
+                  onFieldSubmitted: (value) async {
                     final prefs = await SharedPreferences.getInstance();
-                    setState(() {
-                      inceptionV4 = value!;
-                      prefs.setBool(inceptionV4Preference, inceptionV4);
-                    });
+                    inceptionV4ConfidenceThreshold = int.parse(value);
+                    prefs.setInt(
+                        inceptionV4PreferenceConfidenceThresholdPreference,
+                        inceptionV4ConfidenceThreshold);
                   },
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Google Vision Products Confidnce: ',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.15,
-                  child: TextFormField(
-                    controller:
-                        inceptionV4PreferenceConfidenceThresholdController,
-                    onFieldSubmitted: (value) async {
-                      final prefs = await SharedPreferences.getInstance();
-                      inceptionV4ConfidenceThreshold = int.parse(value);
-                      prefs.setInt(
-                          inceptionV4PreferenceConfidenceThresholdPreference,
-                          inceptionV4ConfidenceThreshold);
-                    },
-                    textAlign: TextAlign.center,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(
-                      prefix: Text('0.'),
-                      border: UnderlineInputBorder(),
-                    ),
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: const InputDecoration(
+                    prefix: Text('0.'),
+                    border: UnderlineInputBorder(),
                   ),
-                )
-              ],
-            ),
-          ],
-        ),
+                ),
+              )
+            ],
+          ),
+        ],
       ),
+      borderColor: sunbirdOrange,
+      color: Colors.black38,
     );
   }
 

@@ -95,8 +95,8 @@ class _PhotoViewState extends State<PhotoView> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             photoCard(context: context, photo: photo, color: color),
-            defaultCard(body: _mlTagsBody(), color: color),
-            defaultCard(body: _userTagsBody(), color: color),
+            defaultCard(body: _mlTagsBody(), borderColor: color),
+            defaultCard(body: _userTagsBody(), borderColor: color),
             SizedBox(
               height: MediaQuery.of(context).size.width,
             ),
