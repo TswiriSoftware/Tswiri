@@ -232,7 +232,6 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
                 barcode(containerEntry.barcodeUID),
                 const Divider(),
 
-                //TODO: Add Tags
                 userTags(containerEntry.containerUID, color),
 
                 ///INFO///

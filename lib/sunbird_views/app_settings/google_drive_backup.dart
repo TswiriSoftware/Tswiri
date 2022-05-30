@@ -430,7 +430,6 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
               });
               break;
             case 'realInterBarcodeVectorEntry.json':
-              //TODO: FIX THIS [1]
               List<InterBarcodeVectorEntry> realInterBarcodeVectorEntrys = json
                   .map((e) => InterBarcodeVectorEntry().fromJson(e))
                   .toList();

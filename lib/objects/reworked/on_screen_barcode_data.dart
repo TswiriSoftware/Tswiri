@@ -12,7 +12,6 @@ import 'package:flutter/cupertino.dart';
 ///
 ///
 
-//TODO: Depricate.
 class OnScreenBarcodeData {
   OnScreenBarcodeData(
       {required final this.displayValue,

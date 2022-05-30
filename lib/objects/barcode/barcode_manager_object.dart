@@ -7,7 +7,6 @@ class BarcodeManagerObject {
   final BarcodeProperty barcodeProperty;
   final ContainerEntry? containerEntry;
 
-  //TODO: implement custom sorting etc. @049er
   //Filtering and searching these objects :D
 
 }

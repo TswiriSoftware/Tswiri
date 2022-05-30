@@ -603,7 +603,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
       context: context,
       builder: (initialDialogContext) {
         return AlertDialog(
-          title: Text('Edit Barcode Size'),
+          title: const Text('Edit Barcode Size'),
           content: Row(
             children: [
               const Text('Size: '),

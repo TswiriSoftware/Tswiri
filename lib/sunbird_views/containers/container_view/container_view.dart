@@ -545,7 +545,7 @@ class _ContainerViewState extends State<ContainerView> {
       style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(_containerColor)),
       onPressed: () async {
-        //TODO: implement multiple scan.
+        //TODO: Scan => moving a box from another container to this one.
       },
       child: Row(
         children: [

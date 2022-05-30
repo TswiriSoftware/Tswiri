@@ -562,8 +562,6 @@ class _NewContainerViewState extends State<NewContainerView> {
     return Card(
       child: InkWell(
         onTap: () async {
-          //TODO: navigate to PhotoView.
-
           await Navigator.push(
             context,
             MaterialPageRoute(
@@ -744,8 +742,6 @@ class _NewContainerViewState extends State<NewContainerView> {
       if (parentContainer != null) {
         Navigator.pop(context);
       } else {
-        //TODO: navigate to ContainerView.
-
         Navigator.pop(context);
         Navigator.push(
           context,

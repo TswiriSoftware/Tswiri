@@ -86,7 +86,6 @@ class SContainer {
   }
 
   @override
-  // TODO: implement hashCode
   int get hashCode => container.containerUID.hashCode;
 
   @override
