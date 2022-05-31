@@ -6,7 +6,7 @@ import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/ba
 import 'package:flutter_google_ml_kit/objects/grid/processing/on_image_inter_barcode_data.dart';
 import 'package:vector_math/vector_math.dart';
 
-import '../../../../functions/translating/distance_from_camera.dart';
+import '../../functions/translating/distance_from_camera.dart';
 
 class InterBarcodeVector {
   InterBarcodeVector({

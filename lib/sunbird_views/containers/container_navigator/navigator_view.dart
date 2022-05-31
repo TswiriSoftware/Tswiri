@@ -69,7 +69,7 @@ class _NavigatorViewState extends State<NavigatorView> {
   bool showingDialog = false;
 
   //Coordinate Updates
-  List<Coordinate> updatedCoordinates = [];
+  //List<Coordinate> updatedCoordinates = [];
 
   @override
   void initState() {
@@ -157,10 +157,10 @@ class _NavigatorViewState extends State<NavigatorView> {
         gridProcessor1 = message[1];
         log('UI: GridProcessor1 Port Set');
       } else if (message[0] == 'Update') {
-        Coordinate coordinate = Coordinate.fromJson(jsonDecode(message[1]));
-        updatedCoordinates.add(coordinate);
-        imageProcessor1!.send(message);
-        imageProcessor2!.send(message);
+        //Coordinate coordinate = Coordinate.fromJson(jsonDecode(message[1]));
+        // updatedCoordinates.add(coordinate);
+        // imageProcessor1!.send(message);
+        // imageProcessor2!.send(message);
 
         //TODO: Update InterBarcodeVectors in database...
       }

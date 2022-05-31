@@ -7,12 +7,12 @@ import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.da
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_generation_entry/barcode_generation_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_size_distance_entry/barcode_size_distance_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/barcodes/interbarcode_vector_entry/interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
+import 'package:flutter_google_ml_kit/isar_database/grid/coordinate_entry/coordinate_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_bounding_box/object_bounding_box.dart';
@@ -430,16 +430,14 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
               });
               break;
             case 'realInterBarcodeVectorEntry.json':
-              List<InterBarcodeVectorEntry> realInterBarcodeVectorEntrys = json
-                  .map((e) => InterBarcodeVectorEntry().fromJson(e))
-                  .toList();
+              List<CoordinateEntry> realInterBarcodeVectorEntrys =
+                  json.map((e) => CoordinateEntry().fromJson(e)).toList();
 
               log(realInterBarcodeVectorEntrys.toString());
               // log(realInterBarcodeVectorEntrys.toString());
               isarDatabase!.writeTxnSync((isar) {
-                isar.interBarcodeVectorEntrys.where().deleteAllSync();
-                isar.interBarcodeVectorEntrys
-                    .putAllSync(realInterBarcodeVectorEntrys);
+                isar.coordinateEntrys.where().deleteAllSync();
+                isar.coordinateEntrys.putAllSync(realInterBarcodeVectorEntrys);
               });
               break;
             case 'objectBoundingBox.json':
@@ -692,8 +690,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
                 .toList());
             break;
           case 'realInterBarcodeVectorEntry.json':
-            backupFileContent = jsonEncode(isarDatabase!
-                .interBarcodeVectorEntrys
+            backupFileContent = jsonEncode(isarDatabase!.coordinateEntrys
                 .where()
                 .findAllSync()
                 .map((e) => e.toJson())

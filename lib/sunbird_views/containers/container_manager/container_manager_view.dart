@@ -7,7 +7,6 @@ import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_type/container_type.dart';
-import 'package:flutter_google_ml_kit/isar_database/barcodes/interbarcode_vector_entry/interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/container_tag/container_tag.dart';
@@ -431,7 +430,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
     //Throw Error when Deleting parent Container.
     List<ContainerEntry> containerEntries = [];
     List<ContainerRelationship> containerRelationships = [];
-    List<InterBarcodeVectorEntry> interBarcodeVectorEntries = [];
+    //List<InterBarcodeVectorEntry> interBarcodeVectorEntries = [];
     List<Marker> containerMarkers = [];
     List<ContainerTag> containerTags = [];
     List<Photo> containerPhotos = [];
@@ -465,15 +464,15 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
       containerRelationships.addAll(parents);
       containerRelationships.addAll(children);
 
-      List<InterBarcodeVectorEntry> vectors = isarDatabase!
-          .interBarcodeVectorEntrys
-          .filter()
-          .startBarcodeUIDMatches(container.barcodeUID!)
-          .or()
-          .endBarcodeUIDMatches(container.barcodeUID!)
-          .findAllSync();
+      // List<InterBarcodeVectorEntry> vectors = isarDatabase!
+      //     .interBarcodeVectorEntrys
+      //     .filter()
+      //     .startBarcodeUIDMatches(container.barcodeUID!)
+      //     .or()
+      //     .endBarcodeUIDMatches(container.barcodeUID!)
+      //     .findAllSync();
 
-      interBarcodeVectorEntries.addAll(vectors);
+      // interBarcodeVectorEntries.addAll(vectors);
 
       List<Marker> markers = isarDatabase!.markers
           .filter()
@@ -481,14 +480,14 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
           .findAllSync();
 
       for (Marker marker in markers) {
-        List<InterBarcodeVectorEntry> markerVectors = isarDatabase!
-            .interBarcodeVectorEntrys
-            .filter()
-            .startBarcodeUIDMatches(marker.barcodeUID)
-            .or()
-            .endBarcodeUIDMatches(marker.barcodeUID)
-            .findAllSync();
-        interBarcodeVectorEntries.addAll(markerVectors);
+        // List<InterBarcodeVectorEntry> markerVectors = isarDatabase!
+        //     .interBarcodeVectorEntrys
+        //     .filter()
+        //     .startBarcodeUIDMatches(marker.barcodeUID)
+        //     .or()
+        //     .endBarcodeUIDMatches(marker.barcodeUID)
+        //     .findAllSync();
+        // interBarcodeVectorEntries.addAll(markerVectors);
       }
 
       containerMarkers.addAll(markers);
@@ -538,11 +537,11 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
                 (q, Marker element) => q.barcodeUIDMatches(element.barcodeUID))
             .deleteFirstSync();
 
-        isar.interBarcodeVectorEntrys
-            .filter()
-            .repeat(interBarcodeVectorEntries,
-                (q, InterBarcodeVectorEntry element) => q.idEqualTo(element.id))
-            .deleteAllSync();
+        // isar.interBarcodeVectorEntrys
+        //     .filter()
+        //     .repeat(interBarcodeVectorEntries,
+        //         (q, InterBarcodeVectorEntry element) => q.idEqualTo(element.id))
+        //     .deleteAllSync();
 
         isar.containerRelationships
             .filter()

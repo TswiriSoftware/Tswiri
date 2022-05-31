@@ -105,9 +105,9 @@ CoordinateEntry _coordinateEntryDeserializeNative(
   object.gridUID = reader.readString(offsets[1]);
   object.id = id;
   object.timestamp = reader.readLong(offsets[2]);
-  object.x = reader.readDouble(offsets[3]);
-  object.y = reader.readDouble(offsets[4]);
-  object.z = reader.readDouble(offsets[5]);
+  object.x = reader.readDoubleOrNull(offsets[3]);
+  object.y = reader.readDoubleOrNull(offsets[4]);
+  object.z = reader.readDoubleOrNull(offsets[5]);
   return object;
 }
 
@@ -123,11 +123,11 @@ P _coordinateEntryDeserializePropNative<P>(
     case 2:
       return (reader.readLong(offset)) as P;
     case 3:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readDoubleOrNull(offset)) as P;
     case 4:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readDoubleOrNull(offset)) as P;
     case 5:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readDoubleOrNull(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
   }
@@ -154,9 +154,9 @@ CoordinateEntry _coordinateEntryDeserializeWeb(
   object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
   object.timestamp =
       IsarNative.jsObjectGet(jsObj, 'timestamp') ?? double.negativeInfinity;
-  object.x = IsarNative.jsObjectGet(jsObj, 'x') ?? double.negativeInfinity;
-  object.y = IsarNative.jsObjectGet(jsObj, 'y') ?? double.negativeInfinity;
-  object.z = IsarNative.jsObjectGet(jsObj, 'z') ?? double.negativeInfinity;
+  object.x = IsarNative.jsObjectGet(jsObj, 'x');
+  object.y = IsarNative.jsObjectGet(jsObj, 'y');
+  object.z = IsarNative.jsObjectGet(jsObj, 'z');
   return object;
 }
 
@@ -173,14 +173,11 @@ P _coordinateEntryDeserializePropWeb<P>(Object jsObj, String propertyName) {
       return (IsarNative.jsObjectGet(jsObj, 'timestamp') ??
           double.negativeInfinity) as P;
     case 'x':
-      return (IsarNative.jsObjectGet(jsObj, 'x') ?? double.negativeInfinity)
-          as P;
+      return (IsarNative.jsObjectGet(jsObj, 'x')) as P;
     case 'y':
-      return (IsarNative.jsObjectGet(jsObj, 'y') ?? double.negativeInfinity)
-          as P;
+      return (IsarNative.jsObjectGet(jsObj, 'y')) as P;
     case 'z':
-      return (IsarNative.jsObjectGet(jsObj, 'z') ?? double.negativeInfinity)
-          as P;
+      return (IsarNative.jsObjectGet(jsObj, 'z')) as P;
     default:
       throw 'Illegal propertyName';
   }
@@ -574,7 +571,16 @@ extension CoordinateEntryQueryFilter
   }
 
   QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterFilterCondition>
-      xGreaterThan(double value) {
+      xIsNull() {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.isNull,
+      property: 'x',
+      value: null,
+    ));
+  }
+
+  QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterFilterCondition>
+      xGreaterThan(double? value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
       include: false,
@@ -584,7 +590,7 @@ extension CoordinateEntryQueryFilter
   }
 
   QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterFilterCondition>
-      xLessThan(double value) {
+      xLessThan(double? value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
       include: false,
@@ -594,7 +600,7 @@ extension CoordinateEntryQueryFilter
   }
 
   QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterFilterCondition>
-      xBetween(double lower, double upper) {
+      xBetween(double? lower, double? upper) {
     return addFilterConditionInternal(FilterCondition.between(
       property: 'x',
       lower: lower,
@@ -605,7 +611,16 @@ extension CoordinateEntryQueryFilter
   }
 
   QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterFilterCondition>
-      yGreaterThan(double value) {
+      yIsNull() {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.isNull,
+      property: 'y',
+      value: null,
+    ));
+  }
+
+  QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterFilterCondition>
+      yGreaterThan(double? value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
       include: false,
@@ -615,7 +630,7 @@ extension CoordinateEntryQueryFilter
   }
 
   QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterFilterCondition>
-      yLessThan(double value) {
+      yLessThan(double? value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
       include: false,
@@ -625,7 +640,7 @@ extension CoordinateEntryQueryFilter
   }
 
   QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterFilterCondition>
-      yBetween(double lower, double upper) {
+      yBetween(double? lower, double? upper) {
     return addFilterConditionInternal(FilterCondition.between(
       property: 'y',
       lower: lower,
@@ -636,7 +651,16 @@ extension CoordinateEntryQueryFilter
   }
 
   QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterFilterCondition>
-      zGreaterThan(double value) {
+      zIsNull() {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.isNull,
+      property: 'z',
+      value: null,
+    ));
+  }
+
+  QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterFilterCondition>
+      zGreaterThan(double? value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
       include: false,
@@ -646,7 +670,7 @@ extension CoordinateEntryQueryFilter
   }
 
   QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterFilterCondition>
-      zLessThan(double value) {
+      zLessThan(double? value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
       include: false,
@@ -656,7 +680,7 @@ extension CoordinateEntryQueryFilter
   }
 
   QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterFilterCondition>
-      zBetween(double lower, double upper) {
+      zBetween(double? lower, double? upper) {
     return addFilterConditionInternal(FilterCondition.between(
       property: 'z',
       lower: lower,
@@ -850,15 +874,15 @@ extension CoordinateEntryQueryProperty
     return addPropertyNameInternal('timestamp');
   }
 
-  QueryBuilder<CoordinateEntry, double, QQueryOperations> xProperty() {
+  QueryBuilder<CoordinateEntry, double?, QQueryOperations> xProperty() {
     return addPropertyNameInternal('x');
   }
 
-  QueryBuilder<CoordinateEntry, double, QQueryOperations> yProperty() {
+  QueryBuilder<CoordinateEntry, double?, QQueryOperations> yProperty() {
     return addPropertyNameInternal('y');
   }
 
-  QueryBuilder<CoordinateEntry, double, QQueryOperations> zProperty() {
+  QueryBuilder<CoordinateEntry, double?, QQueryOperations> zProperty() {
     return addPropertyNameInternal('z');
   }
 }

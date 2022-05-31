@@ -494,11 +494,11 @@ class _ContainerViewState extends State<ContainerView> {
 
   Widget _childrenActions() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
         // _multipleContainers(),
         _gridButton(),
       ],
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
     );
   }
 

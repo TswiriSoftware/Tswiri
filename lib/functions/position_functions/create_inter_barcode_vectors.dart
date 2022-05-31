@@ -1,6 +1,6 @@
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/objects/grid/processing/on_image_inter_barcode_data.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/interbarcode_vector.dart';
+import 'package:flutter_google_ml_kit/objects/grid/interbarcode_vector.dart';
 
 ///2. Generate list of InterbarcodeVector. (Real)
 ///

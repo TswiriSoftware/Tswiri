@@ -1,23 +1,22 @@
 import 'dart:ui';
 
-///A DisplayPoint is used by a painter to represent a barcode as a point.
 class DisplayPoint {
-  DisplayPoint({
-    required this.isMarker,
-    required this.barcodeUID,
-    required this.barcodePosition,
-    required this.realBarcodePosition,
-  });
+  DisplayPoint(
+      {required this.barcodeUID,
+      required this.screenPosition,
+      required this.realPosition});
 
   ///BarcodeUID. [String]
   String barcodeUID;
 
-  ///Is it a Marker ? [bool]
-  bool isMarker;
-
   ///On Screen Position. [Offset]
-  Offset barcodePosition;
+  Offset screenPosition;
 
   ///Real position. [List]
-  List<double> realBarcodePosition;
+  List<double> realPosition;
+
+  @override
+  String toString() {
+    return 'Barcode: $barcodeUID';
+  }
 }

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -40,7 +41,8 @@ class NavigatorPainter extends CustomPainter {
     }
 
     double finderCircleRadius = painterMesssage.averageDiagonalLength / 3;
-    //log('averageOffsetToBarcode ' + averageOffsetToBarcode.toString());
+    log(painterMesssage.averageOffsetToBarcode.distance.toString());
+    log(finderCircleRadius.toString());
     if (painterMesssage.averageOffsetToBarcode.distance <= finderCircleRadius) {
       //Draw Finder Circle
       canvas.drawCircle(
@@ -64,7 +66,6 @@ class NavigatorPainter extends CustomPainter {
     if (painterMesssage.averageOffsetToBarcode != const Offset(0, 0) &&
         painterMesssage.averageOffsetToBarcode.distance >= finderCircleRadius) {
       averageOffsetToBarcode = painterMesssage.averageOffsetToBarcode;
-      //log('averageOffsetToBarcode Set ' + averageOffsetToBarcode.toString());
       drawArrow(screenCenter, finderCircleRadius,
           painterMesssage.averageOffsetToBarcode, size, canvas);
     } else {
@@ -77,7 +78,7 @@ class NavigatorPainter extends CustomPainter {
 
   void drawArrow(Offset screenCenter, double finderCircleRadius,
       Offset averageOffsetToBarcode, Size size, Canvas canvas) {
-    if (averageOffsetToBarcode.dx > finderCircleRadius) {
+    if (averageOffsetToBarcode.distance > finderCircleRadius) {
       //Draw arrow
       //Start position of the arrow line.
       Offset arrowLineStart =

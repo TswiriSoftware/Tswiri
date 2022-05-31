@@ -6,6 +6,7 @@ import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.da
 import 'package:flutter_google_ml_kit/functions/translating/coordinates_translator.dart';
 import 'package:flutter_google_ml_kit/functions/translating/offset_rotation.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/barcode_property.dart';
+import 'package:flutter_google_ml_kit/isar_database/grid/coordinate_entry/coordinate_entry.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/image_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/image_processor_config.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/painter_message.dart';
@@ -39,9 +40,8 @@ void imageProcessor(List init) {
 
   //4. Spawn MasterGrid.
   MasterGrid masterGrid = MasterGrid(isarDatabase: isarDatabase);
-  masterGrid.calculateCoordinates();
 
-  List<Coordinate> coordinates = masterGrid.coordinates!;
+  List<CoordinateEntry> coordinates = masterGrid.coordinateEntries;
   //Calculate coordinates.
 
   //log(masterGrid.coordinates.toString());
@@ -51,7 +51,7 @@ void imageProcessor(List init) {
 
   Relationship? soughtContainerRelationship;
 
-  List<String> grids = coordinates.map((e) => e.gridID).toSet().toList();
+  List<String> grids = coordinates.map((e) => e.gridUID).toSet().toList();
 
   if (coordinates.any((element) => element.barcodeUID == selectedBarcodeUID)) {
     soughtContainerRelationship = relationshipTrees
@@ -219,7 +219,7 @@ void imageProcessor(List init) {
       for (BarcodeObject barcodeObject in barcodeObjects) {
         List<String> gridIDs = coordinates
             .where((element) => element.barcodeUID == barcodeObject.barcodeUID)
-            .map((e) => e.gridID)
+            .map((e) => e.gridUID)
             .toList();
         for (String gridID in gridIDs) {
           int value = map[gridID]! + 1;
@@ -232,30 +232,31 @@ void imageProcessor(List init) {
       }
 
       ///2. Once Identified calculate arrow.
-      List<Coordinate> gridCoordinates =
-          coordinates.where((element) => element.gridID == theGridId).toList();
+      List<CoordinateEntry> gridCoordinates =
+          coordinates.where((element) => element.gridUID == theGridId).toList();
 
       if (gridCoordinates
           .any((element) => element.barcodeUID == selectedBarcodeUID)) {
         //If the user is in the correct grid.
 
         //ix. Find the barcode position.
-        Coordinate? barcodePosition = gridCoordinates.firstWhere(
+        CoordinateEntry? barcodePosition = gridCoordinates.firstWhere(
             (element) => element.barcodeUID == barcodeObjects.first.barcodeUID);
 
-        if (barcodePosition.coordinate != null) {
+        if (barcodePosition.vector() != null) {
           //x. Calculate the realScreenCenter.
-          Offset realScreenCenter = Offset(barcodePosition.coordinate!.x,
-                  barcodePosition.coordinate!.y) -
-              barcodeObjects.first.realOffsetToScreenCenter;
+          Offset realScreenCenter =
+              Offset(barcodePosition.vector()!.x, barcodePosition.vector()!.y) -
+                  barcodeObjects.first.realOffsetToScreenCenter;
 
-          Coordinate selectedBarcodeCoordinate = gridCoordinates.firstWhere(
-              (element) => element.barcodeUID == selectedBarcodeUID);
+          CoordinateEntry selectedBarcodeCoordinate =
+              gridCoordinates.firstWhere(
+                  (element) => element.barcodeUID == selectedBarcodeUID);
 
-          if (selectedBarcodeCoordinate.coordinate != null) {
+          if (selectedBarcodeCoordinate.vector() != null) {
             Offset offsetToBarcode = Offset(
-                  selectedBarcodeCoordinate.coordinate!.x,
-                  selectedBarcodeCoordinate.coordinate!.y,
+                  selectedBarcodeCoordinate.vector()!.x,
+                  selectedBarcodeCoordinate.vector()!.y,
                 ) -
                 realScreenCenter;
 
@@ -331,8 +332,9 @@ void imageProcessor(List init) {
     } else if (message[0] == 'ImageDataMessage') {
       processImage(message);
     } else if (message[0] == 'Update') {
-      Coordinate coordinate = Coordinate.fromJson(jsonDecode(message[1]));
-      masterGrid.updateCoordinate(coordinate);
+      //TODO: update Coordinates
+      // Coordinate coordinate = Coordinate.fromJson(jsonDecode(message[1]));
+      // masterGrid.updateCoordinate(coordinate);
     }
   });
 }

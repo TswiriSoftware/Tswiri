@@ -1,14 +1,10 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/isar_database/barcodes/interbarcode_vector_entry/interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
-import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
-import 'package:flutter_google_ml_kit/objects/grid/rolling_grid.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/position_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/marker_barcode_scanner/marker_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_grid/container_new_markers.dart';
@@ -122,9 +118,8 @@ class _ContainerGridViewState extends State<ContainerGridView> {
         child: CustomPaint(
           size: Size.infinite,
           painter: GridVisualizerPainter(
-              containerEntry: containerEntry,
-              markersToDraw: markersToScan,
-              barcodesToDraw: barcodesToScan),
+            containerEntry: containerEntry,
+          ),
         ),
       ),
     );
@@ -178,11 +173,11 @@ class _ContainerGridViewState extends State<ContainerGridView> {
           backgroundColor: MaterialStateProperty.all(containerTypeColor)),
       onPressed: () async {
         //await FlutterIsolate.killAll();
-        MasterGrid masterGrid = MasterGrid(isarDatabase: isarDatabase!);
-        masterGrid.calculateCoordinates();
-        log(masterGrid.coordinates.toString());
-        Grid rollingGrid = Grid(isarDatabase: isarDatabase!);
-        rollingGrid.initiate(masterGrid);
+        // MasterGrid masterGrid = MasterGrid(isarDatabase: isarDatabase!);
+        // masterGrid.calculateCoordinates();
+        // log(masterGrid.coordinates.toString());
+        // Grid rollingGrid = Grid(isarDatabase: isarDatabase!);
+        // rollingGrid.initiate(masterGrid);
       },
       child: Row(
         children: [
@@ -196,31 +191,28 @@ class _ContainerGridViewState extends State<ContainerGridView> {
     );
   }
 
-  //   GridID: shelf_1653477635075, barcodeUID: 15_1648321996363, X: 64.04536437988281, Y: -0.5496104955673218, Z: -0.005101589020341635,
-  //   GridID: shelf_1653477635075, barcodeUID: 20_1648321996363, X: 128.24557495117188, Y: -1.2776228189468384, Z: -0.015257690101861954,
-  //   GridID: shelf_1653477635075, barcodeUID: 21_1648321996363, X: 192.1835479736328, Y: -0.04005849361419678, Z: -0.02023148350417614,
-  //   GridID: shelf_1653477635075, barcodeUID: 24_1648321996363, X: 129.07171630859375, Y: 128.75350952148438, Z: 0.007043429184705019]
-
   Widget _deleteButton() {
     return ElevatedButton(
       style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(containerTypeColor)),
       onPressed: () {
-        List<int> ids = isarDatabase!.interBarcodeVectorEntrys
-            .filter()
-            .repeat(
-                barcodesToScan,
-                (q, String start) => q
-                    .startBarcodeUIDMatches(start)
-                    .and()
-                    .repeat(barcodesToScan,
-                        (q, String end) => q.endBarcodeUIDMatches(end)))
-            .findAllSync()
-            .map((e) => e.id)
-            .toList();
+        ///TODO: Reconfigure deletebutton.
 
-        isarDatabase!.writeTxnSync(
-            (isar) => isar.interBarcodeVectorEntrys.deleteAllSync(ids));
+        // List<int> ids = isarDatabase!.interBarcodeVectorEntrys
+        //     .filter()
+        //     .repeat(
+        //         barcodesToScan,
+        //         (q, String start) => q
+        //             .startBarcodeUIDMatches(start)
+        //             .and()
+        //             .repeat(barcodesToScan,
+        //                 (q, String end) => q.endBarcodeUIDMatches(end)))
+        //     .findAllSync()
+        //     .map((e) => e.id)
+        //     .toList();
+
+        // isarDatabase!.writeTxnSync(
+        //     (isar) => isar.interBarcodeVectorEntrys.deleteAllSync(ids));
 
         setState(() {});
       },

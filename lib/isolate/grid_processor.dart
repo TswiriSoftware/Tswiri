@@ -3,17 +3,15 @@ import 'dart:developer';
 import 'dart:isolate';
 import 'package:flutter_google_ml_kit/extentions/distinct.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/functions/position_functions/average_inter_barcode_vectors.dart';
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/barcode_property.dart';
-import 'package:flutter_google_ml_kit/isar_database/barcodes/interbarcode_vector_entry/interbarcode_vector_entry.dart';
+import 'package:flutter_google_ml_kit/objects/grid/interbarcode_vector.dart';
 import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
 import 'package:flutter_google_ml_kit/objects/grid/processing/on_image_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/grid/processing/on_image_inter_barcode_data.dart';
 import 'package:flutter_google_ml_kit/objects/grid/rolling_grid.dart';
-
 import 'package:isar/isar.dart';
-
-import '../functions/averageing_functions/calculate_quartile_value.dart';
 
 ///This is a isolate that updates positions (improve this over time.)
 void gridProcessor(List init) {
@@ -37,7 +35,6 @@ void gridProcessor(List init) {
 
   //4. Spawn MasterGrid.
   MasterGrid masterGrid = MasterGrid(isarDatabase: isarDatabase);
-  masterGrid.calculateCoordinates();
 
   //5. Setup the Rolling grid.
   Grid grid = Grid(isarDatabase: isarDatabase);
@@ -45,28 +42,30 @@ void gridProcessor(List init) {
 
   log('GP: Setup Complete');
 
-  List<InterBarcodeVectorEntry> realVectors = [];
-  List<InterBarcodeVectorEntry> averagedInterBarcodeVectors = [];
-  List<InterBarcodeVectorEntry> usedInterBarcodeVectors = [];
+  ///TODO: Convert to InterBarcodeVector
+
+  List<InterBarcodeVector> realVectors = [];
+  List<InterBarcodeVector> averagedInterBarcodeVectors = [];
+  List<InterBarcodeVector> usedInterBarcodeVectors = [];
 
   /// this function is called by
   void processBarcodes(List message) {
     //1. Create realInterBarcodeVectors.
-    List<InterBarcodeVectorEntry> interBarcodeVectorEntries =
+    List<InterBarcodeVector> interBarcodeVectorEntries =
         createInterBarcodeVectors(message, barcodeProperties);
 
     //2. Add new interBarcodeVectors. (If it has already been averaged then it is not added to this list.)
-    for (InterBarcodeVectorEntry vector in interBarcodeVectorEntries) {
+    for (InterBarcodeVector vector in interBarcodeVectorEntries) {
       if (!averagedInterBarcodeVectors.contains(vector)) {
         realVectors.add(vector);
       }
     }
 
     //3. Average the InterBarcodeVectors.
-    List<InterBarcodeVectorEntry> newAveragedVectors =
+    List<InterBarcodeVector> newAveragedVectors =
         averageInterBarcodeVectors(realVectors);
 
-    for (InterBarcodeVectorEntry averagedVector in newAveragedVectors) {
+    for (InterBarcodeVector averagedVector in newAveragedVectors) {
       //i. Add New AverageVector.
       if (!averagedInterBarcodeVectors.contains(averagedVector) &&
           !usedInterBarcodeVectors.contains(averagedVector)) {
@@ -74,78 +73,78 @@ void gridProcessor(List init) {
       }
     }
 
-    //4. Start Generating Coordinates in the independant Grids.
-    for (IndependantRollingGrid independantGrid in grid.independantGrids) {
-      //i. Run though averagedInterBarcodeVectors.
-      for (InterBarcodeVectorEntry vector in averagedInterBarcodeVectors
-          .where((element) => !usedInterBarcodeVectors.contains(element))
-          .toList()) {
-        //ii. Find the fixed coordinates.
-        List<String> fixedCoordinates =
-            independantGrid.coordinates.map((e) => e.barcodeUID).toList();
+    // //4. Start Generating Coordinates in the independant Grids.
+    // for (IndependantRollingGrid independantGrid in grid.independantGrids) {
+    //   //i. Run though averagedInterBarcodeVectors.
+    //   for (InterBarcodeVector vector in averagedInterBarcodeVectors
+    //       .where((element) => !usedInterBarcodeVectors.contains(element))
+    //       .toList()) {
+    //     //ii. Find the fixed coordinates.
+    //     List<String> fixedCoordinates =
+    //         independantGrid.coordinates.map((e) => e.barcodeUID).toList();
 
-        if (fixedCoordinates.contains(vector.startBarcodeUID) ||
-            fixedCoordinates.contains(vector.endBarcodeUID)) {
-          //iii. Add new coordinate.
-          Coordinate newCoordinate = independantGrid.addCoordinate(vector);
+    //     if (fixedCoordinates.contains(vector.startBarcodeUID) ||
+    //         fixedCoordinates.contains(vector.endBarcodeUID)) {
+    //       //iii. Add new coordinate.
+    //       Coordinate newCoordinate = independantGrid.addCoordinate(vector);
 
-          //iv. Move averagedVector to usedInterBarcodeVectors.
-          usedInterBarcodeVectors.add(vector);
-          averagedInterBarcodeVectors.remove(vector);
+    //       //iv. Move averagedVector to usedInterBarcodeVectors.
+    //       usedInterBarcodeVectors.add(vector);
+    //       averagedInterBarcodeVectors.remove(vector);
 
-          //v. Check if this coordinate exists within the same grid.
-          int index = masterGrid.coordinates!.indexWhere((element) =>
-              element.barcodeUID == newCoordinate.barcodeUID &&
-              element.gridID == newCoordinate.gridID);
+    //       //v. Check if this coordinate exists within the same grid.
+    //       int index = masterGrid.coordinates!.indexWhere((element) =>
+    //           element.barcodeUID == newCoordinate.barcodeUID &&
+    //           element.gridID == newCoordinate.gridID);
 
-          if (index != -1) {
-            //vi. It exsists in the same grid.
-            Coordinate storedCoordinate = masterGrid.coordinates![index];
-            //vii. Check if its coordinate is not null.
-            if (storedCoordinate.coordinate != null) {
-              //Check if the coordinate has moved.
-              if (hasMoved(newCoordinate, storedCoordinate, 10)) {
-                masterGrid.updateCoordinate(newCoordinate);
+    //       if (index != -1) {
+    //         //vi. It exsists in the same grid.
+    //         Coordinate storedCoordinate = masterGrid.coordinates![index];
+    //         //vii. Check if its coordinate is not null.
+    //         if (storedCoordinate.coordinate != null) {
+    //           //Check if the coordinate has moved.
+    //           if (hasMoved(newCoordinate, storedCoordinate, 10)) {
+    //             masterGrid.updateCoordinate(newCoordinate);
 
-                //TODO: If the coordinate has moved within the current grid.
+    //             //TODO: If the coordinate has moved within the current grid.
 
-                // log('coordiante has moved within current grid.');
-                // log('new coordinate: $newCoordinate');
-                // log('old coordinate: $storedCoordinate');
+    //             // log('coordiante has moved within current grid.');
+    //             // log('new coordinate: $newCoordinate');
+    //             // log('old coordinate: $storedCoordinate');
 
-                sendPort.send(['Update', jsonEncode(newCoordinate.toJson())]);
-              }
-            } else {
-              //viii. Do something if it's coordinate is null.
-              //TODO: if the Coordinates Position is null
+    //             sendPort.send(['Update', jsonEncode(newCoordinate.toJson())]);
+    //           }
+    //         } else {
+    //           //viii. Do something if it's coordinate is null.
+    //           //TODO: if the Coordinates Position is null
 
-              // log('coordiante needs to be given a position within current grid.');
-              // log('new coordinate: $newCoordinate');
-              // log('old coordinate: $storedCoordinate');
-            }
-          } else {
-            //vi. It does not exist in the same grid.
-            List<Coordinate> foundCoordinates = masterGrid.coordinates!
-                .where(
-                    (element) => element.barcodeUID == newCoordinate.barcodeUID)
-                .toList();
+    //           // log('coordiante needs to be given a position within current grid.');
+    //           // log('new coordinate: $newCoordinate');
+    //           // log('old coordinate: $storedCoordinate');
+    //         }
+    //       } else {
+    //         //vi. It does not exist in the same grid.
+    //         List<Coordinate> foundCoordinates = masterGrid.coordinates!
+    //             .where(
+    //                 (element) => element.barcodeUID == newCoordinate.barcodeUID)
+    //             .toList();
 
-            if (foundCoordinates.isNotEmpty) {
-              //vii. Coordinate has been found in a different grid.
-              //TODO: Code to update a coordinates grid and Position.
+    //         if (foundCoordinates.isNotEmpty) {
+    //           //vii. Coordinate has been found in a different grid.
+    //           //TODO: Code to update a coordinates grid and Position.
 
-              // log('Coordinate has not been found in current grid.');
-              // log('However it has been found somewhere else.');
-              // log(foundCoordinates.toString());
-            } else {
-              //Coordinate has not been found anywhere.
-              //log('This coordinate has not been found anywhere.');
-              //TODO: Maybe ignore this ?
-            }
-          }
-        }
-      }
-    }
+    //           // log('Coordinate has not been found in current grid.');
+    //           // log('However it has been found somewhere else.');
+    //           // log(foundCoordinates.toString());
+    //         } else {
+    //           //Coordinate has not been found anywhere.
+    //           //log('This coordinate has not been found anywhere.');
+    //           //TODO: Maybe ignore this ?
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
   }
 
   receivePort.listen((message) {
@@ -159,7 +158,7 @@ void gridProcessor(List init) {
 }
 
 /// Convert onImageInterbarcodeData -> onImageInterbarcodeData-> realInterBarcodeVectors
-List<InterBarcodeVectorEntry> createInterBarcodeVectors(
+List<InterBarcodeVector> createInterBarcodeVectors(
     List message, List<BarcodeProperty> barcodeProperties) {
   //1. Convert message to InImageBarcodeData.
   List<OnImageBarcodeData> onImageBarcodeData = [];
@@ -186,12 +185,11 @@ List<InterBarcodeVectorEntry> createInterBarcodeVectors(
   }
 
   //3. Create RealInterBarcodeVectos;
-  List<InterBarcodeVectorEntry> realInterBarcodeVectors = [];
+  List<InterBarcodeVector> realInterBarcodeVectors = [];
   for (OnImageInterBarcodeData onImageInterBarcodes in onImageInterBarcodes) {
-    InterBarcodeVectorEntry realInterBarcodeVector = InterBarcodeVectorEntry()
-        .fromRawInterBarcodeData(
+    InterBarcodeVector realInterBarcodeVector =
+        InterBarcodeVector.fromRawInterBarcodeData(
             interBarcodeData: onImageInterBarcodes,
-            creationTimestamp: onImageInterBarcodes.startBarcode.timestamp,
             barcodeProperties: barcodeProperties,
             focalLength: focalLength);
 
@@ -202,18 +200,18 @@ List<InterBarcodeVectorEntry> createInterBarcodeVectors(
 }
 
 ///Averages the interBarcodeVectors with more than 8 copies.
-List<InterBarcodeVectorEntry> averageInterBarcodeVectors(
-    List<InterBarcodeVectorEntry> realInterBarcodeVectors) {
-  List<InterBarcodeVectorEntry> averagedInterBarcodeVectors = [];
+List<InterBarcodeVector> averageInterBarcodeVectors(
+    List<InterBarcodeVector> realInterBarcodeVectors) {
+  List<InterBarcodeVector> averagedInterBarcodeVectors = [];
 
   //1. Get a list of all unique vectors.
-  List<InterBarcodeVectorEntry> uniqueVectors =
+  List<InterBarcodeVector> uniqueVectors =
       realInterBarcodeVectors.distinctBy((x) => x.uid).toList();
 
   //2. Loop through uniqueVectors.
-  for (InterBarcodeVectorEntry uniqueVector in uniqueVectors) {
+  for (InterBarcodeVector uniqueVector in uniqueVectors) {
     //i. Find similar vectors. (These vectors have the same uid as the unique vector)
-    List<InterBarcodeVectorEntry> similarVectors = realInterBarcodeVectors
+    List<InterBarcodeVector> similarVectors = realInterBarcodeVectors
         .where((element) => element.uid == uniqueVector.uid)
         .toList();
 
@@ -247,11 +245,14 @@ List<InterBarcodeVectorEntry> averageInterBarcodeVectors(
           element.vector3.length >= q3Boundry);
 
       //v. Caluclate the average.
-      for (InterBarcodeVectorEntry similarVector in similarVectors) {
+      for (InterBarcodeVector similarVector in similarVectors) {
         //Average the similar interBarcodeData.
-        uniqueVector.x = (uniqueVector.x + similarVector.x) / 2;
-        uniqueVector.y = (uniqueVector.y + similarVector.y) / 2;
-        uniqueVector.vector3.z = (uniqueVector.z + similarVector.z) / 2;
+        uniqueVector.vector3.x =
+            (uniqueVector.vector3.x + similarVector.vector3.x) / 2;
+        uniqueVector.vector3.y =
+            (uniqueVector.vector3.y + similarVector.vector3.y) / 2;
+        uniqueVector.vector3.z =
+            (uniqueVector.vector3.z + similarVector.vector3.z) / 2;
       }
       averagedInterBarcodeVectors.add(uniqueVector);
     }
@@ -260,16 +261,16 @@ List<InterBarcodeVectorEntry> averageInterBarcodeVectors(
   return averagedInterBarcodeVectors;
 }
 
-///Checks if the coordinate's positions are within a given error (mm)
-bool hasMoved(
-    Coordinate newCoordinate, Coordinate storedCoordinate, double error) {
-  if (storedCoordinate.coordinate!.x + error >= newCoordinate.coordinate!.x &&
-      storedCoordinate.coordinate!.x - error <= newCoordinate.coordinate!.x &&
-      storedCoordinate.coordinate!.y + error >= newCoordinate.coordinate!.y &&
-      storedCoordinate.coordinate!.y - error <= newCoordinate.coordinate!.y &&
-      storedCoordinate.coordinate!.z + error >= newCoordinate.coordinate!.z &&
-      storedCoordinate.coordinate!.z - error <= newCoordinate.coordinate!.z) {
-    return false;
-  }
-  return true;
-}
+// ///Checks if the coordinate's positions are within a given error (mm)
+// bool hasMoved(
+//     Coordinate newCoordinate, Coordinate storedCoordinate, double error) {
+//   if (storedCoordinate.coordinate!.x + error >= newCoordinate.coordinate!.x &&
+//       storedCoordinate.coordinate!.x - error <= newCoordinate.coordinate!.x &&
+//       storedCoordinate.coordinate!.y + error >= newCoordinate.coordinate!.y &&
+//       storedCoordinate.coordinate!.y - error <= newCoordinate.coordinate!.y &&
+//       storedCoordinate.coordinate!.z + error >= newCoordinate.coordinate!.z &&
+//       storedCoordinate.coordinate!.z - error <= newCoordinate.coordinate!.z) {
+//     return false;
+//   }
+//   return true;
+// }

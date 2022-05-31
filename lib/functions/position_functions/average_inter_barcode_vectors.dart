@@ -1,4 +1,4 @@
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/interbarcode_vector.dart';
+import 'package:flutter_google_ml_kit/objects/grid/interbarcode_vector.dart';
 
 ///Remove outliers and calculate the average.
 ///

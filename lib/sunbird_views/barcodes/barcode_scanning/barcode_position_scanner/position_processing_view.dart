@@ -8,12 +8,12 @@ import 'package:flutter_google_ml_kit/functions/position_functions/create_on_ima
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/grid/coordinate_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/grid/coordinate_entry/coordinate_entry.dart';
 import 'package:flutter_google_ml_kit/objects/grid/processing/on_image_inter_barcode_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/interbarcode_vector.dart';
+import 'package:flutter_google_ml_kit/objects/grid/interbarcode_vector.dart';
 
 import 'package:isar/isar.dart';
 
@@ -35,11 +35,11 @@ class PositionProcessingView extends StatefulWidget {
 }
 
 class _PositionProcessingViewState extends State<PositionProcessingView> {
-  //ate Future<List<CoordinateEntry>> _future;
+  late Future<List<CoordinateEntry>> _future;
 
   @override
   void initState() {
-    //_future = processData(barcodeDataBatches: widget.barcodeDataBatches);
+    _future = processData(barcodeDataBatches: widget.barcodeDataBatches);
     super.initState();
   }
 
@@ -70,7 +70,7 @@ class _PositionProcessingViewState extends State<PositionProcessingView> {
         centerTitle: true,
       ),
       body: FutureBuilder<List<CoordinateEntry>>(
-        future: processData(barcodeDataBatches: widget.barcodeDataBatches),
+        future: _future,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return _viewer(snapshot.data!);
@@ -111,47 +111,6 @@ class _PositionProcessingViewState extends State<PositionProcessingView> {
     );
   }
 
-  Widget listView(List<InterBarcodeVector> data) {
-    return ListView.builder(
-      itemCount: data.length,
-      itemBuilder: (context, index) {
-        return interBarcodeDataWidget(data[index]);
-      },
-    );
-  }
-
-  Widget interBarcodeDataWidget(InterBarcodeVector data) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-      color: Colors.white12,
-      elevation: 5,
-      shadowColor: Colors.black26,
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(color: sunbirdOrange, width: 2),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              data.startBarcodeUID.split('_').first +
-                  ' => ' +
-                  data.endBarcodeUID.split('_').first,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const Divider(),
-            Text(
-              'X: ${roundDouble(data.vector3.x, 2)}mm,  Y: ${roundDouble(data.vector3.y, 2)}mm,  Z: ${roundDouble(data.vector3.z, 2)}mm',
-              style: Theme.of(context).textTheme.bodyMedium,
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _continueToVisualizer() {
     return FloatingActionButton(
       heroTag: null,
@@ -187,7 +146,17 @@ class _PositionProcessingViewState extends State<PositionProcessingView> {
 
     //4. Generate the Grid.
     List<CoordinateEntry> coordinates =
-        generateCoordinates(widget.parentContainer, interBarcodeVectors);
+        generateCoordinates(widget.parentContainer, finalRealInterBarcodeData);
+
+    //5. Write to Isar.
+    List<String> barcodes = coordinates.map((e) => e.barcodeUID).toList();
+    isarDatabase!.writeTxnSync((isar) {
+      isar.coordinateEntrys
+          .filter()
+          .repeat(barcodes, (q, String element) => q.barcodeUIDMatches(element))
+          .deleteAllSync();
+      isar.coordinateEntrys.putAllSync(coordinates, replaceOnConflict: true);
+    });
 
     return coordinates;
   }

@@ -6,9 +6,9 @@ import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_size_distan
 import 'package:flutter_google_ml_kit/isar_database/containers/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/interbarcode_time_entry/interbarcode_time_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/barcodes/interbarcode_vector_entry/interbarcode_vector_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
+import 'package:flutter_google_ml_kit/isar_database/grid/coordinate_entry/coordinate_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/container_tag/container_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_bounding_box/object_bounding_box.dart';
@@ -31,7 +31,7 @@ Isar openIsar({String? directory, bool? inspector}) {
       MarkerSchema, //4
       BarcodePropertySchema, //5
       BarcodeGenerationEntrySchema, //6
-      InterBarcodeVectorEntrySchema, //7
+      //InterBarcodeVectorEntrySchema, //7
       InterBarcodeTimeEntrySchema, //8
       BarcodeSizeDistanceEntrySchema, //9
       PhotoSchema, //10
@@ -40,6 +40,7 @@ Isar openIsar({String? directory, bool? inspector}) {
       ObjectBoundingBoxSchema, //13
       TagTextSchema, //14
       UserTagSchema, //15
+      CoordinateEntrySchema //16
     ],
     directory: directory ?? isarDirectory!.path,
     inspector: inspector ?? true,
