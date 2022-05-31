@@ -89,22 +89,24 @@ flutter {
 }
 
 dependencies {
-    implementation platform('com.google.firebase:firebase-bom:28.4.2')
-    implementation 'com.google.firebase:firebase-core:16.0.9'
-    
-    implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:16.2.1'
+    implementation platform('com.google.firebase:firebase-bom:30.1.0')
+    implementation 'com.google.firebase:firebase-analytics'
 
-    implementation 'com.google.android.gms:play-services-mlkit-image-labeling:16.0.5'
-    implementation 'com.google.mlkit:image-labeling-custom:16.3.1'
-    implementation 'com.google.mlkit:image-labeling-automl:16.2.1'
-    implementation 'com.google.mlkit:translate:16.1.2'
-    implementation 'com.google.mlkit:entity-extraction:16.0.0-beta2'
-
-    implementation 'com.google.mlkit:object-detection:16.2.7'
-    implementation 'com.google.mlkit:object-detection-custom:16.3.3'
-    implementation 'com.google.mlkit:linkfirebase:16.1.1'
-
-    implementation 'com.google.mlkit:text-recognition:16.0.0-beta1'
 }
 
 //android.buildTypes.release.ndk.debugSymbolLevel = 'symbol_table'
+    //implementation 'com.google.firebase:firebase-core:16.0.9'
+    
+    //implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:16.2.1'
+
+    // implementation 'com.google.android.gms:play-services-mlkit-image-labeling:16.0.5'
+    // implementation 'com.google.mlkit:image-labeling-custom:16.3.1'
+    // implementation 'com.google.mlkit:image-labeling-automl:16.2.1'
+    // implementation 'com.google.mlkit:translate:16.1.2'
+    // implementation 'com.google.mlkit:entity-extraction:16.0.0-beta2'
+
+    // implementation 'com.google.mlkit:object-detection:16.2.7'
+    // implementation 'com.google.mlkit:object-detection-custom:16.3.3'
+    // implementation 'com.google.mlkit:linkfirebase:16.1.1'
+
+    // implementation 'com.google.mlkit:text-recognition:16.0.0-beta1'
