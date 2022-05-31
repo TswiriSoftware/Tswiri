@@ -192,33 +192,33 @@ List<InterBarcodeVector> averageInterBarcodeVectors(
         .toList();
 
     //ii. Check if there are more than 8.
-    if (similarVectors.length >= 8) {
-      //iii. Sort by vector length.
-      similarVectors
-          .sort((a, b) => a.vector3.length.compareTo(b.vector3.length));
+    if (similarVectors.length >= 3) {
+      // //iii. Sort by vector length.
+      // similarVectors
+      //     .sort((a, b) => a.vector3.length.compareTo(b.vector3.length));
 
-      //iv. Remove any outliers.
-      //Indexes (Stats).
-      int medianIndex = (similarVectors.length ~/ 2);
-      int quartile1Index = ((similarVectors.length / 2) ~/ 2);
-      int quartile3Index = medianIndex + quartile1Index;
+      // //iv. Remove any outliers.
+      // //Indexes (Stats).
+      // int medianIndex = (similarVectors.length ~/ 2);
+      // int quartile1Index = ((similarVectors.length / 2) ~/ 2);
+      // int quartile3Index = medianIndex + quartile1Index;
 
-      //Values of indexes.
-      double median = similarVectors[medianIndex].vector3.length;
-      double quartile1 =
-          calculateQuartileValue(similarVectors, quartile1Index, median);
-      double quartile3 =
-          calculateQuartileValue(similarVectors, quartile3Index, median);
+      // //Values of indexes.
+      // double median = similarVectors[medianIndex].vector3.length;
+      // double quartile1 =
+      //     calculateQuartileValue(similarVectors, quartile1Index, median);
+      // double quartile3 =
+      //     calculateQuartileValue(similarVectors, quartile3Index, median);
 
-      //Boundry calculations.
-      double interQuartileRange = quartile3 - quartile1;
-      double q1Boundry = quartile1 - interQuartileRange * 1.5; //Lower boundry
-      double q3Boundry = quartile3 + interQuartileRange * 1.5; //Upper boundry
+      // //Boundry calculations.
+      // double interQuartileRange = quartile3 - quartile1;
+      // double q1Boundry = quartile1 - interQuartileRange * 1.5; //Lower boundry
+      // double q3Boundry = quartile3 + interQuartileRange * 1.5; //Upper boundry
 
-      //Remove data outside the boundries.
-      similarVectors.removeWhere((element) =>
-          element.vector3.length <= q1Boundry &&
-          element.vector3.length >= q3Boundry);
+      // //Remove data outside the boundries.
+      // similarVectors.removeWhere((element) =>
+      //     element.vector3.length <= q1Boundry &&
+      //     element.vector3.length >= q3Boundry);
 
       //v. Caluclate the average.
       for (InterBarcodeVector similarVector in similarVectors) {
