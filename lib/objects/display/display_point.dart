@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+///This is used to display a grid to scale on a canvas
 class DisplayPoint {
   DisplayPoint(
       {required this.barcodeUID,

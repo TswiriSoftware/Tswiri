@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.dart';
@@ -29,13 +30,6 @@ class MasterGrid {
   late final List<ContainerType> types =
       isarDatabase.containerTypes.where().findAllSync();
 
-  // ///Master List of InterBarcodeVectors.
-  // late final List<InterBarcodeVectorEntry> vectors = isarDatabase
-  //     .interBarcodeVectorEntrys
-  //     .filter()
-  //     .outDatedEqualTo(false)
-  //     .findAllSync();
-
   late final List<CoordinateEntry> coordinateEntries =
       isarDatabase.coordinateEntrys.where().findAllSync();
 
@@ -46,6 +40,7 @@ class MasterGrid {
         .toList();
   }
 
+  ///This returns a list of displayPoints (Takes into account the screen size)
   List<DisplayPoint> createDisplayPoints(String gridUID, Size size) {
     List<CoordinateEntry> coordinates = findGridCoordinates(gridUID);
     List<double> unitVector = calculateUnitVectors(
@@ -82,6 +77,65 @@ class MasterGrid {
     }
 
     return myPoints;
+  }
+
+  ///Returns a matching coordinate if it exists.
+  CoordinateEntry? findCoordinate(CoordinateEntry coordinateEntry) {
+    int index = coordinateEntries.indexWhere(
+        (element) => element.barcodeUID == coordinateEntry.barcodeUID);
+    if (index != -1) {
+      return coordinateEntries[index];
+    }
+    return null;
+  }
+
+  ///Updates a coordinate in memory.
+  void updateCoordinateMem(CoordinateEntry coordinateEntry) {
+    log('updating coordiante: $coordinateEntry');
+    coordinateEntries.removeWhere(
+        (element) => element.barcodeUID == coordinateEntry.barcodeUID);
+    coordinateEntries.add(coordinateEntry);
+  }
+
+  ///Updates a coordinate in Isardatabase.
+  void updateCoordinateIsar(CoordinateEntry newCoordinate) {
+    CoordinateEntry? oldCoordinate = isarDatabase.coordinateEntrys
+        .filter()
+        .barcodeUIDMatches(newCoordinate.barcodeUID)
+        .findFirstSync();
+
+    if (oldCoordinate != null) {
+      if (oldCoordinate.gridUID != newCoordinate.gridUID) {
+        //Find the relevant container.
+        ContainerEntry containerEntry = isarDatabase.containerEntrys
+            .filter()
+            .barcodeUIDMatches(oldCoordinate.barcodeUID)
+            .findFirstSync()!;
+        //Find the relevant relationship.
+        ContainerRelationship containerRelationship = isarDatabase
+            .containerRelationships
+            .filter()
+            .containerUIDMatches(containerEntry.containerUID)
+            .findFirstSync()!;
+
+        ContainerRelationship newContainerRelationship = ContainerRelationship()
+          ..containerUID = containerEntry.containerUID
+          ..parentUID = newCoordinate.gridUID;
+
+        isarDatabase.writeTxnSync((isar) {
+          isar.containerRelationships.deleteSync(containerRelationship.id);
+          isar.containerRelationships
+              .putSync(newContainerRelationship, replaceOnConflict: true);
+        });
+      }
+
+      isarDatabase.writeTxnSync((isar) {
+        //Delete the old coordinate.
+        isar.coordinateEntrys.deleteSync(oldCoordinate.id);
+        //Add the new coordinate.
+        isar.coordinateEntrys.putSync(newCoordinate, replaceOnConflict: true);
+      });
+    }
   }
 
 /////////////////////////////////???DISPOSE???/////////////////////////////////

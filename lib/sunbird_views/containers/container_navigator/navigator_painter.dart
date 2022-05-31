@@ -41,8 +41,6 @@ class NavigatorPainter extends CustomPainter {
     }
 
     double finderCircleRadius = painterMesssage.averageDiagonalLength / 3;
-    log(painterMesssage.averageOffsetToBarcode.distance.toString());
-    log(finderCircleRadius.toString());
     if (painterMesssage.averageOffsetToBarcode.distance <= finderCircleRadius) {
       //Draw Finder Circle
       canvas.drawCircle(

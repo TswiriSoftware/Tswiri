@@ -30,8 +30,8 @@ List<double> calculateUnitVectors(
     }
   }
 
-  double totalXdistance = (sX - bX).abs() + 500;
-  double totalYdistance = (sY - bY).abs() + 500;
+  double totalXdistance = (sX - bX).abs() + 250;
+  double totalYdistance = (sY - bY).abs() + 250;
 
   double unitX = width / 2 / totalXdistance;
   double unitY = height / 2 / totalYdistance;

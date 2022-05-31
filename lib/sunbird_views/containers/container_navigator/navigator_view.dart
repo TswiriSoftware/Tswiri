@@ -1,14 +1,17 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isolate/grid_processor.dart';
+import 'package:flutter_google_ml_kit/isar_database/grid/coordinate_entry/coordinate_entry.dart';
+import 'package:flutter_google_ml_kit/isolates/grid_processor.dart';
+import 'package:flutter_google_ml_kit/isolates/image_processor.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/position_camera_view.dart';
-import 'package:flutter_google_ml_kit/isolate/image_processor.dart';
+
 import 'package:flutter_google_ml_kit/objects/navigation/image_data.dart';
 import 'package:flutter_google_ml_kit/objects/navigation/image_processor_config.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_view/container_view.dart';
@@ -155,10 +158,10 @@ class _NavigatorViewState extends State<NavigatorView> {
         gridProcessor1 = message[1];
         log('UI: GridProcessor1 Port Set');
       } else if (message[0] == 'Update') {
-        //Coordinate coordinate = Coordinate.fromJson(jsonDecode(message[1]));
-        // updatedCoordinates.add(coordinate);
-        // imageProcessor1!.send(message);
-        // imageProcessor2!.send(message);
+        CoordinateEntry coordinate =
+            CoordinateEntry().fromJson(jsonDecode(message[1]));
+        imageProcessor1!.send(message);
+        imageProcessor2!.send(message);
 
         //TODO: Update InterBarcodeVectors in database...
       }
@@ -204,7 +207,7 @@ class _NavigatorViewState extends State<NavigatorView> {
       children: [
         RepaintBoundary(
           child: PositionCameraView(
-            title: 'Position Scanner',
+            title: 'Navigator',
             color: color,
             customPaint: customPaint,
             onImage: (inputImage) {

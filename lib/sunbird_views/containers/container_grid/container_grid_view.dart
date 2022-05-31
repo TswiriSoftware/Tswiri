@@ -5,6 +5,9 @@ import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
+import 'package:flutter_google_ml_kit/isar_database/grid/coordinate_entry/coordinate_entry.dart';
+import 'package:flutter_google_ml_kit/objects/grid/grid.dart';
+import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/position_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/marker_barcode_scanner/marker_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_grid/container_new_markers.dart';
@@ -113,8 +116,9 @@ class _ContainerGridViewState extends State<ContainerGridView> {
       ),
       height: MediaQuery.of(context).size.width,
       child: InteractiveViewer(
-        maxScale: 25,
-        minScale: 0.01,
+        scaleFactor: 5,
+        maxScale: 10,
+        minScale: 1,
         child: CustomPaint(
           size: Size.infinite,
           painter: GridVisualizerPainter(
@@ -130,7 +134,6 @@ class _ContainerGridViewState extends State<ContainerGridView> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _deleteButton(),
-        _killIsolates(),
         _scanButton(),
       ],
     );
@@ -167,54 +170,22 @@ class _ContainerGridViewState extends State<ContainerGridView> {
     );
   }
 
-  Widget _killIsolates() {
-    return ElevatedButton(
-      style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(containerTypeColor)),
-      onPressed: () async {
-        //await FlutterIsolate.killAll();
-        // MasterGrid masterGrid = MasterGrid(isarDatabase: isarDatabase!);
-        // masterGrid.calculateCoordinates();
-        // log(masterGrid.coordinates.toString());
-        // Grid rollingGrid = Grid(isarDatabase: isarDatabase!);
-        // rollingGrid.initiate(masterGrid);
-      },
-      child: Row(
-        children: [
-          Text(
-            'Kill ',
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          const Icon(Icons.scatter_plot)
-        ],
-      ),
-    );
-  }
-
   Widget _deleteButton() {
     return ElevatedButton(
       style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(containerTypeColor)),
       onPressed: () {
-        ///TODO: Reconfigure deletebutton.
-
-        // List<int> ids = isarDatabase!.interBarcodeVectorEntrys
-        //     .filter()
-        //     .repeat(
-        //         barcodesToScan,
-        //         (q, String start) => q
-        //             .startBarcodeUIDMatches(start)
-        //             .and()
-        //             .repeat(barcodesToScan,
-        //                 (q, String end) => q.endBarcodeUIDMatches(end)))
-        //     .findAllSync()
-        //     .map((e) => e.id)
-        //     .toList();
-
-        // isarDatabase!.writeTxnSync(
-        //     (isar) => isar.interBarcodeVectorEntrys.deleteAllSync(ids));
-
-        setState(() {});
+        isarDatabase!.writeTxnSync((isar) {
+          isar.coordinateEntrys
+              .filter()
+              .gridUIDMatches(containerEntry.barcodeUID!)
+              .deleteAllSync();
+        });
+        // MasterGrid masterGrid = MasterGrid(isarDatabase: isarDatabase!);
+        // Grid grid = Grid(isarDatabase: isarDatabase!);
+        // grid.initiate(masterGrid);
+        // log(grid.coordinates.toString());
+        // setState(() {});
       },
       child: Row(
         children: [
@@ -422,13 +393,7 @@ class _ContainerGridViewState extends State<ContainerGridView> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              colorInfo('Current container:', barcodeFocusColor),
-              _divider(),
               colorInfo('Marker :', barcodeMarkerColor),
-              _divider(),
-              colorInfo('Container:', barcodeDefaultColor),
-              _divider(),
-              colorInfo('Parent:', barcodeParentColor),
               _divider(),
               colorInfo('Child:', barcodeChildren),
               _divider(),

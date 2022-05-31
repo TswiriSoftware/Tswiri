@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
 import 'package:flutter/painting.dart';
@@ -210,7 +211,7 @@ void imageProcessor(List init) {
         gridProcessor!.send(gridProcessorData);
       }
 
-      ///1. Identify the grid that the user is in.
+      ///1. Identify the grid that the user is in. //TODO: this is unnecessary now :D
       int thevalue = 0;
       String theGridId = '';
       Map<String, int> map = {for (var v in grids) v: 0};
@@ -332,8 +333,9 @@ void imageProcessor(List init) {
       processImage(message);
     } else if (message[0] == 'Update') {
       //TODO: update Coordinates
-      // Coordinate coordinate = Coordinate.fromJson(jsonDecode(message[1]));
-      // masterGrid.updateCoordinate(coordinate);
+      CoordinateEntry coordinate =
+          CoordinateEntry().fromJson(jsonDecode(message[1]));
+      masterGrid.updateCoordinateMem(coordinate);
     }
   });
 }

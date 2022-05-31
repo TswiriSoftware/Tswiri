@@ -20,16 +20,17 @@ List<CoordinateEntry> generateCoordinates(ContainerEntry originContainer,
         ..z = null
         ..timestamp = timestamp)
       .toList();
-  // .map((e) => CoordinateEntry(
-  //     barcodeUID: e, coordinate: null, gridID: originContainer.barcodeUID!))
-  // .toList();
 
   //3. Populate the Origin Coordinate.
-  coordinates
-      .firstWhere((element) => element.barcodeUID == originContainer.barcodeUID)
-    ..x = 0
-    ..y = 0
-    ..z = 0;
+  int index = coordinates.indexWhere(
+      (element) => element.barcodeUID == originContainer.barcodeUID);
+  if (index != -1) {
+    coordinates.firstWhere(
+        (element) => element.barcodeUID == originContainer.barcodeUID)
+      ..x = 0
+      ..y = 0
+      ..z = 0;
+  }
 
   int nonNullPositions = 1;
   int nonNullPositionsInPreviousIteration = coordinates.length - 1;

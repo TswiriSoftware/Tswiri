@@ -20,6 +20,15 @@ class CoordinateEntry {
   late double? y;
   late double? z;
 
+  //Comparison
+  @override
+  bool operator ==(Object other) {
+    return other is CoordinateEntry && other.barcodeUID == barcodeUID;
+  }
+
+  @override
+  int get hashCode => barcodeUID.hashCode;
+
   @override
   String toString() {
     return '\nGridUID: $gridUID, BarcodeUID: $barcodeUID, X:$x, Y:$y, Z:$z';

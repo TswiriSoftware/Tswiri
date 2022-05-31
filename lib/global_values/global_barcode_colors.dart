@@ -1,1 +1,0 @@
-//TODO: define colors for barcode states.
