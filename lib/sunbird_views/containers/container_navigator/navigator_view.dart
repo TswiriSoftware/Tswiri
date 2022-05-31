@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -6,7 +5,6 @@ import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.da
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isolate/grid_processor.dart';
-import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/app_settings/app_settings.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/position_camera_view.dart';

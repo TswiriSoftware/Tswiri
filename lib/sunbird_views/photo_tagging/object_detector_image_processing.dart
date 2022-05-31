@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:flutter_google_ml_kit/extentions/get_model.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';

@@ -8,7 +8,6 @@ import 'package:flutter_google_ml_kit/isar_database/containers/container_type/co
 import 'package:flutter_google_ml_kit/isar_database/grid/coordinate_entry/coordinate_entry.dart';
 import 'package:flutter_google_ml_kit/objects/display/display_point.dart';
 import 'package:isar/isar.dart';
-import 'package:vector_math/vector_math.dart';
 
 class MasterGrid {
   MasterGrid({

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:vector_math/vector_math.dart';
 import 'package:isar/isar.dart';
 part 'coordinate_entry.g.dart';

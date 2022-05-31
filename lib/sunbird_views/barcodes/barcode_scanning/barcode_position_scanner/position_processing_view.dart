@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.dart';
 import 'package:flutter_google_ml_kit/functions/position_functions/average_inter_barcode_vectors.dart';
 import 'package:flutter_google_ml_kit/functions/position_functions/generate_coordinates.dart';
 import 'package:flutter_google_ml_kit/functions/position_functions/create_inter_barcode_vectors.dart';

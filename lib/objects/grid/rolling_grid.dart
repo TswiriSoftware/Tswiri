@@ -2,10 +2,8 @@ import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart'
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_type/container_type.dart';
-import 'package:flutter_google_ml_kit/objects/grid/interbarcode_vector.dart';
 import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
 import 'package:isar/isar.dart';
-import 'package:vector_math/vector_math.dart';
 
 class Grid {
   Grid({

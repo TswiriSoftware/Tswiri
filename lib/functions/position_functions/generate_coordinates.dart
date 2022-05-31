@@ -1,9 +1,6 @@
-import 'dart:developer';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/grid/coordinate_entry/coordinate_entry.dart';
-import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
 import 'package:flutter_google_ml_kit/objects/grid/interbarcode_vector.dart';
-import 'package:vector_math/vector_math.dart';
 
 ///Generate a list of coordinates from a list of interBarcodeVectors and the origin container.
 List<CoordinateEntry> generateCoordinates(ContainerEntry originContainer,
