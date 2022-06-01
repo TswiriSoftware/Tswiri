@@ -479,16 +479,16 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
           .parentContainerUIDMatches(containerUID)
           .findAllSync();
 
-      for (Marker marker in markers) {
-        // List<InterBarcodeVectorEntry> markerVectors = isarDatabase!
-        //     .interBarcodeVectorEntrys
-        //     .filter()
-        //     .startBarcodeUIDMatches(marker.barcodeUID)
-        //     .or()
-        //     .endBarcodeUIDMatches(marker.barcodeUID)
-        //     .findAllSync();
-        // interBarcodeVectorEntries.addAll(markerVectors);
-      }
+      // for (Marker marker in markers) {
+      //   // List<InterBarcodeVectorEntry> markerVectors = isarDatabase!
+      //   //     .interBarcodeVectorEntrys
+      //   //     .filter()
+      //   //     .startBarcodeUIDMatches(marker.barcodeUID)
+      //   //     .or()
+      //   //     .endBarcodeUIDMatches(marker.barcodeUID)
+      //   //     .findAllSync();
+      //   // interBarcodeVectorEntries.addAll(markerVectors);
+      // }
 
       containerMarkers.addAll(markers);
 

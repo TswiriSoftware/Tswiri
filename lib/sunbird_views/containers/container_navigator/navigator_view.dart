@@ -1,11 +1,9 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/grid/coordinate_entry/coordinate_entry.dart';
 import 'package:flutter_google_ml_kit/isolates/grid_processor.dart';
 import 'package:flutter_google_ml_kit/isolates/image_processor.dart';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
@@ -158,8 +156,6 @@ class _NavigatorViewState extends State<NavigatorView> {
         gridProcessor1 = message[1];
         log('UI: GridProcessor1 Port Set');
       } else if (message[0] == 'Update') {
-        CoordinateEntry coordinate =
-            CoordinateEntry().fromJson(jsonDecode(message[1]));
         imageProcessor1!.send(message);
         imageProcessor2!.send(message);
 

@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'dart:isolate';
 import 'package:flutter_google_ml_kit/extentions/distinct.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/functions/position_functions/average_inter_barcode_vectors.dart';
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/isar_database/grid/coordinate_entry/coordinate_entry.dart';
@@ -42,8 +41,6 @@ void gridProcessor(List init) {
   grid.initiate(masterGrid);
 
   log('GP: Setup Complete');
-
-  ///TODO: Convert to InterBarcodeVector
 
   List<InterBarcodeVector> realVectors = [];
   List<InterBarcodeVector> averagedInterBarcodeVectors = [];
@@ -106,12 +103,15 @@ void gridProcessor(List init) {
               }
             } else {
               //The gridUIDs do not match. (This means the barcode has moved to a new grid.)
-              //TODO: Delete the old coordinate + Add new one
-              //TODO: Delete Relationship + Add new Relationship
+              //1. Delete the old coordinate + Add new one
+              //2. Delete Relationship + Add new Relationship
+              masterGrid.updateCoordinateMem(newCoordinate);
+              //Update the Isar database.
+              masterGrid.updateCoordinateIsar(newCoordinate);
             }
           } else {
             //The coordinate does not exisit.
-            //TODO: add new coordinate to MasterGrid.
+            //TODO: does this warrant any action ?
           }
         }
       }

@@ -111,6 +111,7 @@ class MasterGrid {
             .filter()
             .barcodeUIDMatches(oldCoordinate.barcodeUID)
             .findFirstSync()!;
+
         //Find the relevant relationship.
         ContainerRelationship containerRelationship = isarDatabase
             .containerRelationships
@@ -118,9 +119,15 @@ class MasterGrid {
             .containerUIDMatches(containerEntry.containerUID)
             .findFirstSync()!;
 
+        //Find the new ContainerParent
+        ContainerEntry parentContainer = isarDatabase.containerEntrys
+            .filter()
+            .barcodeUIDMatches(newCoordinate.gridUID)
+            .findFirstSync()!;
+
         ContainerRelationship newContainerRelationship = ContainerRelationship()
           ..containerUID = containerEntry.containerUID
-          ..parentUID = newCoordinate.gridUID;
+          ..parentUID = parentContainer.containerUID;
 
         isarDatabase.writeTxnSync((isar) {
           isar.containerRelationships.deleteSync(containerRelationship.id);
@@ -345,22 +352,6 @@ class MasterGrid {
     }
     return orphans;
   }
-
-  // //TODO: Compare coordinates
-  // bool compareCoordinates() {
-  //   return false;
-  // }
-
-  // //TODO: Update coordinate.
-  // void updateCoordinate(Coordinate coordinate) {
-  //   int index = coordinates!.indexWhere((element) =>
-  //       element.barcodeUID == coordinate.barcodeUID &&
-  //       element.gridID == coordinate.gridID);
-  //   if (index != -1) {
-  //     coordinates!.removeAt(index);
-  //     coordinates!.add(coordinate);
-  //   }
-  // }
 }
 
 // class Coordinate {

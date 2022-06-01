@@ -50,11 +50,14 @@ void imageProcessor(List init) {
       masterGrid.relationshipTrees; //Calculate relationshipsTrees.
 
   Relationship? soughtContainerRelationship;
+  CoordinateEntry? soughtCoordiante;
 
   List<String> grids = coordinates.map((e) => e.gridUID).toSet().toList();
 
   if (coordinates.any((element) => element.barcodeUID == selectedBarcodeUID)) {
     soughtContainerRelationship = relationshipTrees
+        .firstWhere((element) => element.barcodeUID == selectedBarcodeUID);
+    soughtCoordiante = coordinates
         .firstWhere((element) => element.barcodeUID == selectedBarcodeUID);
   } else {
     sendPort.send([
@@ -205,116 +208,145 @@ void imageProcessor(List init) {
         );
 
         painterData.add(barcodePainterData);
+
+        int index = coordinates.indexWhere(
+            (element) => element.barcodeUID == barcode.displayValue);
+
+        if (index != -1 &&
+            soughtCoordiante != null &&
+            soughtCoordiante.vector() != null) {
+          //Find Barcode Coordinate.
+          CoordinateEntry storedBarcodeCoordinate = coordinates[index];
+          if (storedBarcodeCoordinate.gridUID == soughtCoordiante.gridUID &&
+              storedBarcodeCoordinate.vector() != null) {
+            Offset realScreenCenter = Offset(
+                    storedBarcodeCoordinate.vector()!.x,
+                    storedBarcodeCoordinate.vector()!.y) -
+                barcodeObjects.first.realOffsetToScreenCenter;
+
+            Offset offsetToBarcode = Offset(
+                  soughtCoordiante.vector()!.x,
+                  soughtCoordiante.vector()!.y,
+                ) -
+                realScreenCenter;
+
+            averageOffsetToBarcode ??= offsetToBarcode;
+          }
+        }
       }
 
       if (gridProcessor != null) {
         gridProcessor!.send(gridProcessorData);
       }
 
-      ///1. Identify the grid that the user is in. //TODO: this is unnecessary now :D
-      int thevalue = 0;
-      String theGridId = '';
-      Map<String, int> map = {for (var v in grids) v: 0};
+      // ///1. Identify the grid that the user is in. //TODO: this is unnecessary now :D
+      // int thevalue = 0;
+      // String theGridId = '';
+      // Map<String, int> map = {for (var v in grids) v: 0};
 
-      for (BarcodeObject barcodeObject in barcodeObjects) {
-        List<String> gridIDs = coordinates
-            .where((element) => element.barcodeUID == barcodeObject.barcodeUID)
-            .map((e) => e.gridUID)
-            .toList();
-        for (String gridID in gridIDs) {
-          int value = map[gridID]! + 1;
-          map[gridID] = value;
-          if (thevalue <= value) {
-            thevalue = value;
-            theGridId = gridID;
-          }
-        }
-      }
+      // for (BarcodeObject barcodeObject in barcodeObjects) {
+      //   List<String> gridIDs = coordinates
+      //       .where((element) => element.barcodeUID == barcodeObject.barcodeUID)
+      //       .map((e) => e.gridUID)
+      //       .toList();
+      //   for (String gridID in gridIDs) {
+      //     int value = map[gridID]! + 1;
+      //     map[gridID] = value;
+      //     if (thevalue <= value) {
+      //       thevalue = value;
+      //       theGridId = gridID;
+      //     }
+      //   }
+      // }
 
-      ///2. Once Identified calculate arrow.
-      List<CoordinateEntry> gridCoordinates =
-          coordinates.where((element) => element.gridUID == theGridId).toList();
+      // ///2. Once Identified calculate arrow.
+      // List<CoordinateEntry> gridCoordinates =
+      //     coordinates.where((element) => element.gridUID == theGridId).toList();
 
-      if (gridCoordinates
-          .any((element) => element.barcodeUID == selectedBarcodeUID)) {
-        //If the user is in the correct grid.
+      // if (gridCoordinates
+      //     .any((element) => element.barcodeUID == selectedBarcodeUID)) {
+      //   //If the user is in the correct grid.
 
-        //ix. Find the barcode position.
-        CoordinateEntry? barcodePosition = gridCoordinates.firstWhere(
-            (element) => element.barcodeUID == barcodeObjects.first.barcodeUID);
+      //   //ix. Find the barcode position.
+      //   int index = gridCoordinates.indexWhere(
+      //       (element) => element.barcodeUID == barcodeObjects.first.barcodeUID);
 
-        if (barcodePosition.vector() != null) {
-          //x. Calculate the realScreenCenter.
-          Offset realScreenCenter =
-              Offset(barcodePosition.vector()!.x, barcodePosition.vector()!.y) -
-                  barcodeObjects.first.realOffsetToScreenCenter;
+      //   if (index != -1) {
+      //     CoordinateEntry? barcodePosition = gridCoordinates[index];
 
-          CoordinateEntry selectedBarcodeCoordinate =
-              gridCoordinates.firstWhere(
-                  (element) => element.barcodeUID == selectedBarcodeUID);
+      //     if (barcodePosition.vector() != null) {
+      //       //x. Calculate the realScreenCenter.
+      //       Offset realScreenCenter = Offset(
+      //               barcodePosition.vector()!.x, barcodePosition.vector()!.y) -
+      //           barcodeObjects.first.realOffsetToScreenCenter;
 
-          if (selectedBarcodeCoordinate.vector() != null) {
-            Offset offsetToBarcode = Offset(
-                  selectedBarcodeCoordinate.vector()!.x,
-                  selectedBarcodeCoordinate.vector()!.y,
-                ) -
-                realScreenCenter;
+      //       CoordinateEntry selectedBarcodeCoordinate =
+      //           gridCoordinates.firstWhere(
+      //               (element) => element.barcodeUID == selectedBarcodeUID);
 
-            //Calculate the average offset to selectedBarcode.
-            if (averageOffsetToBarcode == null) {
-              averageOffsetToBarcode = offsetToBarcode;
-            } else {
-              averageOffsetToBarcode =
-                  (averageOffsetToBarcode + offsetToBarcode) / 2;
-            }
-            arrow = true;
-          } else {
-            if (relationshipTrees.any((element) => barcodeObjects
-                .map((e) => e.barcodeUID)
-                .contains(element.barcodeUID))) {
-              barcodeRelationship = relationshipTrees.firstWhere((element) =>
-                  barcodeObjects
-                      .map((e) => e.barcodeUID)
-                      .contains(element.barcodeUID));
-              //RelationShip found
-              foundPath = true;
-            }
-          }
-          foundPath = true;
-        }
-      } else {
-        //If the user is in another grid.
-        if (relationshipTrees.any((element) => barcodeObjects
-            .map((e) => e.barcodeUID)
-            .contains(element.barcodeUID))) {
-          barcodeRelationship = relationshipTrees.firstWhere((element) =>
-              barcodeObjects
-                  .map((e) => e.barcodeUID)
-                  .contains(element.barcodeUID));
-          //RelationShip found
-          foundPath = true;
-        }
-      }
+      //       if (selectedBarcodeCoordinate.vector() != null) {
+      //         Offset offsetToBarcode = Offset(
+      //               selectedBarcodeCoordinate.vector()!.x,
+      //               selectedBarcodeCoordinate.vector()!.y,
+      //             ) -
+      //             realScreenCenter;
 
-      //Check if barcodes have been scanned.
-      if (barcodes.isNotEmpty) {
-        if (foundPath == false) {
-          sendPort.send([
-            'error', //[0] Identifier.
-            'NoPath', //[1] Error Type.
-          ]);
-        } else if (foundPath == true &&
-            barcodeRelationship != null &&
-            soughtContainerRelationship != null &&
-            arrow == false) {
-          sendPort.send([
-            'error', //[0] Identifier.
-            'Path', //[1] Error Type.
-            barcodeRelationship.treeList, //[2]
-            soughtContainerRelationship.treeList, //[3]
-          ]);
-        }
-      }
+      //         //Calculate the average offset to selectedBarcode.
+      //         if (averageOffsetToBarcode == null) {
+      //           averageOffsetToBarcode = offsetToBarcode;
+      //         } else {
+      //           averageOffsetToBarcode =
+      //               (averageOffsetToBarcode + offsetToBarcode) / 2;
+      //         }
+      //         arrow = true;
+      //       } else {
+      //         if (relationshipTrees.any((element) => barcodeObjects
+      //             .map((e) => e.barcodeUID)
+      //             .contains(element.barcodeUID))) {
+      //           barcodeRelationship = relationshipTrees.firstWhere((element) =>
+      //               barcodeObjects
+      //                   .map((e) => e.barcodeUID)
+      //                   .contains(element.barcodeUID));
+      //           //RelationShip found
+      //           foundPath = true;
+      //         }
+      //       }
+      //       foundPath = true;
+      //     }
+      //   }
+      // } else {
+      //   //If the user is in another grid.
+      //   if (relationshipTrees.any((element) => barcodeObjects
+      //       .map((e) => e.barcodeUID)
+      //       .contains(element.barcodeUID))) {
+      //     barcodeRelationship = relationshipTrees.firstWhere((element) =>
+      //         barcodeObjects
+      //             .map((e) => e.barcodeUID)
+      //             .contains(element.barcodeUID));
+      //     //RelationShip found
+      //     foundPath = true;
+      //   }
+      // }
+
+      // //Check if barcodes have been scanned.
+      // if (barcodes.isNotEmpty) {
+      //   if (foundPath == false) {
+      //     sendPort.send([
+      //       'error', //[0] Identifier.
+      //       'NoPath', //[1] Error Type.
+      //     ]);
+      //   } else if (foundPath == true &&
+      //       barcodeRelationship != null &&
+      //       soughtContainerRelationship != null &&
+      //       arrow == false) {
+      //     sendPort.send([
+      //       'error', //[0] Identifier.
+      //       'Path', //[1] Error Type.
+      //       barcodeRelationship.treeList, //[2]
+      //       soughtContainerRelationship.treeList, //[3]
+      //     ]);
+      //   }
+      // }
 
       PainterMesssage painterMessage = PainterMesssage(
         averageDiagonalLength: averageOnImageBarcodeSize ?? 100,
@@ -332,7 +364,6 @@ void imageProcessor(List init) {
     } else if (message[0] == 'ImageDataMessage') {
       processImage(message);
     } else if (message[0] == 'Update') {
-      //TODO: update Coordinates
       CoordinateEntry coordinate =
           CoordinateEntry().fromJson(jsonDecode(message[1]));
       masterGrid.updateCoordinateMem(coordinate);

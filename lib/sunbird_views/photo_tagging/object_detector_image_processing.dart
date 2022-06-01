@@ -228,8 +228,6 @@ class _ObjectDetectorProcessingView
     for (TextBlock block in recognisedText.blocks) {
       for (TextLine line in block.lines) {
         for (String word in line.text.split(' ').toList()) {
-          //TODO: implement spell checker/dictionary.
-
           //i. Label Text.
           String labelText = word.toLowerCase();
 
@@ -380,6 +378,7 @@ class _ObjectDetectorProcessingView
 
     final objectDetector = ObjectDetector(
       options: LocalObjectDetectorOptions(
+          mode: DetectionMode.singleImage,
           modelPath: modelPath,
           classifyObjects: true,
           multipleObjects: true,
