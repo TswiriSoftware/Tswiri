@@ -24,6 +24,8 @@ class ContainerManagerView extends StatefulWidget {
   State<ContainerManagerView> createState() => _ContainerManagerViewState();
 }
 
+List<String> filters = ['shelf', 'area'];
+
 class _ContainerManagerViewState extends State<ContainerManagerView> {
   //Search//
   TextEditingController searchController = TextEditingController();
@@ -34,8 +36,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
   bool isSelecting = false;
 
   //Containers//
-  late List<ContainerEntry> containers =
-      isarDatabase!.containerEntrys.where().findAllSync();
+  List<ContainerEntry> containers = [];
 
   late List<ContainerType> x =
       isarDatabase!.containerTypes.where().findAllSync();
@@ -45,8 +46,11 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
       e.containerType: Color(int.parse(e.containerColor)).withOpacity(1)
   };
 
+  late List<String> filterTypes = x.map((e) => e.containerType).toList();
+
   @override
   void initState() {
+    search(null);
     _focusNode.addListener(() {
       setState(() {
         isFocused = _focusNode.hasFocus;
@@ -114,6 +118,53 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
     );
   }
 
+  ///FILTER///
+
+  Widget _filters() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      scrollDirection: Axis.horizontal,
+      child: Wrap(
+        spacing: 5,
+        children: filterTypes
+            .map((e) => fliterChip(filter: e, tooltip: 'Filter by Type'))
+            .toList(),
+      ),
+    );
+  }
+
+  FilterChip fliterChip({required String filter, required String tooltip}) {
+    return FilterChip(
+      label: Text(
+        filter,
+        style: Theme.of(context).textTheme.bodyLarge,
+      ),
+      onSelected: (selected) {
+        _onSelected(selected, filter);
+        setState(() {
+          search(searchController.text);
+        });
+      },
+      selected: filters.contains(filter),
+      selectedColor: sunbirdOrange,
+      tooltip: tooltip,
+      elevation: 5,
+      shadowColor: Colors.black54,
+    );
+  }
+
+  void _onSelected(bool selected, String filter) {
+    if (filters.contains(filter)) {
+      setState(() {
+        filters.removeWhere((element) => element == filter);
+      });
+    } else {
+      setState(() {
+        filters.add(filter);
+      });
+    }
+  }
+
   ///SELECT ACTIONS///
   Widget _selectionActions() {
     return Row(
@@ -150,12 +201,19 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
 
   ///BODY///
   Widget _body() {
-    return ListView.builder(
-      itemCount: containers.length,
-      itemBuilder: (context, index) {
-        return container(containers[index],
-            containerColors[containers[index].containerType]);
-      },
+    return Stack(
+      alignment: AlignmentDirectional.topCenter,
+      children: [
+        ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 50),
+          itemCount: containers.length,
+          itemBuilder: (context, index) {
+            return container(containers[index],
+                containerColors[containers[index].containerType]);
+          },
+        ),
+        _filters(),
+      ],
     );
   }
 
@@ -411,7 +469,16 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
             .findAllSync();
       });
     } else {
-      containers = isarDatabase!.containerEntrys.where().findAllSync();
+      containers = [];
+      List<ContainerEntry> foundContainers =
+          isarDatabase!.containerEntrys.where().findAllSync();
+
+      for (String filter in filters) {
+        containers.addAll(foundContainers
+            .where((element) => element.containerType == filter));
+      }
+      //containers =
+
       setState(() {});
     }
   }
