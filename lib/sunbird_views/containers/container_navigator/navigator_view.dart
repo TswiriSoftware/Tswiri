@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isolates/grid_processor.dart';
@@ -168,7 +169,6 @@ class _NavigatorViewState extends State<NavigatorView> {
     switch (message[1]) {
       case 'nogrid':
         showNoGridDialog(context);
-
         break;
       case 'NoPath':
         initiateDialog(
@@ -176,9 +176,17 @@ class _NavigatorViewState extends State<NavigatorView> {
           'Cannot find a path to selected barcode.',
         );
         break;
+      case 'WrongGrid':
+        wrongGird(
+          'Wrong Grid',
+          message[3],
+          message[2],
+        );
+        break;
       case 'Path':
         treeNavigator('Navigator', message[3], message[2]);
         break;
+
       default:
     }
   }
@@ -379,6 +387,85 @@ class _NavigatorViewState extends State<NavigatorView> {
                 Text(
                   message,
                   style: const TextStyle(fontSize: 15),
+                ),
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(initialDialogContext);
+                },
+                child: const Text('close'),
+              ),
+            ],
+          );
+        },
+      );
+      setState(() {
+        showingDialog = false;
+      });
+    }
+  }
+
+  void wrongGird(String title, String here, String goTo) async {
+    if (showingDialog == false) {
+      setState(() {
+        showingDialog = true;
+      });
+      ContainerEntry sought = isarDatabase!.containerEntrys
+          .filter()
+          .barcodeUIDMatches(goTo)
+          .findFirstSync()!;
+
+      ContainerEntry current = isarDatabase!.containerEntrys
+          .filter()
+          .barcodeUIDMatches(here)
+          .findFirstSync()!;
+
+      await showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (initialDialogContext) {
+          return AlertDialog(
+            insetPadding: const EdgeInsets.all(20),
+            contentPadding: const EdgeInsets.all(5),
+            title: Text(title),
+            content: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.start,
+              children: [
+                defaultCard(
+                  body: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'You are here: ',
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      Text(
+                        current.name ?? current.containerUID,
+                        style:
+                            const TextStyle(fontSize: 20, color: sunbirdOrange),
+                      ),
+                    ],
+                  ),
+                  borderColor: sunbirdOrange,
+                ),
+                defaultCard(
+                  body: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Go here: ',
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      Text(
+                        sought.name ?? sought.containerUID,
+                        style:
+                            const TextStyle(fontSize: 20, color: sunbirdOrange),
+                      ),
+                    ],
+                  ),
+                  borderColor: sunbirdOrange,
                 ),
               ],
             ),

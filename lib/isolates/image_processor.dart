@@ -46,17 +46,17 @@ void imageProcessor(List init) {
 
   //log(masterGrid.coordinates.toString());
 
-  List<Relationship> relationshipTrees =
-      masterGrid.relationshipTrees; //Calculate relationshipsTrees.
+  // List<Relationship> relationshipTrees =
+  //     masterGrid.relationshipTrees; //Calculate relationshipsTrees.
 
-  Relationship? soughtContainerRelationship;
+  // Relationship? soughtContainerRelationship;
   CoordinateEntry? soughtCoordiante;
 
   List<String> grids = coordinates.map((e) => e.gridUID).toSet().toList();
 
   if (coordinates.any((element) => element.barcodeUID == selectedBarcodeUID)) {
-    soughtContainerRelationship = relationshipTrees
-        .firstWhere((element) => element.barcodeUID == selectedBarcodeUID);
+    // soughtContainerRelationship = relationshipTrees
+    //     .firstWhere((element) => element.barcodeUID == selectedBarcodeUID);
     soughtCoordiante = coordinates
         .firstWhere((element) => element.barcodeUID == selectedBarcodeUID);
   } else {
@@ -117,9 +117,9 @@ void imageProcessor(List init) {
       List gridProcessorData = [];
       List<BarcodeObject> barcodeObjects = [];
 
-      bool foundPath = false;
-      bool arrow = false;
-      Relationship? barcodeRelationship;
+      // bool foundPath = false;
+      // bool arrow = false;
+      // Relationship? barcodeRelationship;
 
       for (Barcode barcode in barcodes) {
         ///1. Caluclate barcode OnScreen CornerPoints.
@@ -239,25 +239,56 @@ void imageProcessor(List init) {
         gridProcessor!.send(gridProcessorData);
       }
 
-      // ///1. Identify the grid that the user is in. //TODO: this is unnecessary now :D
-      // int thevalue = 0;
-      // String theGridId = '';
-      // Map<String, int> map = {for (var v in grids) v: 0};
+      ///1. Identify the grid that the user is in. //TODO: this is unnecessary now :D
+      int thevalue = 0;
+      String theGridId = '';
+      Map<String, int> map = {for (var v in grids) v: 0};
 
-      // for (BarcodeObject barcodeObject in barcodeObjects) {
-      //   List<String> gridIDs = coordinates
-      //       .where((element) => element.barcodeUID == barcodeObject.barcodeUID)
-      //       .map((e) => e.gridUID)
-      //       .toList();
-      //   for (String gridID in gridIDs) {
-      //     int value = map[gridID]! + 1;
-      //     map[gridID] = value;
-      //     if (thevalue <= value) {
-      //       thevalue = value;
-      //       theGridId = gridID;
-      //     }
-      //   }
-      // }
+      for (BarcodeObject barcodeObject in barcodeObjects) {
+        List<String> gridIDs = coordinates
+            .where((element) => element.barcodeUID == barcodeObject.barcodeUID)
+            .map((e) => e.gridUID)
+            .toList();
+        for (String gridID in gridIDs) {
+          int value = map[gridID]! + 1;
+          map[gridID] = value;
+          if (thevalue <= value) {
+            thevalue = value;
+            theGridId = gridID;
+          }
+        }
+      }
+
+      if (soughtCoordiante != null &&
+          theGridId != soughtCoordiante.gridUID &&
+          barcodes.isNotEmpty) {
+        sendPort.send([
+          'error', //[0] Identifier.
+          'WrongGrid', //[1] Error Type.
+          soughtCoordiante.gridUID, //[2]Looking for
+          theGridId, //[3]You are here
+        ]);
+
+        // if () {
+
+        //   // if (foundPath == false) {
+        // sendPort.send([
+        //   'error', //[0] Identifier.
+        //   'NoPath', //[1] Error Type.
+        // ]);
+        //   // } else if (foundPath == true &&
+        //   //     barcodeRelationship != null &&
+        //   //     soughtContainerRelationship != null &&
+        //   //     arrow == false) {
+        //   //   sendPort.send([
+        //   //     'error', //[0] Identifier.
+        //   //     'Path', //[1] Error Type.
+        //   //     barcodeRelationship.treeList, //[2]
+        //   //     soughtContainerRelationship.treeList, //[3]
+        //   //   ]);
+        //   // }
+        // }
+      }
 
       // ///2. Once Identified calculate arrow.
       // List<CoordinateEntry> gridCoordinates =
