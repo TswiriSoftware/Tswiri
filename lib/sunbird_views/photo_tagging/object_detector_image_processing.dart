@@ -45,6 +45,7 @@ class _ObjectDetectorProcessingView
 
   final _objectDetector = ObjectDetector(
       options: ObjectDetectorOptions(
+    mode: DetectionMode.singleImage,
     classifyObjects: true,
     multipleObjects: false,
   ));

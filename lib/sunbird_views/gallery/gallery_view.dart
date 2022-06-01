@@ -629,6 +629,7 @@ class _GalleryViewState extends State<GalleryView> {
         isarDatabase!.writeTxnSync((isar) => isar.userTags.putSync(userTag));
         userTags.add(userTag);
         _tagsNode.requestFocus();
+        tagsController.clear();
         setState(() {});
       }
     }

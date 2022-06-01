@@ -112,7 +112,6 @@ void gridProcessor(List init) {
           } else {
             //The coordinate does not exisit.
             //TODO: add new coordinate to MasterGrid.
-
           }
         }
       }
