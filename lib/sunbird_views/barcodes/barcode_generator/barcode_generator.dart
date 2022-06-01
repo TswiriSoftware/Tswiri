@@ -86,7 +86,8 @@ List<pw.Widget> generatePageBarcodes(
               height: size,
               width: size,
               color: PdfColor.fromHex("#000000"),
-              barcode: pw.Barcode.qrCode(),
+              barcode: pw.Barcode.qrCode(
+                  errorCorrectLevel: pw.BarcodeQRCorrectionLevel.high),
               data: barcodeUID,
             ),
           ],
