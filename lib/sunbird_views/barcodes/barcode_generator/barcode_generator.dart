@@ -82,14 +82,16 @@ List<pw.Widget> generatePageBarcodes(
           mainAxisAlignment: pw.MainAxisAlignment.center,
           children: [
             pw.Text(barcodeUID, style: pw.TextStyle(fontSize: (size / 15))),
-            pw.BarcodeWidget(
-              height: size,
-              width: size,
-              color: PdfColor.fromHex("#000000"),
-              barcode: pw.Barcode.qrCode(
-                  errorCorrectLevel: pw.BarcodeQRCorrectionLevel.high),
-              data: barcodeUID,
-            ),
+            pw.Stack(children: [
+              pw.BarcodeWidget(
+                height: size,
+                width: size,
+                color: PdfColor.fromHex("#000000"),
+                barcode: pw.Barcode.qrCode(
+                    errorCorrectLevel: pw.BarcodeQRCorrectionLevel.high),
+                data: barcodeUID,
+              ),
+            ]),
           ],
         ),
       ),
