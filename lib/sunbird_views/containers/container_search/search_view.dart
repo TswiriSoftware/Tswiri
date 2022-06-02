@@ -494,8 +494,8 @@ class _SearchViewState extends State<SearchView> {
             );
             search(searchController.text);
           },
-          child: const Text('Edit'),
           style: ElevatedButton.styleFrom(primary: color),
+          child: const Text('Edit'),
         ),
         ElevatedButton(
           onPressed: () {
@@ -507,8 +507,8 @@ class _SearchViewState extends State<SearchView> {
               ),
             );
           },
-          child: const Text('Find'),
           style: ElevatedButton.styleFrom(primary: color),
+          child: const Text('Find'),
         ),
       ],
     );
@@ -669,8 +669,8 @@ class _SearchViewState extends State<SearchView> {
               (e) => SContainer(
                 container: e,
                 sPhotos: sPhotos
-                    .where((_sPhoto) =>
-                        _sPhoto.photo.containerUID == e.containerUID)
+                    .where(
+                        (sPhoto) => sPhoto.photo.containerUID == e.containerUID)
                     .toList(),
               ),
             )

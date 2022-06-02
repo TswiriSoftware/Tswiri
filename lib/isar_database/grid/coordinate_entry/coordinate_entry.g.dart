@@ -1,5 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 part of 'coordinate_entry.dart';
 
 // **************************************************************************
@@ -15,15 +17,16 @@ extension GetCoordinateEntryCollection on Isar {
 const CoordinateEntrySchema = CollectionSchema(
   name: 'CoordinateEntry',
   schema:
-      '{"name":"CoordinateEntry","idName":"id","properties":[{"name":"barcodeUID","type":"String"},{"name":"gridUID","type":"String"},{"name":"timestamp","type":"Long"},{"name":"x","type":"Double"},{"name":"y","type":"Double"},{"name":"z","type":"Double"}],"indexes":[],"links":[]}',
+      '{"name":"CoordinateEntry","idName":"id","properties":[{"name":"barcodeUID","type":"String"},{"name":"gridUID","type":"String"},{"name":"hashCode","type":"Long"},{"name":"timestamp","type":"Long"},{"name":"x","type":"Double"},{"name":"y","type":"Double"},{"name":"z","type":"Double"}],"indexes":[],"links":[]}',
   idName: 'id',
   propertyIds: {
     'barcodeUID': 0,
     'gridUID': 1,
-    'timestamp': 2,
-    'x': 3,
-    'y': 4,
-    'z': 5
+    'hashCode': 2,
+    'timestamp': 3,
+    'x': 4,
+    'y': 5,
+    'z': 6
   },
   listProperties: {},
   indexIds: {},
@@ -73,14 +76,16 @@ void _coordinateEntrySerializeNative(
   final value1 = object.gridUID;
   final _gridUID = IsarBinaryWriter.utf8Encoder.convert(value1);
   dynamicSize += (_gridUID.length) as int;
-  final value2 = object.timestamp;
-  final _timestamp = value2;
-  final value3 = object.x;
-  final _x = value3;
-  final value4 = object.y;
-  final _y = value4;
-  final value5 = object.z;
-  final _z = value5;
+  final value2 = object.hashCode;
+  final _hashCode = value2;
+  final value3 = object.timestamp;
+  final _timestamp = value3;
+  final value4 = object.x;
+  final _x = value4;
+  final value5 = object.y;
+  final _y = value5;
+  final value6 = object.z;
+  final _z = value6;
   final size = staticSize + dynamicSize;
 
   rawObj.buffer = alloc(size);
@@ -89,10 +94,11 @@ void _coordinateEntrySerializeNative(
   final writer = IsarBinaryWriter(buffer, staticSize);
   writer.writeBytes(offsets[0], _barcodeUID);
   writer.writeBytes(offsets[1], _gridUID);
-  writer.writeLong(offsets[2], _timestamp);
-  writer.writeDouble(offsets[3], _x);
-  writer.writeDouble(offsets[4], _y);
-  writer.writeDouble(offsets[5], _z);
+  writer.writeLong(offsets[2], _hashCode);
+  writer.writeLong(offsets[3], _timestamp);
+  writer.writeDouble(offsets[4], _x);
+  writer.writeDouble(offsets[5], _y);
+  writer.writeDouble(offsets[6], _z);
 }
 
 CoordinateEntry _coordinateEntryDeserializeNative(
@@ -104,10 +110,10 @@ CoordinateEntry _coordinateEntryDeserializeNative(
   object.barcodeUID = reader.readString(offsets[0]);
   object.gridUID = reader.readString(offsets[1]);
   object.id = id;
-  object.timestamp = reader.readLong(offsets[2]);
-  object.x = reader.readDoubleOrNull(offsets[3]);
-  object.y = reader.readDoubleOrNull(offsets[4]);
-  object.z = reader.readDoubleOrNull(offsets[5]);
+  object.timestamp = reader.readLong(offsets[3]);
+  object.x = reader.readDoubleOrNull(offsets[4]);
+  object.y = reader.readDoubleOrNull(offsets[5]);
+  object.z = reader.readDoubleOrNull(offsets[6]);
   return object;
 }
 
@@ -123,10 +129,12 @@ P _coordinateEntryDeserializePropNative<P>(
     case 2:
       return (reader.readLong(offset)) as P;
     case 3:
-      return (reader.readDoubleOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 4:
       return (reader.readDoubleOrNull(offset)) as P;
     case 5:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 6:
       return (reader.readDoubleOrNull(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
@@ -138,6 +146,7 @@ dynamic _coordinateEntrySerializeWeb(
   final jsObj = IsarNative.newJsObject();
   IsarNative.jsObjectSet(jsObj, 'barcodeUID', object.barcodeUID);
   IsarNative.jsObjectSet(jsObj, 'gridUID', object.gridUID);
+  IsarNative.jsObjectSet(jsObj, 'hashCode', object.hashCode);
   IsarNative.jsObjectSet(jsObj, 'id', object.id);
   IsarNative.jsObjectSet(jsObj, 'timestamp', object.timestamp);
   IsarNative.jsObjectSet(jsObj, 'x', object.x);
@@ -166,6 +175,9 @@ P _coordinateEntryDeserializePropWeb<P>(Object jsObj, String propertyName) {
       return (IsarNative.jsObjectGet(jsObj, 'barcodeUID') ?? '') as P;
     case 'gridUID':
       return (IsarNative.jsObjectGet(jsObj, 'gridUID') ?? '') as P;
+    case 'hashCode':
+      return (IsarNative.jsObjectGet(jsObj, 'hashCode') ??
+          double.negativeInfinity) as P;
     case 'id':
       return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
           as P;
@@ -469,6 +481,57 @@ extension CoordinateEntryQueryFilter
   }
 
   QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterFilterCondition>
+      hashCodeEqualTo(int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterFilterCondition>
+      hashCodeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterFilterCondition>
+      hashCodeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterFilterCondition>
+      hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'hashCode',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
+
+  QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterFilterCondition>
       idEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
@@ -715,6 +778,16 @@ extension CoordinateEntryQueryWhereSortBy
     return addSortByInternal('gridUID', Sort.desc);
   }
 
+  QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterSortBy>
+      sortByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterSortBy>
+      sortByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -779,6 +852,16 @@ extension CoordinateEntryQueryWhereSortThenBy
     return addSortByInternal('gridUID', Sort.desc);
   }
 
+  QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterSortBy>
+      thenByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterSortBy>
+      thenByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<CoordinateEntry, CoordinateEntry, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -834,6 +917,11 @@ extension CoordinateEntryQueryWhereDistinct
     return addDistinctByInternal('gridUID', caseSensitive: caseSensitive);
   }
 
+  QueryBuilder<CoordinateEntry, CoordinateEntry, QDistinct>
+      distinctByHashCode() {
+    return addDistinctByInternal('hashCode');
+  }
+
   QueryBuilder<CoordinateEntry, CoordinateEntry, QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
@@ -864,6 +952,10 @@ extension CoordinateEntryQueryProperty
 
   QueryBuilder<CoordinateEntry, String, QQueryOperations> gridUIDProperty() {
     return addPropertyNameInternal('gridUID');
+  }
+
+  QueryBuilder<CoordinateEntry, int, QQueryOperations> hashCodeProperty() {
+    return addPropertyNameInternal('hashCode');
   }
 
   QueryBuilder<CoordinateEntry, int, QQueryOperations> idProperty() {

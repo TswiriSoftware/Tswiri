@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:vector_math/vector_math.dart';
 import 'package:isar/isar.dart';
 part 'coordinate_entry.g.dart';

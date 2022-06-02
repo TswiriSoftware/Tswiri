@@ -61,13 +61,8 @@ class GridVisualizerPainter extends CustomPainter {
 
     for (DisplayPoint point in myPoints) {
       final textSpan = TextSpan(
-          text: point.barcodeUID +
-              '\n x: ' +
-              point.realPosition[0].toString() +
-              '\n y: ' +
-              point.realPosition[1].toString() +
-              '\n z: ' +
-              point.realPosition[2].toString(),
+          text:
+              '${point.barcodeUID}\n x: ${point.realPosition[0]}\n y: ${point.realPosition[1]}\n z: ${point.realPosition[2]}',
           style: TextStyle(
               color: Colors.red[500],
               fontSize: 1.5,

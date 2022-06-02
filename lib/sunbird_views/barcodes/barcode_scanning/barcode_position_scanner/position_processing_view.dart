@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter_google_ml_kit/functions/position_functions/average_inter_barcode_vectors.dart';
 import 'package:flutter_google_ml_kit/functions/position_functions/generate_coordinates.dart';
 import 'package:flutter_google_ml_kit/functions/position_functions/create_inter_barcode_vectors.dart';

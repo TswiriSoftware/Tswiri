@@ -1,3 +1,4 @@
+// ignore: depend_on_referenced_packages
 import 'package:vector_math/vector_math.dart' as vm;
 
 ///Calculate the phone angle on the X-Y plane.

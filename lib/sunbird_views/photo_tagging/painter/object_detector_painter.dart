@@ -12,8 +12,8 @@ class ObjectDetectorPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    List<DetectedObject> _objects = objectData.detectedObjects;
-    List<TextBlock> _textData = objectData.detectedText!.blocks;
+    List<DetectedObject> objects = objectData.detectedObjects;
+    List<TextBlock> textData = objectData.detectedText!.blocks;
     Size absoluteSize = objectData.size;
     InputImageRotation rotation = objectData.imageRotation;
 
@@ -24,7 +24,7 @@ class ObjectDetectorPainter extends CustomPainter {
 
     final Paint background = Paint()..color = const Color(0x99000000);
 
-    for (DetectedObject detectedObject in _objects) {
+    for (DetectedObject detectedObject in objects) {
       final ParagraphBuilder builder = ParagraphBuilder(
         ParagraphStyle(
             textAlign: TextAlign.left,
@@ -64,7 +64,7 @@ class ObjectDetectorPainter extends CustomPainter {
       );
     }
 
-    for (final textBlock in _textData) {
+    for (final textBlock in textData) {
       final ParagraphBuilder builder = ParagraphBuilder(
         ParagraphStyle(
             textAlign: TextAlign.left,

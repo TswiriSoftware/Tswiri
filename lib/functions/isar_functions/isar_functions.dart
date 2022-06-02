@@ -31,7 +31,6 @@ Isar openIsar({String? directory, bool? inspector}) {
       MarkerSchema, //4
       BarcodePropertySchema, //5
       BarcodeGenerationEntrySchema, //6
-      //InterBarcodeVectorEntrySchema, //7
       InterBarcodeTimeEntrySchema, //8
       BarcodeSizeDistanceEntrySchema, //9
       PhotoSchema, //10

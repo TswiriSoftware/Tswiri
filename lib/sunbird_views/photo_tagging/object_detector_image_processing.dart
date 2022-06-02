@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages, library_private_types_in_public_api
+
 import 'dart:io';
 import 'package:flutter_google_ml_kit/extentions/get_model.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
@@ -144,10 +146,10 @@ class _ObjectDetectorProcessingView
     }
 
     //Create the photo file path.
-    String photoFilePath = '$storagePath/sunbird/$fileName.' + fileExtention;
+    String photoFilePath = '$storagePath/sunbird/$fileName.$fileExtention';
 
     String thumbnailPhotoPath =
-        '$storagePath/sunbird/${fileName}_thumbnail.' + fileExtention;
+        '$storagePath/sunbird/${fileName}_thumbnail.$fileExtention';
 
     //Create Thumbnail
     var image = img.decodeJpg(imageFile.readAsBytesSync());

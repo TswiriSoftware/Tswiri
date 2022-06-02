@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'dart:developer';
 
 import 'package:flutter/services.dart';
@@ -6,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/single_barcode_scanner/single_camera_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/single_barcode_scanner/single_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
+
+import '../../../../functions/barcode_calculations/calculate_barcode_center_from_bounding_box.dart';
 
 ///Will return a String? BarcodeUID
 class SingleScannerView extends StatefulWidget {
@@ -88,7 +92,8 @@ class _SingleScannerViewState extends State<SingleScannerView> {
         if (barcodes.isNotEmpty && mounted) {
           //Calculate distance from screen center
           double distanceFromCenter =
-              (imageCenter - calculateBarcodeCenterOffset(barcode)).distance;
+              (imageCenter - calculateBarcodeCenterFromBoundingBox(barcode))
+                  .distance;
 
           if (closestBarcodeDistance == null) {
             closestBarcodeDistance = distanceFromCenter;
@@ -135,14 +140,4 @@ class _SingleScannerViewState extends State<SingleScannerView> {
     HapticFeedback.lightImpact();
     Navigator.pop(context, barcodeID);
   }
-}
-
-Offset calculateBarcodeCenterOffset(Barcode barcode) {
-  double top = barcode.boundingBox!.top;
-  double bottom = barcode.boundingBox!.bottom;
-  double left = barcode.boundingBox!.left;
-  double right = barcode.boundingBox!.right;
-
-  Rect boundingBox = Rect.fromLTRB(left, top, right, bottom);
-  return boundingBox.center;
 }

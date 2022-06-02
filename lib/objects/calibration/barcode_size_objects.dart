@@ -1,4 +1,4 @@
-import 'package:flutter_google_ml_kit/functions/barcode_calculations/data_capturing_functions.dart';
+import 'package:flutter_google_ml_kit/functions/barcode_calculations/calculate_barcode_diagonal_length.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 ///Timestamp and Barcode;
@@ -16,7 +16,7 @@ class BarcodeData {
 
   double get averageBarcodeDiagonalLength {
     double averageBarcodeDiagonalLength =
-        calculateAverageBarcodeDiagonalLength(barcode);
+        calculateBarcodeDiagonalLength(barcode);
 
     return averageBarcodeDiagonalLength;
   }

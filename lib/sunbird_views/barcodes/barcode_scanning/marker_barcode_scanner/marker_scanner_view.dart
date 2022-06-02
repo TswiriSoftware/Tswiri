@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
@@ -7,6 +9,8 @@ import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/ma
 import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/marker_barcode_scanner/marker_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
+
+import '../../../../functions/barcode_calculations/calculate_barcode_center_from_bounding_box.dart';
 
 class MarkerScannerView extends StatefulWidget {
   const MarkerScannerView({Key? key, required this.parentContainer, this.color})
@@ -91,7 +95,7 @@ class _MarkerScannerViewState extends State<MarkerScannerView> {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Text(
-                  'Scanned barcodes: ' + selectedBarcodeUIDs.length.toString(),
+                  'Scanned barcodes: ${selectedBarcodeUIDs.length}',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
@@ -142,7 +146,8 @@ class _MarkerScannerViewState extends State<MarkerScannerView> {
             mounted) {
           //Calculate distance from screen center
           double distanceFromCenter =
-              (imageCenter - calculateBarcodeCenterOffset(barcode)).distance;
+              (imageCenter - calculateBarcodeCenterFromBoundingBox(barcode))
+                  .distance;
 
           //If it is the closest it will update the button value.
           if (clostesBarcodeDistance == null) {
@@ -175,14 +180,4 @@ class _MarkerScannerViewState extends State<MarkerScannerView> {
       setState(() {});
     }
   }
-}
-
-Offset calculateBarcodeCenterOffset(Barcode barcode) {
-  double top = barcode.boundingBox!.top;
-  double bottom = barcode.boundingBox!.bottom;
-  double left = barcode.boundingBox!.left;
-  double right = barcode.boundingBox!.right;
-
-  Rect boundingBox = Rect.fromLTRB(left, top, right, bottom);
-  return boundingBox.center;
 }

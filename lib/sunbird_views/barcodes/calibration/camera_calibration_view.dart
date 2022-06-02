@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages, use_build_context_synchronously, library_private_types_in_public_api
+
 import 'dart:async';
 
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';

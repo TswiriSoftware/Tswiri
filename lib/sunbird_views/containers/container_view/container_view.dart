@@ -775,7 +775,7 @@ class _ContainerViewState extends State<ContainerView> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              tag.text + ' ',
+              '${tag.text} ',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             Icon(
@@ -918,6 +918,12 @@ class _ContainerViewState extends State<ContainerView> {
       height: 35,
       margin: const EdgeInsets.all(2.5),
       padding: const EdgeInsets.all(0),
+      decoration: BoxDecoration(
+          border: Border.all(color: _containerColor, width: 1),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(5),
+          ),
+          color: _containerColor.withOpacity(0.5)),
       child: Center(
         child: IconButton(
           padding: const EdgeInsets.all(1),
@@ -930,12 +936,6 @@ class _ContainerViewState extends State<ContainerView> {
           color: Colors.white,
         ),
       ),
-      decoration: BoxDecoration(
-          border: Border.all(color: _containerColor, width: 1),
-          borderRadius: const BorderRadius.all(
-            Radius.circular(5),
-          ),
-          color: _containerColor.withOpacity(0.5)),
     );
   }
 

@@ -52,8 +52,8 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
 
   late List<DropdownMenuItem<String>> menuItems = barcodeSizes.keys
       .map((e) => DropdownMenuItem<String>(
-            child: Text(e),
             value: e,
+            child: Text(e),
           ))
       .toList();
 
@@ -127,11 +127,11 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
           itemBuilder: (BuildContext context) {
             return [
               PopupMenuItem(
+                value: 'import',
                 child: Text(
                   'Import Barcodes',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                value: 'import',
               ),
             ];
           },
@@ -440,7 +440,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
           style: Theme.of(context).textTheme.bodySmall,
         ),
         Text(
-          start.toString() + ' to ' + end.toString(),
+          '$start to $end',
           style: Theme.of(context).textTheme.bodyLarge,
         ),
       ],
@@ -536,7 +536,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
     List<BarcodeProperty> generatedBarcodeProperties = [];
 
     for (var i = rangeStart; i <= rangeEnd; i++) {
-      String barcodeUID = '${i}_' + timestamp.toString();
+      String barcodeUID = '${i}_$timestamp';
       generatedBarcodeUIDs.add(barcodeUID);
       generatedBarcodeProperties.add(BarcodeProperty()
         ..barcodeUID = barcodeUID

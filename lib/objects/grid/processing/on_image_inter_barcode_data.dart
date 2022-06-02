@@ -38,7 +38,7 @@ class OnImageInterBarcodeData {
 
   ///This returns the UID of the Start and end Barcode.
   String get uid {
-    return startBarcode.barcodeUID + '_' + endBarcode.barcodeUID;
+    return '${startBarcode.barcodeUID}_${endBarcode.barcodeUID}';
   }
 
   @override

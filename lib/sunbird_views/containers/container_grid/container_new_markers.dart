@@ -57,7 +57,7 @@ class _ContainerNewMarkersViewState extends State<ContainerNewMarkersView> {
       appBar: AppBar(
         backgroundColor: color,
         title: Text(
-          containerUID + ' Markers',
+          '$containerUID Markers',
           style: Theme.of(context).textTheme.titleMedium,
         ),
         centerTitle: true,

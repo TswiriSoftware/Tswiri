@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, sort_child_properties_last
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -119,7 +121,7 @@ class _NewContainerViewState extends State<NewContainerView> {
           );
         } else {
           return Text(
-            'New ' + selectedContainerType!.containerType.capitalize(),
+            'New ${selectedContainerType!.containerType.capitalize()}',
             style: Theme.of(context).textTheme.titleMedium,
           );
         }
@@ -258,9 +260,8 @@ class _NewContainerViewState extends State<NewContainerView> {
               selectedContainerType = containerType;
               _containerColor = typeColor;
 
-              containerUID = selectedContainerType!.containerType +
-                  '_' +
-                  DateTime.now().millisecondsSinceEpoch.toString();
+              containerUID =
+                  '${selectedContainerType!.containerType}_${DateTime.now().millisecondsSinceEpoch}';
 
               setState(() {});
             },
@@ -379,9 +380,7 @@ class _NewContainerViewState extends State<NewContainerView> {
       if (linkedContainer == null) {
         barcodeUID = scannedBarcodeUID;
         nameController.text =
-            selectedContainerType!.containerType.capitalize() +
-                ' ' +
-                barcodeUID!.split('_').first;
+            '${selectedContainerType!.containerType.capitalize()} ${barcodeUID!.split('_').first}';
         name = nameController.text;
         setState(() {});
       } else {
@@ -777,9 +776,9 @@ class _NewContainerViewState extends State<NewContainerView> {
     return SnackBar(
       content: Builder(builder: (context) {
         if (containerEntry.name != null) {
-          return Text('Barcode in use => ' + containerEntry.name!);
+          return Text('Barcode in use => ${containerEntry.name!}');
         } else {
-          return Text('Barcode in use => ' + containerEntry.containerUID);
+          return Text('Barcode in use => ${containerEntry.containerUID}');
         }
       }),
     );

@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -519,16 +521,13 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
           drive.Media test = await driveApi.files.get(photo.id!,
               downloadOptions: drive.DownloadOptions.fullMedia) as drive.Media;
 
-          File photoFile = File(storagePath + '/sunbird/' + photo.name!);
-          log('path: ' + photoFile.path);
-          log('id: ' + photo.id!);
-          log('name: ' + photo.name.toString());
+          File photoFile = File('$storagePath/sunbird/${photo.name!}');
+          log('path: ${photoFile.path}');
+          log('id: ${photo.id!}');
+          log('name: ${photo.name}');
 
-          File thumbnailFile = File(storagePath +
-              '/sunbird/' +
-              photo.name.toString().split('.').first +
-              '_thumbnail.' +
-              photo.name.toString().split('.').last);
+          File thumbnailFile = File(
+              '$storagePath/sunbird/${photo.name.toString().split('.').first}_thumbnail.${photo.name.toString().split('.').last}');
 
           if (await photoFile.exists()) {
             log('file exisits');
@@ -566,7 +565,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
         downloadOptions: drive.DownloadOptions.fullMedia) as drive.Media;
 
     String backupPath =
-        (await getApplicationSupportDirectory()).path + '/download/';
+        '${(await getApplicationSupportDirectory()).path}/download/';
     String fileContent = '';
 
     if (!(await File('$backupPath/sunbird/download/$filename').exists())) {
@@ -776,7 +775,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
     fileToUpload.name = name;
 
     if (fileList.files != null && fileList.files!.isNotEmpty) {
-      log('file exists: ' + fileList.files!.first.name.toString());
+      log('file exists: ${fileList.files!.first.name}');
 
       await driveApi.files.delete(fileList.files!.first.id!);
 
@@ -785,16 +784,16 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
         uploadMedia: drive.Media(file.openRead(), file.lengthSync()),
       );
 
-      log('file updated: ' + name + ' ' + response.toString());
+      log('file updated: $name $response');
     } else {
-      log('file does not exists: ' + name);
+      log('file does not exists: $name');
 
       var response = await driveApi.files.create(
         fileToUpload,
         uploadMedia: drive.Media(file.openRead(), file.lengthSync()),
       );
 
-      log('file created: ' + response.toString());
+      log('file created: $response');
     }
   }
 
@@ -802,9 +801,9 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
     if (!await File('$backupPath/sunbird/backup/$filename').exists()) {
       await File('$backupPath/sunbird/backup/$filename')
           .create(recursive: true);
-      log('created: ' + filename);
+      log('created: $filename');
     } else {
-      log('exists: ' + filename);
+      log('exists: $filename');
     }
   }
 

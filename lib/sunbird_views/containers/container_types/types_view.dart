@@ -168,12 +168,11 @@ class _ContainerTypeViewState extends State<ContainerTypeView> {
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                       Text(
-                        'Movable: ' + containerType.moveable.toString(),
+                        'Movable: ${containerType.moveable}',
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       Text(
-                        'Marker to Children: ' +
-                            containerType.enclosing.toString(),
+                        'Marker to Children: ${containerType.enclosing}',
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ],

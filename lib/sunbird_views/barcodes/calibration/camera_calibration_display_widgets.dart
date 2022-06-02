@@ -27,18 +27,18 @@ class CameraCalibrationDisplayWidget extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(right: 10, left: 10),
                 child: SizedBox(
+                  width: 150,
                   child: Text(dataObject.diagonalSize.toString(),
                       textAlign: TextAlign.start),
-                  width: 150,
                 ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 25),
               child: SizedBox(
+                width: 150,
                 child: Text(dataObject.distanceFromCamera.toString(),
                     textAlign: TextAlign.start),
-                width: 150,
               ),
             ),
           ],
@@ -73,16 +73,16 @@ class DisplayDataHeader extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(right: 20),
                 child: SizedBox(
-                  child: Text(dataObject[0], textAlign: TextAlign.start),
                   width: 150,
+                  child: Text(dataObject[0], textAlign: TextAlign.start),
                 ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 25),
               child: SizedBox(
-                child: Text(dataObject[1], textAlign: TextAlign.start),
                 width: 150,
+                child: Text(dataObject[1], textAlign: TextAlign.start),
               ),
             ),
           ],

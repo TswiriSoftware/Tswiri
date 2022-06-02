@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:isolate';
 import 'dart:typed_data';
 import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';

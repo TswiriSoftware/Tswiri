@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/barcode_colors.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
@@ -43,7 +45,7 @@ class _ContainerGridViewState extends State<ContainerGridView> {
       appBar: AppBar(
         backgroundColor: containerTypeColor,
         title: Text(
-          containerEntry.name ?? containerEntry.containerUID + ' Grid',
+          containerEntry.name ?? '${containerEntry.containerUID} Grid',
           style: Theme.of(context).textTheme.titleMedium,
         ),
         centerTitle: true,
