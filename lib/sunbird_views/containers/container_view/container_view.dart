@@ -8,6 +8,7 @@ import 'package:flutter_google_ml_kit/isar_database/tags/container_tag/container
 import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart';
+import 'package:flutter_google_ml_kit/sunbird_views/barcodes/barcode_scanning/barcode_position_scanner/position_scanner_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_view/photo_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_grid/container_grid_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_view/new_container_view.dart';
@@ -494,9 +495,9 @@ class _ContainerViewState extends State<ContainerView> {
 
   Widget _childrenActions() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // _multipleContainers(),
+        _multipleContainers(),
         _gridButton(),
       ],
     );
@@ -545,7 +546,15 @@ class _ContainerViewState extends State<ContainerView> {
       style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(_containerColor)),
       onPressed: () async {
-        //TODO: Scan => moving a box from another container to this one.
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PositionScannerView(
+              parentContainer: _containerEntry,
+              customColor: _containerColor,
+            ),
+          ),
+        );
       },
       child: Row(
         children: [

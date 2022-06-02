@@ -142,7 +142,6 @@ class _ContainerGridViewState extends State<ContainerGridView> {
       style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(containerTypeColor)),
       onPressed: () async {
-        log(focalLength.toString());
         await Navigator.push(
           context,
           MaterialPageRoute(
