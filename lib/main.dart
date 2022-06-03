@@ -59,9 +59,11 @@ Future<void> main() async {
   //Request Permissions.
   var status = await Permission.storage.status;
 
-  if (status.isDenied) {
-    Permission.storage.request();
-  }
+  //TODO: Disable for integration Test.
+  // if (status.isDenied) {
+  //   Permission.storage.request();
+  // }
+
   //Get App Settings. From Shared Prefernces.
   getStoredAppSettings();
 
@@ -133,9 +135,14 @@ class MyApp extends StatelessWidget {
 }
 //TODO:@Spodeopieter implement navigator 2.0
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
 
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
   @override
   build(BuildContext context) {
     return Scaffold(
