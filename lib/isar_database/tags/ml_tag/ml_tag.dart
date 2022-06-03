@@ -57,6 +57,9 @@ class MlTag {
       ..blackListed = json['blackListed']
       ..tagType = MlTagType.values.byName(json['tagType']);
   }
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 enum MlTagType {

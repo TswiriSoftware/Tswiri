@@ -27,4 +27,7 @@ class TagText {
   bool operator ==(Object other) {
     return other is TagText && id == other.id && text == other.text;
   }
+
+  @override
+  int get hashCode => id.hashCode;
 }

@@ -21,6 +21,9 @@ class ObjectBoundingBox {
   }
 
   @override
+  int get hashCode => id.hashCode;
+
+  @override
   String toString() {
     return 'boundingBox: $boundingBox, mlTagID: $mlTagID';
   }

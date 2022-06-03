@@ -30,4 +30,7 @@ class UserTag {
       ..photoID = json['tagID']
       ..textID = json['textID'];
   }
+
+  @override
+  int get hashCode => id.hashCode;
 }

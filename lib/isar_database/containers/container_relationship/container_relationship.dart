@@ -38,4 +38,7 @@ class ContainerRelationship {
       ..containerUID = json['containerUID']
       ..parentUID = json['parentUID'];
   }
+
+  @override
+  int get hashCode => id.hashCode;
 }

@@ -49,4 +49,7 @@ class ContainerEntry {
       ..description = json['description']
       ..barcodeUID = json['barcodeUID'];
   }
+
+  @override
+  int get hashCode => id.hashCode;
 }

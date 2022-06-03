@@ -111,7 +111,7 @@ void gridProcessor(List init) {
             }
           } else {
             //The coordinate does not exisit.
-            //TODO: does this warrant any action ?
+
           }
         }
       }

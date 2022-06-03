@@ -36,4 +36,7 @@ class BarcodeSizeDistanceEntry {
       ..diagonalSize = json['diagonalSize'] as double
       ..distanceFromCamera = json['distanceFromCamera'] as double;
   }
+
+  @override
+  int get hashCode => id.hashCode;
 }

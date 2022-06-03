@@ -239,7 +239,7 @@ void imageProcessor(List init) {
         gridProcessor!.send(gridProcessorData);
       }
 
-      ///1. Identify the grid that the user is in. //TODO: this is unnecessary now :D
+      ///1. Identify the grid that the user is in.
       int thevalue = 0;
       String theGridId = '';
       Map<String, int> map = {for (var v in grids) v: 0};

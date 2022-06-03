@@ -34,4 +34,7 @@ class Marker {
       ..barcodeUID = json['barcodeUID']
       ..parentContainerUID = json['parentContainerUID'];
   }
+
+  @override
+  int get hashCode => id.hashCode;
 }

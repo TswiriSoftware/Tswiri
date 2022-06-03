@@ -38,4 +38,7 @@ class BarcodeProperty {
   Map<String, double> toIsolateMap() => {
         barcodeUID: size,
       };
+
+  @override
+  int get hashCode => barcodeUID.hashCode;
 }

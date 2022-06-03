@@ -36,4 +36,7 @@ class ContainerTag {
       ..containerUID = json['containerUID']
       ..textID = json['tagTextID'] as int;
   }
+
+  @override
+  int get hashCode => id.hashCode;
 }

@@ -161,8 +161,6 @@ class _NavigatorViewState extends State<NavigatorView> {
       } else if (message[0] == 'Update') {
         imageProcessor1!.send(message);
         imageProcessor2!.send(message);
-
-        //TODO: Update InterBarcodeVectors in database...
       }
     });
   }

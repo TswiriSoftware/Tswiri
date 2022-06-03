@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:isar/isar.dart';
-import 'package:collection/collection.dart';
 part 'container_type.g.dart';
 
 @Collection()
@@ -68,4 +67,7 @@ color $containerColor
       ..moveable = json['moveable']
       ..containerColor = json['containerColor'];
   }
+
+  @override
+  int get hashCode => id.hashCode;
 }
