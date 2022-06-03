@@ -66,8 +66,6 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
     'barcodeGenerationEntrys.json', // 12
     'photos.json', //13
     'userTags.json', //14
-    //InterbarcodeTimeSchema required later
-    //Physical Photos
   ];
 
   @override

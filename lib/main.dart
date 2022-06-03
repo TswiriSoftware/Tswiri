@@ -196,7 +196,7 @@ class HomeView extends StatelessWidget {
               tileColor: sunbirdOrange,
             ),
             CustomCard(
-              'Camera Calibraion',
+              'Calibration',
               CalibrationToolsView(),
               Icons.camera,
               featureCompleted: true,

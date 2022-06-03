@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter_google_ml_kit/functions/barcode_calculations/calculate_barcode_center_from_bounding_box.dart';
@@ -14,10 +16,8 @@ void main() {
   //Test 1. (Calculate Offset Between Two Points)
   late Offset offsetBetweenPoints;
 
-  setUp(() {
-    offsetBetweenPoints =
-        calculateOffsetBetweenTwoPoints(const Offset(5, 5), const Offset(5, 5));
-  });
+  offsetBetweenPoints =
+      calculateOffsetBetweenTwoPoints(const Offset(5, 5), const Offset(5, 5));
 
   Offset result = const Offset(0, 0);
 
@@ -42,9 +42,7 @@ void main() {
       ],
       value: null);
 
-  setUp(() {
-    barcodeDiagonalLength = calculateBarcodeDiagonalLength(barcode);
-  });
+  barcodeDiagonalLength = calculateBarcodeDiagonalLength(barcode);
 
   test('Average Diagonal Length Calculator', () {
     expect(11.024937810560445, barcodeDiagonalLength);
@@ -53,9 +51,7 @@ void main() {
   //Test 3. (Calculate Barcode Center From BoundingBox)
   late Offset barcodeCenterPoint;
 
-  setUp(() {
-    barcodeCenterPoint = calculateBarcodeCenterFromBoundingBox(barcode);
-  });
+  barcodeCenterPoint = calculateBarcodeCenterFromBoundingBox(barcode);
 
   test('Barcode Center Point', () {
     expect(const Offset(15.0, 15.0), barcodeCenterPoint);
@@ -64,10 +60,7 @@ void main() {
   //Test 4. (Calculate phone angle relative to gravity)
   late double angleRadians;
   Vector3 gravityDirection = Vector3(1, 0, 0);
-
-  setUp(() {
-    angleRadians = calculatePhoneAngle(gravityDirection);
-  });
+  angleRadians = calculatePhoneAngle(gravityDirection);
 
   test('Phone Angle', () {
     expect(angleRadians, -1.5707963267948966);

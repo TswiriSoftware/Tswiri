@@ -23,6 +23,7 @@ class CustomCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      key: Key(_label),
       elevation: 5,
       color: Colors.transparent,
       margin: const EdgeInsets.only(bottom: 10),
