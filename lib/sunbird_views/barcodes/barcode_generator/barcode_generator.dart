@@ -13,10 +13,14 @@ Future<Uint8List> barcodePdfGenerator({
   double convertionWidth = PdfPageFormat.a4.width / 210;
   double convertionHeight = PdfPageFormat.a4.height / 297;
   double realWidth = size * convertionWidth;
-  double realHeight = size * convertionHeight + (5 * convertionWidth);
+  double realHeight = size * convertionHeight;
 
-  int crossAxisCount = PdfPageFormat.a4.availableWidth ~/ realWidth;
-  int mainAxisCount = (PdfPageFormat.a4.availableHeight ~/ realHeight);
+  int crossAxisCount = PdfPageFormat.a4.width ~/ realWidth;
+  int mainAxisCount = (PdfPageFormat.a4.height ~/ realHeight);
+
+  if (size <= 40) {
+    mainAxisCount = mainAxisCount - 1;
+  }
 
   int numberPerPage = crossAxisCount * mainAxisCount;
 

@@ -33,10 +33,10 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
   };
 
   final Map<String, int> barcodesPerPage = {
-    'Extra Small': 80,
-    'Small': 35,
-    'Medium': 12,
-    'Large': 6,
+    'Extra Small': 130,
+    'Small': 56,
+    'Medium': 20,
+    'Large': 12,
     'Extra Large': 6,
     'Custom': 100,
   };
