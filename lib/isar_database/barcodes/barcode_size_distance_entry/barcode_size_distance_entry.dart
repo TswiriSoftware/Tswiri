@@ -12,6 +12,14 @@ class BarcodeSizeDistanceEntry {
   late double distanceFromCamera;
 
   @override
+  bool operator ==(Object other) {
+    return other is BarcodeSizeDistanceEntry &&
+        id == other.id &&
+        diagonalSize == other.diagonalSize &&
+        distanceFromCamera == other.distanceFromCamera;
+  }
+
+  @override
   String toString() {
     return 'diagonalSize: $diagonalSize,\ndistanceFromCamera: $distanceFromCamera,\n';
   }

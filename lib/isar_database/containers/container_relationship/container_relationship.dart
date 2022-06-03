@@ -13,6 +13,15 @@ class ContainerRelationship {
   late String? parentUID;
 
   @override
+  bool operator ==(Object other) {
+    return other is ContainerRelationship &&
+        id == other.id &&
+        containerUID == other.containerUID &&
+        containerUID == other.containerUID &&
+        parentUID == other.parentUID;
+  }
+
+  @override
   String toString() {
     return '\ncontainerUID: $containerUID, parentUID: $parentUID';
   }

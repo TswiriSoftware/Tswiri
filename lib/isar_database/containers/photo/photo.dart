@@ -21,6 +21,15 @@ class Photo {
   late String thumbnailPath;
 
   @override
+  bool operator ==(Object other) {
+    return other is Photo &&
+        id == other.id &&
+        containerUID == other.containerUID &&
+        photoPath.split('/').last == other.photoPath.split('/').last &&
+        thumbnailPath.split('/').last == other.thumbnailPath.split('/').last;
+  }
+
+  @override
   String toString() {
     return '\nID: $id, containerID: $containerUID ';
   }
@@ -34,7 +43,6 @@ class Photo {
 
   Photo fromJson(Map<String, dynamic> json, String storagePath) {
     String photoFilePath = '$storagePath/sunbird/' + json['photoPath'];
-    log(photoFilePath);
     String photoThumbnail = '$storagePath/sunbird/' + json['thumbnailPath'];
     return Photo()
       ..id = json['id']

@@ -16,6 +16,17 @@ class ContainerEntry {
   late String? barcodeUID;
 
   @override
+  bool operator ==(Object other) {
+    return other is ContainerEntry &&
+        id == other.id &&
+        containerType == other.containerType &&
+        containerUID == other.containerUID &&
+        name == other.name &&
+        description == other.description &&
+        barcodeUID == other.barcodeUID;
+  }
+
+  @override
   String toString() {
     return '\nUID: $containerUID, Type: $containerType, Name: $name, Description: $description, BarcodeUID $barcodeUID';
   }

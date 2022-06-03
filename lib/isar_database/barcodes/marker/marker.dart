@@ -10,6 +10,14 @@ class Marker {
   late String? parentContainerUID;
 
   @override
+  bool operator ==(Object other) {
+    return other is Marker &&
+        id == other.id &&
+        barcodeUID == other.barcodeUID &&
+        parentContainerUID == other.parentContainerUID;
+  }
+
+  @override
   String toString() {
     return '\nbarcodeUID: $barcodeUID, containerUID: $parentContainerUID';
   }

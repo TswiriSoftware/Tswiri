@@ -22,4 +22,9 @@ class TagText {
       ..id = json['id']
       ..text = json['tag'];
   }
+
+  @override
+  bool operator ==(Object other) {
+    return other is TagText && id == other.id && text == other.text;
+  }
 }

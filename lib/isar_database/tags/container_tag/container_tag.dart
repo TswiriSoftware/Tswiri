@@ -12,6 +12,14 @@ class ContainerTag {
   late int textID;
 
   @override
+  bool operator ==(Object other) {
+    return other is ContainerTag &&
+        id == other.id &&
+        containerUID == other.containerUID &&
+        textID == other.textID;
+  }
+
+  @override
   String toString() {
     return 'UID: $containerUID: Tag: $textID';
   }

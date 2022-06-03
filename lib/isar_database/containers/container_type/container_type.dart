@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:isar/isar.dart';
+import 'package:collection/collection.dart';
 part 'container_type.g.dart';
 
 @Collection()
@@ -23,6 +25,18 @@ class ContainerType {
 
   ///Container color.
   late String containerColor;
+
+  @override
+  bool operator ==(Object other) {
+    return other is ContainerType &&
+        id == other.id &&
+        containerType == other.containerType &&
+        containerDescription == other.containerDescription &&
+        moveable == other.moveable &&
+        enclosing == other.enclosing &&
+        listEquals(canContain, other.canContain) &&
+        containerColor == other.containerColor;
+  }
 
   @override
   String toString() {

@@ -10,6 +10,14 @@ class BarcodeProperty {
   late double size;
 
   @override
+  bool operator ==(Object other) {
+    return other is BarcodeProperty &&
+        id == other.id &&
+        barcodeUID == other.barcodeUID &&
+        size == other.size;
+  }
+
+  @override
   String toString() {
     return 'barcodeUID: $barcodeUID: size(mm): $size';
   }

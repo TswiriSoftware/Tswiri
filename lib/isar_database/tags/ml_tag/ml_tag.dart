@@ -24,6 +24,17 @@ class MlTag {
   late MlTagType tagType;
 
   @override
+  bool operator ==(Object other) {
+    return other is MlTag &&
+        id == other.id &&
+        photoID == other.photoID &&
+        textID == other.textID &&
+        confidence == other.confidence &&
+        blackListed == other.blackListed &&
+        tagType == other.tagType;
+  }
+
+  @override
   String toString() {
     return '\ntag: ${isarDatabase!.tagTexts.getSync(textID)?.text}, confidence: $confidence, blacklisted: $blackListed, photoID: $photoID';
   }

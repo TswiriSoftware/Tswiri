@@ -10,6 +10,14 @@ class UserTag {
   late int textID;
 
   @override
+  bool operator ==(Object other) {
+    return other is UserTag &&
+        id == other.id &&
+        photoID == other.photoID &&
+        textID == other.textID;
+  }
+
+  @override
   String toString() {
     return 'photoID: $photoID, textID: $textID';
   }

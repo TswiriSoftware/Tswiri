@@ -60,7 +60,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
     'markers.json', // 6
     'mlTags.json', // 7
     'objectBoundingBox.json', // 8
-    'realInterBarcodeVectorEntry.json', // 9
+    'coordinateEntry.json', // 9
     'barcodeSizeDistanceEntrys.json', // 10
     'barcodePropertys.json', // 11
     'barcodeGenerationEntrys.json', // 12
@@ -429,7 +429,7 @@ class _GoogleDriveBackupState extends State<GoogleDriveBackup>
                 isar.mlTags.putAllSync(mlTags);
               });
               break;
-            case 'realInterBarcodeVectorEntry.json':
+            case 'coordinateEntry.json':
               List<CoordinateEntry> realInterBarcodeVectorEntrys =
                   json.map((e) => CoordinateEntry().fromJson(e)).toList();
 
