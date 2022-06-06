@@ -17,9 +17,9 @@ extension GetObjectBoundingBoxCollection on Isar {
 const ObjectBoundingBoxSchema = CollectionSchema(
   name: 'ObjectBoundingBox',
   schema:
-      '{"name":"ObjectBoundingBox","idName":"id","properties":[{"name":"boundingBox","type":"DoubleList"},{"name":"mlTagID","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"ObjectBoundingBox","idName":"id","properties":[{"name":"boundingBox","type":"DoubleList"},{"name":"hashCode","type":"Long"},{"name":"mlTagID","type":"Long"}],"indexes":[],"links":[]}',
   idName: 'id',
-  propertyIds: {'boundingBox': 0, 'mlTagID': 1},
+  propertyIds: {'boundingBox': 0, 'hashCode': 1, 'mlTagID': 2},
   listProperties: {'boundingBox'},
   indexIds: {},
   indexValueTypes: {},
@@ -65,8 +65,10 @@ void _objectBoundingBoxSerializeNative(
   final value0 = object.boundingBox;
   dynamicSize += (value0.length) * 8;
   final _boundingBox = value0;
-  final value1 = object.mlTagID;
-  final _mlTagID = value1;
+  final value1 = object.hashCode;
+  final _hashCode = value1;
+  final value2 = object.mlTagID;
+  final _mlTagID = value2;
   final size = staticSize + dynamicSize;
 
   rawObj.buffer = alloc(size);
@@ -74,7 +76,8 @@ void _objectBoundingBoxSerializeNative(
   final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
   writer.writeDoubleList(offsets[0], _boundingBox);
-  writer.writeLong(offsets[1], _mlTagID);
+  writer.writeLong(offsets[1], _hashCode);
+  writer.writeLong(offsets[2], _mlTagID);
 }
 
 ObjectBoundingBox _objectBoundingBoxDeserializeNative(
@@ -85,7 +88,7 @@ ObjectBoundingBox _objectBoundingBoxDeserializeNative(
   final object = ObjectBoundingBox();
   object.boundingBox = reader.readDoubleList(offsets[0]) ?? [];
   object.id = id;
-  object.mlTagID = reader.readLong(offsets[1]);
+  object.mlTagID = reader.readLong(offsets[2]);
   return object;
 }
 
@@ -98,6 +101,8 @@ P _objectBoundingBoxDeserializePropNative<P>(
       return (reader.readDoubleList(offset) ?? []) as P;
     case 1:
       return (reader.readLong(offset)) as P;
+    case 2:
+      return (reader.readLong(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
   }
@@ -107,6 +112,7 @@ dynamic _objectBoundingBoxSerializeWeb(
     IsarCollection<ObjectBoundingBox> collection, ObjectBoundingBox object) {
   final jsObj = IsarNative.newJsObject();
   IsarNative.jsObjectSet(jsObj, 'boundingBox', object.boundingBox);
+  IsarNative.jsObjectSet(jsObj, 'hashCode', object.hashCode);
   IsarNative.jsObjectSet(jsObj, 'id', object.id);
   IsarNative.jsObjectSet(jsObj, 'mlTagID', object.mlTagID);
   return jsObj;
@@ -134,6 +140,9 @@ P _objectBoundingBoxDeserializePropWeb<P>(Object jsObj, String propertyName) {
               .toList()
               .cast<double>() ??
           []) as P;
+    case 'hashCode':
+      return (IsarNative.jsObjectGet(jsObj, 'hashCode') ??
+          double.negativeInfinity) as P;
     case 'id':
       return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
           as P;
@@ -248,6 +257,57 @@ extension ObjectBoundingBoxQueryFilter
   }
 
   QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterFilterCondition>
+      hashCodeEqualTo(int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterFilterCondition>
+      hashCodeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterFilterCondition>
+      hashCodeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterFilterCondition>
+      hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'hashCode',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
+
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterFilterCondition>
       idEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
@@ -355,6 +415,16 @@ extension ObjectBoundingBoxQueryLinks
 
 extension ObjectBoundingBoxQueryWhereSortBy
     on QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QSortBy> {
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterSortBy>
+      sortByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterSortBy>
+      sortByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -377,6 +447,16 @@ extension ObjectBoundingBoxQueryWhereSortBy
 
 extension ObjectBoundingBoxQueryWhereSortThenBy
     on QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QSortThenBy> {
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterSortBy>
+      thenByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterSortBy>
+      thenByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -399,6 +479,11 @@ extension ObjectBoundingBoxQueryWhereSortThenBy
 
 extension ObjectBoundingBoxQueryWhereDistinct
     on QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QDistinct> {
+  QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QDistinct>
+      distinctByHashCode() {
+    return addDistinctByInternal('hashCode');
+  }
+
   QueryBuilder<ObjectBoundingBox, ObjectBoundingBox, QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
@@ -414,6 +499,10 @@ extension ObjectBoundingBoxQueryProperty
   QueryBuilder<ObjectBoundingBox, List<double>, QQueryOperations>
       boundingBoxProperty() {
     return addPropertyNameInternal('boundingBox');
+  }
+
+  QueryBuilder<ObjectBoundingBox, int, QQueryOperations> hashCodeProperty() {
+    return addPropertyNameInternal('hashCode');
   }
 
   QueryBuilder<ObjectBoundingBox, int, QQueryOperations> idProperty() {

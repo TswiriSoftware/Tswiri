@@ -18,9 +18,9 @@ extension GetBarcodeSizeDistanceEntryCollection on Isar {
 const BarcodeSizeDistanceEntrySchema = CollectionSchema(
   name: 'BarcodeSizeDistanceEntry',
   schema:
-      '{"name":"BarcodeSizeDistanceEntry","idName":"id","properties":[{"name":"diagonalSize","type":"Double"},{"name":"distanceFromCamera","type":"Double"}],"indexes":[],"links":[]}',
+      '{"name":"BarcodeSizeDistanceEntry","idName":"id","properties":[{"name":"diagonalSize","type":"Double"},{"name":"distanceFromCamera","type":"Double"},{"name":"hashCode","type":"Long"}],"indexes":[],"links":[]}',
   idName: 'id',
-  propertyIds: {'diagonalSize': 0, 'distanceFromCamera': 1},
+  propertyIds: {'diagonalSize': 0, 'distanceFromCamera': 1, 'hashCode': 2},
   listProperties: {},
   indexIds: {},
   indexValueTypes: {},
@@ -68,6 +68,8 @@ void _barcodeSizeDistanceEntrySerializeNative(
   final _diagonalSize = value0;
   final value1 = object.distanceFromCamera;
   final _distanceFromCamera = value1;
+  final value2 = object.hashCode;
+  final _hashCode = value2;
   final size = staticSize + dynamicSize;
 
   rawObj.buffer = alloc(size);
@@ -76,6 +78,7 @@ void _barcodeSizeDistanceEntrySerializeNative(
   final writer = IsarBinaryWriter(buffer, staticSize);
   writer.writeDouble(offsets[0], _diagonalSize);
   writer.writeDouble(offsets[1], _distanceFromCamera);
+  writer.writeLong(offsets[2], _hashCode);
 }
 
 BarcodeSizeDistanceEntry _barcodeSizeDistanceEntryDeserializeNative(
@@ -99,6 +102,8 @@ P _barcodeSizeDistanceEntryDeserializePropNative<P>(
       return (reader.readDouble(offset)) as P;
     case 1:
       return (reader.readDouble(offset)) as P;
+    case 2:
+      return (reader.readLong(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
   }
@@ -111,6 +116,7 @@ dynamic _barcodeSizeDistanceEntrySerializeWeb(
   IsarNative.jsObjectSet(jsObj, 'diagonalSize', object.diagonalSize);
   IsarNative.jsObjectSet(
       jsObj, 'distanceFromCamera', object.distanceFromCamera);
+  IsarNative.jsObjectSet(jsObj, 'hashCode', object.hashCode);
   IsarNative.jsObjectSet(jsObj, 'id', object.id);
   return jsObj;
 }
@@ -135,6 +141,9 @@ P _barcodeSizeDistanceEntryDeserializePropWeb<P>(
           double.negativeInfinity) as P;
     case 'distanceFromCamera':
       return (IsarNative.jsObjectGet(jsObj, 'distanceFromCamera') ??
+          double.negativeInfinity) as P;
+    case 'hashCode':
+      return (IsarNative.jsObjectGet(jsObj, 'hashCode') ??
           double.negativeInfinity) as P;
     case 'id':
       return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
@@ -280,6 +289,57 @@ extension BarcodeSizeDistanceEntryQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry,
+      QAfterFilterCondition> hashCodeEqualTo(int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry,
+      QAfterFilterCondition> hashCodeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry,
+      QAfterFilterCondition> hashCodeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry,
+      QAfterFilterCondition> hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'hashCode',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
+
+  QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry,
       QAfterFilterCondition> idEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
@@ -357,6 +417,16 @@ extension BarcodeSizeDistanceEntryQueryWhereSortBy on QueryBuilder<
   }
 
   QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry, QAfterSortBy>
+      sortByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry, QAfterSortBy>
+      sortByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
+  QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry, QAfterSortBy>
       sortById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -390,6 +460,16 @@ extension BarcodeSizeDistanceEntryQueryWhereSortThenBy on QueryBuilder<
   }
 
   QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry, QAfterSortBy>
+      thenByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry, QAfterSortBy>
+      thenByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
+  QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry, QAfterSortBy>
       thenById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -413,6 +493,11 @@ extension BarcodeSizeDistanceEntryQueryWhereDistinct on QueryBuilder<
   }
 
   QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry, QDistinct>
+      distinctByHashCode() {
+    return addDistinctByInternal('hashCode');
+  }
+
+  QueryBuilder<BarcodeSizeDistanceEntry, BarcodeSizeDistanceEntry, QDistinct>
       distinctById() {
     return addDistinctByInternal('id');
   }
@@ -428,6 +513,11 @@ extension BarcodeSizeDistanceEntryQueryProperty on QueryBuilder<
   QueryBuilder<BarcodeSizeDistanceEntry, double, QQueryOperations>
       distanceFromCameraProperty() {
     return addPropertyNameInternal('distanceFromCamera');
+  }
+
+  QueryBuilder<BarcodeSizeDistanceEntry, int, QQueryOperations>
+      hashCodeProperty() {
+    return addPropertyNameInternal('hashCode');
   }
 
   QueryBuilder<BarcodeSizeDistanceEntry, int, QQueryOperations> idProperty() {

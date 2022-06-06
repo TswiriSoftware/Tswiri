@@ -2,24 +2,22 @@ import 'dart:ui';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
-import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
+// import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
+// import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-import '../../../../functions/translating/coordinates_translator.dart';
+import '../../../../../functions/translating/coordinates_translator.dart';
 
 class TensorPainter extends CustomPainter {
   TensorPainter({
     required this.barcodes,
     required this.absoluteImageSize,
     required this.rotation,
-    this.barcodeID,
   });
   final List<Barcode> barcodes;
   final Size absoluteImageSize;
   final InputImageRotation rotation;
-  final String? barcodeID;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -67,13 +65,6 @@ class TensorPainter extends CustomPainter {
         );
 
         canvas.drawPoints(PointMode.polygon, offsetPoints, paint);
-        if (barcodeID == barcode.displayValue) {
-          canvas.drawPoints(
-              PointMode.polygon, offsetPoints, paintEasy(Colors.blueAccent, 3));
-        } else {
-          canvas.drawPoints(
-              PointMode.polygon, offsetPoints, paintEasy(springGreen, 3));
-        }
       }
     }
   }

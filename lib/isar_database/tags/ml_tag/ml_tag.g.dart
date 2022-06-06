@@ -17,14 +17,15 @@ extension GetMlTagCollection on Isar {
 const MlTagSchema = CollectionSchema(
   name: 'MlTag',
   schema:
-      '{"name":"MlTag","idName":"id","properties":[{"name":"blackListed","type":"Bool"},{"name":"confidence","type":"Double"},{"name":"photoID","type":"Long"},{"name":"tagType","type":"Long"},{"name":"textID","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"MlTag","idName":"id","properties":[{"name":"blackListed","type":"Bool"},{"name":"confidence","type":"Double"},{"name":"hashCode","type":"Long"},{"name":"photoID","type":"Long"},{"name":"tagType","type":"Long"},{"name":"textID","type":"Long"}],"indexes":[],"links":[]}',
   idName: 'id',
   propertyIds: {
     'blackListed': 0,
     'confidence': 1,
-    'photoID': 2,
-    'tagType': 3,
-    'textID': 4
+    'hashCode': 2,
+    'photoID': 3,
+    'tagType': 4,
+    'textID': 5
   },
   listProperties: {},
   indexIds: {},
@@ -74,12 +75,14 @@ void _mlTagSerializeNative(
   final _blackListed = value0;
   final value1 = object.confidence;
   final _confidence = value1;
-  final value2 = object.photoID;
-  final _photoID = value2;
-  final value3 = _mlTagMlTagTypeConverter.toIsar(object.tagType);
-  final _tagType = value3;
-  final value4 = object.textID;
-  final _textID = value4;
+  final value2 = object.hashCode;
+  final _hashCode = value2;
+  final value3 = object.photoID;
+  final _photoID = value3;
+  final value4 = _mlTagMlTagTypeConverter.toIsar(object.tagType);
+  final _tagType = value4;
+  final value5 = object.textID;
+  final _textID = value5;
   final size = staticSize + dynamicSize;
 
   rawObj.buffer = alloc(size);
@@ -88,9 +91,10 @@ void _mlTagSerializeNative(
   final writer = IsarBinaryWriter(buffer, staticSize);
   writer.writeBool(offsets[0], _blackListed);
   writer.writeDouble(offsets[1], _confidence);
-  writer.writeLong(offsets[2], _photoID);
-  writer.writeLong(offsets[3], _tagType);
-  writer.writeLong(offsets[4], _textID);
+  writer.writeLong(offsets[2], _hashCode);
+  writer.writeLong(offsets[3], _photoID);
+  writer.writeLong(offsets[4], _tagType);
+  writer.writeLong(offsets[5], _textID);
 }
 
 MlTag _mlTagDeserializeNative(IsarCollection<MlTag> collection, int id,
@@ -99,10 +103,10 @@ MlTag _mlTagDeserializeNative(IsarCollection<MlTag> collection, int id,
   object.blackListed = reader.readBool(offsets[0]);
   object.confidence = reader.readDouble(offsets[1]);
   object.id = id;
-  object.photoID = reader.readLong(offsets[2]);
+  object.photoID = reader.readLong(offsets[3]);
   object.tagType =
-      _mlTagMlTagTypeConverter.fromIsar(reader.readLong(offsets[3]));
-  object.textID = reader.readLong(offsets[4]);
+      _mlTagMlTagTypeConverter.fromIsar(reader.readLong(offsets[4]));
+  object.textID = reader.readLong(offsets[5]);
   return object;
 }
 
@@ -118,8 +122,10 @@ P _mlTagDeserializePropNative<P>(
     case 2:
       return (reader.readLong(offset)) as P;
     case 3:
-      return (_mlTagMlTagTypeConverter.fromIsar(reader.readLong(offset))) as P;
+      return (reader.readLong(offset)) as P;
     case 4:
+      return (_mlTagMlTagTypeConverter.fromIsar(reader.readLong(offset))) as P;
+    case 5:
       return (reader.readLong(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
@@ -130,6 +136,7 @@ dynamic _mlTagSerializeWeb(IsarCollection<MlTag> collection, MlTag object) {
   final jsObj = IsarNative.newJsObject();
   IsarNative.jsObjectSet(jsObj, 'blackListed', object.blackListed);
   IsarNative.jsObjectSet(jsObj, 'confidence', object.confidence);
+  IsarNative.jsObjectSet(jsObj, 'hashCode', object.hashCode);
   IsarNative.jsObjectSet(jsObj, 'id', object.id);
   IsarNative.jsObjectSet(jsObj, 'photoID', object.photoID);
   IsarNative.jsObjectSet(
@@ -159,6 +166,9 @@ P _mlTagDeserializePropWeb<P>(Object jsObj, String propertyName) {
       return (IsarNative.jsObjectGet(jsObj, 'blackListed') ?? false) as P;
     case 'confidence':
       return (IsarNative.jsObjectGet(jsObj, 'confidence') ??
+          double.negativeInfinity) as P;
+    case 'hashCode':
+      return (IsarNative.jsObjectGet(jsObj, 'hashCode') ??
           double.negativeInfinity) as P;
     case 'id':
       return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
@@ -279,6 +289,53 @@ extension MlTagQueryFilter on QueryBuilder<MlTag, MlTag, QFilterCondition> {
       includeLower: false,
       upper: upper,
       includeUpper: false,
+    ));
+  }
+
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> hashCodeEqualTo(int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> hashCodeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> hashCodeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<MlTag, MlTag, QAfterFilterCondition> hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'hashCode',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
     ));
   }
 
@@ -491,6 +548,14 @@ extension MlTagQueryWhereSortBy on QueryBuilder<MlTag, MlTag, QSortBy> {
     return addSortByInternal('confidence', Sort.desc);
   }
 
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> sortByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<MlTag, MlTag, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -541,6 +606,14 @@ extension MlTagQueryWhereSortThenBy on QueryBuilder<MlTag, MlTag, QSortThenBy> {
     return addSortByInternal('confidence', Sort.desc);
   }
 
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<MlTag, MlTag, QAfterSortBy> thenByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<MlTag, MlTag, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -583,6 +656,10 @@ extension MlTagQueryWhereDistinct on QueryBuilder<MlTag, MlTag, QDistinct> {
     return addDistinctByInternal('confidence');
   }
 
+  QueryBuilder<MlTag, MlTag, QDistinct> distinctByHashCode() {
+    return addDistinctByInternal('hashCode');
+  }
+
   QueryBuilder<MlTag, MlTag, QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
@@ -607,6 +684,10 @@ extension MlTagQueryProperty on QueryBuilder<MlTag, MlTag, QQueryProperty> {
 
   QueryBuilder<MlTag, double, QQueryOperations> confidenceProperty() {
     return addPropertyNameInternal('confidence');
+  }
+
+  QueryBuilder<MlTag, int, QQueryOperations> hashCodeProperty() {
+    return addPropertyNameInternal('hashCode');
   }
 
   QueryBuilder<MlTag, int, QQueryOperations> idProperty() {

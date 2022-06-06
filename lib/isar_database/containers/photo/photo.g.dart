@@ -17,9 +17,14 @@ extension GetPhotoCollection on Isar {
 const PhotoSchema = CollectionSchema(
   name: 'Photo',
   schema:
-      '{"name":"Photo","idName":"id","properties":[{"name":"containerUID","type":"String"},{"name":"photoPath","type":"String"},{"name":"thumbnailPath","type":"String"}],"indexes":[],"links":[]}',
+      '{"name":"Photo","idName":"id","properties":[{"name":"containerUID","type":"String"},{"name":"hashCode","type":"Long"},{"name":"photoPath","type":"String"},{"name":"thumbnailPath","type":"String"}],"indexes":[],"links":[]}',
   idName: 'id',
-  propertyIds: {'containerUID': 0, 'photoPath': 1, 'thumbnailPath': 2},
+  propertyIds: {
+    'containerUID': 0,
+    'hashCode': 1,
+    'photoPath': 2,
+    'thumbnailPath': 3
+  },
   listProperties: {},
   indexIds: {},
   indexValueTypes: {},
@@ -65,11 +70,13 @@ void _photoSerializeNative(
   final value0 = object.containerUID;
   final _containerUID = IsarBinaryWriter.utf8Encoder.convert(value0);
   dynamicSize += (_containerUID.length) as int;
-  final value1 = object.photoPath;
-  final _photoPath = IsarBinaryWriter.utf8Encoder.convert(value1);
+  final value1 = object.hashCode;
+  final _hashCode = value1;
+  final value2 = object.photoPath;
+  final _photoPath = IsarBinaryWriter.utf8Encoder.convert(value2);
   dynamicSize += (_photoPath.length) as int;
-  final value2 = object.thumbnailPath;
-  final _thumbnailPath = IsarBinaryWriter.utf8Encoder.convert(value2);
+  final value3 = object.thumbnailPath;
+  final _thumbnailPath = IsarBinaryWriter.utf8Encoder.convert(value3);
   dynamicSize += (_thumbnailPath.length) as int;
   final size = staticSize + dynamicSize;
 
@@ -78,8 +85,9 @@ void _photoSerializeNative(
   final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
   writer.writeBytes(offsets[0], _containerUID);
-  writer.writeBytes(offsets[1], _photoPath);
-  writer.writeBytes(offsets[2], _thumbnailPath);
+  writer.writeLong(offsets[1], _hashCode);
+  writer.writeBytes(offsets[2], _photoPath);
+  writer.writeBytes(offsets[3], _thumbnailPath);
 }
 
 Photo _photoDeserializeNative(IsarCollection<Photo> collection, int id,
@@ -87,8 +95,8 @@ Photo _photoDeserializeNative(IsarCollection<Photo> collection, int id,
   final object = Photo();
   object.containerUID = reader.readString(offsets[0]);
   object.id = id;
-  object.photoPath = reader.readString(offsets[1]);
-  object.thumbnailPath = reader.readString(offsets[2]);
+  object.photoPath = reader.readString(offsets[2]);
+  object.thumbnailPath = reader.readString(offsets[3]);
   return object;
 }
 
@@ -100,8 +108,10 @@ P _photoDeserializePropNative<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 2:
+      return (reader.readString(offset)) as P;
+    case 3:
       return (reader.readString(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
@@ -111,6 +121,7 @@ P _photoDeserializePropNative<P>(
 dynamic _photoSerializeWeb(IsarCollection<Photo> collection, Photo object) {
   final jsObj = IsarNative.newJsObject();
   IsarNative.jsObjectSet(jsObj, 'containerUID', object.containerUID);
+  IsarNative.jsObjectSet(jsObj, 'hashCode', object.hashCode);
   IsarNative.jsObjectSet(jsObj, 'id', object.id);
   IsarNative.jsObjectSet(jsObj, 'photoPath', object.photoPath);
   IsarNative.jsObjectSet(jsObj, 'thumbnailPath', object.thumbnailPath);
@@ -130,6 +141,9 @@ P _photoDeserializePropWeb<P>(Object jsObj, String propertyName) {
   switch (propertyName) {
     case 'containerUID':
       return (IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '') as P;
+    case 'hashCode':
+      return (IsarNative.jsObjectGet(jsObj, 'hashCode') ??
+          double.negativeInfinity) as P;
     case 'id':
       return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
           as P;
@@ -306,6 +320,53 @@ extension PhotoQueryFilter on QueryBuilder<Photo, Photo, QFilterCondition> {
       property: 'containerUID',
       value: pattern,
       caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> hashCodeEqualTo(int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> hashCodeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> hashCodeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<Photo, Photo, QAfterFilterCondition> hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'hashCode',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
     ));
   }
 
@@ -574,6 +635,14 @@ extension PhotoQueryWhereSortBy on QueryBuilder<Photo, Photo, QSortBy> {
     return addSortByInternal('containerUID', Sort.desc);
   }
 
+  QueryBuilder<Photo, Photo, QAfterSortBy> sortByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<Photo, Photo, QAfterSortBy> sortByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<Photo, Photo, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -608,6 +677,14 @@ extension PhotoQueryWhereSortThenBy on QueryBuilder<Photo, Photo, QSortThenBy> {
     return addSortByInternal('containerUID', Sort.desc);
   }
 
+  QueryBuilder<Photo, Photo, QAfterSortBy> thenByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<Photo, Photo, QAfterSortBy> thenByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<Photo, Photo, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -639,6 +716,10 @@ extension PhotoQueryWhereDistinct on QueryBuilder<Photo, Photo, QDistinct> {
     return addDistinctByInternal('containerUID', caseSensitive: caseSensitive);
   }
 
+  QueryBuilder<Photo, Photo, QDistinct> distinctByHashCode() {
+    return addDistinctByInternal('hashCode');
+  }
+
   QueryBuilder<Photo, Photo, QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
@@ -657,6 +738,10 @@ extension PhotoQueryWhereDistinct on QueryBuilder<Photo, Photo, QDistinct> {
 extension PhotoQueryProperty on QueryBuilder<Photo, Photo, QQueryProperty> {
   QueryBuilder<Photo, String, QQueryOperations> containerUIDProperty() {
     return addPropertyNameInternal('containerUID');
+  }
+
+  QueryBuilder<Photo, int, QQueryOperations> hashCodeProperty() {
+    return addPropertyNameInternal('hashCode');
   }
 
   QueryBuilder<Photo, int, QQueryOperations> idProperty() {

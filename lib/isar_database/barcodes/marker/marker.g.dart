@@ -17,9 +17,9 @@ extension GetMarkerCollection on Isar {
 const MarkerSchema = CollectionSchema(
   name: 'Marker',
   schema:
-      '{"name":"Marker","idName":"id","properties":[{"name":"barcodeUID","type":"String"},{"name":"parentContainerUID","type":"String"}],"indexes":[],"links":[]}',
+      '{"name":"Marker","idName":"id","properties":[{"name":"barcodeUID","type":"String"},{"name":"hashCode","type":"Long"},{"name":"parentContainerUID","type":"String"}],"indexes":[],"links":[]}',
   idName: 'id',
-  propertyIds: {'barcodeUID': 0, 'parentContainerUID': 1},
+  propertyIds: {'barcodeUID': 0, 'hashCode': 1, 'parentContainerUID': 2},
   listProperties: {},
   indexIds: {},
   indexValueTypes: {},
@@ -65,10 +65,12 @@ void _markerSerializeNative(
   final value0 = object.barcodeUID;
   final _barcodeUID = IsarBinaryWriter.utf8Encoder.convert(value0);
   dynamicSize += (_barcodeUID.length) as int;
-  final value1 = object.parentContainerUID;
+  final value1 = object.hashCode;
+  final _hashCode = value1;
+  final value2 = object.parentContainerUID;
   IsarUint8List? _parentContainerUID;
-  if (value1 != null) {
-    _parentContainerUID = IsarBinaryWriter.utf8Encoder.convert(value1);
+  if (value2 != null) {
+    _parentContainerUID = IsarBinaryWriter.utf8Encoder.convert(value2);
   }
   dynamicSize += (_parentContainerUID?.length ?? 0) as int;
   final size = staticSize + dynamicSize;
@@ -78,7 +80,8 @@ void _markerSerializeNative(
   final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
   writer.writeBytes(offsets[0], _barcodeUID);
-  writer.writeBytes(offsets[1], _parentContainerUID);
+  writer.writeLong(offsets[1], _hashCode);
+  writer.writeBytes(offsets[2], _parentContainerUID);
 }
 
 Marker _markerDeserializeNative(IsarCollection<Marker> collection, int id,
@@ -86,7 +89,7 @@ Marker _markerDeserializeNative(IsarCollection<Marker> collection, int id,
   final object = Marker();
   object.barcodeUID = reader.readString(offsets[0]);
   object.id = id;
-  object.parentContainerUID = reader.readStringOrNull(offsets[1]);
+  object.parentContainerUID = reader.readStringOrNull(offsets[2]);
   return object;
 }
 
@@ -98,6 +101,8 @@ P _markerDeserializePropNative<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
+      return (reader.readLong(offset)) as P;
+    case 2:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
@@ -107,6 +112,7 @@ P _markerDeserializePropNative<P>(
 dynamic _markerSerializeWeb(IsarCollection<Marker> collection, Marker object) {
   final jsObj = IsarNative.newJsObject();
   IsarNative.jsObjectSet(jsObj, 'barcodeUID', object.barcodeUID);
+  IsarNative.jsObjectSet(jsObj, 'hashCode', object.hashCode);
   IsarNative.jsObjectSet(jsObj, 'id', object.id);
   IsarNative.jsObjectSet(
       jsObj, 'parentContainerUID', object.parentContainerUID);
@@ -126,6 +132,9 @@ P _markerDeserializePropWeb<P>(Object jsObj, String propertyName) {
   switch (propertyName) {
     case 'barcodeUID':
       return (IsarNative.jsObjectGet(jsObj, 'barcodeUID') ?? '') as P;
+    case 'hashCode':
+      return (IsarNative.jsObjectGet(jsObj, 'hashCode') ??
+          double.negativeInfinity) as P;
     case 'id':
       return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
           as P;
@@ -303,6 +312,54 @@ extension MarkerQueryFilter on QueryBuilder<Marker, Marker, QFilterCondition> {
     ));
   }
 
+  QueryBuilder<Marker, Marker, QAfterFilterCondition> hashCodeEqualTo(
+      int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<Marker, Marker, QAfterFilterCondition> hashCodeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<Marker, Marker, QAfterFilterCondition> hashCodeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<Marker, Marker, QAfterFilterCondition> hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'hashCode',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
+
   QueryBuilder<Marker, Marker, QAfterFilterCondition> idEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
@@ -477,6 +534,14 @@ extension MarkerQueryWhereSortBy on QueryBuilder<Marker, Marker, QSortBy> {
     return addSortByInternal('barcodeUID', Sort.desc);
   }
 
+  QueryBuilder<Marker, Marker, QAfterSortBy> sortByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<Marker, Marker, QAfterSortBy> sortByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<Marker, Marker, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -504,6 +569,14 @@ extension MarkerQueryWhereSortThenBy
     return addSortByInternal('barcodeUID', Sort.desc);
   }
 
+  QueryBuilder<Marker, Marker, QAfterSortBy> thenByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<Marker, Marker, QAfterSortBy> thenByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<Marker, Marker, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -527,6 +600,10 @@ extension MarkerQueryWhereDistinct on QueryBuilder<Marker, Marker, QDistinct> {
     return addDistinctByInternal('barcodeUID', caseSensitive: caseSensitive);
   }
 
+  QueryBuilder<Marker, Marker, QDistinct> distinctByHashCode() {
+    return addDistinctByInternal('hashCode');
+  }
+
   QueryBuilder<Marker, Marker, QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
@@ -541,6 +618,10 @@ extension MarkerQueryWhereDistinct on QueryBuilder<Marker, Marker, QDistinct> {
 extension MarkerQueryProperty on QueryBuilder<Marker, Marker, QQueryProperty> {
   QueryBuilder<Marker, String, QQueryOperations> barcodeUIDProperty() {
     return addPropertyNameInternal('barcodeUID');
+  }
+
+  QueryBuilder<Marker, int, QQueryOperations> hashCodeProperty() {
+    return addPropertyNameInternal('hashCode');
   }
 
   QueryBuilder<Marker, int, QQueryOperations> idProperty() {

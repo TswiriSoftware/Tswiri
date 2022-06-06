@@ -17,9 +17,9 @@ extension GetContainerTagCollection on Isar {
 const ContainerTagSchema = CollectionSchema(
   name: 'ContainerTag',
   schema:
-      '{"name":"ContainerTag","idName":"id","properties":[{"name":"containerUID","type":"String"},{"name":"textID","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"ContainerTag","idName":"id","properties":[{"name":"containerUID","type":"String"},{"name":"hashCode","type":"Long"},{"name":"textID","type":"Long"}],"indexes":[],"links":[]}',
   idName: 'id',
-  propertyIds: {'containerUID': 0, 'textID': 1},
+  propertyIds: {'containerUID': 0, 'hashCode': 1, 'textID': 2},
   listProperties: {},
   indexIds: {},
   indexValueTypes: {},
@@ -65,8 +65,10 @@ void _containerTagSerializeNative(
   final value0 = object.containerUID;
   final _containerUID = IsarBinaryWriter.utf8Encoder.convert(value0);
   dynamicSize += (_containerUID.length) as int;
-  final value1 = object.textID;
-  final _textID = value1;
+  final value1 = object.hashCode;
+  final _hashCode = value1;
+  final value2 = object.textID;
+  final _textID = value2;
   final size = staticSize + dynamicSize;
 
   rawObj.buffer = alloc(size);
@@ -74,7 +76,8 @@ void _containerTagSerializeNative(
   final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
   writer.writeBytes(offsets[0], _containerUID);
-  writer.writeLong(offsets[1], _textID);
+  writer.writeLong(offsets[1], _hashCode);
+  writer.writeLong(offsets[2], _textID);
 }
 
 ContainerTag _containerTagDeserializeNative(
@@ -85,7 +88,7 @@ ContainerTag _containerTagDeserializeNative(
   final object = ContainerTag();
   object.containerUID = reader.readString(offsets[0]);
   object.id = id;
-  object.textID = reader.readLong(offsets[1]);
+  object.textID = reader.readLong(offsets[2]);
   return object;
 }
 
@@ -98,6 +101,8 @@ P _containerTagDeserializePropNative<P>(
       return (reader.readString(offset)) as P;
     case 1:
       return (reader.readLong(offset)) as P;
+    case 2:
+      return (reader.readLong(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
   }
@@ -107,6 +112,7 @@ dynamic _containerTagSerializeWeb(
     IsarCollection<ContainerTag> collection, ContainerTag object) {
   final jsObj = IsarNative.newJsObject();
   IsarNative.jsObjectSet(jsObj, 'containerUID', object.containerUID);
+  IsarNative.jsObjectSet(jsObj, 'hashCode', object.hashCode);
   IsarNative.jsObjectSet(jsObj, 'id', object.id);
   IsarNative.jsObjectSet(jsObj, 'textID', object.textID);
   return jsObj;
@@ -126,6 +132,9 @@ P _containerTagDeserializePropWeb<P>(Object jsObj, String propertyName) {
   switch (propertyName) {
     case 'containerUID':
       return (IsarNative.jsObjectGet(jsObj, 'containerUID') ?? '') as P;
+    case 'hashCode':
+      return (IsarNative.jsObjectGet(jsObj, 'hashCode') ??
+          double.negativeInfinity) as P;
     case 'id':
       return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
           as P;
@@ -315,6 +324,57 @@ extension ContainerTagQueryFilter
     ));
   }
 
+  QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition>
+      hashCodeEqualTo(int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition>
+      hashCodeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition>
+      hashCodeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition>
+      hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'hashCode',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
+
   QueryBuilder<ContainerTag, ContainerTag, QAfterFilterCondition> idEqualTo(
       int value) {
     return addFilterConditionInternal(FilterCondition(
@@ -428,6 +488,14 @@ extension ContainerTagQueryWhereSortBy
     return addSortByInternal('containerUID', Sort.desc);
   }
 
+  QueryBuilder<ContainerTag, ContainerTag, QAfterSortBy> sortByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<ContainerTag, ContainerTag, QAfterSortBy> sortByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<ContainerTag, ContainerTag, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -456,6 +524,14 @@ extension ContainerTagQueryWhereSortThenBy
     return addSortByInternal('containerUID', Sort.desc);
   }
 
+  QueryBuilder<ContainerTag, ContainerTag, QAfterSortBy> thenByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<ContainerTag, ContainerTag, QAfterSortBy> thenByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<ContainerTag, ContainerTag, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -480,6 +556,10 @@ extension ContainerTagQueryWhereDistinct
     return addDistinctByInternal('containerUID', caseSensitive: caseSensitive);
   }
 
+  QueryBuilder<ContainerTag, ContainerTag, QDistinct> distinctByHashCode() {
+    return addDistinctByInternal('hashCode');
+  }
+
   QueryBuilder<ContainerTag, ContainerTag, QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
@@ -493,6 +573,10 @@ extension ContainerTagQueryProperty
     on QueryBuilder<ContainerTag, ContainerTag, QQueryProperty> {
   QueryBuilder<ContainerTag, String, QQueryOperations> containerUIDProperty() {
     return addPropertyNameInternal('containerUID');
+  }
+
+  QueryBuilder<ContainerTag, int, QQueryOperations> hashCodeProperty() {
+    return addPropertyNameInternal('hashCode');
   }
 
   QueryBuilder<ContainerTag, int, QQueryOperations> idProperty() {

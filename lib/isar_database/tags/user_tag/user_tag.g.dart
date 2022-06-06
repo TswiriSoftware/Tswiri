@@ -17,9 +17,9 @@ extension GetUserTagCollection on Isar {
 const UserTagSchema = CollectionSchema(
   name: 'UserTag',
   schema:
-      '{"name":"UserTag","idName":"id","properties":[{"name":"photoID","type":"Long"},{"name":"textID","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"UserTag","idName":"id","properties":[{"name":"hashCode","type":"Long"},{"name":"photoID","type":"Long"},{"name":"textID","type":"Long"}],"indexes":[],"links":[]}',
   idName: 'id',
-  propertyIds: {'photoID': 0, 'textID': 1},
+  propertyIds: {'hashCode': 0, 'photoID': 1, 'textID': 2},
   listProperties: {},
   indexIds: {},
   indexValueTypes: {},
@@ -62,26 +62,29 @@ void _userTagSerializeNative(
     List<int> offsets,
     AdapterAlloc alloc) {
   var dynamicSize = 0;
-  final value0 = object.photoID;
-  final _photoID = value0;
-  final value1 = object.textID;
-  final _textID = value1;
+  final value0 = object.hashCode;
+  final _hashCode = value0;
+  final value1 = object.photoID;
+  final _photoID = value1;
+  final value2 = object.textID;
+  final _textID = value2;
   final size = staticSize + dynamicSize;
 
   rawObj.buffer = alloc(size);
   rawObj.buffer_length = size;
   final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
-  writer.writeLong(offsets[0], _photoID);
-  writer.writeLong(offsets[1], _textID);
+  writer.writeLong(offsets[0], _hashCode);
+  writer.writeLong(offsets[1], _photoID);
+  writer.writeLong(offsets[2], _textID);
 }
 
 UserTag _userTagDeserializeNative(IsarCollection<UserTag> collection, int id,
     IsarBinaryReader reader, List<int> offsets) {
   final object = UserTag();
   object.id = id;
-  object.photoID = reader.readLong(offsets[0]);
-  object.textID = reader.readLong(offsets[1]);
+  object.photoID = reader.readLong(offsets[1]);
+  object.textID = reader.readLong(offsets[2]);
   return object;
 }
 
@@ -94,6 +97,8 @@ P _userTagDeserializePropNative<P>(
       return (reader.readLong(offset)) as P;
     case 1:
       return (reader.readLong(offset)) as P;
+    case 2:
+      return (reader.readLong(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
   }
@@ -102,6 +107,7 @@ P _userTagDeserializePropNative<P>(
 dynamic _userTagSerializeWeb(
     IsarCollection<UserTag> collection, UserTag object) {
   final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'hashCode', object.hashCode);
   IsarNative.jsObjectSet(jsObj, 'id', object.id);
   IsarNative.jsObjectSet(jsObj, 'photoID', object.photoID);
   IsarNative.jsObjectSet(jsObj, 'textID', object.textID);
@@ -121,6 +127,9 @@ UserTag _userTagDeserializeWeb(
 
 P _userTagDeserializePropWeb<P>(Object jsObj, String propertyName) {
   switch (propertyName) {
+    case 'hashCode':
+      return (IsarNative.jsObjectGet(jsObj, 'hashCode') ??
+          double.negativeInfinity) as P;
     case 'id':
       return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
           as P;
@@ -200,6 +209,54 @@ extension UserTagQueryWhere on QueryBuilder<UserTag, UserTag, QWhereClause> {
 
 extension UserTagQueryFilter
     on QueryBuilder<UserTag, UserTag, QFilterCondition> {
+  QueryBuilder<UserTag, UserTag, QAfterFilterCondition> hashCodeEqualTo(
+      int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<UserTag, UserTag, QAfterFilterCondition> hashCodeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<UserTag, UserTag, QAfterFilterCondition> hashCodeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<UserTag, UserTag, QAfterFilterCondition> hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'hashCode',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
+
   QueryBuilder<UserTag, UserTag, QAfterFilterCondition> idEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
@@ -348,6 +405,14 @@ extension UserTagQueryLinks
     on QueryBuilder<UserTag, UserTag, QFilterCondition> {}
 
 extension UserTagQueryWhereSortBy on QueryBuilder<UserTag, UserTag, QSortBy> {
+  QueryBuilder<UserTag, UserTag, QAfterSortBy> sortByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<UserTag, UserTag, QAfterSortBy> sortByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<UserTag, UserTag, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -375,6 +440,14 @@ extension UserTagQueryWhereSortBy on QueryBuilder<UserTag, UserTag, QSortBy> {
 
 extension UserTagQueryWhereSortThenBy
     on QueryBuilder<UserTag, UserTag, QSortThenBy> {
+  QueryBuilder<UserTag, UserTag, QAfterSortBy> thenByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<UserTag, UserTag, QAfterSortBy> thenByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<UserTag, UserTag, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -402,6 +475,10 @@ extension UserTagQueryWhereSortThenBy
 
 extension UserTagQueryWhereDistinct
     on QueryBuilder<UserTag, UserTag, QDistinct> {
+  QueryBuilder<UserTag, UserTag, QDistinct> distinctByHashCode() {
+    return addDistinctByInternal('hashCode');
+  }
+
   QueryBuilder<UserTag, UserTag, QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
@@ -417,6 +494,10 @@ extension UserTagQueryWhereDistinct
 
 extension UserTagQueryProperty
     on QueryBuilder<UserTag, UserTag, QQueryProperty> {
+  QueryBuilder<UserTag, int, QQueryOperations> hashCodeProperty() {
+    return addPropertyNameInternal('hashCode');
+  }
+
   QueryBuilder<UserTag, int, QQueryOperations> idProperty() {
     return addPropertyNameInternal('id');
   }

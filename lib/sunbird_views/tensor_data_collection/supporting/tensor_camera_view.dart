@@ -1,15 +1,12 @@
 // ignore_for_file: curly_braces_in_flow_control_structures, library_private_types_in_public_api
 
 import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-//import 'package:image_picker/image_picker.dart';
-
-import '../../../../main.dart';
-import '../app_settings/app_settings.dart';
+import '../../../../../main.dart';
+import '../../app_settings/app_settings.dart';
 
 enum ScreenMode { liveFeed, gallery }
 

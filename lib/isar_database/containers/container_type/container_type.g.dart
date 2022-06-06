@@ -17,7 +17,7 @@ extension GetContainerTypeCollection on Isar {
 const ContainerTypeSchema = CollectionSchema(
   name: 'ContainerType',
   schema:
-      '{"name":"ContainerType","idName":"id","properties":[{"name":"canContain","type":"StringList"},{"name":"containerColor","type":"String"},{"name":"containerDescription","type":"String"},{"name":"containerType","type":"String"},{"name":"enclosing","type":"Bool"},{"name":"moveable","type":"Bool"}],"indexes":[],"links":[]}',
+      '{"name":"ContainerType","idName":"id","properties":[{"name":"canContain","type":"StringList"},{"name":"containerColor","type":"String"},{"name":"containerDescription","type":"String"},{"name":"containerType","type":"String"},{"name":"enclosing","type":"Bool"},{"name":"hashCode","type":"Long"},{"name":"moveable","type":"Bool"}],"indexes":[],"links":[]}',
   idName: 'id',
   propertyIds: {
     'canContain': 0,
@@ -25,7 +25,8 @@ const ContainerTypeSchema = CollectionSchema(
     'containerDescription': 2,
     'containerType': 3,
     'enclosing': 4,
-    'moveable': 5
+    'hashCode': 5,
+    'moveable': 6
   },
   listProperties: {'canContain'},
   indexIds: {},
@@ -89,8 +90,10 @@ void _containerTypeSerializeNative(
   dynamicSize += (_containerType.length) as int;
   final value4 = object.enclosing;
   final _enclosing = value4;
-  final value5 = object.moveable;
-  final _moveable = value5;
+  final value5 = object.hashCode;
+  final _hashCode = value5;
+  final value6 = object.moveable;
+  final _moveable = value6;
   final size = staticSize + dynamicSize;
 
   rawObj.buffer = alloc(size);
@@ -102,7 +105,8 @@ void _containerTypeSerializeNative(
   writer.writeBytes(offsets[2], _containerDescription);
   writer.writeBytes(offsets[3], _containerType);
   writer.writeBool(offsets[4], _enclosing);
-  writer.writeBool(offsets[5], _moveable);
+  writer.writeLong(offsets[5], _hashCode);
+  writer.writeBool(offsets[6], _moveable);
 }
 
 ContainerType _containerTypeDeserializeNative(
@@ -117,7 +121,7 @@ ContainerType _containerTypeDeserializeNative(
   object.containerType = reader.readString(offsets[3]);
   object.enclosing = reader.readBool(offsets[4]);
   object.id = id;
-  object.moveable = reader.readBool(offsets[5]);
+  object.moveable = reader.readBool(offsets[6]);
   return object;
 }
 
@@ -137,6 +141,8 @@ P _containerTypeDeserializePropNative<P>(
     case 4:
       return (reader.readBool(offset)) as P;
     case 5:
+      return (reader.readLong(offset)) as P;
+    case 6:
       return (reader.readBool(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
@@ -152,6 +158,7 @@ dynamic _containerTypeSerializeWeb(
       jsObj, 'containerDescription', object.containerDescription);
   IsarNative.jsObjectSet(jsObj, 'containerType', object.containerType);
   IsarNative.jsObjectSet(jsObj, 'enclosing', object.enclosing);
+  IsarNative.jsObjectSet(jsObj, 'hashCode', object.hashCode);
   IsarNative.jsObjectSet(jsObj, 'id', object.id);
   IsarNative.jsObjectSet(jsObj, 'moveable', object.moveable);
   return jsObj;
@@ -191,6 +198,9 @@ P _containerTypeDeserializePropWeb<P>(Object jsObj, String propertyName) {
       return (IsarNative.jsObjectGet(jsObj, 'containerType') ?? '') as P;
     case 'enclosing':
       return (IsarNative.jsObjectGet(jsObj, 'enclosing') ?? false) as P;
+    case 'hashCode':
+      return (IsarNative.jsObjectGet(jsObj, 'hashCode') ??
+          double.negativeInfinity) as P;
     case 'id':
       return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
           as P;
@@ -710,6 +720,57 @@ extension ContainerTypeQueryFilter
     ));
   }
 
+  QueryBuilder<ContainerType, ContainerType, QAfterFilterCondition>
+      hashCodeEqualTo(int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<ContainerType, ContainerType, QAfterFilterCondition>
+      hashCodeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<ContainerType, ContainerType, QAfterFilterCondition>
+      hashCodeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<ContainerType, ContainerType, QAfterFilterCondition>
+      hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'hashCode',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
+
   QueryBuilder<ContainerType, ContainerType, QAfterFilterCondition> idEqualTo(
       int value) {
     return addFilterConditionInternal(FilterCondition(
@@ -813,6 +874,15 @@ extension ContainerTypeQueryWhereSortBy
     return addSortByInternal('enclosing', Sort.desc);
   }
 
+  QueryBuilder<ContainerType, ContainerType, QAfterSortBy> sortByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<ContainerType, ContainerType, QAfterSortBy>
+      sortByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<ContainerType, ContainerType, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -872,6 +942,15 @@ extension ContainerTypeQueryWhereSortThenBy
     return addSortByInternal('enclosing', Sort.desc);
   }
 
+  QueryBuilder<ContainerType, ContainerType, QAfterSortBy> thenByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<ContainerType, ContainerType, QAfterSortBy>
+      thenByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<ContainerType, ContainerType, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -913,6 +992,10 @@ extension ContainerTypeQueryWhereDistinct
     return addDistinctByInternal('enclosing');
   }
 
+  QueryBuilder<ContainerType, ContainerType, QDistinct> distinctByHashCode() {
+    return addDistinctByInternal('hashCode');
+  }
+
   QueryBuilder<ContainerType, ContainerType, QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
@@ -946,6 +1029,10 @@ extension ContainerTypeQueryProperty
 
   QueryBuilder<ContainerType, bool, QQueryOperations> enclosingProperty() {
     return addPropertyNameInternal('enclosing');
+  }
+
+  QueryBuilder<ContainerType, int, QQueryOperations> hashCodeProperty() {
+    return addPropertyNameInternal('hashCode');
   }
 
   QueryBuilder<ContainerType, int, QQueryOperations> idProperty() {

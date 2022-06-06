@@ -17,9 +17,9 @@ extension GetBarcodePropertyCollection on Isar {
 const BarcodePropertySchema = CollectionSchema(
   name: 'BarcodeProperty',
   schema:
-      '{"name":"BarcodeProperty","idName":"id","properties":[{"name":"barcodeUID","type":"String"},{"name":"size","type":"Double"}],"indexes":[],"links":[]}',
+      '{"name":"BarcodeProperty","idName":"id","properties":[{"name":"barcodeUID","type":"String"},{"name":"hashCode","type":"Long"},{"name":"size","type":"Double"}],"indexes":[],"links":[]}',
   idName: 'id',
-  propertyIds: {'barcodeUID': 0, 'size': 1},
+  propertyIds: {'barcodeUID': 0, 'hashCode': 1, 'size': 2},
   listProperties: {},
   indexIds: {},
   indexValueTypes: {},
@@ -65,8 +65,10 @@ void _barcodePropertySerializeNative(
   final value0 = object.barcodeUID;
   final _barcodeUID = IsarBinaryWriter.utf8Encoder.convert(value0);
   dynamicSize += (_barcodeUID.length) as int;
-  final value1 = object.size;
-  final _size = value1;
+  final value1 = object.hashCode;
+  final _hashCode = value1;
+  final value2 = object.size;
+  final _size = value2;
   final size = staticSize + dynamicSize;
 
   rawObj.buffer = alloc(size);
@@ -74,7 +76,8 @@ void _barcodePropertySerializeNative(
   final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
   writer.writeBytes(offsets[0], _barcodeUID);
-  writer.writeDouble(offsets[1], _size);
+  writer.writeLong(offsets[1], _hashCode);
+  writer.writeDouble(offsets[2], _size);
 }
 
 BarcodeProperty _barcodePropertyDeserializeNative(
@@ -85,7 +88,7 @@ BarcodeProperty _barcodePropertyDeserializeNative(
   final object = BarcodeProperty();
   object.barcodeUID = reader.readString(offsets[0]);
   object.id = id;
-  object.size = reader.readDouble(offsets[1]);
+  object.size = reader.readDouble(offsets[2]);
   return object;
 }
 
@@ -97,6 +100,8 @@ P _barcodePropertyDeserializePropNative<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
+      return (reader.readLong(offset)) as P;
+    case 2:
       return (reader.readDouble(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
@@ -107,6 +112,7 @@ dynamic _barcodePropertySerializeWeb(
     IsarCollection<BarcodeProperty> collection, BarcodeProperty object) {
   final jsObj = IsarNative.newJsObject();
   IsarNative.jsObjectSet(jsObj, 'barcodeUID', object.barcodeUID);
+  IsarNative.jsObjectSet(jsObj, 'hashCode', object.hashCode);
   IsarNative.jsObjectSet(jsObj, 'id', object.id);
   IsarNative.jsObjectSet(jsObj, 'size', object.size);
   return jsObj;
@@ -126,6 +132,9 @@ P _barcodePropertyDeserializePropWeb<P>(Object jsObj, String propertyName) {
   switch (propertyName) {
     case 'barcodeUID':
       return (IsarNative.jsObjectGet(jsObj, 'barcodeUID') ?? '') as P;
+    case 'hashCode':
+      return (IsarNative.jsObjectGet(jsObj, 'hashCode') ??
+          double.negativeInfinity) as P;
     case 'id':
       return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
           as P;
@@ -316,6 +325,57 @@ extension BarcodePropertyQueryFilter
   }
 
   QueryBuilder<BarcodeProperty, BarcodeProperty, QAfterFilterCondition>
+      hashCodeEqualTo(int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<BarcodeProperty, BarcodeProperty, QAfterFilterCondition>
+      hashCodeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<BarcodeProperty, BarcodeProperty, QAfterFilterCondition>
+      hashCodeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'hashCode',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<BarcodeProperty, BarcodeProperty, QAfterFilterCondition>
+      hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'hashCode',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
+
+  QueryBuilder<BarcodeProperty, BarcodeProperty, QAfterFilterCondition>
       idEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
@@ -413,6 +473,16 @@ extension BarcodePropertyQueryWhereSortBy
     return addSortByInternal('barcodeUID', Sort.desc);
   }
 
+  QueryBuilder<BarcodeProperty, BarcodeProperty, QAfterSortBy>
+      sortByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<BarcodeProperty, BarcodeProperty, QAfterSortBy>
+      sortByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<BarcodeProperty, BarcodeProperty, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -443,6 +513,16 @@ extension BarcodePropertyQueryWhereSortThenBy
     return addSortByInternal('barcodeUID', Sort.desc);
   }
 
+  QueryBuilder<BarcodeProperty, BarcodeProperty, QAfterSortBy>
+      thenByHashCode() {
+    return addSortByInternal('hashCode', Sort.asc);
+  }
+
+  QueryBuilder<BarcodeProperty, BarcodeProperty, QAfterSortBy>
+      thenByHashCodeDesc() {
+    return addSortByInternal('hashCode', Sort.desc);
+  }
+
   QueryBuilder<BarcodeProperty, BarcodeProperty, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -468,6 +548,11 @@ extension BarcodePropertyQueryWhereDistinct
     return addDistinctByInternal('barcodeUID', caseSensitive: caseSensitive);
   }
 
+  QueryBuilder<BarcodeProperty, BarcodeProperty, QDistinct>
+      distinctByHashCode() {
+    return addDistinctByInternal('hashCode');
+  }
+
   QueryBuilder<BarcodeProperty, BarcodeProperty, QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
@@ -481,6 +566,10 @@ extension BarcodePropertyQueryProperty
     on QueryBuilder<BarcodeProperty, BarcodeProperty, QQueryProperty> {
   QueryBuilder<BarcodeProperty, String, QQueryOperations> barcodeUIDProperty() {
     return addPropertyNameInternal('barcodeUID');
+  }
+
+  QueryBuilder<BarcodeProperty, int, QQueryOperations> hashCodeProperty() {
+    return addPropertyNameInternal('hashCode');
   }
 
   QueryBuilder<BarcodeProperty, int, QQueryOperations> idProperty() {
