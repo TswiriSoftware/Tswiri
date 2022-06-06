@@ -433,6 +433,7 @@ class _ContainerManagerViewState extends State<ContainerManagerView> {
     return Visibility(
       visible: !isFocused,
       child: FloatingActionButton(
+        key: const Key('new-container'),
         elevation: 10,
         onPressed: () async {
           ///Navigate to NewContainerView

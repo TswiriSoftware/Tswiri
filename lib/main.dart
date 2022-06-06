@@ -26,7 +26,7 @@ List<CameraDescription> cameras = [];
 
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  // FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   //Set screen orientation.
   SystemChrome.setPreferredOrientations([
@@ -53,18 +53,16 @@ Future<void> main() async {
     ),
   );
 
-  //Get camera's
+  // Get camera's
   cameras = await availableCameras();
 
   //Request Permissions.
-  var status = await Permission.storage.status;
+  var storageStatus = await Permission.storage.status;
+  if (storageStatus.isDenied) {
+    Permission.storage.request();
+  }
 
-  //TODO: Disable for integration Test.
-  // if (status.isDenied) {
-  //   Permission.storage.request();
-  // }
-
-  //Get App Settings. From Shared Prefernces.
+  // Get App Settings. From Shared Prefernces.
   getStoredAppSettings();
 
   //Get support directory
@@ -73,7 +71,7 @@ Future<void> main() async {
   isarDatabase = openIsar();
 
   createBasicContainerTypes();
-  FlutterNativeSplash.remove();
+  // FlutterNativeSplash.remove();
 }
 
 class MyApp extends StatelessWidget {
@@ -143,6 +141,11 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   build(BuildContext context) {
     return Scaffold(

@@ -1,7 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/main.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:flutter_google_ml_kit/main.dart' as app;
 
 void main() {
@@ -12,11 +12,21 @@ void main() {
     }
 
     testWidgets('Integration Test', (tester) async {
-      await app.main();
-      await tester.pumpAndSettle(const Duration(seconds: 10));
-      expect(find.text('Sunbird'), findsOneWidget);
-      await tester.tap(find.text('Calibration'));
-      await tester.pumpAndSettle(const Duration(milliseconds: 1200));
+      app.main();
+
+      //This is time to accept permissions
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+
+      //1. Navigate to containers.
+      await tester.tap(find.text('Containers'));
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tap(find.byType(FloatingActionButton));
+      // await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.byKey(const Key('shelf')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('shelf')));
+      await tester.pump(const Duration(seconds: 5));
+      //Add a button to create a 'fake barcode'
     });
   });
 }

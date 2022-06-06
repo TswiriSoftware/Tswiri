@@ -254,6 +254,8 @@ class _NewContainerViewState extends State<NewContainerView> {
         Visibility(
           visible: selectedContainerType == null,
           child: ElevatedButton(
+            key: Key(containerType
+                .containerType), // [area], [box], [drawer], [shelf]
             style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(typeColor)),
             onPressed: () {
