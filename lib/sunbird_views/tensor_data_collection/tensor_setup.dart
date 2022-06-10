@@ -8,9 +8,9 @@ import 'package:flutter_google_ml_kit/sunbird_views/tensor_data_collection/suppo
 import 'package:flutter_google_ml_kit/sunbird_views/tensor_data_collection/supporting/tensor_frame_visualizer.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/tensor_data_collection/tensor_data_capturing_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/default_card/defualt_card.dart';
+import 'package:intl/intl.dart';
 import 'dart:math' as m;
-
-import 'package:path_provider/path_provider.dart';
+import 'package:vector_math/vector_math.dart' as vm;
 
 class TensorSetupView extends StatefulWidget {
   const TensorSetupView({Key? key}) : super(key: key);
@@ -24,9 +24,13 @@ class _TensorSetupViewState extends State<TensorSetupView> {
 
   final TextEditingController _textEditingControllerX = TextEditingController();
   final TextEditingController _textEditingControllerY = TextEditingController();
+  final TextEditingController _textEditingControllerZ = TextEditingController();
 
   bool xAngleValid = false;
   bool yAngleValid = false;
+  bool zAngleValid = false;
+
+  bool isExporting = false;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +46,15 @@ class _TensorSetupViewState extends State<TensorSetupView> {
         'Tensor Data Capturing',
         style: Theme.of(context).textTheme.titleMedium,
       ),
+      actions: [
+        ElevatedButton(
+            onPressed: () {
+              setState(() {
+                tensorData = [];
+              });
+            },
+            child: const Icon(Icons.delete))
+      ],
       centerTitle: true,
     );
   }
@@ -66,12 +79,15 @@ class _TensorSetupViewState extends State<TensorSetupView> {
         children: [
           ElevatedButton(
             onPressed: () async {
-              if (xAngleValid && yAngleValid) {
-                tensorData = await Navigator.push(
+              if (xAngleValid && yAngleValid && zAngleValid) {
+                List<TensorData>? data = await Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => const TensorDataCapturingView()),
                 );
+                if (data != null) {
+                  tensorData = data;
+                }
                 //log(tensorData.toString());
                 setState(() {});
               }
@@ -95,6 +111,11 @@ class _TensorSetupViewState extends State<TensorSetupView> {
                   thickness: 1,
                 ),
                 _angleSelector(_textEditingControllerY, 'Y'),
+                const VerticalDivider(
+                  color: Colors.white,
+                  thickness: 1,
+                ),
+                _angleSelector(_textEditingControllerZ, 'Z'),
               ],
             ),
           ),
@@ -113,8 +134,9 @@ class _TensorSetupViewState extends State<TensorSetupView> {
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         SizedBox(
-          width: MediaQuery.of(context).size.width / 2.5,
+          width: MediaQuery.of(context).size.width / 4,
           child: TextFormField(
+            autofocus: false,
             textAlign: TextAlign.center,
             controller: textEditingController,
             keyboardType: TextInputType.number,
@@ -134,6 +156,9 @@ class _TensorSetupViewState extends State<TensorSetupView> {
                     case 'Y':
                       yAngleValid = true;
                       break;
+                    case 'Z':
+                      zAngleValid = true;
+                      break;
                   }
                   return null;
                 }
@@ -145,7 +170,7 @@ class _TensorSetupViewState extends State<TensorSetupView> {
           ),
         ),
         Text(
-          'Radians: ${roundDouble(_degreesToRadians(double.tryParse(textEditingController.text) ?? 0), 5)}',
+          'R: ${roundDouble(_degreesToRadians(double.tryParse(textEditingController.text) ?? 0), 5)}',
           style: Theme.of(context).textTheme.bodyLarge,
         ),
       ],
@@ -169,29 +194,38 @@ class _TensorSetupViewState extends State<TensorSetupView> {
   Widget _exportData() {
     return ElevatedButton(
       onPressed: () async {
-        final directory = (await getApplicationDocumentsDirectory());
+        setState(() {
+          isExporting = true;
+        });
 
         String name =
-            '${DateTime.now().millisecondsSinceEpoch}_X${_textEditingControllerX.text}_Y${_textEditingControllerY.text}.txt';
+            'X${_textEditingControllerX.text}_Y${_textEditingControllerY.text}_Z${_textEditingControllerZ.text}.txt';
 
-        File myFile = File('${directory.path}/$name');
+        File myFile = File('/storage/emulated/0/Download/TensorData/$name');
+
+        DateTime now = DateTime.now();
 
         await myFile.writeAsString(
-            'Timestamp: ${DateTime.now().millisecondsSinceEpoch} X: ${_textEditingControllerX.text}, Y:${_textEditingControllerY.text}');
-        for (var element in tensorData) {
+          '\n\nTimestamp: ${DateFormat('yyyy-MM-dd – kk:mm').format(now)} X: ${_textEditingControllerX.text}°, Y:${_textEditingControllerY.text}°, Z:${_textEditingControllerZ.text}°, X=${roundDouble(_degreesToRadians(double.tryParse(_textEditingControllerX.text) ?? 0), 5)}, Y=${roundDouble(_degreesToRadians(double.tryParse(_textEditingControllerY.text) ?? 0), 5)}, Z=${roundDouble(_degreesToRadians(double.tryParse(_textEditingControllerZ.text) ?? 0), 5)}',
+          mode: FileMode.append,
+        );
+
+        for (var data in tensorData) {
+          data.normalizeCornerPoints();
+          List<vm.Vector2> cp = data.normalizeCornerPoints();
           await myFile.writeAsString(
-            '[${element.cornerPoints[0].x}, ${element.cornerPoints[0].y}], [${element.cornerPoints[1].x}, ${element.cornerPoints[1].y}], [${element.cornerPoints[2].x}, ${element.cornerPoints[2].y}], [${element.cornerPoints[3].x}, ${element.cornerPoints[3].y}]\n',
+            '\n[${cp[0].x}, ${cp[0].y}, ${cp[1].x}, ${cp[1].y}, ${cp[2].x}, ${cp[2].y}, ${cp[3].x}, ${cp[3].y}],',
             mode: FileMode.append,
           );
         }
 
-        File file = File('${directory.path}/$name');
-        log(file.path);
-
-        // await Share.shareFiles(['${directory.path}/$name'],
-        //     text: name, mimeTypes: ['text/plain']);
+        setState(() {
+          isExporting = false;
+        });
       },
-      child: const Text('Export'),
+      child: isExporting
+          ? const CircularProgressIndicator(color: Colors.white)
+          : const Text('Export'),
     );
   }
 
@@ -207,10 +241,14 @@ class _TensorSetupViewState extends State<TensorSetupView> {
                 'Frame',
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              Text(t.cornerPoints[0].toString()),
-              Text(t.cornerPoints[1].toString()),
-              Text(t.cornerPoints[2].toString()),
-              Text(t.cornerPoints[3].toString()),
+              Text(
+                  '${roundDouble(t.normalizeCornerPoints()[0].x, 6)}, ${roundDouble(t.normalizeCornerPoints()[0].y, 6)}'),
+              Text(
+                  '${roundDouble(t.normalizeCornerPoints()[1].x, 6)}, ${roundDouble(t.normalizeCornerPoints()[1].y, 6)}'),
+              Text(
+                  '${roundDouble(t.normalizeCornerPoints()[2].x, 6)}, ${roundDouble(t.normalizeCornerPoints()[2].y, 6)}'),
+              Text(
+                  '${roundDouble(t.normalizeCornerPoints()[3].x, 6)}, ${roundDouble(t.normalizeCornerPoints()[3].y, 6)}'),
             ],
           ),
           _viewer(t)

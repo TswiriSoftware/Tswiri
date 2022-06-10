@@ -1,7 +1,11 @@
+import 'dart:developer';
 import 'dart:ui';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/functions/barcode_calculations/calculate_barcode_center_from_corner_points.dart';
+import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
+import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 // import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
 // import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 
@@ -21,29 +25,33 @@ class TensorPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    double centerX = size.width / 2;
+    double centerY = size.height / 2;
+
+    Offset topCenter = Offset(centerX, 0);
+    Offset botCenter = Offset(centerX, size.height);
+
+    Offset leftCenter = Offset(0, centerY);
+    Offset rightCenter = Offset(size.width, centerY);
+
     final Paint paint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0
+      ..strokeWidth = 1.0
       ..color = Colors.lightGreenAccent;
 
-    final Paint background = Paint()..color = const Color(0x99000000);
+    final Paint gridPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.5
+      ..color = sunbirdOrange;
 
     Offset imageCenter = Offset(size.width / 2, size.height / 2);
 
-    canvas.drawCircle(imageCenter, 100, paint);
+    canvas.drawCircle(imageCenter, centerX / 2, paint);
+
+    drawMyLinesHorizontal(canvas, topCenter, botCenter, 4, gridPaint);
+    drawMyLinesVertical(canvas, leftCenter, rightCenter, 8, gridPaint);
 
     for (final Barcode barcode in barcodes) {
-      final ParagraphBuilder builder = ParagraphBuilder(
-        ParagraphStyle(
-            textAlign: TextAlign.left,
-            fontSize: 16,
-            textDirection: TextDirection.ltr),
-      );
-      builder.pushStyle(ui.TextStyle(
-          color: Colors.lightGreenAccent, background: background, fontSize: 9));
-      builder.addText('${barcode.displayValue}');
-      builder.pop();
-
       var cornerPoints = barcode.cornerPoints;
       if (cornerPoints != null) {
         List<Offset> offsetPoints = <Offset>[];
@@ -59,12 +67,63 @@ class TensorPainter extends CustomPainter {
 
         offsetPoints.add(offsetPoints.first);
 
-        canvas.drawParagraph(
-          builder.build()..layout(const ParagraphConstraints(width: 100)),
-          offsetPoints.first,
-        );
+        canvas.drawPoints(
+            PointMode.points,
+            [calculateCenterFromCornerPoints(offsetPoints)],
+            paintSimple(
+                color: Colors.lightGreenAccent,
+                strokeWidth: 5,
+                style: PaintingStyle.stroke));
 
         canvas.drawPoints(PointMode.polygon, offsetPoints, paint);
+      }
+    }
+  }
+
+  void drawMyLinesHorizontal(
+      Canvas canvas, Offset a, Offset b, int k, Paint gridPaint) {
+    for (var i = 0; i < k; i++) {
+      if (i == 0) {
+        canvas.drawLine(
+            a,
+            b,
+            paintSimple(
+                color: Colors.blueAccent,
+                strokeWidth: 1,
+                style: PaintingStyle.stroke));
+      } else {
+        Offset aOffset = Offset(i * 50, 0) + a;
+        Offset bOffset = Offset(i * 50, 0) + b;
+        canvas.drawLine(aOffset, bOffset, gridPaint);
+
+        Offset naOffset = Offset(i * -50, 0) + a;
+        Offset nbOffset = Offset(i * -50, 0) + b;
+
+        canvas.drawLine(naOffset, nbOffset, gridPaint);
+      }
+    }
+  }
+
+  void drawMyLinesVertical(
+      Canvas canvas, Offset a, Offset b, int k, Paint gridPaint) {
+    for (var i = 0; i < k; i++) {
+      if (i == 0) {
+        canvas.drawLine(
+            a,
+            b,
+            paintSimple(
+                color: Colors.blueAccent,
+                strokeWidth: 1,
+                style: PaintingStyle.stroke));
+      } else {
+        Offset aOffset = Offset(0, i * 50) + a;
+        Offset bOffset = Offset(0, i * 50) + b;
+        canvas.drawLine(aOffset, bOffset, gridPaint);
+
+        Offset naOffset = Offset(0, i * -50) + a;
+        Offset nbOffset = Offset(0, i * -50) + b;
+
+        canvas.drawLine(naOffset, nbOffset, gridPaint);
       }
     }
   }

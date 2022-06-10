@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 // import 'dart:developer';
+import 'dart:developer';
 import 'dart:math' as m;
 
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
@@ -30,6 +31,7 @@ class _TensorDataCapturingViewState extends State<TensorDataCapturingView> {
   CustomPaint? customPaint;
 
   List<TensorData> tensorData = [];
+  bool isRecording = false;
 
   @override
   void initState() {
@@ -48,19 +50,7 @@ class _TensorDataCapturingViewState extends State<TensorDataCapturingView> {
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        floatingActionButton: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            FloatingActionButton(
-              backgroundColor: widget.color,
-              heroTag: null,
-              onPressed: () {
-                Navigator.pop(context, tensorData);
-              },
-              child: const Icon(Icons.check_circle_outline_rounded),
-            ),
-          ],
-        ),
+        floatingActionButton: isRecording ? _endRecording() : _startRecording(),
         body: TensorCameraView(
           color: widget.color ?? sunbirdOrange,
           title: 'Scanner',
@@ -69,6 +59,30 @@ class _TensorDataCapturingViewState extends State<TensorDataCapturingView> {
             processImage(inputImage);
           },
         ));
+  }
+
+  FloatingActionButton _startRecording() {
+    return FloatingActionButton(
+      backgroundColor: widget.color,
+      heroTag: null,
+      onPressed: () {
+        setState(() {
+          isRecording = true;
+        });
+      },
+      child: const Icon(Icons.start),
+    );
+  }
+
+  FloatingActionButton _endRecording() {
+    return FloatingActionButton(
+      backgroundColor: widget.color,
+      heroTag: null,
+      onPressed: () {
+        Navigator.pop(context, tensorData);
+      },
+      child: Text(tensorData.length.toString()),
+    );
   }
 
   Future<void> processImage(InputImage inputImage) async {
@@ -81,11 +95,15 @@ class _TensorDataCapturingViewState extends State<TensorDataCapturingView> {
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
       for (Barcode barcode in barcodes) {
-        List<m.Point<int>> cornerPoints = [];
-        for (m.Point<int> point in barcode.cornerPoints!) {
-          cornerPoints.add(point - barcode.cornerPoints![0]);
+        if (isRecording) {
+          List<m.Point<int>> cornerPoints = [];
+          for (m.Point<int> point in barcode.cornerPoints!) {
+            cornerPoints.add(point - barcode.cornerPoints![0]);
+          }
+
+          // log(cornerPoints.toString());
+          tensorData.add(TensorData(cornerPoints: cornerPoints));
         }
-        tensorData.add(TensorData(cornerPoints: cornerPoints));
       }
 
       final painter = TensorPainter(

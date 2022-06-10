@@ -1,5 +1,7 @@
 // import 'dart:io';
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_google_ml_kit/main.dart' as app;
@@ -13,7 +15,6 @@ void main() {
 
     testWidgets('Integration Test', (tester) async {
       app.main();
-
       //This is time to accept permissions
       await tester.pumpAndSettle(const Duration(seconds: 3));
 

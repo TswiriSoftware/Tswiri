@@ -13,9 +13,9 @@ import 'package:flutter_google_ml_kit/sunbird_views/containers/container_types/t
 import 'package:flutter_google_ml_kit/sunbird_views/tensor_data_collection/tensor_setup.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/tree_visualizer/tree_visualizer_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/custom_card/custom_card.dart';
-// import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:path_provider/path_provider.dart';
-// import 'package:permission_handler/permission_handler.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'sunbird_views/app_settings/app_settings_functions.dart';
 import 'sunbird_views/app_settings/app_settings_view.dart';
@@ -58,10 +58,10 @@ Future<void> main() async {
   cameras = await availableCameras();
 
   //Request Permissions.
-  // var storageStatus = await Permission.storage.status;
-  // if (storageStatus.isDenied) {
-  //   Permission.storage.request();
-  // }
+  var storageStatus = await Permission.storage.status;
+  if (storageStatus.isDenied) {
+    Permission.storage.request();
+  }
 
   // Get App Settings. From Shared Prefernces.
   getStoredAppSettings();
