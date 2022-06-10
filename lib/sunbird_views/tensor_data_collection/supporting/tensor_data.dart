@@ -26,8 +26,12 @@ class TensorData {
     }
 
     List<Vector2> normalizedVectors = vectors
-        .map((e) => Vector2(
-            (e.x / longest.x).toPrecision(4), (e.y / longest.y).toPrecision(4)))
+        .map(
+          (e) => Vector2(
+            (e.x / longest.x),
+            (e.y / longest.y),
+          ),
+        )
         .toList();
 
     // int xMax = 0;

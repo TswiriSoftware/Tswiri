@@ -211,8 +211,7 @@ class _TensorSetupViewState extends State<TensorSetupView> {
         );
 
         for (var data in tensorData) {
-          data.normalizeCornerPoints();
-          List<vm.Vector2> cp = data.normalizeCornerPoints();
+          List<m.Point<int>> cp = data.cornerPoints;
           await myFile.writeAsString(
             '\n[${cp[0].x}, ${cp[0].y}, ${cp[1].x}, ${cp[1].y}, ${cp[2].x}, ${cp[2].y}, ${cp[3].x}, ${cp[3].y}],',
             mode: FileMode.append,
@@ -241,14 +240,23 @@ class _TensorSetupViewState extends State<TensorSetupView> {
                 'Frame',
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              Text(
-                  '${roundDouble(t.normalizeCornerPoints()[0].x, 6)}, ${roundDouble(t.normalizeCornerPoints()[0].y, 6)}'),
-              Text(
-                  '${roundDouble(t.normalizeCornerPoints()[1].x, 6)}, ${roundDouble(t.normalizeCornerPoints()[1].y, 6)}'),
-              Text(
-                  '${roundDouble(t.normalizeCornerPoints()[2].x, 6)}, ${roundDouble(t.normalizeCornerPoints()[2].y, 6)}'),
-              Text(
-                  '${roundDouble(t.normalizeCornerPoints()[3].x, 6)}, ${roundDouble(t.normalizeCornerPoints()[3].y, 6)}'),
+              SelectableText(
+                '''
+${t.cornerPoints[0].x}, ${t.cornerPoints[0].y}
+${t.cornerPoints[1].x}, ${t.cornerPoints[1].y}
+${t.cornerPoints[2].x}, ${t.cornerPoints[2].y}
+${t.cornerPoints[3].x}, ${t.cornerPoints[3].y}
+''',
+              ),
+
+              // Text(
+              //     '${roundDouble(t.normalizeCornerPoints()[0].x, 6)}, ${roundDouble(t.normalizeCornerPoints()[0].y, 6)}'),
+              // Text(
+              //     '${roundDouble(t.normalizeCornerPoints()[1].x, 6)}, ${roundDouble(t.normalizeCornerPoints()[1].y, 6)}'),
+              // Text(
+              //     '${roundDouble(t.normalizeCornerPoints()[2].x, 6)}, ${roundDouble(t.normalizeCornerPoints()[2].y, 6)}'),
+              // Text(
+              //     '${roundDouble(t.normalizeCornerPoints()[3].x, 6)}, ${roundDouble(t.normalizeCornerPoints()[3].y, 6)}'),
             ],
           ),
           _viewer(t)

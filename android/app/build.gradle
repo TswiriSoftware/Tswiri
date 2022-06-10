@@ -65,11 +65,11 @@ android {
         // }
 
     }
-    lintOptions {
-        disable 'InvalidPackage'
-        checkReleaseBuilds false
-        abortOnError false
-    } 
+    // lintOptions {
+    //     disable 'InvalidPackage'
+    //     checkReleaseBuilds false
+    //     abortOnError false
+    // } 
     signingConfigs {
        release {
            keyAlias keystoreProperties['keyAlias']
@@ -78,6 +78,7 @@ android {
            storePassword keystoreProperties['storePassword']
        }
    }
+   
    buildTypes {
        release {
            signingConfig signingConfigs.release
