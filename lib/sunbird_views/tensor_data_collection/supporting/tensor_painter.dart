@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 import 'dart:ui' as ui;
 
@@ -23,6 +24,15 @@ class TensorPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    double centerX = size.width / 2;
+    double centerY = size.height / 2;
+
+    Offset topCenter = Offset(centerX, 0);
+    Offset botCenter = Offset(centerX, size.height);
+
+    Offset leftCenter = Offset(0, centerY);
+    Offset rightCenter = Offset(size.width, centerY);
+
     final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0
@@ -44,7 +54,10 @@ class TensorPainter extends CustomPainter {
 
     Offset imageCenter = Offset(size.width / 2, size.height / 2);
 
-    canvas.drawCircle(imageCenter, 100, paint);
+    canvas.drawCircle(imageCenter, centerX / 2, paint);
+
+    // drawMyLinesHorizontal(canvas, topCenter, botCenter, 4, gridPaint);
+    // drawMyLinesVertical(canvas, leftCenter, rightCenter, 8, gridPaint);
 
     for (final Barcode barcode in barcodes) {
       var cornerPoints = barcode.cornerPoints;

@@ -1,8 +1,8 @@
-import 'dart:math';
+import 'dart:math' as m;
 
 class TensorData {
   TensorData({required this.cp});
-  List<Point<int>> cp;
+  List<m.Point<int>> cp;
 
   @override
   String toString() {
