@@ -26,8 +26,7 @@ import 'sunbird_views/tag_manager/tag_manager_view.dart';
 List<CameraDescription> cameras = [];
 
 Future<void> main() async {
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  // FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  WidgetsFlutterBinding.ensureInitialized();
 
   //Set screen orientation.
   SystemChrome.setPreferredOrientations([
@@ -72,7 +71,6 @@ Future<void> main() async {
   isarDatabase = openIsar();
 
   createBasicContainerTypes();
-  // FlutterNativeSplash.remove();
 }
 
 class MyApp extends StatelessWidget {

@@ -30,7 +30,7 @@ class _TensorDataCapturingViewState extends State<TensorDataCapturingView> {
   CustomPaint? customPaint;
 
   List<TensorData> tensorData = [];
-
+  bool isCapturing = false;
   @override
   void initState() {
     WidgetsFlutterBinding.ensureInitialized();
@@ -55,9 +55,17 @@ class _TensorDataCapturingViewState extends State<TensorDataCapturingView> {
               backgroundColor: widget.color,
               heroTag: null,
               onPressed: () {
-                Navigator.pop(context, tensorData);
+                if (isCapturing) {
+                  Navigator.pop(context, tensorData);
+                } else {
+                  setState(() {
+                    isCapturing = true;
+                  });
+                }
               },
-              child: const Icon(Icons.check_circle_outline_rounded),
+              child: isCapturing
+                  ? Text(tensorData.length.toString())
+                  : const Icon(Icons.start),
             ),
           ],
         ),
@@ -85,7 +93,9 @@ class _TensorDataCapturingViewState extends State<TensorDataCapturingView> {
         for (m.Point<int> point in barcode.cornerPoints!) {
           cornerPoints.add(point - barcode.cornerPoints![0]);
         }
-        tensorData.add(TensorData(cornerPoints: cornerPoints));
+        if (isCapturing) {
+          tensorData.add(TensorData(cp: cornerPoints));
+        }
       }
 
       final painter = TensorPainter(

@@ -2,6 +2,8 @@ import 'dart:ui';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_google_ml_kit/functions/barcode_calculations/calculate_barcode_center_from_corner_points.dart';
+import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 // import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
 // import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 
@@ -23,27 +25,28 @@ class TensorPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final Paint paint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0
+      ..strokeWidth = 2.0
+      ..color = Colors.lightGreenAccent;
+    final Paint paint5 = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5.0
       ..color = Colors.lightGreenAccent;
 
-    final Paint background = Paint()..color = const Color(0x99000000);
+    final Paint paint2 = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.5
+      ..color = sunbirdOrange;
+
+    final Paint paint3 = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1
+      ..color = Colors.blue;
 
     Offset imageCenter = Offset(size.width / 2, size.height / 2);
 
     canvas.drawCircle(imageCenter, 100, paint);
 
     for (final Barcode barcode in barcodes) {
-      final ParagraphBuilder builder = ParagraphBuilder(
-        ParagraphStyle(
-            textAlign: TextAlign.left,
-            fontSize: 16,
-            textDirection: TextDirection.ltr),
-      );
-      builder.pushStyle(ui.TextStyle(
-          color: Colors.lightGreenAccent, background: background, fontSize: 9));
-      builder.addText('${barcode.displayValue}');
-      builder.pop();
-
       var cornerPoints = barcode.cornerPoints;
       if (cornerPoints != null) {
         List<Offset> offsetPoints = <Offset>[];
@@ -58,25 +61,40 @@ class TensorPainter extends CustomPainter {
         }
 
         offsetPoints.add(offsetPoints.first);
-
-        canvas.drawParagraph(
-          builder.build()..layout(const ParagraphConstraints(width: 100)),
-          offsetPoints.first,
-        );
-
         canvas.drawPoints(PointMode.polygon, offsetPoints, paint);
+        canvas.drawPoints(PointMode.points,
+            [calculateCenterFromCornerPoints(offsetPoints)], paint5);
       }
     }
-  }
 
-  TextPainter text(String text) {
-    TextSpan span = TextSpan(
-        style: const TextStyle(color: Colors.red, fontSize: 5), text: text);
-    TextPainter tp = TextPainter(
-        text: span,
-        textAlign: TextAlign.left,
-        textDirection: TextDirection.ltr);
-    return tp;
+    double xCenter = size.width / 2;
+    double yCenter = size.height / 2;
+
+    Offset centerTop = Offset(xCenter, 0);
+    Offset centerBot = Offset(xCenter, size.height);
+    canvas.drawLine(centerTop, centerBot, paint3);
+
+    Offset centerLeft = Offset(0, yCenter);
+    Offset centerRight = Offset(size.width, yCenter);
+    canvas.drawLine(centerLeft, centerRight, paint3);
+
+    for (var i = 1; i < 4; i++) {
+      Offset top = centerTop + Offset((50 * i).toDouble(), 0);
+      Offset bot = centerBot + Offset((50 * i).toDouble(), 0);
+      canvas.drawLine(top, bot, paint2);
+      Offset ntop = centerTop + Offset((-50 * i).toDouble(), 0);
+      Offset nbot = centerBot + Offset((-50 * i).toDouble(), 0);
+      canvas.drawLine(ntop, nbot, paint2);
+    }
+
+    for (var i = 1; i < 8; i++) {
+      Offset top = centerLeft + Offset(0, (50 * i).toDouble());
+      Offset bot = centerRight + Offset(0, (50 * i).toDouble());
+      canvas.drawLine(top, bot, paint2);
+      Offset ntop = centerLeft + Offset(0, (-50 * i).toDouble());
+      Offset nbot = centerRight + Offset(0, (-50 * i).toDouble());
+      canvas.drawLine(ntop, nbot, paint2);
+    }
   }
 
   @override

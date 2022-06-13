@@ -23,7 +23,7 @@ class TensorVisualizerPainter extends CustomPainter {
     int xMin = 0;
     int yMax = 0;
     int yMin = 0;
-    for (m.Point<int> point in tensorData.cornerPoints) {
+    for (m.Point<int> point in tensorData.cp) {
       if (point.x > xMax) {
         xMax = point.x;
       }
