@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -9,9 +8,7 @@ import 'package:flutter_google_ml_kit/sunbird_views/tensor_data_collection/suppo
 import 'package:flutter_google_ml_kit/sunbird_views/tensor_data_collection/supporting/tensor_frame_visualizer.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/tensor_data_collection/tensor_data_capturing_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/default_card/defualt_card.dart';
-import 'package:intl/intl.dart';
 import 'dart:math' as m;
-import 'package:vector_math/vector_math.dart' as vm;
 
 class TensorSetupView extends StatefulWidget {
   const TensorSetupView({Key? key}) : super(key: key);
@@ -275,7 +272,6 @@ class _TensorSetupViewState extends State<TensorSetupView> {
                 ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text("Copied to Clipboard")));
               });
-              ;
             },
           ),
         ],
