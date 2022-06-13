@@ -1,7 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api
 
 // import 'dart:developer';
-import 'dart:developer';
 import 'dart:math' as m;
 
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
@@ -80,29 +79,29 @@ class _TensorDataCapturingViewState extends State<TensorDataCapturingView> {
         ));
   }
 
-  FloatingActionButton _startRecording() {
-    return FloatingActionButton(
-      backgroundColor: widget.color,
-      heroTag: null,
-      onPressed: () {
-        setState(() {
-          isCapturing = true;
-        });
-      },
-      child: const Icon(Icons.start),
-    );
-  }
+  // FloatingActionButton _startRecording() {
+  //   return FloatingActionButton(
+  //     backgroundColor: widget.color,
+  //     heroTag: null,
+  //     onPressed: () {
+  //       setState(() {
+  //         isCapturing = true;
+  //       });
+  //     },
+  //     child: const Icon(Icons.start),
+  //   );
+  // }
 
-  FloatingActionButton _endRecording() {
-    return FloatingActionButton(
-      backgroundColor: widget.color,
-      heroTag: null,
-      onPressed: () {
-        Navigator.pop(context, tensorData);
-      },
-      child: Text(tensorData.length.toString()),
-    );
-  }
+  // FloatingActionButton _endRecording() {
+  //   return FloatingActionButton(
+  //     backgroundColor: widget.color,
+  //     heroTag: null,
+  //     onPressed: () {
+  //       Navigator.pop(context, tensorData);
+  //     },
+  //     child: Text(tensorData.length.toString()),
+  //   );
+  // }
 
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;

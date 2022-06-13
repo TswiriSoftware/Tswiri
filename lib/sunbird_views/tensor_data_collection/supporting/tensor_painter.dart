@@ -1,6 +1,4 @@
-import 'dart:developer';
 import 'dart:ui';
-import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/barcode_calculations/calculate_barcode_center_from_corner_points.dart';
@@ -27,11 +25,11 @@ class TensorPainter extends CustomPainter {
     double centerX = size.width / 2;
     double centerY = size.height / 2;
 
-    Offset topCenter = Offset(centerX, 0);
-    Offset botCenter = Offset(centerX, size.height);
+    // Offset topCenter = Offset(centerX, 0);
+    // Offset botCenter = Offset(centerX, size.height);
 
-    Offset leftCenter = Offset(0, centerY);
-    Offset rightCenter = Offset(size.width, centerY);
+    // Offset leftCenter = Offset(0, centerY);
+    // Offset rightCenter = Offset(size.width, centerY);
 
     final Paint paint = Paint()
       ..style = PaintingStyle.stroke
@@ -52,9 +50,9 @@ class TensorPainter extends CustomPainter {
       ..strokeWidth = 1
       ..color = Colors.blue;
 
-    Offset imageCenter = Offset(size.width / 2, size.height / 2);
+    // Offset imageCenter = Offset(size.width / 2, size.height / 2);
 
-    canvas.drawCircle(imageCenter, centerX / 2, paint);
+    // canvas.drawCircle(imageCenter, centerX / 2, paint);
 
     // drawMyLinesHorizontal(canvas, topCenter, botCenter, 4, gridPaint);
     // drawMyLinesVertical(canvas, leftCenter, rightCenter, 8, gridPaint);
@@ -80,15 +78,15 @@ class TensorPainter extends CustomPainter {
       }
     }
 
-    double xCenter = size.width / 2;
-    double yCenter = size.height / 2;
+    // double xCenter = size.width / 2;
+    // double yCenter = size.height / 2;
 
-    Offset centerTop = Offset(xCenter, 0);
-    Offset centerBot = Offset(xCenter, size.height);
+    Offset centerTop = Offset(centerX, 0);
+    Offset centerBot = Offset(centerX, size.height);
     canvas.drawLine(centerTop, centerBot, paint3);
 
-    Offset centerLeft = Offset(0, yCenter);
-    Offset centerRight = Offset(size.width, yCenter);
+    Offset centerLeft = Offset(0, centerY);
+    Offset centerRight = Offset(size.width, centerY);
     canvas.drawLine(centerLeft, centerRight, paint3);
 
     for (var i = 1; i < 4; i++) {
