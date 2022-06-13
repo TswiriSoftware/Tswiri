@@ -119,12 +119,9 @@ class _TensorDataCapturingViewState extends State<TensorDataCapturingView> {
           for (m.Point<int> point in barcode.cornerPoints!) {
             cornerPoints.add(point - barcode.cornerPoints![0]);
           }
-
-          // log(cornerPoints.toString());
-          tensorData.add(TensorData(cp: cornerPoints));
-        }
-        if (isCapturing) {
-          tensorData.add(TensorData(cp: cp));
+          if (isCapturing) {
+            tensorData.add(TensorData(cp: cornerPoints));
+          }
         }
       }
 
