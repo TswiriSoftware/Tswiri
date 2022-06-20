@@ -1,7 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api
 
 // import 'dart:developer';
-import 'dart:developer';
 import 'dart:math' as m;
 
 import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.dart';
@@ -13,6 +12,7 @@ import 'package:flutter_google_ml_kit/sunbird_views/tensor_data_collection/suppo
 import 'package:flutter_google_ml_kit/sunbird_views/tensor_data_collection/supporting/tensor_painter.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+// ignore: depend_on_referenced_packages
 import 'package:vector_math/vector_math.dart' as vm;
 
 class TensorDataCapturingView extends StatefulWidget {

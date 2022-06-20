@@ -2,13 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_google_ml_kit/functions/math_functionts/round_to_double.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/tensor_data_collection/supporting/tensor_data.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/tensor_data_collection/supporting/tensor_frame_visualizer.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/tensor_data_collection/tensor_data_capturing_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/default_card/defualt_card.dart';
-import 'dart:math' as m;
+// import 'dart:math' as m;
 
 class TensorSetupView extends StatefulWidget {
   const TensorSetupView({Key? key}) : super(key: key);
@@ -302,7 +301,7 @@ class _TensorSetupViewState extends State<TensorSetupView> {
     );
   }
 
-  double _degreesToRadians(double degrees) {
-    return degrees * (m.pi / 180);
-  }
+  // double _degreesToRadians(double degrees) {
+  //   return degrees * (m.pi / 180);
+  // }
 }
