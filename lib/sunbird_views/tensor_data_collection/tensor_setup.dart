@@ -20,14 +20,6 @@ class TensorSetupView extends StatefulWidget {
 class _TensorSetupViewState extends State<TensorSetupView> {
   List<TensorData> tensorData = [];
 
-  final TextEditingController _textEditingControllerX = TextEditingController();
-  final TextEditingController _textEditingControllerY = TextEditingController();
-  final TextEditingController _textEditingControllerZ = TextEditingController();
-
-  bool xAngleValid = false;
-  bool yAngleValid = false;
-  bool zAngleValid = false;
-
   bool isExporting = false;
   bool testData = false;
 
@@ -78,18 +70,18 @@ class _TensorSetupViewState extends State<TensorSetupView> {
         children: [
           ElevatedButton(
             onPressed: () async {
-              if (xAngleValid && yAngleValid && zAngleValid) {
-                List<TensorData>? data = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const TensorDataCapturingView()),
-                );
-                if (data != null) {
-                  tensorData = data;
-                }
-                //log(tensorData.toString());
-                setState(() {});
+              // if (xAngleValid && yAngleValid && zAngleValid) {
+              List<TensorData>? data = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const TensorDataCapturingView()),
+              );
+              if (data != null) {
+                tensorData = data;
               }
+              //log(tensorData.toString());
+              setState(() {});
+              // }
             },
             child: Text(
               'Capture Data',
@@ -100,24 +92,24 @@ class _TensorSetupViewState extends State<TensorSetupView> {
             color: Colors.white,
             thickness: 2,
           ),
-          IntrinsicHeight(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _angleSelector(_textEditingControllerX, 'X'),
-                const VerticalDivider(
-                  color: Colors.white,
-                  thickness: 1,
-                ),
-                _angleSelector(_textEditingControllerY, 'Y'),
-                const VerticalDivider(
-                  color: Colors.white,
-                  thickness: 1,
-                ),
-                _angleSelector(_textEditingControllerZ, 'Z'),
-              ],
-            ),
-          ),
+          // IntrinsicHeight(
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //     children: [
+          //       _angleSelector(_textEditingControllerX, 'X'),
+          //       const VerticalDivider(
+          //         color: Colors.white,
+          //         thickness: 1,
+          //       ),
+          //       _angleSelector(_textEditingControllerY, 'Y'),
+          //       const VerticalDivider(
+          //         color: Colors.white,
+          //         thickness: 1,
+          //       ),
+          //       _angleSelector(_textEditingControllerZ, 'Z'),
+          //     ],
+          //   ),
+          // ),
           Row(
             children: [
               const Text('Test Data? :'),
@@ -129,64 +121,64 @@ class _TensorSetupViewState extends State<TensorSetupView> {
                     });
                   })
             ],
-          )
+          ),
         ],
       ),
     );
   }
 
-  Widget _angleSelector(
-      TextEditingController textEditingController, String plane) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          'Angle $plane°',
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-        SizedBox(
-          width: MediaQuery.of(context).size.width / 4,
-          child: TextFormField(
-            autofocus: false,
-            textAlign: TextAlign.center,
-            controller: textEditingController,
-            keyboardType: TextInputType.number,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Enter Angle';
-              } else {
-                double? x = double.tryParse(value);
-                if (x == null) {
-                  return 'Enter Valid Angle';
-                } else {
-                  switch (plane) {
-                    case 'X':
-                      xAngleValid = true;
-                      break;
-                    case 'Y':
-                      yAngleValid = true;
-                      break;
-                    case 'Z':
-                      zAngleValid = true;
-                      break;
-                  }
-                  return null;
-                }
-              }
-            },
-            onChanged: (value) {
-              setState(() {});
-            },
-          ),
-        ),
-        Text(
-          'R: ${roundDouble(_degreesToRadians(double.tryParse(textEditingController.text) ?? 0), 5)}',
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-      ],
-    );
-  }
+  // Widget _angleSelector(
+  //     TextEditingController textEditingController, String plane) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.center,
+  //     children: [
+  //       Text(
+  //         'Angle $plane°',
+  //         style: Theme.of(context).textTheme.bodyLarge,
+  //       ),
+  //       SizedBox(
+  //         width: MediaQuery.of(context).size.width / 4,
+  //         child: TextFormField(
+  //           autofocus: false,
+  //           textAlign: TextAlign.center,
+  //           controller: textEditingController,
+  //           keyboardType: TextInputType.number,
+  //           autovalidateMode: AutovalidateMode.onUserInteraction,
+  //           validator: (value) {
+  //             if (value == null || value.isEmpty) {
+  //               return 'Enter Angle';
+  //             } else {
+  //               double? x = double.tryParse(value);
+  //               if (x == null) {
+  //                 return 'Enter Valid Angle';
+  //               } else {
+  //                 switch (plane) {
+  //                   case 'X':
+  //                     xAngleValid = true;
+  //                     break;
+  //                   case 'Y':
+  //                     yAngleValid = true;
+  //                     break;
+  //                   case 'Z':
+  //                     zAngleValid = true;
+  //                     break;
+  //                 }
+  //                 return null;
+  //               }
+  //             }
+  //           },
+  //           onChanged: (value) {
+  //             setState(() {});
+  //           },
+  //         ),
+  //       ),
+  //       Text(
+  //         'R: ${roundDouble(_degreesToRadians(double.tryParse(textEditingController.text) ?? 0), 5)}',
+  //         style: Theme.of(context).textTheme.bodyLarge,
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _dataDisplay() {
     return defaultCard(
@@ -210,19 +202,26 @@ class _TensorSetupViewState extends State<TensorSetupView> {
         });
         String directory = '/storage/emulated/0/Download/';
 
-        String name =
-            'x${_textEditingControllerX.text}_y${_textEditingControllerY.text}_z${_textEditingControllerZ.text}.txt';
+        String name = 'tensor_data.txt';
+        String name1 = 'tensor_data_answers.txt';
+        String name2 = 'tensor_data_test.txt';
+        String name3 = 'tensor_data_answers_test.txt';
 
-        if (testData == true) {
-          name =
-              'test_x${_textEditingControllerX.text}_y${_textEditingControllerY.text}_z${_textEditingControllerZ.text}.txt';
+        File data = File('$directory/$name');
+        File answers = File('$directory/$name1');
+
+        if (testData) {
+          data = File('$directory/$name2');
+          answers = File('$directory/$name3');
         }
 
-        File myFile = File('$directory/$name');
-
         for (var t in tensorData) {
-          await myFile.writeAsString(
-            '[${t.cp[0].x}, ${t.cp[0].y}], [${t.cp[1].x}, ${t.cp[1].y}], [${t.cp[2].x}, ${t.cp[2].y}], [${t.cp[3].x}, ${t.cp[3].y}],\n',
+          await data.writeAsString(
+            '${t.cp[0].x}, ${t.cp[0].y}, ${t.cp[1].x}, ${t.cp[1].y}, ${t.cp[2].x}, ${t.cp[2].y}, ${t.cp[3].x}, ${t.cp[3].y}\n',
+            mode: FileMode.append,
+          );
+          await answers.writeAsString(
+            '${t.angle[0]}, ${t.angle[1]}, ${t.angle[2]}\n',
             mode: FileMode.append,
           );
         }
@@ -255,6 +254,7 @@ class _TensorSetupViewState extends State<TensorSetupView> {
                   Text('${t.cp[1].x}, ${t.cp[1].y}'),
                   Text('${t.cp[2].x}, ${t.cp[2].y}'),
                   Text('${t.cp[3].x}, ${t.cp[3].y}'),
+                  Text('${t.angle[0]}, ${t.angle[1]}, ${t.angle[2]}'),
                 ],
               ),
               _viewer(t)
