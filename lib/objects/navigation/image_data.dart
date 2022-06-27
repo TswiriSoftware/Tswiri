@@ -2,7 +2,7 @@
 
 import 'dart:isolate';
 import 'dart:typed_data';
-import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
+import 'package:flutter_google_ml_kit/objects/calibration/accelerometer_data.dart';
 import 'package:vector_math/vector_math.dart';
 
 ///This is the

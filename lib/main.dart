@@ -1,25 +1,13 @@
 import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_google_ml_kit/global_values/all_globals.dart';
 import 'package:flutter_google_ml_kit/firebase_options.dart';
-import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
-import 'package:flutter_google_ml_kit/global_values/routes.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/views/barcode_generator/barcode_generator_view.dart';
-import 'package:flutter_google_ml_kit/views/calibration/calibration_tools_view.dart';
-import 'package:flutter_google_ml_kit/views/containers/containers_view.dart';
-import 'package:flutter_google_ml_kit/views/search/search_view.dart';
-import 'package:flutter_google_ml_kit/views/container_types/types_view.dart';
-import 'package:flutter_google_ml_kit/views/tree_visualizer/tree_visualizer_view.dart';
-import 'package:flutter_google_ml_kit/views/widgets/cards/custom_card/custom_card.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
-import 'views/settings/app_settings_functions.dart';
-import 'views/settings/app_settings_view.dart';
-import 'views/barcodes/barcodes_view.dart';
-import 'views/gallery/gallery_view.dart';
-import 'views/tags/tags_view.dart';
+import 'views/main_views.dart';
 
 List<CameraDescription> cameras = [];
 
@@ -43,10 +31,9 @@ Future<void> main() async {
   //debugRepaintRainbowEnabled = true;
 
   runApp(
-    MaterialApp(
+    const MaterialApp(
       title: 'Sunbird',
-      initialRoute: '/',
-      routes: allRoutes,
+      home: MyApp(),
       debugShowCheckedModeBanner: false,
     ),
   );

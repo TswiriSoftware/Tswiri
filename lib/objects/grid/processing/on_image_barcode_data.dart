@@ -1,6 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages
 
-import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
+import 'package:flutter_google_ml_kit/objects/calibration/accelerometer_data.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 import 'dart:ui';
 

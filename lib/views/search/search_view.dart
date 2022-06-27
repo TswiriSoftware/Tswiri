@@ -15,8 +15,6 @@ import 'package:flutter_google_ml_kit/views/widgets/cards/default_card/defualt_c
 import 'package:flutter_google_ml_kit/views/widgets/dividers/dividers.dart';
 import 'package:isar/isar.dart';
 
-List<String> filters = ['Tags', 'AI Tags', 'Photos'];
-
 class SearchView extends StatefulWidget {
   const SearchView({Key? key}) : super(key: key);
 
@@ -27,6 +25,8 @@ class SearchView extends StatefulWidget {
 class _SearchViewState extends State<SearchView> {
   //Text Controller.
   TextEditingController searchController = TextEditingController();
+
+  List<String> filters = ['Tags', 'AI Tags', 'Photos'];
 
   //Search FocusNode.
   final FocusNode _focusNode = FocusNode();

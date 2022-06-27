@@ -9,7 +9,7 @@ import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isolates/grid_processor.dart';
 import 'package:flutter_google_ml_kit/isolates/image_processor.dart';
-import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
+import 'package:flutter_google_ml_kit/objects/calibration/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/views/settings/app_settings.dart';
 import 'package:flutter_google_ml_kit/views/barcodes/scanning/position/position_camera_view.dart';
 

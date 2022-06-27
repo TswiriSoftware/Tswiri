@@ -4,7 +4,7 @@ import 'dart:isolate';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isolates/image_processing_isolate.dart';
-import 'package:flutter_google_ml_kit/objects/reworked/accelerometer_data.dart';
+import 'package:flutter_google_ml_kit/objects/calibration/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/views/barcodes/scanning/position/position_camera_view.dart';
 import 'package:flutter_google_ml_kit/views/barcodes/scanning/position/position_painter.dart';
 import 'package:vector_math/vector_math.dart' as vm;
