@@ -125,8 +125,6 @@ class _TensorDataCapturingViewState extends State<TensorDataCapturingView> {
     final List<Barcode> barcodes =
         await barcodeScanner.processImage(inputImage);
 
-    List<TensorData> data = [];
-
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
       for (Barcode barcode in barcodes) {
@@ -135,15 +133,11 @@ class _TensorDataCapturingViewState extends State<TensorDataCapturingView> {
           for (m.Point<int> point in barcode.cornerPoints!) {
             cornerPoints.add(point - barcode.cornerPoints![0]);
           }
-          if (isCapturing) {
-            data.add(
+          if (tensorData.length < 20) {
+            tensorData.add(
                 TensorData(cp: cornerPoints, angle: [angleX, angleY, angleZ]));
           }
         }
-      }
-
-      if (tensorData.isEmpty) {
-        tensorData = data;
       }
 
       final painter = TensorPainter(

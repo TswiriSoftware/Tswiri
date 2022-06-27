@@ -200,27 +200,20 @@ class _TensorSetupViewState extends State<TensorSetupView> {
           isExporting = true;
         });
         String directory = '/storage/emulated/0/Download/';
-
-        String name = 'tensor_data.txt';
-        String name1 = 'tensor_data_answers.txt';
-        String name2 = 'tensor_data_test.txt';
-        String name3 = 'tensor_data_answers_test.txt';
-
+        String name = 'tensor_data.csv';
         File data = File('$directory/$name');
-        File answers = File('$directory/$name1');
+        // File answers = File('$directory/$name1');
 
-        if (testData) {
-          data = File('$directory/$name2');
-          answers = File('$directory/$name3');
-        }
-
-        for (var t in tensorData) {
+        if (!(await data.exists())) {
+          //If the file does not exisit yet then append the csv labels
           await data.writeAsString(
-            '${t.cp[0].x}, ${t.cp[0].y}, ${t.cp[1].x}, ${t.cp[1].y}, ${t.cp[2].x}, ${t.cp[2].y}, ${t.cp[3].x}, ${t.cp[3].y}\n',
+            'cp1x,cp1y,cp2x,cp2y,cp3x,cp3y,cp4x,cp4y,angleX,angleY,angleZ\n',
             mode: FileMode.append,
           );
-          await answers.writeAsString(
-            '${t.angle[0]}, ${t.angle[1]}, ${t.angle[2]}\n',
+        }
+        for (var t in tensorData) {
+          await data.writeAsString(
+            '${t.cp[0].x},${t.cp[0].y},${t.cp[1].x},${t.cp[1].y},${t.cp[2].x},${t.cp[2].y},${t.cp[3].x},${t.cp[3].y},${t.angle[0]},${t.angle[1]},${t.angle[2]}\n',
             mode: FileMode.append,
           );
         }
