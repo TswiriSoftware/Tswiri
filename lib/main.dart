@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/global_values/all_globals.dart';
 import 'package:flutter_google_ml_kit/firebase_options.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/theme.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
@@ -64,58 +65,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        backgroundColor: Colors.black,
-        primaryColor: sunbirdOrange,
-        colorScheme: ColorScheme.fromSwatch(
-            primarySwatch: Colors.deepOrange,
-            brightness: Brightness.dark,
-            backgroundColor: Colors.black),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: sunbirdOrange,
-        ),
-        scaffoldBackgroundColor: backgroundColor,
-        buttonTheme: const ButtonThemeData(
-          buttonColor: sunbirdOrange,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: TextButton.styleFrom(
-              backgroundColor: sunbirdOrange,
-              textStyle: Theme.of(context).textTheme.bodyLarge),
-        ),
-        checkboxTheme: CheckboxThemeData(
-          checkColor: MaterialStateProperty.all(Colors.white),
-          fillColor: MaterialStateProperty.all(sunbirdOrange),
-        ),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          foregroundColor: Colors.white,
-          backgroundColor: sunbirdOrange,
-        ),
-        textSelectionTheme:
-            const TextSelectionThemeData(cursorColor: sunbirdOrange),
-        textTheme: const TextTheme(
-          labelLarge: TextStyle(fontSize: 20),
-          labelMedium: TextStyle(fontSize: 17),
-          labelSmall: TextStyle(fontSize: 15),
-          titleLarge: TextStyle(fontSize: 25),
-          titleMedium: TextStyle(fontSize: 18),
-          titleSmall: TextStyle(fontSize: 16),
-          bodyLarge: TextStyle(fontSize: 16),
-          headlineSmall: TextStyle(
-              fontSize: 22, color: Colors.white, fontWeight: FontWeight.w300),
-        ),
-        inputDecorationTheme: const InputDecorationTheme(
-          focusedBorder:
-              UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-        ),
-      ),
+      theme: themeData(),
       debugShowCheckedModeBanner: false,
       home: const HomeView(),
     );
   }
 }
-//TODO:@Spodeopieter implement navigator 2.0
 
 class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);

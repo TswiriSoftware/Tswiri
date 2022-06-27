@@ -6,8 +6,8 @@ import 'package:flutter_google_ml_kit/isar_database/tags/container_tag/container
 import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart';
 
-class SContainer {
-  SContainer({
+class SearchContainer {
+  SearchContainer({
     required this.container,
     this.tags,
     this.sPhotos,
@@ -56,7 +56,7 @@ class SContainer {
     return tags;
   }
 
-  void merge(SContainer sContainer) {
+  void merge(SearchContainer sContainer) {
     //Tag merge
     if (tags == null) {
       tags = sContainer.tags;
@@ -77,7 +77,7 @@ class SContainer {
 
   @override
   bool operator ==(Object other) {
-    if (other is SContainer) {
+    if (other is SearchContainer) {
       if (other.container.containerUID == container.containerUID) {
         return true;
       }
