@@ -10,7 +10,6 @@ import 'package:flutter_google_ml_kit/sunbird_views/barcodes/calibration/calibra
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_manager/container_manager_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_search/search_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/containers/container_types/types_view.dart';
-import 'package:flutter_google_ml_kit/sunbird_views/tensor_data_collection/tensor_setup.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/tree_visualizer/tree_visualizer_view.dart';
 import 'package:flutter_google_ml_kit/sunbird_views/widgets/cards/custom_card/custom_card.dart';
 import 'package:path_provider/path_provider.dart';
@@ -234,13 +233,6 @@ class _HomeViewState extends State<HomeView> {
             CustomCard(
               'Tree Visualizer',
               GridVisualizerView(),
-              Icons.grid_4x4_sharp,
-              featureCompleted: true,
-              tileColor: sunbirdOrange,
-            ),
-            CustomCard(
-              'Tensor Data Collection',
-              TensorSetupView(),
               Icons.grid_4x4_sharp,
               featureCompleted: true,
               tileColor: sunbirdOrange,
