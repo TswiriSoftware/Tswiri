@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
+///Get the tflite model from flutter assets
 Future<String> getModel(String assetPath) async {
   log((await io.File(assetPath).exists()).toString());
   if (io.Platform.isAndroid) {

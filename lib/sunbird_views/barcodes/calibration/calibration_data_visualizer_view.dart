@@ -1,7 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/functions/calibration_functions/calibration_functions.dart';
+import 'package:flutter_google_ml_kit/functions/calibration_functions/list_of_display_points.dart';
 
 import 'package:flutter_google_ml_kit/global_values/shared_prefrences.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_size_distance_entry/barcode_size_distance_entry.dart';
@@ -70,7 +70,7 @@ class _CalibrationDataVisualizerViewState
     Size size = Size(
         MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
 
-    List<Offset> points = listOfPoints(sizeDistanceEntry, size);
+    List<Offset> points = listOfCalibrationPoints(sizeDistanceEntry, size);
 
     final prefs = await SharedPreferences.getInstance();
     focalLength = prefs.getDouble(focalLengthPreference) ?? 0;
