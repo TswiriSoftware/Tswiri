@@ -9,7 +9,7 @@ import 'package:flutter_google_ml_kit/views/widgets/cards/default_card/defualt_c
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 import 'package:numberpicker/numberpicker.dart';
-import '../barcodes/scanning/multiple/multiple_scanner_view.dart';
+import '../scanning/multiple/multiple_scanner_view.dart';
 
 class BarcodeGeneratorView extends StatefulWidget {
   const BarcodeGeneratorView({Key? key}) : super(key: key);

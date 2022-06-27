@@ -12,7 +12,7 @@ import 'package:flutter_google_ml_kit/isar_database/containers/container_type/co
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/marker/marker.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
-import 'package:flutter_google_ml_kit/views/barcodes/scanning/single/single_scanner_view.dart';
+import 'package:flutter_google_ml_kit/views/scanning/single/single_scanner_view.dart';
 import 'package:flutter_google_ml_kit/views/containers/container_view.dart';
 import 'package:flutter_google_ml_kit/views/containers/photo_view.dart';
 import 'package:flutter_google_ml_kit/views/photo_tagging/object_detector_view.dart';

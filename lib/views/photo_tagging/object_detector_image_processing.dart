@@ -14,7 +14,7 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../objects/photo_tagging/image_data.dart';
-import 'painter/object_detector_painter.dart';
+import 'object_detector_painter.dart';
 
 ///Displays the Photo and objects detected
 class ObjectDetectorProcessingView extends StatefulWidget {

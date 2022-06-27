@@ -10,7 +10,7 @@ import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart'
 import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart';
 import 'package:flutter_google_ml_kit/objects/search/search_object.dart';
 import 'package:flutter_google_ml_kit/views/containers/container_view.dart';
-import 'package:flutter_google_ml_kit/views/search/navigation/navigator_view.dart';
+import 'package:flutter_google_ml_kit/views/navigation/navigator_view.dart';
 import 'package:flutter_google_ml_kit/views/widgets/cards/default_card/defualt_card.dart';
 import 'package:flutter_google_ml_kit/views/widgets/dividers/dividers.dart';
 import 'package:isar/isar.dart';
@@ -40,7 +40,7 @@ class _SearchViewState extends State<SearchView> {
     'Description': 'Search by container Description',
     'Barcode': 'Search by container Barcodes'
   };
-  List<SContainer> searchR = [];
+  List<SearchContainer> searchR = [];
   Color highlightColor = Colors.blueAccent;
 
   @override
@@ -187,7 +187,7 @@ class _SearchViewState extends State<SearchView> {
       padding: const EdgeInsets.symmetric(vertical: 50),
       itemCount: searchR.length,
       itemBuilder: (context, index) {
-        SContainer searchObject = searchR.elementAt(index);
+        SearchContainer searchObject = searchR.elementAt(index);
         //
         //log(searchObject.toString());
         return defaultCard(
@@ -196,7 +196,7 @@ class _SearchViewState extends State<SearchView> {
     );
   }
 
-  Widget container(SContainer sContainer) {
+  Widget container(SearchContainer sContainer) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -526,11 +526,11 @@ class _SearchViewState extends State<SearchView> {
 
       if (filters.contains('Name')) {
         ///Do name Search.
-        List<SContainer> containers = isarDatabase!.containerEntrys
+        List<SearchContainer> containers = isarDatabase!.containerEntrys
             .filter()
             .nameContains(text, caseSensitive: false)
             .findAllSync()
-            .map((e) => SContainer(container: e))
+            .map((e) => SearchContainer(container: e))
             .toList();
 
         for (var container in containers) {
@@ -542,11 +542,11 @@ class _SearchViewState extends State<SearchView> {
 
       if (filters.contains('Description')) {
         ///Do description Search.
-        List<SContainer> containers = isarDatabase!.containerEntrys
+        List<SearchContainer> containers = isarDatabase!.containerEntrys
             .filter()
             .descriptionContains(text, caseSensitive: false)
             .findAllSync()
-            .map((e) => SContainer(container: e))
+            .map((e) => SearchContainer(container: e))
             .toList();
 
         for (var container in containers) {
@@ -565,14 +565,14 @@ class _SearchViewState extends State<SearchView> {
             .findAllSync();
 
         if (containerTags.isNotEmpty) {
-          List<SContainer> containers = isarDatabase!.containerEntrys
+          List<SearchContainer> containers = isarDatabase!.containerEntrys
               .filter()
               .repeat(
                   containerTags,
                   (q, ContainerTag element) =>
                       q.containerUIDMatches(element.containerUID))
               .findAllSync()
-              .map((e) => SContainer(
+              .map((e) => SearchContainer(
                   container: e,
                   tags: containerTags
                       .where(
@@ -596,11 +596,11 @@ class _SearchViewState extends State<SearchView> {
 
       if (filters.contains('Barcode')) {
         ///Do description Search.
-        List<SContainer> containers = isarDatabase!.containerEntrys
+        List<SearchContainer> containers = isarDatabase!.containerEntrys
             .filter()
             .barcodeUIDContains(text, caseSensitive: false)
             .findAllSync()
-            .map((e) => SContainer(container: e))
+            .map((e) => SearchContainer(container: e))
             .toList();
 
         for (var container in containers) {
@@ -658,7 +658,7 @@ class _SearchViewState extends State<SearchView> {
             )
             .toList();
 
-        List<SContainer> containers = isarDatabase!.containerEntrys
+        List<SearchContainer> containers = isarDatabase!.containerEntrys
             .filter()
             .repeat(
                 sPhotos,
@@ -666,7 +666,7 @@ class _SearchViewState extends State<SearchView> {
                     q.containerUIDMatches(sphoto.photo.containerUID))
             .findAllSync()
             .map(
-              (e) => SContainer(
+              (e) => SearchContainer(
                 container: e,
                 sPhotos: sPhotos
                     .where(
@@ -692,7 +692,7 @@ class _SearchViewState extends State<SearchView> {
       searchR = isarDatabase!.containerEntrys
           .where()
           .findAllSync()
-          .map((e) => SContainer(container: e))
+          .map((e) => SearchContainer(container: e))
           .toList();
     }
   }

@@ -2,7 +2,7 @@
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'camera_view/object_dector_camera_view.dart';
+import 'object_dector_camera_view.dart';
 
 ///Displays the cameraView of the object Dectector.
 class ObjectDetectorView extends StatefulWidget {

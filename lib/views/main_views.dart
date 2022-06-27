@@ -9,5 +9,5 @@ export 'settings/app_settings_view.dart';
 export 'barcodes/barcodes_view.dart';
 export 'gallery/gallery_view.dart';
 export 'tags/tags_view.dart';
-export 'search/navigation/camera_view.dart';
+export 'navigation/camera_view.dart';
 export 'search/search_view.dart';

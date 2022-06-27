@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
-import 'package:flutter_google_ml_kit/views/calibration/camera_calibration_view.dart';
+import 'package:flutter_google_ml_kit/views/calibration/camera/camera_calibration_view.dart';
 import '../widgets/cards/custom_card/custom_card.dart';
-import 'calibration_data_visualizer_view.dart';
+import 'visualizer/calibration_data_visualizer_view.dart';
 
 ///Shows camera calibration tools.
 class CalibrationToolsView extends StatefulWidget {
