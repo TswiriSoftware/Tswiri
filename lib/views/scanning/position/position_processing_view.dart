@@ -13,9 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/objects/grid/interbarcode_vector.dart';
-
 import 'package:isar/isar.dart';
-
 import 'grid_visualizer_painter.dart';
 
 class PositionProcessingView extends StatefulWidget {
@@ -54,7 +52,6 @@ class _PositionProcessingViewState extends State<PositionProcessingView> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
           children: [
             _continueToVisualizer(),
           ],
@@ -156,6 +153,25 @@ class _PositionProcessingViewState extends State<PositionProcessingView> {
           .deleteAllSync();
       isar.coordinateEntrys.putAllSync(coordinates, replaceOnConflict: true);
     });
+
+    // String path = '/storage/emulated/0/Download/';
+    // String name = 'data.txt';
+
+    // File file = File(path + name);
+
+    // if (!(await file.exists())) {
+    //   await file.writeAsString(
+    //     'Data\n[\n$barcodeDataBatches',
+    //     mode: FileMode.append,
+    //   );
+    // }
+
+    // for (var element in barcodeDataBatches) {
+    //   await file.writeAsString(
+    //     '$element,\n',
+    //     mode: FileMode.append,
+    //   );
+    // }
 
     return coordinates;
   }

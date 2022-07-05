@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_generation_entry/barcode_generation_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_property/barcode_property.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/barcode_size_distance_entry/barcode_size_distance_entry.dart';
+import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_relationship/container_relationship.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_type/container_type.dart';
 import 'package:flutter_google_ml_kit/isar_database/barcodes/interbarcode_time_entry/interbarcode_time_entry.dart';
@@ -15,7 +16,6 @@ import 'package:flutter_google_ml_kit/isar_database/tags/tag_bounding_box/object
 import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
 import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart';
 import 'package:isar/isar.dart';
-import '../../isar_database/containers/container_entry/container_entry.dart';
 
 ///Isar dir
 Directory? isarDirectory;

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/global_values/all_globals.dart';
 import 'package:flutter_google_ml_kit/firebase_options.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/test_views/test_main.dart';
 import 'package:flutter_google_ml_kit/theme.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -176,6 +177,13 @@ class _HomeViewState extends State<HomeView> {
               'Tree Visualizer',
               GridVisualizerView(),
               Icons.grid_4x4_sharp,
+              featureCompleted: true,
+              tileColor: sunbirdOrange,
+            ),
+            CustomCard(
+              'Integration Test',
+              MainTest(),
+              Icons.integration_instructions,
               featureCompleted: true,
               tileColor: sunbirdOrange,
             ),

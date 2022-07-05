@@ -109,6 +109,7 @@ List<CoordinateEntry> generateCoordinates(ContainerEntry originContainer,
                     .startBarcodeUID ==
                 endBarcodeRealPosition.barcodeUID) {
               //Calculate the interBarcodeOffset
+
               endBarcodeRealPosition.x = startBarcode.x! -
                   relevantInterBarcodeVectors[interBarcodeOffsetIndex]
                       .vector3
@@ -139,6 +140,7 @@ List<CoordinateEntry> generateCoordinates(ContainerEntry originContainer,
   return coordinates;
 }
 
+///This extracts all the barcodes found in the list of InterBarcodeVectors.
 List<String> extractBarcodes(List<InterBarcodeVector> interBarcodeVectors) {
   List<String> barcodes = [];
   barcodes.addAll(interBarcodeVectors.map((e) => e.startBarcodeUID));

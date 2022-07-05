@@ -45,7 +45,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
       isarDatabase!.barcodeGenerationEntrys.where().findAllSync();
 
   late int rangeStart = 0;
-  late int rangeEnd = rangeStart + 1;
+  late int rangeEnd = rangeStart + 50;
 
   //Max value on the numberPicker
   late int maxValue = rangeStart + maxBarcodes;
@@ -100,6 +100,7 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
 
                   int timestamp =
                       int.parse(scannedBarcodes.first.split('_').last);
+
                   BarcodeGenerationEntry importedBarcodeEntry =
                       BarcodeGenerationEntry()
                         ..rangeStart = range.first
@@ -113,10 +114,12 @@ class _BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
                         ..barcodeUID = e
                         ..size = defaultBarcodeDiagonalLength!)
                       .toList();
+
                   isarDatabase!.writeTxnSync((isar) {
                     isar.barcodeGenerationEntrys.putSync(importedBarcodeEntry);
                     isar.barcodePropertys.putAllSync(barcodeProperties);
                   });
+
                   _updateHitory();
                   _updateRange();
                 }
