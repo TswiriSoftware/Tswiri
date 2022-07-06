@@ -5,6 +5,7 @@ import 'package:flutter_google_ml_kit/objects/calibration/accelerometer_data.dar
 import 'package:flutter_google_ml_kit/objects/grid/processing/on_image_inter_barcode_data.dart';
 
 import '../objects/grid/processing/on_image_barcode_data.dart';
+// ignore: depend_on_referenced_packages
 import 'package:vector_math/vector_math.dart' as v;
 
 class JsonTest extends StatefulWidget {
@@ -72,10 +73,10 @@ class _JsonTestState extends State<JsonTest> {
   late OnImageBarcodeData startBarcode = OnImageBarcodeData(
       barcodeUID: '1',
       onImageCornerPoints: [
-        Offset(0, 0),
-        Offset(100, 0),
-        Offset(100, 100),
-        Offset(0, 100),
+        const Offset(0, 0),
+        const Offset(100, 0),
+        const Offset(100, 100),
+        const Offset(0, 100),
       ],
       timestamp: 1,
       accelerometerData: a1);
@@ -83,10 +84,10 @@ class _JsonTestState extends State<JsonTest> {
   late OnImageBarcodeData endBarcode = OnImageBarcodeData(
     barcodeUID: '2',
     onImageCornerPoints: [
-      Offset(300, 300),
-      Offset(400, 300),
-      Offset(400, 400),
-      Offset(300, 400),
+      const Offset(300, 300),
+      const Offset(400, 300),
+      const Offset(400, 400),
+      const Offset(300, 400),
     ],
     timestamp: 1,
     accelerometerData: a2,

@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_google_ml_kit/global_values/all_globals.dart';
 import 'package:flutter_google_ml_kit/firebase_options.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/test_views/test_main.dart';
 import 'package:flutter_google_ml_kit/theme.dart';
+import 'package:flutter_google_ml_kit/views/search/search_view_2.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
@@ -120,6 +120,13 @@ class _HomeViewState extends State<HomeView> {
             CustomCard(
               'Search',
               SearchView(),
+              Icons.search,
+              featureCompleted: true,
+              tileColor: sunbirdOrange,
+            ),
+            CustomCard(
+              'Search2',
+              SearchView2(),
               Icons.search,
               featureCompleted: true,
               tileColor: sunbirdOrange,

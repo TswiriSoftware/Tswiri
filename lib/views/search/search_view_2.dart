@@ -1,13 +1,7 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
-import 'package:flutter_google_ml_kit/isar_database/containers/photo/photo.dart';
-import 'package:flutter_google_ml_kit/isar_database/tags/container_tag/container_tag.dart';
-import 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
-import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
-import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart';
 import 'package:flutter_google_ml_kit/objects/search/search_object.dart';
 import 'package:flutter_google_ml_kit/views/containers/container_view.dart';
 import 'package:flutter_google_ml_kit/views/navigation/navigator_view.dart';
@@ -15,125 +9,120 @@ import 'package:flutter_google_ml_kit/views/widgets/cards/default_card/defualt_c
 import 'package:flutter_google_ml_kit/views/widgets/dividers/dividers.dart';
 import 'package:isar/isar.dart';
 
-class SearchView extends StatefulWidget {
-  const SearchView({Key? key}) : super(key: key);
+import '../../global_values/all_globals.dart';
+import '../../isar_database/isar_export.dart';
+
+class SearchView2 extends StatefulWidget {
+  const SearchView2({Key? key}) : super(key: key);
 
   @override
-  State<SearchView> createState() => _SearchViewState();
+  State<SearchView2> createState() => _SearchView2State();
 }
 
-class _SearchViewState extends State<SearchView> {
-  //Text Controller.
-  TextEditingController searchController = TextEditingController();
+List<String> selectedFilters = ['Tags', 'AI Tags', 'Photos'];
 
-  List<String> filters = ['Tags', 'AI Tags', 'Photos'];
+class _SearchView2State extends State<SearchView2> {
+  final TextEditingController _searchController = TextEditingController();
+  FocusNode searchNode = FocusNode();
+  bool isSearching = false;
 
-  //Search FocusNode.
-  final FocusNode _focusNode = FocusNode();
-  bool isFocused = false;
+  List<SearchContainer> searchResults = [];
+  Color highlightColor = Colors.blueAccent;
 
   Map<String, String> filterTypes = {
-    'Tags': 'Search by container Tags',
+    'Tags': 'Search by Container Tags',
     'Photos': 'Search by Photos',
     'Photo Tags': 'Search by Photo Tags',
-    'Name': 'Search by container Name',
-    'Description': 'Search by container Description',
-    'Barcode': 'Search by container Barcodes'
+    'Name': 'Search by Container Name',
+    'Description': 'Search by Container Description',
+    'Barcode': 'Search by Container Barcode'
   };
-  List<SearchContainer> searchR = [];
-  Color highlightColor = Colors.blueAccent;
 
   @override
   void initState() {
-    search('');
-    _focusNode.addListener(() {
-      setState(() {
-        isFocused = _focusNode.hasFocus;
-      });
-    });
+    // search('');
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: _appBar(),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        floatingActionButton: _focusNode.hasFocus ? null : _searchButton(),
-        body: GestureDetector(
-          onTap: () {
-            setState(() {
-              _focusNode.unfocus();
-            });
-          },
-          child: Stack(
-            children: [
-              _containers(),
-              _filters(),
-            ],
-          ),
-        ));
-  }
-
-  ///APP BAR///
-  AppBar _appBar() {
-    return AppBar(
-      title: _textField(),
-      shadowColor: Colors.black54,
+      appBar: _appBar(),
+      body: _body(),
+      floatingActionButton: _searchButton(),
     );
   }
 
-  ///SEARCH///
+  AppBar _appBar() {
+    return AppBar(
+      title: isSearching ? _searchField() : _title(),
+      actions: [
+        !isSearching
+            ? IconButton(
+                onPressed: () {
+                  setState(() {
+                    searchNode.requestFocus();
+                    isSearching = true;
+                  });
+                },
+                icon: const Icon(Icons.search),
+              )
+            : const SizedBox.shrink(),
+      ],
+      centerTitle: true,
+    );
+  }
 
-  Widget _textField() {
+  Text _title() {
+    return Text(
+      'Container Search',
+      style: Theme.of(context).textTheme.titleMedium,
+    );
+  }
+
+  TextField _searchField() {
     return TextField(
-      focusNode: _focusNode,
-      controller: searchController,
-      onChanged: (value) {
-        setState(() {
-          search(value);
-        });
-      },
+      focusNode: searchNode,
+      controller: _searchController,
       cursorColor: Colors.white,
       style: Theme.of(context).textTheme.labelLarge,
-      decoration: InputDecoration(
-        suffixIcon: isFocused ? null : _searchIcon(),
+      onSubmitted: (value) {
+        if (value.isEmpty) {
+          setState(() {
+            isSearching = false;
+          });
+        }
+      },
+      decoration: const InputDecoration(
         hintText: 'Search',
-        hintStyle: const TextStyle(fontSize: 18),
+        hintStyle: TextStyle(fontSize: 18),
       ),
     );
   }
 
   Widget _searchButton() {
     return Visibility(
-      visible: !isFocused,
+      visible: !isSearching,
       child: FloatingActionButton(
-        elevation: 10,
         onPressed: () {
           setState(() {
-            _focusNode.requestFocus();
+            searchNode.requestFocus();
+            isSearching = true;
           });
         },
-        child: _searchIcon(),
+        child: const Icon(Icons.search),
       ),
     );
   }
 
-  Widget _searchIcon() {
-    return const Icon(
-      Icons.search,
-      color: Colors.white,
+  Widget _body() {
+    return Stack(
+      children: [
+        _filters(),
+        _results(),
+      ],
     );
   }
-
-  ///FILTER///
 
   Widget _filters() {
     return SingleChildScrollView(
@@ -157,10 +146,10 @@ class _SearchViewState extends State<SearchView> {
       onSelected: (selected) {
         _onSelected(selected, filter);
         setState(() {
-          search(searchController.text);
+          search(_searchController.text);
         });
       },
-      selected: filters.contains(filter),
+      selected: selectedFilters.contains(filter),
       selectedColor: sunbirdOrange,
       tooltip: tooltip,
       elevation: 5,
@@ -169,25 +158,25 @@ class _SearchViewState extends State<SearchView> {
   }
 
   void _onSelected(bool selected, String filter) {
-    if (filters.contains(filter)) {
+    if (selectedFilters.contains(filter)) {
       setState(() {
-        filters.removeWhere((element) => element == filter);
+        selectedFilters.removeWhere((element) => element == filter);
       });
     } else {
       setState(() {
-        filters.add(filter);
+        selectedFilters.add(filter);
       });
     }
   }
 
   ///CONTAINERS///
 
-  Widget _containers() {
+  Widget _results() {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 50),
-      itemCount: searchR.length,
+      itemCount: searchResults.length,
       itemBuilder: (context, index) {
-        SearchContainer searchObject = searchR.elementAt(index);
+        SearchContainer searchObject = searchResults.elementAt(index);
         //
         //log(searchObject.toString());
         return defaultCard(
@@ -230,7 +219,7 @@ class _SearchViewState extends State<SearchView> {
                   ),
                   Text(
                     name ?? '-',
-                    style: filters.contains('Name')
+                    style: selectedFilters.contains('Name')
                         ? TextStyle(
                             color: highlightColor,
                             fontWeight: FontWeight.bold,
@@ -264,7 +253,7 @@ class _SearchViewState extends State<SearchView> {
   ///DESCRIPTION///
   Widget containerDescription(String? description) {
     return Visibility(
-      visible: filters.contains('Description'),
+      visible: selectedFilters.contains('Description'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -285,7 +274,7 @@ class _SearchViewState extends State<SearchView> {
   ///BARCODE///
   Widget containerBarcode(String? barcodeUID) {
     return Visibility(
-      visible: filters.contains('Barcode'),
+      visible: selectedFilters.contains('Barcode'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -306,7 +295,7 @@ class _SearchViewState extends State<SearchView> {
   ///CONTAINER TAGS///
   Widget containerTags(List<ContainerTag> containerTags, Color color) {
     return Visibility(
-      visible: filters.contains('Tags') && containerTags.isNotEmpty,
+      visible: selectedFilters.contains('Tags') && containerTags.isNotEmpty,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -340,7 +329,7 @@ class _SearchViewState extends State<SearchView> {
   ///ML TAGS///
   Widget mlTags(List<MlTag> mlTags, Color color) {
     return Visibility(
-      visible: filters.contains('Photo Tags') && mlTags.isNotEmpty,
+      visible: selectedFilters.contains('Photo Tags') && mlTags.isNotEmpty,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -394,7 +383,7 @@ class _SearchViewState extends State<SearchView> {
   ///USER TAGS///
   Widget userTags(List<UserTag> userTags, Color color) {
     return Visibility(
-      visible: filters.contains('Photo Tags') && userTags.isNotEmpty,
+      visible: selectedFilters.contains('Photo Tags') && userTags.isNotEmpty,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -427,7 +416,7 @@ class _SearchViewState extends State<SearchView> {
   ///PHOTOS///
   Widget photos(List<Photo> photos, Color color) {
     return Visibility(
-      visible: filters.contains('Photos') && photos.isNotEmpty,
+      visible: selectedFilters.contains('Photos') && photos.isNotEmpty,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -491,7 +480,7 @@ class _SearchViewState extends State<SearchView> {
                     ContainerView(containerEntry: containerEntry),
               ),
             );
-            search(searchController.text);
+            search(_searchController.text);
           },
           style: ElevatedButton.styleFrom(primary: color),
           child: const Text('Edit'),
@@ -516,14 +505,14 @@ class _SearchViewState extends State<SearchView> {
   ///SEARCH///
   void search(String text) {
     text.toLowerCase();
-    searchR = [];
+    searchResults = [];
     if (text.isNotEmpty) {
       List<TagText> tagTextMatches = isarDatabase!.tagTexts
           .filter()
           .textContains(text, caseSensitive: false)
           .findAllSync();
 
-      if (filters.contains('Name')) {
+      if (selectedFilters.contains('Name')) {
         ///Do name Search.
         List<SearchContainer> containers = isarDatabase!.containerEntrys
             .filter()
@@ -533,13 +522,13 @@ class _SearchViewState extends State<SearchView> {
             .toList();
 
         for (var container in containers) {
-          if (!searchR.contains(container)) {
-            searchR.add(container);
+          if (!searchResults.contains(container)) {
+            searchResults.add(container);
           }
         }
       }
 
-      if (filters.contains('Description')) {
+      if (selectedFilters.contains('Description')) {
         ///Do description Search.
         List<SearchContainer> containers = isarDatabase!.containerEntrys
             .filter()
@@ -549,13 +538,13 @@ class _SearchViewState extends State<SearchView> {
             .toList();
 
         for (var container in containers) {
-          if (!searchR.contains(container)) {
-            searchR.add(container);
+          if (!searchResults.contains(container)) {
+            searchResults.add(container);
           }
         }
       }
 
-      if (filters.contains('Tags')) {
+      if (selectedFilters.contains('Tags')) {
         //Do containerTag search.
         List<ContainerTag> containerTags = isarDatabase!.containerTags
             .filter()
@@ -580,20 +569,20 @@ class _SearchViewState extends State<SearchView> {
               .toList();
 
           for (var container in containers) {
-            if (searchR.contains(container)) {
-              searchR
+            if (searchResults.contains(container)) {
+              searchResults
                   .firstWhere((element) =>
                       element.container.containerUID ==
                       container.container.containerUID)
                   .merge(container);
             } else {
-              searchR.add(container);
+              searchResults.add(container);
             }
           }
         }
       }
 
-      if (filters.contains('Barcode')) {
+      if (selectedFilters.contains('Barcode')) {
         ///Do description Search.
         List<SearchContainer> containers = isarDatabase!.containerEntrys
             .filter()
@@ -603,13 +592,14 @@ class _SearchViewState extends State<SearchView> {
             .toList();
 
         for (var container in containers) {
-          if (!searchR.contains(container)) {
-            searchR.add(container);
+          if (!searchResults.contains(container)) {
+            searchResults.add(container);
           }
         }
       }
 
-      if (filters.contains('Photo Tags') || filters.contains('Photos')) {
+      if (selectedFilters.contains('Photo Tags') ||
+          selectedFilters.contains('Photos')) {
         //log(tagTextMatches.toString());
         List<MlTag> mlTags = isarDatabase!.mlTags
             .filter()
@@ -676,19 +666,19 @@ class _SearchViewState extends State<SearchView> {
             .toList();
 
         for (var container in containers) {
-          if (searchR.contains(container)) {
-            searchR
+          if (searchResults.contains(container)) {
+            searchResults
                 .firstWhere((element) =>
                     element.container.containerUID ==
                     container.container.containerUID)
                 .merge(container);
           } else {
-            searchR.add(container);
+            searchResults.add(container);
           }
         }
       }
     } else {
-      searchR = isarDatabase!.containerEntrys
+      searchResults = isarDatabase!.containerEntrys
           .where()
           .findAllSync()
           .map((e) => SearchContainer(container: e))

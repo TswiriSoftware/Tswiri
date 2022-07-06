@@ -53,7 +53,7 @@ class OnImageInterBarcodeData {
 
   @override
   String toString() {
-    return '\n${startBarcode} => ${endBarcode}';
+    return '\n$startBarcode => $endBarcode';
     // return '[${startBarcode.onImageCornerPoints.hashCode}]';
   }
 
