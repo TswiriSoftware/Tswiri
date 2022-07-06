@@ -24,4 +24,27 @@ class AccelerometerData {
 
     return angleRadians;
   }
+
+  Map<String, dynamic> toJson() => {
+        'userAccelerometerEventX': userAccelerometerEvent.x,
+        'userAccelerometerEventY': userAccelerometerEvent.y,
+        'userAccelerometerEventZ': userAccelerometerEvent.z,
+        'accelerometerEventX': accelerometerEvent.x,
+        'accelerometerEventY': accelerometerEvent.y,
+        'accelerometerEventZ': accelerometerEvent.z,
+      };
+
+  factory AccelerometerData.fromJson(Map<String, dynamic> json) {
+    return AccelerometerData(
+        accelerometerEvent: Vector3(
+          json['userAccelerometerEventX'] as double,
+          json['userAccelerometerEventY'] as double,
+          json['userAccelerometerEventZ'] as double,
+        ),
+        userAccelerometerEvent: Vector3(
+          json['accelerometerEventX'] as double,
+          json['accelerometerEventY'] as double,
+          json['accelerometerEventZ'] as double,
+        ));
+  }
 }

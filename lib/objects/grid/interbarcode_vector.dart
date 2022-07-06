@@ -42,6 +42,9 @@ class InterBarcodeVector {
   @override
   int get hashCode => uid.hashCode;
 
+  int get comparableHashCode =>
+      startBarcodeUID.hashCode + endBarcodeUID.hashCode + vector3.hashCode;
+
   ///Create from RawInterBarcodeData.
   factory InterBarcodeVector.fromRawInterBarcodeData({
     required OnImageInterBarcodeData interBarcodeData,

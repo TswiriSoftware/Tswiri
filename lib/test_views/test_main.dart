@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/test_views/database_manager.dart';
+import 'package:flutter_google_ml_kit/test_views/json_test.dart';
 
 import '../global_values/all_globals.dart';
 import '../views/widgets/cards/custom_card/custom_card.dart';
@@ -42,6 +43,13 @@ class _MainTestState extends State<MainTest> {
             'Database',
             DatabaseManager(),
             Icons.data_array,
+            featureCompleted: true,
+            tileColor: sunbirdOrange,
+          ),
+          CustomCard(
+            'Json Test',
+            JsonTest(),
+            Icons.add_to_home_screen_outlined,
             featureCompleted: true,
             tileColor: sunbirdOrange,
           ),

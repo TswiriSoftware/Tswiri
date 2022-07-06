@@ -49,8 +49,23 @@ class OnImageInterBarcodeData {
   @override
   int get hashCode => (uid).hashCode;
 
+  int get comparableHashCode => startBarcode.hashCode;
+
   @override
   String toString() {
-    return '\n${startBarcode.barcodeUID} => ${endBarcode.barcodeUID}';
+    return '\n${startBarcode} => ${endBarcode}';
+    // return '[${startBarcode.onImageCornerPoints.hashCode}]';
   }
+
+  factory OnImageInterBarcodeData.fromJsopn(Map<String, dynamic> json) {
+    return OnImageInterBarcodeData(
+      startBarcode: OnImageBarcodeData.fromJson(json['startBarcode']),
+      endBarcode: OnImageBarcodeData.fromJson(json['endBarcode']),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'startBarcode': startBarcode.toJson(),
+        'endBarcode': endBarcode.toJson(),
+      };
 }

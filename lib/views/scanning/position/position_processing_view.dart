@@ -1,5 +1,8 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_google_ml_kit/functions/position_functions/average_inter_barcode_vectors.dart';
 import 'package:flutter_google_ml_kit/functions/position_functions/generate_coordinates.dart';
 import 'package:flutter_google_ml_kit/functions/position_functions/create_inter_barcode_vectors.dart';
@@ -125,6 +128,16 @@ class _PositionProcessingViewState extends State<PositionProcessingView> {
   Future<List<CoordinateEntry>> processData({
     required List barcodeDataBatches,
   }) async {
+    String path = '/storage/emulated/0/Download/';
+
+    File barcodeDataBatchesFile = File('${path}barcodeDataBatches.txt');
+    if (!(await barcodeDataBatchesFile.exists())) {
+      await barcodeDataBatchesFile.writeAsString(
+        'barcodeDataBatches\n${barcodeDataBatches.length}\n\n$barcodeDataBatches',
+        mode: FileMode.write,
+      );
+    }
+
     List<BarcodeProperty> barcodeProperties =
         isarDatabase!.barcodePropertys.where().findAllSync();
 
@@ -132,17 +145,68 @@ class _PositionProcessingViewState extends State<PositionProcessingView> {
     List<OnImageInterBarcodeData> onImageInterBarcodeData =
         createOnImageBarcodeData(barcodeDataBatches);
 
+    // List onImageInterBarcodeDataHashCode =
+    //     onImageInterBarcodeData.map((e) => e.comparableHashCode).toList();
+
+    // File onImageBarcodeDataFile = File('${path}onImageBarcodeData.txt');
+
+    // if (!(await onImageBarcodeDataFile.exists())) {
+    //   await onImageBarcodeDataFile.writeAsString(
+    //     'onImageBarcodeDataHashCodes\n\n$onImageInterBarcodeDataHashCode',
+    //     mode: FileMode.write,
+    //   );
+    // }
+
     //2. Create a list of InterbarcodeVectors from OnImageInterBarcodeData.
     List<InterBarcodeVector> interBarcodeVectors = createInterbarcodeVectors(
         onImageInterBarcodeData, barcodeProperties, focalLength);
+
+    // List interBarcodeVectorsHashCode =
+    //     interBarcodeVectors.map((e) => e.comparableHashCode).toList();
+
+    // File interBarcodeVectorsFile = File('${path}InterBarcodeVectorData.txt');
+
+    // if (!(await interBarcodeVectorsFile.exists())) {
+    //   await interBarcodeVectorsFile.writeAsString(
+    //     'InterBarcodeVectorDataHashCodes\n\n$interBarcodeVectorsHashCode',
+    //     mode: FileMode.write,
+    //   );
+    // }
 
     //3. Remove outliers and calculate the averages.
     List<InterBarcodeVector> finalRealInterBarcodeData =
         averageInterbarcodeData(interBarcodeVectors);
 
+    // List finalRealInterBarcodeDataHashCode =
+    //     finalRealInterBarcodeData.map((e) => e.comparableHashCode).toList();
+
+    // File finalRealInterBarcodeDataFile =
+    //     File('${path}finalInterBarcodeVectorData.txt');
+
+    // if (!(await finalRealInterBarcodeDataFile.exists())) {
+    //   await finalRealInterBarcodeDataFile.writeAsString(
+    //     'finalInterBarcodeVectorData\n\n$finalRealInterBarcodeDataHashCode',
+    //     mode: FileMode.write,
+    //   );
+    // }
+
     //4. Generate the Grid.
     List<CoordinateEntry> coordinates =
         generateCoordinates(widget.parentContainer, finalRealInterBarcodeData);
+
+    // List coordinatesHashCode = coordinates.map((e) => e.comparableHashCode).toList();
+
+    File coordinatesFile = File('${path}coordinatesData.txt');
+
+    if (!(await coordinatesFile.exists())) {
+      await coordinatesFile.writeAsString(
+        'coordinatesData\n\n',
+        mode: FileMode.write,
+      );
+      for (var e in coordinates) {
+        await coordinatesFile.writeAsString('$e\n', mode: FileMode.append);
+      }
+    }
 
     //5. Write to Isar.
     List<String> barcodes = coordinates.map((e) => e.barcodeUID).toList();
@@ -153,25 +217,6 @@ class _PositionProcessingViewState extends State<PositionProcessingView> {
           .deleteAllSync();
       isar.coordinateEntrys.putAllSync(coordinates, replaceOnConflict: true);
     });
-
-    // String path = '/storage/emulated/0/Download/';
-    // String name = 'data.txt';
-
-    // File file = File(path + name);
-
-    // if (!(await file.exists())) {
-    //   await file.writeAsString(
-    //     'Data\n[\n$barcodeDataBatches',
-    //     mode: FileMode.append,
-    //   );
-    // }
-
-    // for (var element in barcodeDataBatches) {
-    //   await file.writeAsString(
-    //     '$element,\n',
-    //     mode: FileMode.append,
-    //   );
-    // }
 
     return coordinates;
   }

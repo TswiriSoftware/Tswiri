@@ -1,5 +1,8 @@
 // ignore_for_file: depend_on_referenced_packages
 
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter_google_ml_kit/objects/calibration/accelerometer_data.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 import 'dart:ui';
@@ -22,6 +25,8 @@ class OnImageBarcodeData {
 
   ///Accelerometer Data.
   final AccelerometerData accelerometerData;
+
+  int get comparableHashCode => onImageCornerPoints.hashCode;
 
   List toMessage() {
     return [
@@ -51,7 +56,7 @@ class OnImageBarcodeData {
   }
 
   ///Create a OnImageBarcodeData from a Message.
-  factory OnImageBarcodeData.fromPositionIsolate(List<dynamic> item) {
+  factory OnImageBarcodeData.fromBarcodeData(List<dynamic> item) {
     List<Offset> onImageCornerPoints = [
       Offset(item[2][0] as double, item[2][1] as double),
       Offset(item[2][2] as double, item[2][3] as double),
@@ -72,7 +77,7 @@ class OnImageBarcodeData {
         ));
 
     return OnImageBarcodeData(
-      barcodeUID: item[0],
+      barcodeUID: item[0].toString(),
       onImageCornerPoints: onImageCornerPoints,
       accelerometerData: accelerometerData,
       timestamp: item[4],
@@ -138,5 +143,41 @@ class OnImageBarcodeData {
   @override
   String toString() {
     return '\nUID: $barcodeUID, timestamp: $timestamp, centerPoint: (${barcodeCenterPoint.dx}, ${barcodeCenterPoint.dy}), diagonalLength: $barcodeDiagonalLength)';
+  }
+
+  late List<double> corners = [
+    onImageCornerPoints[0].dx,
+    onImageCornerPoints[0].dy,
+    onImageCornerPoints[1].dx,
+    onImageCornerPoints[1].dy,
+    onImageCornerPoints[2].dx,
+    onImageCornerPoints[2].dy,
+    onImageCornerPoints[3].dx,
+    onImageCornerPoints[3].dy,
+  ];
+
+  Map<String, dynamic> toJson() => {
+        'barcodeUID': barcodeUID,
+        'onImageCornerPoints': jsonEncode(corners),
+        'timestamp': timestamp,
+        'accelerometerData': accelerometerData.toJson(),
+      };
+
+  factory OnImageBarcodeData.fromJson(Map<String, dynamic> json) {
+    Map<String, dynamic> acceleromerter = json['accelerometerData'];
+
+    List c = jsonDecode(json['onImageCornerPoints']);
+    List<Offset> cornerPoints = [
+      Offset(c[0] as double, c[1] as double),
+      Offset(c[2] as double, c[3] as double),
+      Offset(c[4] as double, c[5] as double),
+      Offset(c[6] as double, c[7] as double),
+    ];
+
+    return OnImageBarcodeData(
+        barcodeUID: json['barcodeUID'],
+        onImageCornerPoints: cornerPoints,
+        timestamp: json['timestamp'] as int,
+        accelerometerData: AccelerometerData.fromJson(acceleromerter));
   }
 }

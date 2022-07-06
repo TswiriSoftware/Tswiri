@@ -14,14 +14,17 @@ import 'package:flutter_google_ml_kit/objects/grid/processing/on_image_inter_bar
 List<OnImageInterBarcodeData> createOnImageBarcodeData(
     List barcodeDataBatches) {
   List<OnImageInterBarcodeData> onImageInterBarcodeData = [];
+
   for (int i = 0; i < barcodeDataBatches.length; i++) {
     //i. Iterate through barcodeDataBatches.
     List barcodeDataBatch = barcodeDataBatches[i];
+
     List<OnImageBarcodeData> onImageBarcodeDataBatch = [];
+
     for (int x = 0; x < barcodeDataBatch.length; x++) {
       //ii. Iterate through the barcodeDataBatch and generate IsolateRawOnImageBarcodeData.
       onImageBarcodeDataBatch
-          .add(OnImageBarcodeData.fromPositionIsolate(barcodeDataBatch[x]));
+          .add(OnImageBarcodeData.fromBarcodeData(barcodeDataBatch[x]));
     }
 
     for (OnImageBarcodeData onImageBarcodeData in onImageBarcodeDataBatch) {

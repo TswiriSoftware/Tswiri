@@ -31,6 +31,14 @@ class CoordinateEntry {
   @override
   int get hashCode => barcodeUID.hashCode;
 
+  int get comparableHashCode =>
+      timestamp.hashCode +
+      barcodeUID.hashCode +
+      gridUID.hashCode +
+      x.hashCode +
+      y.hashCode +
+      z.hashCode;
+
   @override
   String toString() {
     return '\nGridUID: $gridUID, BarcodeUID: $barcodeUID, X:$x, Y:$y, Z:$z';
