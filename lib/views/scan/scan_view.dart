@@ -1,27 +1,28 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
+import 'package:flutter_google_ml_kit/global_values/all_globals.dart';
+import 'package:flutter_google_ml_kit/isar_database/isar_export.dart';
 import 'package:flutter_google_ml_kit/objects/search/search_object.dart';
 import 'package:flutter_google_ml_kit/views/containers/container_view.dart';
 import 'package:flutter_google_ml_kit/views/navigation/navigator_view.dart';
+import 'package:flutter_google_ml_kit/views/scan/grid_view.dart';
 import 'package:flutter_google_ml_kit/views/widgets/cards/default_card/defualt_card.dart';
 import 'package:flutter_google_ml_kit/views/widgets/dividers/dividers.dart';
 import 'package:isar/isar.dart';
 
-import '../../global_values/all_globals.dart';
-import '../../isar_database/isar_export.dart';
-
-class SearchView2 extends StatefulWidget {
-  const SearchView2({Key? key}) : super(key: key);
+class ScanView extends StatefulWidget {
+  const ScanView({Key? key}) : super(key: key);
 
   @override
-  State<SearchView2> createState() => _SearchView2State();
+  State<ScanView> createState() => _ScanViewState();
 }
 
-List<String> selectedFilters = ['Tags', 'AI Tags', 'Photos'];
+List<String> selectedFilters = ['Name'];
 
-class _SearchView2State extends State<SearchView2> {
+class _ScanViewState extends State<ScanView> {
   final TextEditingController _searchController = TextEditingController();
   FocusNode searchNode = FocusNode();
   bool isSearching = false;
@@ -30,9 +31,6 @@ class _SearchView2State extends State<SearchView2> {
   Color highlightColor = Colors.blueAccent;
 
   Map<String, String> filterTypes = {
-    'Tags': 'Search by Container Tags',
-    'Photos': 'Search by Photos',
-    'Photo Tags': 'Search by Photo Tags',
     'Name': 'Search by Container Name',
     'Description': 'Search by Container Description',
     'Barcode': 'Search by Container Barcode'
@@ -40,7 +38,7 @@ class _SearchView2State extends State<SearchView2> {
 
   @override
   void initState() {
-    // search('');
+    search('');
     super.initState();
   }
 
@@ -55,28 +53,25 @@ class _SearchView2State extends State<SearchView2> {
 
   AppBar _appBar() {
     return AppBar(
-      title: isSearching ? _searchField() : _title(),
-      actions: [
-        !isSearching
-            ? IconButton(
-                onPressed: () {
-                  setState(() {
-                    searchNode.requestFocus();
-                    isSearching = true;
-                  });
-                },
-                icon: const Icon(Icons.search),
-              )
-            : const SizedBox.shrink(),
-      ],
+      title: !isSearching
+          ? Text(
+              'Grid Scan',
+              style: Theme.of(context).textTheme.titleMedium,
+            )
+          : _searchField(),
       centerTitle: true,
+      actions: [
+        _helpButton(),
+      ],
     );
   }
 
-  Text _title() {
-    return Text(
-      'Container Search',
-      style: Theme.of(context).textTheme.titleMedium,
+  Widget _helpButton() {
+    return IconButton(
+      onPressed: () {
+        showHelpDialog(context);
+      },
+      icon: const Icon(Icons.help_outline),
     );
   }
 
@@ -92,6 +87,11 @@ class _SearchView2State extends State<SearchView2> {
             isSearching = false;
           });
         }
+      },
+      onChanged: (value) {
+        setState(() {
+          search(value);
+        });
       },
       decoration: const InputDecoration(
         hintText: 'Search',
@@ -118,8 +118,8 @@ class _SearchView2State extends State<SearchView2> {
   Widget _body() {
     return Stack(
       children: [
-        _filters(),
         _results(),
+        _filters(),
       ],
     );
   }
@@ -146,7 +146,7 @@ class _SearchView2State extends State<SearchView2> {
       onSelected: (selected) {
         _onSelected(selected, filter);
         setState(() {
-          search(_searchController.text);
+          // search(_searchController.text);
         });
       },
       selected: selectedFilters.contains(filter),
@@ -169,6 +169,38 @@ class _SearchView2State extends State<SearchView2> {
     }
   }
 
+  void showHelpDialog(BuildContext context) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (initialDialogContext) {
+        return AlertDialog(
+          insetPadding: const EdgeInsets.all(10),
+          title: const Text('How to use Grid Scan'),
+          content: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.start,
+            children: const [
+              Text(
+                  "Grid Scan is used to map a set of containers onto a 2D plane.\n"),
+              Text("1. Select the parent container from the list\n"),
+              Text("2. Start the scan from the selected container\n"),
+              Text(
+                  "3. Scan all the containers that appear on the same plane as the selected container"),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(initialDialogContext);
+              },
+              child: const Text('close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   ///CONTAINERS///
 
   Widget _results() {
@@ -178,7 +210,7 @@ class _SearchView2State extends State<SearchView2> {
       itemBuilder: (context, index) {
         SearchContainer searchObject = searchResults.elementAt(index);
         //
-        //log(searchObject.toString());
+        // log(searchObject.toString());
         return defaultCard(
             body: container(searchObject), borderColor: searchObject.color);
       },
@@ -219,12 +251,7 @@ class _SearchView2State extends State<SearchView2> {
                   ),
                   Text(
                     name ?? '-',
-                    style: selectedFilters.contains('Name')
-                        ? TextStyle(
-                            color: highlightColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18)
-                        : Theme.of(context).textTheme.bodyLarge,
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
               ),
@@ -469,34 +496,20 @@ class _SearchView2State extends State<SearchView2> {
   ///OPTIONS///
   Widget options(ContainerEntry containerEntry, Color color) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        ElevatedButton(
-          onPressed: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    ContainerView(containerEntry: containerEntry),
-              ),
-            );
-            search(_searchController.text);
-          },
-          style: ElevatedButton.styleFrom(primary: color),
-          child: const Text('Edit'),
-        ),
         ElevatedButton(
           onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) =>
-                    NavigatorView(containerEntry: containerEntry),
+                    GridDisplayView(containerEntry: containerEntry),
               ),
             );
           },
           style: ElevatedButton.styleFrom(primary: color),
-          child: const Text('Find'),
+          child: const Text('View'),
         ),
       ],
     );
@@ -507,11 +520,6 @@ class _SearchView2State extends State<SearchView2> {
     text.toLowerCase();
     searchResults = [];
     if (text.isNotEmpty) {
-      List<TagText> tagTextMatches = isarDatabase!.tagTexts
-          .filter()
-          .textContains(text, caseSensitive: false)
-          .findAllSync();
-
       if (selectedFilters.contains('Name')) {
         ///Do name Search.
         List<SearchContainer> containers = isarDatabase!.containerEntrys
@@ -544,44 +552,6 @@ class _SearchView2State extends State<SearchView2> {
         }
       }
 
-      if (selectedFilters.contains('Tags')) {
-        //Do containerTag search.
-        List<ContainerTag> containerTags = isarDatabase!.containerTags
-            .filter()
-            .repeat(tagTextMatches,
-                (q, TagText textID) => q.textIDEqualTo(textID.id))
-            .findAllSync();
-
-        if (containerTags.isNotEmpty) {
-          List<SearchContainer> containers = isarDatabase!.containerEntrys
-              .filter()
-              .repeat(
-                  containerTags,
-                  (q, ContainerTag element) =>
-                      q.containerUIDMatches(element.containerUID))
-              .findAllSync()
-              .map((e) => SearchContainer(
-                  container: e,
-                  tags: containerTags
-                      .where(
-                          (element) => element.containerUID == e.containerUID)
-                      .toList()))
-              .toList();
-
-          for (var container in containers) {
-            if (searchResults.contains(container)) {
-              searchResults
-                  .firstWhere((element) =>
-                      element.container.containerUID ==
-                      container.container.containerUID)
-                  .merge(container);
-            } else {
-              searchResults.add(container);
-            }
-          }
-        }
-      }
-
       if (selectedFilters.contains('Barcode')) {
         ///Do description Search.
         List<SearchContainer> containers = isarDatabase!.containerEntrys
@@ -593,86 +563,6 @@ class _SearchView2State extends State<SearchView2> {
 
         for (var container in containers) {
           if (!searchResults.contains(container)) {
-            searchResults.add(container);
-          }
-        }
-      }
-
-      if (selectedFilters.contains('Photo Tags') ||
-          selectedFilters.contains('Photos')) {
-        //log(tagTextMatches.toString());
-        List<MlTag> mlTags = isarDatabase!.mlTags
-            .filter()
-            .repeat(
-                tagTextMatches,
-                (q, TagText tagText) =>
-                    q.textIDEqualTo(tagText.id).and().blackListedEqualTo(false))
-            .findAllSync();
-
-        List<UserTag> userTags = isarDatabase!.userTags
-            .filter()
-            .repeat(tagTextMatches,
-                (q, TagText tagText) => q.textIDEqualTo(tagText.id))
-            .findAllSync();
-
-        List<Photo> photos = [];
-
-        photos.addAll(isarDatabase!.photos
-            .filter()
-            .optional(
-                mlTags.isNotEmpty,
-                (q) => q.repeat(
-                    mlTags, (q, MlTag element) => q.idEqualTo(element.photoID)))
-            .optional(
-                userTags.isNotEmpty,
-                (q) => q.repeat(userTags,
-                    (q, UserTag userTag) => q.idEqualTo(userTag.photoID)))
-            .findAllSync());
-
-        photos.toSet().toList();
-
-        List<SPhoto> sPhotos = photos
-            .map(
-              (e) => SPhoto(
-                photo: e,
-                mlTags: mlTags
-                    .where((mlTag) =>
-                        mlTag.photoID == e.id && mlTag.blackListed == false)
-                    .toSet()
-                    .toList(),
-                userTags: userTags
-                    .where((userTag) => userTag.photoID == e.id)
-                    .toList(),
-              ),
-            )
-            .toList();
-
-        List<SearchContainer> containers = isarDatabase!.containerEntrys
-            .filter()
-            .repeat(
-                sPhotos,
-                (q, SPhoto sphoto) =>
-                    q.containerUIDMatches(sphoto.photo.containerUID))
-            .findAllSync()
-            .map(
-              (e) => SearchContainer(
-                container: e,
-                sPhotos: sPhotos
-                    .where(
-                        (sPhoto) => sPhoto.photo.containerUID == e.containerUID)
-                    .toList(),
-              ),
-            )
-            .toList();
-
-        for (var container in containers) {
-          if (searchResults.contains(container)) {
-            searchResults
-                .firstWhere((element) =>
-                    element.container.containerUID ==
-                    container.container.containerUID)
-                .merge(container);
-          } else {
             searchResults.add(container);
           }
         }

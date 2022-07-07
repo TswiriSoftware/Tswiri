@@ -24,7 +24,7 @@ class ContainersView extends StatefulWidget {
   State<ContainersView> createState() => _ContainersViewState();
 }
 
-List<String> filters = ['shelf', 'area'];
+List<String> filters = ['shelf', 'area', 'drawer', 'box'];
 
 class _ContainersViewState extends State<ContainersView> {
   //Search//
