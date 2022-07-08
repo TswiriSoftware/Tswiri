@@ -4,7 +4,6 @@ import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/isar_export.dart';
 
 import 'package:flutter_google_ml_kit/views/widgets/cards/default_card/defualt_card.dart';
-import 'package:isar/isar.dart';
 
 class DatabaseManager extends StatefulWidget {
   const DatabaseManager({Key? key}) : super(key: key);

@@ -8,7 +8,6 @@ import 'package:flutter_google_ml_kit/views/containers/container_view.dart';
 import 'package:flutter_google_ml_kit/views/navigation/navigator_view.dart';
 import 'package:flutter_google_ml_kit/views/widgets/cards/default_card/defualt_card.dart';
 import 'package:flutter_google_ml_kit/views/widgets/dividers/dividers.dart';
-import 'package:isar/isar.dart';
 
 import '../../global_values/all_globals.dart';
 import '../../isar_database/isar_export.dart';

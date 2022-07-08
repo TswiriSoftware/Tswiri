@@ -8,7 +8,6 @@ import 'package:flutter_google_ml_kit/objects/search/search_object.dart';
 import 'package:flutter_google_ml_kit/views/scan/grid_view.dart';
 import 'package:flutter_google_ml_kit/views/widgets/cards/default_card/defualt_card.dart';
 import 'package:flutter_google_ml_kit/views/widgets/dividers/dividers.dart';
-import 'package:isar/isar.dart';
 
 class ScanView extends StatefulWidget {
   const ScanView({Key? key}) : super(key: key);

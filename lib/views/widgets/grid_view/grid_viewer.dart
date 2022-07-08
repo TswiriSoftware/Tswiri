@@ -1,5 +1,4 @@
 // ignore: must_be_immutable
-import 'dart:developer';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/functions/simple_paint/simple_paint.dart';
@@ -7,7 +6,6 @@ import 'package:flutter_google_ml_kit/global_values/all_globals.dart';
 import 'package:flutter_google_ml_kit/isar_database/isar_export.dart';
 import 'package:flutter_google_ml_kit/objects/display/display_point.dart';
 import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
-import 'package:isar/isar.dart';
 
 import '../../../functions/isar_functions/isar_functions.dart';
 
