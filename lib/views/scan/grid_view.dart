@@ -16,16 +16,16 @@ class GridDisplayView extends StatefulWidget {
 }
 
 class _GridDisplayViewState extends State<GridDisplayView> {
-  late final ContainerEntry _parentContainer = isarDatabase!.containerEntrys
-      .filter()
-      .barcodeUIDMatches(gridUID)
-      .findFirstSync()!;
-
   late String gridUID = isarDatabase!.coordinateEntrys
       .filter()
       .barcodeUIDMatches(widget.containerEntry.barcodeUID!)
       .findFirstSync()!
       .gridUID;
+
+  late final ContainerEntry _parentContainer = isarDatabase!.containerEntrys
+      .filter()
+      .barcodeUIDMatches(gridUID)
+      .findFirstSync()!;
 
   @override
   void initState() {

@@ -10,15 +10,16 @@ import 'package:flutter_google_ml_kit/views/scanning/position/position_scanner_v
 import 'package:flutter_google_ml_kit/views/scanning/marker/marker_scanner_view.dart';
 import 'package:flutter_google_ml_kit/views/grid_visualizer/container_new_markers.dart';
 import 'package:flutter_google_ml_kit/views/grid_visualizer/grid_visualizer_painter.dart';
+import 'package:flutter_google_ml_kit/views/widgets/grid_view/grid_viewer.dart';
 import 'package:isar/isar.dart';
 import '../../isar_database/containers/container_relationship/container_relationship.dart';
 
 class ContainerGridView extends StatefulWidget {
-  const ContainerGridView(
-      {Key? key,
-      required this.containerEntry,
-      required this.containerTypeColor})
-      : super(key: key);
+  const ContainerGridView({
+    Key? key,
+    required this.containerEntry,
+    required this.containerTypeColor,
+  }) : super(key: key);
 
   final ContainerEntry containerEntry;
   final Color containerTypeColor;
@@ -30,13 +31,31 @@ class ContainerGridView extends StatefulWidget {
 class _ContainerGridViewState extends State<ContainerGridView> {
   late ContainerEntry containerEntry = widget.containerEntry;
   late Color containerTypeColor = widget.containerTypeColor;
+
   List<Marker> gridMarkers = [];
   List<String> barcodesToScan = [];
   List<String> markersToScan = [];
   List<ContainerEntry> children = [];
 
+  late String? gridUID = isarDatabase!.coordinateEntrys
+      .filter()
+      .barcodeUIDMatches(containerEntry.barcodeUID!)
+      .findFirstSync()
+      ?.gridUID;
+
+  late final ContainerEntry? _parentContainer;
+
   @override
   void initState() {
+    if (gridUID != null) {
+      _parentContainer = isarDatabase!.containerEntrys
+          .filter()
+          .barcodeUIDMatches(gridUID!)
+          .findFirstSync()!;
+    } else {
+      _parentContainer = containerEntry;
+      gridUID = containerEntry.barcodeUID!;
+    }
     super.initState();
   }
 
@@ -82,7 +101,8 @@ class _ContainerGridViewState extends State<ContainerGridView> {
           children: [
             _gridHeading(),
             _dividerHeading(),
-            _viewer(),
+            // _viewer(),
+            GridViewer(girdUID: gridUID!),
             _gridActions(),
           ],
         ),
@@ -105,28 +125,28 @@ class _ContainerGridViewState extends State<ContainerGridView> {
     );
   }
 
-  Widget _viewer() {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: containerTypeColor, width: 1),
-        borderRadius: const BorderRadius.all(
-          Radius.circular(5),
-        ),
-      ),
-      height: MediaQuery.of(context).size.width,
-      child: InteractiveViewer(
-        scaleFactor: 5,
-        maxScale: 10,
-        minScale: 1,
-        child: CustomPaint(
-          size: Size.infinite,
-          painter: GridVisualizerPainter(
-            containerEntry: containerEntry,
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget _viewer() {
+  //   return Container(
+  //     decoration: BoxDecoration(
+  //       border: Border.all(color: containerTypeColor, width: 1),
+  //       borderRadius: const BorderRadius.all(
+  //         Radius.circular(5),
+  //       ),
+  //     ),
+  //     height: MediaQuery.of(context).size.width,
+  //     child: InteractiveViewer(
+  //       scaleFactor: 5,
+  //       maxScale: 10,
+  //       minScale: 1,
+  //       child: CustomPaint(
+  //         size: Size.infinite,
+  //         painter: GridVisualizerPainter(
+  //           containerEntry: containerEntry,
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _gridActions() {
     return Row(
@@ -147,7 +167,7 @@ class _ContainerGridViewState extends State<ContainerGridView> {
           context,
           MaterialPageRoute(
             builder: (context) => PositionScannerView(
-              parentContainer: containerEntry,
+              parentContainer: _parentContainer!,
               customColor: containerTypeColor,
             ),
           ),
@@ -176,7 +196,7 @@ class _ContainerGridViewState extends State<ContainerGridView> {
         isarDatabase!.writeTxnSync((isar) {
           isar.coordinateEntrys
               .filter()
-              .gridUIDMatches(containerEntry.barcodeUID!)
+              .gridUIDMatches(gridUID!)
               .deleteAllSync();
         });
         // MasterGrid masterGrid = MasterGrid(isarDatabase: isarDatabase!);
