@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_ml_kit/test_views/database_manager.dart';
-import 'package:flutter_google_ml_kit/test_views/json_test.dart';
+import 'package:flutter_google_ml_kit/_to_be_removed/test_views/database_manager.dart';
+import 'package:flutter_google_ml_kit/_to_be_removed/test_views/json_test.dart';
 
-import '../global_values/all_globals.dart';
-import '../views/widgets/cards/custom_card/custom_card.dart';
+import '../../global_values/all_globals.dart';
+import '../../views/widgets/cards/custom_card/custom_card.dart';
 
 class MainTest extends StatefulWidget {
   const MainTest({Key? key}) : super(key: key);

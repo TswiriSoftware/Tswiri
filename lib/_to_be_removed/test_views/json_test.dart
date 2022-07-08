@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/objects/grid/processing/on_image_inter_barcode_data.dart';
 
-import '../objects/grid/processing/on_image_barcode_data.dart';
+import '../../objects/grid/processing/on_image_barcode_data.dart';
 // ignore: depend_on_referenced_packages
 import 'package:vector_math/vector_math.dart' as v;
 

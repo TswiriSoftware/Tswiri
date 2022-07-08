@@ -3,7 +3,7 @@ import 'package:flutter_google_ml_kit/views/barcode_generator/barcode_generator_
 import 'package:flutter_google_ml_kit/views/barcodes/barcodes_view.dart';
 import 'package:flutter_google_ml_kit/views/widgets/cards/custom_card/custom_card.dart';
 
-import '../../global_values/all_globals.dart';
+import '../global_values/all_globals.dart';
 
 class BarcodeToolsView extends StatefulWidget {
   const BarcodeToolsView({Key? key}) : super(key: key);
