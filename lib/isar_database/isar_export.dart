@@ -13,3 +13,4 @@ export 'package:flutter_google_ml_kit/isar_database/tags/ml_tag/ml_tag.dart';
 export 'package:flutter_google_ml_kit/isar_database/tags/tag_bounding_box/object_bounding_box.dart';
 export 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart';
 export 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart';
+export 'package:isar/isar.dart';

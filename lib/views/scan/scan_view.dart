@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -6,8 +5,6 @@ import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.da
 import 'package:flutter_google_ml_kit/global_values/all_globals.dart';
 import 'package:flutter_google_ml_kit/isar_database/isar_export.dart';
 import 'package:flutter_google_ml_kit/objects/search/search_object.dart';
-import 'package:flutter_google_ml_kit/views/containers/container_view.dart';
-import 'package:flutter_google_ml_kit/views/navigation/navigator_view.dart';
 import 'package:flutter_google_ml_kit/views/scan/grid_view.dart';
 import 'package:flutter_google_ml_kit/views/widgets/cards/default_card/defualt_card.dart';
 import 'package:flutter_google_ml_kit/views/widgets/dividers/dividers.dart';
@@ -519,6 +516,7 @@ class _ScanViewState extends State<ScanView> {
   void search(String text) {
     text.toLowerCase();
     searchResults = [];
+
     if (text.isNotEmpty) {
       if (selectedFilters.contains('Name')) {
         ///Do name Search.

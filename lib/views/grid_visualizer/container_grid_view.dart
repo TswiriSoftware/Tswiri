@@ -19,6 +19,7 @@ class ContainerGridView extends StatefulWidget {
       required this.containerEntry,
       required this.containerTypeColor})
       : super(key: key);
+
   final ContainerEntry containerEntry;
   final Color containerTypeColor;
 

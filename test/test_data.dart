@@ -16,6 +16,7 @@ import 'package:flutter_google_ml_kit/isar_database/tags/tag_text/tag_text.dart'
 import 'package:flutter_google_ml_kit/isar_database/tags/user_tag/user_tag.dart';
 import 'package:flutter_google_ml_kit/objects/calibration/accelerometer_data.dart';
 import 'package:flutter_google_ml_kit/objects/grid/processing/on_image_barcode_data.dart';
+// ignore: depend_on_referenced_packages
 import 'package:vector_math/vector_math.dart';
 
 TagText tagText = TagText()
