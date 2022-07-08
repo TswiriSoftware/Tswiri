@@ -9,12 +9,17 @@ import 'package:flutter_google_ml_kit/objects/grid/master_grid.dart';
 
 import '../../../functions/isar_functions/isar_functions.dart';
 
+///Grid viewer displays the grid in a InteractiveViewer.
+///1. It requires the GridUID
+///2. It can highlight a desired barcode if
 // ignore: must_be_immutable
 class GridViewer extends StatelessWidget {
-  GridViewer({Key? key, required this.girdUID, this.highlightBarcode})
+  GridViewer({Key? key, required this.girdUID, this.barcodesToHighlight})
       : super(key: key);
   String girdUID;
-  String? highlightBarcode;
+
+  List<String>? barcodesToHighlight;
+  // String? highlightBarcode;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +44,7 @@ class GridViewer extends StatelessWidget {
                 size: Size.infinite,
                 painter: GridVisualizerPainter(
                   gridUID: girdUID,
-                  highlightBarcode: highlightBarcode,
+                  barcodesToHighlight: barcodesToHighlight,
                 ),
               ),
             ),
@@ -53,11 +58,11 @@ class GridViewer extends StatelessWidget {
 class GridVisualizerPainter extends CustomPainter {
   GridVisualizerPainter({
     required this.gridUID,
-    this.highlightBarcode,
+    this.barcodesToHighlight,
   });
 
   String gridUID;
-  String? highlightBarcode;
+  List<String>? barcodesToHighlight;
 
   @override
   paint(Canvas canvas, Size size) async {
@@ -93,7 +98,8 @@ class GridVisualizerPainter extends CustomPainter {
       } else {
         unknownPositions.add(displayPoint.screenPosition);
       }
-      if (displayPoint.barcodeUID == highlightBarcode) {
+      if (barcodesToHighlight != null &&
+          barcodesToHighlight!.contains(displayPoint.barcodeUID)) {
         highlitedBarcodes.add(displayPoint.screenPosition);
       }
     }

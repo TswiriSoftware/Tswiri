@@ -125,6 +125,12 @@ class _GalleryViewState extends State<GalleryView> {
   ///BODY///
   Widget _body() {
     return Builder(builder: (context) {
+      if (photos.isEmpty) {
+        return const Center(
+          child: Text('Take some photos.'),
+        );
+      }
+
       if (selectedPhoto == null) {
         return _photoGridView();
       } else {

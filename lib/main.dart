@@ -5,8 +5,6 @@ import 'package:flutter_google_ml_kit/global_values/all_globals.dart';
 import 'package:flutter_google_ml_kit/firebase_options.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/theme.dart';
-// import 'package:flutter_google_ml_kit/views/scan/grids_view.dart';
-import 'package:flutter_google_ml_kit/views/scan/scan_view.dart';
 import 'package:flutter_google_ml_kit/views/search/search_view_v2.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -150,14 +148,7 @@ class _HomeViewState extends State<HomeView> {
             CustomCard(
               'Barcode Generator',
               BarcodeGeneratorView(),
-              Icons.qr_code_2_rounded,
-              featureCompleted: true,
-              tileColor: sunbirdOrange,
-            ),
-            CustomCard(
-              'Container Types',
-              ContainerTypeView(),
-              Icons.code,
+              Icons.qr_code_2_outlined,
               featureCompleted: true,
               tileColor: sunbirdOrange,
             ),
@@ -175,16 +166,22 @@ class _HomeViewState extends State<HomeView> {
               featureCompleted: true,
               tileColor: sunbirdOrange,
             ),
-
             CustomCard(
-              'Grid Scan',
-              ScanView(),
-              Icons.scanner,
+              'Container Types',
+              ContainerTypeView(),
+              Icons.code,
               featureCompleted: true,
               tileColor: sunbirdOrange,
             ),
 
             //Extras for testing
+            // CustomCard(
+            //   'Grid Scan',
+            //   ScanView(),
+            //   Icons.scanner,
+            //   featureCompleted: true,
+            //   tileColor: sunbirdOrange,
+            // ),
             // CustomCard(
             //   'Tree Visualizer',
             //   GridVisualizerView(),

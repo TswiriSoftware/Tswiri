@@ -55,7 +55,7 @@ class _GridDisplayViewState extends State<GridDisplayView> {
       children: [
         GridViewer(
           girdUID: gridUID,
-          highlightBarcode: widget.containerEntry.barcodeUID,
+          barcodesToHighlight: [widget.containerEntry.barcodeUID!],
         ),
         _actions()
       ],
@@ -67,15 +67,6 @@ class _GridDisplayViewState extends State<GridDisplayView> {
         body: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // ElevatedButton(
-            //   onPressed: () {},
-            //   child: Row(
-            //     children: const [
-            //       Text('Clear'),
-            //       Icon(Icons.delete),
-            //     ],
-            //   ),
-            // ),
             ElevatedButton(
               onPressed: () async {
                 await Navigator.push(

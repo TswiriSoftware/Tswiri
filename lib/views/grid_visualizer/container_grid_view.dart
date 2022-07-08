@@ -9,7 +9,6 @@ import 'package:flutter_google_ml_kit/isar_database/grid/coordinate_entry/coordi
 import 'package:flutter_google_ml_kit/views/scanning/position/position_scanner_view.dart';
 import 'package:flutter_google_ml_kit/views/scanning/marker/marker_scanner_view.dart';
 import 'package:flutter_google_ml_kit/views/grid_visualizer/container_new_markers.dart';
-import 'package:flutter_google_ml_kit/views/grid_visualizer/grid_visualizer_painter.dart';
 import 'package:flutter_google_ml_kit/views/widgets/grid_view/grid_viewer.dart';
 import 'package:isar/isar.dart';
 import '../../isar_database/containers/container_relationship/container_relationship.dart';
@@ -124,29 +123,6 @@ class _ContainerGridViewState extends State<ContainerGridView> {
       ],
     );
   }
-
-  // Widget _viewer() {
-  //   return Container(
-  //     decoration: BoxDecoration(
-  //       border: Border.all(color: containerTypeColor, width: 1),
-  //       borderRadius: const BorderRadius.all(
-  //         Radius.circular(5),
-  //       ),
-  //     ),
-  //     height: MediaQuery.of(context).size.width,
-  //     child: InteractiveViewer(
-  //       scaleFactor: 5,
-  //       maxScale: 10,
-  //       minScale: 1,
-  //       child: CustomPaint(
-  //         size: Size.infinite,
-  //         painter: GridVisualizerPainter(
-  //           containerEntry: containerEntry,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Widget _gridActions() {
     return Row(

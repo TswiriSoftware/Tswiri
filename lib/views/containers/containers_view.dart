@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_google_ml_kit/extentions/capitalize_first_character.dart';
 import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
 import 'package:flutter_google_ml_kit/global_values/global_colours.dart';
 import 'package:flutter_google_ml_kit/isar_database/containers/container_entry/container_entry.dart';
@@ -136,7 +137,7 @@ class _ContainersViewState extends State<ContainersView> {
   FilterChip fliterChip({required String filter, required String tooltip}) {
     return FilterChip(
       label: Text(
-        filter,
+        filter.capitalize(),
         style: Theme.of(context).textTheme.bodyLarge,
       ),
       onSelected: (selected) {
