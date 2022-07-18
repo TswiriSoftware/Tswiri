@@ -1,46 +1,27 @@
 import 'package:camera/camera.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_google_ml_kit/global_values/all_globals.dart';
-import 'package:flutter_google_ml_kit/firebase_options.dart';
-import 'package:flutter_google_ml_kit/functions/isar_functions/isar_functions.dart';
-import 'package:flutter_google_ml_kit/theme.dart';
-import 'package:flutter_google_ml_kit/views/search/search_view_v2.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/material.dart';
-import 'views/main_views.dart';
+import 'package:sunbird_v2/isar/isar_database.dart';
+import 'package:sunbird_v2/scripts/app_settings.dart';
+import 'package:sunbird_v2/views/areas/area_view.dart';
+import 'package:sunbird_v2/views/search/search_view.dart';
+import 'package:sunbird_v2/views/settings/settings_view.dart';
+import 'package:sunbird_v2/views/utilities/utilities_view.dart';
+import 'globals/globals_export.dart';
 
-List<CameraDescription> cameras = [];
-
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  //Set screen orientation.
+  //Force portraitUp.
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
 
-  //Initialize Firebase.
-  if (Firebase.apps.isEmpty) {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-  } else {
-    Firebase.app();
-  }
+  //TODO: Implement Firebase.
 
-  //debugRepaintRainbowEnabled = true;
-
-  runApp(
-    const MaterialApp(
-      title: 'Sunbird',
-      home: MyApp(),
-      debugShowCheckedModeBanner: false,
-    ),
-  );
-
-  // Get camera's
+  //Get Camera descriptions.
   cameras = await availableCameras();
 
   //Request Permissions.
@@ -49,156 +30,106 @@ Future<void> main() async {
     Permission.storage.request();
   }
 
-  // Get App Settings. From Shared Prefernces.
-  getStoredAppSettings();
-
-  //Get support directory
+  //Initiate Isar
   isarDirectory = await getApplicationSupportDirectory();
-  //Open Isar.
-  isarDatabase = openIsar();
-
+  isar = initiateIsar(inspector: false);
   createBasicContainerTypes();
+
+  //Load Settigns.
+  loadAppSettings();
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Flutter Demo',
       theme: themeData(),
+      home: const HomePage(),
       debugShowCheckedModeBanner: false,
-      home: const HomeView(),
     );
   }
 }
 
-class HomeView extends StatefulWidget {
-  const HomeView({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomeView> createState() => _HomeViewState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
   @override
   void initState() {
+    _tabController = TabController(
+      vsync: this,
+      length: 4,
+      initialIndex: 1,
+    );
     super.initState();
   }
 
   @override
-  build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SettingsView(),
-                ),
-              );
-            },
-            icon: const Icon(Icons.settings),
-          )
-        ],
-        title: Text(
-          'Sunbird',
-          style: Theme.of(context).textTheme.labelLarge,
-        ),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: Center(
-        child: GridView.count(
-          padding: const EdgeInsets.all(16),
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 16,
-          crossAxisCount: 2,
-          children: const [
-            CustomCard(
-              'Search',
-              SearchViewV2(),
-              Icons.search,
-              featureCompleted: true,
-              tileColor: sunbirdOrange,
-            ),
-            CustomCard(
-              'Containers',
-              ContainersView(),
-              Icons.add_box_outlined,
-              featureCompleted: true,
-              tileColor: sunbirdOrange,
-            ),
-            CustomCard(
-              'Tags',
-              TagManagerView(),
-              Icons.tag,
-              featureCompleted: true,
-              tileColor: sunbirdOrange,
-            ),
-            CustomCard(
-              'Gallery',
-              GalleryView(),
-              Icons.photo,
-              featureCompleted: true,
-              tileColor: sunbirdOrange,
-            ),
-            CustomCard(
-              'Barcode Generator',
-              BarcodeGeneratorView(),
-              Icons.qr_code_2_outlined,
-              featureCompleted: true,
-              tileColor: sunbirdOrange,
-            ),
-            CustomCard(
-              'Barcodes',
-              BarcodesView(),
-              Icons.list,
-              featureCompleted: true,
-              tileColor: sunbirdOrange,
-            ),
-            CustomCard(
-              'Calibration',
-              CalibrationToolsView(),
-              Icons.camera,
-              featureCompleted: true,
-              tileColor: sunbirdOrange,
-            ),
-            CustomCard(
-              'Container Types',
-              ContainerTypeView(),
-              Icons.code,
-              featureCompleted: true,
-              tileColor: sunbirdOrange,
-            ),
+      body: _tabBarView(),
+      bottomSheet: _bottomSheet(),
+    );
+  }
 
-            //Extras for testing
-            // CustomCard(
-            //   'Grid Scan',
-            //   ScanView(),
-            //   Icons.scanner,
-            //   featureCompleted: true,
-            //   tileColor: sunbirdOrange,
-            // ),
-            // CustomCard(
-            //   'Tree Visualizer',
-            //   GridVisualizerView(),
-            //   Icons.grid_4x4_sharp,
-            //   featureCompleted: true,
-            //   tileColor: sunbirdOrange,
-            // ),
-            // CustomCard(
-            //   'Integration Test',
-            //   MainTest(),
-            //   Icons.integration_instructions,
-            //   featureCompleted: true,
-            //   tileColor: sunbirdOrange,
-            // ),
-          ],
+  Widget _tabBarView() {
+    return TabBarView(
+      controller: _tabController,
+      children: const [
+        AreaView(),
+        SearchView(),
+        UtilitiesView(),
+        SettingsView(),
+      ],
+    );
+  }
+
+  Widget _bottomSheet() {
+    return TabBar(
+      controller: _tabController,
+      tabs: const [
+        Tooltip(
+          message: "Area's",
+          child: Tab(
+            icon: Icon(
+              Icons.account_tree_sharp,
+            ),
+          ),
         ),
-      ),
+        Tooltip(
+          message: "Search",
+          child: Tab(
+            icon: Icon(
+              Icons.search_sharp,
+            ),
+          ),
+        ),
+        Tooltip(
+          message: "Utilities",
+          child: Tab(
+            icon: Icon(Icons.build_sharp),
+          ),
+        ),
+        Tooltip(
+          message: "Settings",
+          child: Tab(
+            icon: Icon(
+              Icons.settings_sharp,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
