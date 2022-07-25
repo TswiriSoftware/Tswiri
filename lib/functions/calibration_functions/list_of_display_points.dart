@@ -9,6 +9,7 @@ List<Offset> listOfCalibrationPoints(
   for (var sizeDistanceEntry in sizeDistanceEntries) {
     Offset offsetData = Offset(
         sizeDistanceEntry.diagonalSize, sizeDistanceEntry.distanceFromCamera);
+    
     points.add(
       Offset(
         ((offsetData.dx + screenSize.width / 2) / (screenSize.width / 50)),

@@ -57,7 +57,7 @@ class OnImageInterBarcodeData {
     // return '[${startBarcode.onImageCornerPoints.hashCode}]';
   }
 
-  factory OnImageInterBarcodeData.fromJsopn(Map<String, dynamic> json) {
+  factory OnImageInterBarcodeData.fromJson(Map<String, dynamic> json) {
     return OnImageInterBarcodeData(
       startBarcode: OnImageBarcodeData.fromJson(json['startBarcode']),
       endBarcode: OnImageBarcodeData.fromJson(json['endBarcode']),

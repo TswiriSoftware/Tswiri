@@ -57,7 +57,7 @@ class _JsonTestState extends State<JsonTest> {
                 var json = onImageInterBarcodeData.toJson();
                 log(json.toString());
                 OnImageInterBarcodeData a =
-                    OnImageInterBarcodeData.fromJsopn(json);
+                    OnImageInterBarcodeData.fromJson(json);
                 log(a.toString());
 
                 // log(.toString());

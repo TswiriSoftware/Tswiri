@@ -195,17 +195,17 @@ class _PositionProcessingViewState extends State<PositionProcessingView> {
 
     // List coordinatesHashCode = coordinates.map((e) => e.comparableHashCode).toList();
 
-    File coordinatesFile = File('${path}coordinatesData.txt');
+    // File coordinatesFile = File('${path}coordinatesData.txt');
 
-    if (!(await coordinatesFile.exists())) {
-      await coordinatesFile.writeAsString(
-        'coordinatesData\n\n',
-        mode: FileMode.write,
-      );
-      for (var e in coordinates) {
-        await coordinatesFile.writeAsString('$e\n', mode: FileMode.append);
-      }
-    }
+    // if (!(await coordinatesFile.exists())) {
+    //   await coordinatesFile.writeAsString(
+    //     'coordinatesData\n\n',
+    //     mode: FileMode.write,
+    //   );
+    //   for (var e in coordinates) {
+    //     await coordinatesFile.writeAsString('$e\n', mode: FileMode.append);
+    //   }
+    // }
 
     //5. Write to Isar.
     List<String> barcodes = coordinates.map((e) => e.barcodeUID).toList();

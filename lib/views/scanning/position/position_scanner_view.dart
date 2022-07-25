@@ -46,7 +46,7 @@ class _PositionScannerViewState extends State<PositionScannerView> {
   bool hasConfiguredIsolate1 = false;
   bool hasConfiguredIsolate2 = false;
 
-  bool x = false;
+  // bool x = false;
 
   int counter1 = 0;
 

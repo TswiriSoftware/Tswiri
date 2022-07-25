@@ -26,6 +26,7 @@ class CameraCalibrationView extends StatefulWidget {
 }
 
 class _CameraCalibrationViewState extends State<CameraCalibrationView> {
+  
   BarcodeScanner barcodeScanner =
       GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
 
