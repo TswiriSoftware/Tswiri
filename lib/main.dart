@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:sunbird_v2/isar/isar_database.dart';
-import 'package:sunbird_v2/scripts/app_settings.dart';
-import 'package:sunbird_v2/views/areas/area_view.dart';
-import 'package:sunbird_v2/views/search/search_view.dart';
-import 'package:sunbird_v2/views/settings/settings_view.dart';
-import 'package:sunbird_v2/views/utilities/utilities_view.dart';
 import 'globals/globals_export.dart';
+import 'isar/isar_database.dart';
+import 'views/containers/containers_view/containers_view.dart';
+import 'views/search/search_view.dart';
+import 'views/settings/settings_view.dart';
+import 'views/utilities/utilities_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +31,7 @@ void main() async {
 
   //Initiate Isar
   isarDirectory = await getApplicationSupportDirectory();
-  isar = initiateIsar(inspector: false);
+  isar = await initiateIsar(inspector: false);
   createBasicContainerTypes();
 
   //Load Settigns.
@@ -46,7 +45,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
       theme: themeData(),
       home: const HomePage(),
       debugShowCheckedModeBanner: false,
@@ -64,6 +62,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  bool isSearching = false;
 
   @override
   void initState() {
@@ -72,6 +71,7 @@ class _HomePageState extends State<HomePage>
       length: 4,
       initialIndex: 1,
     );
+
     super.initState();
   }
 
@@ -79,28 +79,39 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     return Scaffold(
       body: _tabBarView(),
-      bottomSheet: _bottomSheet(),
+      bottomSheet: isSearching ? const SizedBox.shrink() : _bottomSheet(),
     );
   }
 
   Widget _tabBarView() {
     return TabBarView(
+      physics: isSearching ? const NeverScrollableScrollPhysics() : null,
       controller: _tabController,
-      children: const [
-        AreaView(),
-        SearchView(),
-        UtilitiesView(),
-        SettingsView(),
+      children: [
+        ContainersView(
+          isSearching: (value) => setState(() {
+            isSearching = value;
+          }),
+        ),
+        SearchView(
+          isSearching: (value) => setState(() {
+            isSearching = value;
+          }),
+        ),
+        const UtilitiesView(),
+        const SettingsView(),
       ],
     );
   }
 
   Widget _bottomSheet() {
     return TabBar(
+      // isScrollable: !isSearching,
       controller: _tabController,
+      labelPadding: const EdgeInsets.all(2.5),
       tabs: const [
         Tooltip(
-          message: "Area's",
+          message: "Containers",
           child: Tab(
             icon: Icon(
               Icons.account_tree_sharp,

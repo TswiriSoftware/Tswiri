@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:sunbird_v2/views/utilities/barcode_generator/barcode_generator_view.dart';
-import 'package:sunbird_v2/views/utilities/barcodes/barcodes_view.dart';
-import 'package:sunbird_v2/widgets/cards/navigator_card.dart';
+import 'package:sunbird_2/views/utilities/markers/markers_view.dart';
+
+import 'barcodes/barcodes_view.dart';
+import 'calibration/calibration_view.dart';
+import 'container_types/container_types_view.dart';
+import 'gallery/gallery_view.dart';
+import 'generator/generator_view.dart';
+import 'navigator_card.dart';
 
 class UtilitiesView extends StatefulWidget {
   const UtilitiesView({Key? key}) : super(key: key);
@@ -12,6 +17,11 @@ class UtilitiesView extends StatefulWidget {
 
 class _UtilitiesViewState extends State<UtilitiesView> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar(),
@@ -19,21 +29,19 @@ class _UtilitiesViewState extends State<UtilitiesView> {
     );
   }
 
-  PreferredSizeWidget _appBar() {
+  AppBar _appBar() {
     return AppBar(
-      title: Text(
-        "Utilities",
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
-      actions: [],
-      centerTitle: true,
-    );
+        title: Text(
+          'Utilities',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        centerTitle: true);
   }
 
   Widget _body() {
     return Center(
       child: GridView.count(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8.0),
         crossAxisCount: 2,
         children: const [
           NavigatorCard(
@@ -44,8 +52,28 @@ class _UtilitiesViewState extends State<UtilitiesView> {
           NavigatorCard(
             label: 'Barcode Generator',
             icon: Icons.scanner_sharp,
-            viewPage: BarcodeGeneratorView(),
+            viewPage: GeneratorView(),
           ),
+          NavigatorCard(
+            label: 'Camera Calibration',
+            icon: Icons.camera_sharp,
+            viewPage: CalibrationView(),
+          ),
+          NavigatorCard(
+            label: 'Gallery',
+            icon: Icons.photo_sharp,
+            viewPage: GalleryView(),
+          ),
+          NavigatorCard(
+            label: 'Container Types',
+            icon: Icons.code_sharp,
+            viewPage: ContainerTypesView(),
+          ),
+          // NavigatorCard(
+          //   label: 'Markers',
+          //   icon: Icons.gps_fixed,
+          //   viewPage: MarkersView(),
+          // ),
         ],
       ),
     );

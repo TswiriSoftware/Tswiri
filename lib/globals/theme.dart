@@ -48,14 +48,14 @@ ThemeData themeData() {
 
     //Card Theme.
     cardTheme: CardTheme(
-      color: background[500],
-      elevation: 5,
+      color: background[400],
+      elevation: 10,
       margin: const EdgeInsets.all(8),
       shape: RoundedRectangleBorder(
-        side: const BorderSide(
-          color: sunbirdOrange,
-          width: 1.5,
-        ),
+        // side: const BorderSide(
+        //   color: sunbirdOrange,
+        //   width: 0.5,
+        // ),
         borderRadius: BorderRadius.circular(10),
       ),
     ),
@@ -133,6 +133,17 @@ ThemeData themeData() {
       focusedBorder: UnderlineInputBorder(
         borderSide: BorderSide(
           color: Colors.white,
+        ),
+      ),
+    ),
+
+    //Chip Theme.
+    chipTheme: ChipThemeData(
+      backgroundColor: background[300],
+      selectedColor: sunbirdOrange,
+      shape: const StadiumBorder(
+        side: BorderSide(
+          color: sunbirdOrange,
         ),
       ),
     ),

@@ -1,42 +1,348 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:sunbird_2/isar/isar_database.dart';
+import 'package:sunbird_2/views/containers/container_view/container_view.dart';
+import 'package:sunbird_2/views/search/search_controller.dart';
+import 'package:sunbird_2/widgets/search_bar/search_bar.dart';
 
 class SearchView extends StatefulWidget {
-  const SearchView({Key? key}) : super(key: key);
-
+  const SearchView({
+    Key? key,
+    required this.isSearching,
+  }) : super(key: key);
+  final void Function(bool) isSearching;
   @override
   State<SearchView> createState() => _SearchViewState();
 }
 
+///Search Filters.
+List<String> searchFilters = ['Tags', 'Photos'];
+
 class _SearchViewState extends State<SearchView> {
+  final SearchController _searchController =
+      SearchController(filters: searchFilters);
+  Map<String, String> filterTypes = {
+    'Tags': 'Search by container tags',
+    'Photo Labels': 'Search by photo labels',
+    'Photo Objects': 'Search by photo objects',
+    'Name': 'Search by container Name',
+    'Description': 'Search by container Description',
+    'Barcode': 'Search by container Barcodes',
+    'ML Text': 'Search by detected text',
+  };
+
+  bool isSearching = false;
+
+  @override
+  void initState() {
+    _searchController.search();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBar(),
+      appBar: isSearching ? _searchBar() : _appBar(),
       body: _body(),
     );
   }
 
-  PreferredSizeWidget _appBar() {
+  AppBar _appBar() {
     return AppBar(
       title: Text(
-        "Search",
+        'Search',
         style: Theme.of(context).textTheme.titleMedium,
       ),
-      actions: [],
       centerTitle: true,
+      actions: [
+        IconButton(
+          onPressed: () {
+            setState(() {
+              isSearching = true;
+              widget.isSearching(isSearching);
+            });
+          },
+          icon: const Icon(
+            Icons.search_sharp,
+          ),
+        ),
+      ],
+    );
+  }
+
+  PreferredSize _searchBar() {
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(kToolbarHeight + 50),
+      child: SearchAppBar(
+        filters: searchFilters,
+        filterTypes: filterTypes.entries.map((e) => e.key).toList(),
+        filterChange: (enteredKeyWord) {
+          setState(() {
+            _searchController.search(enteredKeyword: enteredKeyWord);
+          });
+        },
+        onCancel: () {
+          setState(() {
+            isSearching = false;
+            widget.isSearching(isSearching);
+            _searchController.search();
+          });
+        },
+        onChanged: (value) {
+          setState(() {
+            _searchController.search(enteredKeyword: value);
+          });
+        },
+        onSubmitted: (value) {
+          setState(() {
+            _searchController.search(enteredKeyword: value);
+          });
+        },
+      ),
     );
   }
 
   Widget _body() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          'Search',
-          style: Theme.of(context).textTheme.bodyMedium,
+    return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 100),
+      itemCount: _searchController.searchResults.length,
+      itemBuilder: (context, index) {
+        return _containerCard(
+          _searchController.searchResults[index],
+        );
+      },
+    );
+  }
+
+  Widget _containerCard(ContainerSearchObject e) {
+    return ContainerSearchCard(containerSearchObject: e);
+  }
+}
+
+class ContainerSearchCard extends StatelessWidget {
+  const ContainerSearchCard({
+    Key? key,
+    required this.containerSearchObject,
+  }) : super(key: key);
+  final ContainerSearchObject containerSearchObject;
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Text(
+                  containerSearchObject.catalogedContainer.name ??
+                      containerSearchObject.catalogedContainer.containerUID,
+                  style: Theme.of(context).textTheme.titleSmall,
+                )
+              ],
+            ),
+
+            ///Container Tags.
+            Visibility(
+              visible: containerSearchObject.containerTags.isNotEmpty,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Divider(),
+                  Text(
+                    'Tags: ',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Wrap(
+                      spacing: 4,
+                      children: [
+                        for (ContainerTag containerTag
+                            in containerSearchObject.containerTags)
+                          Chip(
+                            label: Text(
+                              isar!.tagTexts
+                                  .getSync(containerTag.tagTextID)!
+                                  .text,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            ///Photos.
+            Visibility(
+              visible: containerSearchObject.photos.isNotEmpty,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Divider(),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Wrap(
+                      spacing: 4,
+                      children: [
+                        for (Photo photo in containerSearchObject.photos)
+                          ClipRRect(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(10)),
+                            child: Image.file(
+                              File(photo.getPhotoPath()),
+                              width: 100,
+                              height: 150,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            ///Photo Labels.
+            Visibility(
+              visible: containerSearchObject.mlPhotoLabels.isNotEmpty ||
+                  containerSearchObject.photoLabels.isNotEmpty,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Divider(),
+                  Text(
+                    'Photo Labels: ',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Wrap(
+                      spacing: 4,
+                      children: [
+                        for (PhotoLabel photoLabel
+                            in containerSearchObject.photoLabels)
+                          Chip(
+                            label: Text(
+                              isar!.tagTexts
+                                  .getSync(photoLabel.tagTextID)!
+                                  .text,
+                            ),
+                            avatar: const Icon(
+                              Icons.verified_user_sharp,
+                              size: 15,
+                            ),
+                          ),
+                        for (MLPhotoLabel mlPhotoLabel
+                            in containerSearchObject.mlPhotoLabels)
+                          Chip(
+                            label: Text(
+                              isar!.mLDetectedLabelTexts
+                                  .getSync(mlPhotoLabel.detectedLabelTextID)!
+                                  .detectedLabelText,
+                            ),
+                            avatar: const Icon(
+                              Icons.smart_toy_sharp,
+                              size: 15,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            ///Object Labels.
+            Visibility(
+              visible: containerSearchObject.objectLabels.isNotEmpty ||
+                  containerSearchObject.mlObjectLabels.isNotEmpty,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Divider(),
+                  Text(
+                    'Object Labels: ',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Wrap(
+                      spacing: 4,
+                      children: [
+                        for (ObjectLabel objectLabel
+                            in containerSearchObject.objectLabels)
+                          Chip(
+                            label: Text(
+                              isar!.tagTexts
+                                  .getSync(objectLabel.tagTextID)!
+                                  .text,
+                            ),
+                            avatar: const Icon(
+                              Icons.verified_user_sharp,
+                              size: 15,
+                            ),
+                          ),
+                        for (MLObjectLabel mlObjectlabel
+                            in containerSearchObject.mlObjectLabels)
+                          Chip(
+                            label: Text(
+                              isar!.mLDetectedLabelTexts
+                                  .getSync(mlObjectlabel.detectedLabelTextID)!
+                                  .detectedLabelText,
+                            ),
+                            avatar: const Icon(
+                              Icons.smart_toy_sharp,
+                              size: 15,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ContainerView(
+                          catalogedContainer:
+                              containerSearchObject.catalogedContainer,
+                          tagsExpanded: true,
+                          photosExpaned: true,
+                          childrenExpanded: false,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'Edit',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    //TODO: implement navigation.
+                  },
+                  child: Text(
+                    'Find',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              ],
+            )
+          ],
         ),
-      ],
+      ),
     );
   }
 }

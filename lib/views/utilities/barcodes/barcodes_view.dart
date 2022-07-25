@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:sunbird_v2/globals/globals_export.dart';
-import 'package:sunbird_v2/isar/collections/barcode_properties/barcode_property.dart';
-import 'package:sunbird_v2/isar/collections/container_entry/container_entry.dart';
-import 'package:sunbird_v2/isar/isar_database.dart';
-import 'package:sunbird_v2/widgets/cards/barcode_card.dart';
-import 'package:sunbird_v2/widgets/chips/filter_chip.dart';
-import 'package:isar/isar.dart';
+import 'package:sunbird_2/globals/globals_export.dart';
+import 'package:sunbird_2/isar/isar_database.dart';
+import 'package:sunbird_2/views/utilities/generator/generator_view.dart';
+import 'package:sunbird_2/widgets/search_bar/search_bar.dart';
 
 class BarcodesView extends StatefulWidget {
   const BarcodesView({Key? key}) : super(key: key);
@@ -15,8 +12,6 @@ class BarcodesView extends StatefulWidget {
 }
 
 class _BarcodesViewState extends State<BarcodesView> {
-  final TextEditingController _searchController = TextEditingController();
-  final FocusNode _searchNode = FocusNode();
   bool isSearching = false;
 
   Map<String, String> barcodeFilterTypes = {
@@ -25,8 +20,8 @@ class _BarcodesViewState extends State<BarcodesView> {
   };
 
   List<String>? linkedContainers = [];
-  List<BarcodeProperty>? allBarcodes;
-  List<BarcodeProperty> barcodes = [];
+  List<CatalogedBarcode>? allBarcodes;
+  List<CatalogedBarcode> barcodes = [];
 
   @override
   void initState() {
@@ -38,7 +33,7 @@ class _BarcodesViewState extends State<BarcodesView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: isSearching ? _searchBar() : _titleBar(),
-      body: _body(),
+      body: _barcodesListView(),
     );
   }
 
@@ -48,12 +43,12 @@ class _BarcodesViewState extends State<BarcodesView> {
         'Barcodes',
         style: Theme.of(context).textTheme.titleMedium,
       ),
+      centerTitle: true,
       actions: [
         IconButton(
           onPressed: () {
             setState(() {
               isSearching = true;
-              _searchNode.requestFocus();
             });
           },
           icon: const Icon(
@@ -65,111 +60,137 @@ class _BarcodesViewState extends State<BarcodesView> {
   }
 
   PreferredSizeWidget _searchBar() {
-    return AppBar(
-      title: TextField(
-        controller: _searchController,
-        focusNode: _searchNode,
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(kToolbarHeight + 50),
+      child: SearchAppBar(
+        filters: barcodeFilters,
+        filterTypes: barcodeFilterTypes.entries.map((e) => e.key).toList(),
+        filterChange: (enteredKeyWord) {
+          _getBarcodes();
+        },
+        onCancel: () {
+          setState(() {
+            isSearching = false;
+          });
+        },
         onChanged: (value) {
           _search(enteredKeyword: value);
         },
+        onSubmitted: (value) {},
       ),
-      actions: [
-        IconButton(
-          onPressed: () {
-            setState(() {
-              isSearching = false;
-            });
-          },
-          icon: const Icon(
-            Icons.close_sharp,
-          ),
-        ),
-      ],
     );
   }
 
-  Widget _body() {
-    return Stack(
-      alignment: AlignmentDirectional.topCenter,
-      children: [
-        _barcodes(),
-        _filters(),
-      ],
-    );
-  }
-
-  Widget _barcodes() {
+  Widget _barcodesListView() {
     return Builder(
       builder: (context) {
         if (barcodes.isNotEmpty) {
           return ListView.builder(
             itemCount: barcodes.length,
-            padding: const EdgeInsets.symmetric(
-              vertical: 40,
-            ),
             itemBuilder: (context, index) {
-              return BarcodeCard(
-                barcodeProperty: barcodes[index],
-              );
+              return _barcodeCard(barcodes[index]);
             },
           );
         }
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 50),
-          child: Text(
-            'no results',
-            style: Theme.of(context).textTheme.bodyMedium,
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 50),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                      builder: (context) => const GeneratorView()),
+                );
+              },
+              child: Text(
+                'Generate Barcodes',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
           ),
         );
       },
     );
   }
 
-  Widget _filters() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Center(
-        child: Wrap(
-          spacing: 5,
-          children: barcodeFilterTypes.entries
-              .map(
-                (e) => CustomFilterChip(
-                  label: e.key,
-                  toolTip: 'Assigned Barcodes',
-                  selected: barcodeFilters.contains(e.key),
-                  onSelected: (value) {
-                    _onSelected(value, e.key);
-                    _getBarcodes();
-                  },
+  Widget _barcodeCard(CatalogedBarcode barcodeProperty) {
+    //Check if barcode is linked.
+    CatalogedContainer? linkedContainer = isar!.catalogedContainers
+        .filter()
+        .barcodeUIDMatches(barcodeProperty.barcodeUID)
+        .findFirstSync();
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'ID: ',
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-              )
-              .toList(),
+                Text(
+                  barcodeProperty.barcodeUID,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
+            const Divider(
+              indent: 5,
+              endIndent: 5,
+              height: 25,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Size: ',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                Text(
+                  '${barcodeProperty.size} x ${barcodeProperty.size} mm',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
+            const Divider(
+              indent: 5,
+              endIndent: 5,
+              height: 25,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Linked: ',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                Text(
+                  (linkedContainer == null)
+                      ? '-'
+                      : linkedContainer.name ?? linkedContainer.containerUID,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
   }
 
-  void _onSelected(bool selected, String filter) {
-    if (barcodeFilters.contains(filter)) {
-      setState(() {
-        barcodeFilters.removeWhere((element) => element == filter);
-      });
-    } else {
-      setState(() {
-        barcodeFilters.add(filter);
-      });
-    }
-  }
-
   void _getBarcodes() async {
     setState(() {
-      linkedContainers = isar!.containerEntrys
+      linkedContainers = isar!.catalogedContainers
           .where()
           .findAllSync()
           .map((e) => e.barcodeUID!)
           .toList();
 
-      allBarcodes = isar!.barcodePropertys.where().findAllSync();
+      allBarcodes = isar!.catalogedBarcodes.where().findAllSync();
 
       if (barcodeFilters.contains('Assigned')) {
         barcodes = allBarcodes!
