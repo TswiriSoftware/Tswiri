@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sunbird_2/views/utilities/markers/markers_view.dart';
-
 import 'barcodes/barcodes_view.dart';
 import 'calibration/calibration_view.dart';
 import 'container_types/container_types_view.dart';

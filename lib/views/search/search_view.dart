@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sunbird_2/isar/isar_database.dart';
 import 'package:sunbird_2/views/containers/container_view/container_view.dart';
-import 'package:sunbird_2/views/search/search_controller.dart';
+import 'package:sunbird_2/views/search/navigator/navigator_view.dart';
+import 'package:sunbird_2/views/search/searh_controller/search_controller.dart';
 import 'package:sunbird_2/widgets/search_bar/search_bar.dart';
 
 class SearchView extends StatefulWidget {
@@ -115,17 +116,17 @@ class _SearchViewState extends State<SearchView> {
     );
   }
 
-  Widget _containerCard(ContainerSearchObject e) {
-    return ContainerSearchCard(containerSearchObject: e);
+  Widget _containerCard(SearchResult e) {
+    return ContainerSearchCard(searchObject: e);
   }
 }
 
 class ContainerSearchCard extends StatelessWidget {
   const ContainerSearchCard({
     Key? key,
-    required this.containerSearchObject,
+    required this.searchObject,
   }) : super(key: key);
-  final ContainerSearchObject containerSearchObject;
+  final SearchResult searchObject;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -136,8 +137,8 @@ class ContainerSearchCard extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  containerSearchObject.catalogedContainer.name ??
-                      containerSearchObject.catalogedContainer.containerUID,
+                  searchObject.catalogedContainer.name ??
+                      searchObject.catalogedContainer.containerUID,
                   style: Theme.of(context).textTheme.titleSmall,
                 )
               ],
@@ -145,7 +146,7 @@ class ContainerSearchCard extends StatelessWidget {
 
             ///Container Tags.
             Visibility(
-              visible: containerSearchObject.containerTags.isNotEmpty,
+              visible: searchObject.containerTags.isNotEmpty,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -160,7 +161,7 @@ class ContainerSearchCard extends StatelessWidget {
                       spacing: 4,
                       children: [
                         for (ContainerTag containerTag
-                            in containerSearchObject.containerTags)
+                            in searchObject.containerTags)
                           Chip(
                             label: Text(
                               isar!.tagTexts
@@ -177,7 +178,7 @@ class ContainerSearchCard extends StatelessWidget {
 
             ///Photos.
             Visibility(
-              visible: containerSearchObject.photos.isNotEmpty,
+              visible: searchObject.photos.isNotEmpty,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -187,7 +188,7 @@ class ContainerSearchCard extends StatelessWidget {
                     child: Wrap(
                       spacing: 4,
                       children: [
-                        for (Photo photo in containerSearchObject.photos)
+                        for (Photo photo in searchObject.photos)
                           ClipRRect(
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(10)),
@@ -207,8 +208,8 @@ class ContainerSearchCard extends StatelessWidget {
 
             ///Photo Labels.
             Visibility(
-              visible: containerSearchObject.mlPhotoLabels.isNotEmpty ||
-                  containerSearchObject.photoLabels.isNotEmpty,
+              visible: searchObject.mlPhotoLabels.isNotEmpty ||
+                  searchObject.photoLabels.isNotEmpty,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -222,8 +223,7 @@ class ContainerSearchCard extends StatelessWidget {
                     child: Wrap(
                       spacing: 4,
                       children: [
-                        for (PhotoLabel photoLabel
-                            in containerSearchObject.photoLabels)
+                        for (PhotoLabel photoLabel in searchObject.photoLabels)
                           Chip(
                             label: Text(
                               isar!.tagTexts
@@ -236,7 +236,7 @@ class ContainerSearchCard extends StatelessWidget {
                             ),
                           ),
                         for (MLPhotoLabel mlPhotoLabel
-                            in containerSearchObject.mlPhotoLabels)
+                            in searchObject.mlPhotoLabels)
                           Chip(
                             label: Text(
                               isar!.mLDetectedLabelTexts
@@ -257,8 +257,8 @@ class ContainerSearchCard extends StatelessWidget {
 
             ///Object Labels.
             Visibility(
-              visible: containerSearchObject.objectLabels.isNotEmpty ||
-                  containerSearchObject.mlObjectLabels.isNotEmpty,
+              visible: searchObject.objectLabels.isNotEmpty ||
+                  searchObject.mlObjectLabels.isNotEmpty,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -273,7 +273,7 @@ class ContainerSearchCard extends StatelessWidget {
                       spacing: 4,
                       children: [
                         for (ObjectLabel objectLabel
-                            in containerSearchObject.objectLabels)
+                            in searchObject.objectLabels)
                           Chip(
                             label: Text(
                               isar!.tagTexts
@@ -286,7 +286,7 @@ class ContainerSearchCard extends StatelessWidget {
                             ),
                           ),
                         for (MLObjectLabel mlObjectlabel
-                            in containerSearchObject.mlObjectLabels)
+                            in searchObject.mlObjectLabels)
                           Chip(
                             label: Text(
                               isar!.mLDetectedLabelTexts
@@ -306,6 +306,8 @@ class ContainerSearchCard extends StatelessWidget {
             ),
 
             const Divider(),
+
+            ///Actions.
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -315,8 +317,7 @@ class ContainerSearchCard extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => ContainerView(
-                          catalogedContainer:
-                              containerSearchObject.catalogedContainer,
+                          catalogedContainer: searchObject.catalogedContainer,
                           tagsExpanded: true,
                           photosExpaned: true,
                           childrenExpanded: false,
@@ -330,8 +331,27 @@ class ContainerSearchCard extends StatelessWidget {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    //TODO: implement navigation.
+                  onPressed: () async {
+                    CatalogedCoordinate? catalogedCoordiante = isar!
+                        .catalogedCoordinates
+                        .filter()
+                        .barcodeUIDMatches(
+                            searchObject.catalogedContainer.barcodeUID!)
+                        .findFirstSync();
+
+                    if (catalogedCoordiante != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NavigatorView(
+                            catalogedContainer: searchObject.catalogedContainer,
+                            gridUID: catalogedCoordiante.gridUID,
+                          ),
+                        ),
+                      );
+                    } else {
+                      //TODO: implement scaffold message by way of a function.
+                    }
                   },
                   child: Text(
                     'Find',

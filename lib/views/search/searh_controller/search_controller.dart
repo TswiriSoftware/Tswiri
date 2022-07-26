@@ -1,5 +1,7 @@
 import 'dart:developer';
 import 'package:sunbird_2/isar/isar_database.dart';
+import 'search_result.dart';
+export 'search_result.dart';
 
 class SearchController {
   SearchController({
@@ -7,7 +9,7 @@ class SearchController {
   });
 
   ///List of search Results.
-  List<ContainerSearchObject> searchResults = [];
+  List<SearchResult> searchResults = [];
 
   ///A reference to the filterList.
   List<String> filters;
@@ -42,8 +44,8 @@ class SearchController {
             .findAllSync();
 
         for (CatalogedContainer container in containers) {
-          ContainerSearchObject containerSearchObject =
-              ContainerSearchObject(catalogedContainer: container);
+          SearchResult containerSearchObject =
+              SearchResult(catalogedContainer: container);
           if (!searchResults.contains(containerSearchObject)) {
             searchResults.add(containerSearchObject);
           }
@@ -57,8 +59,8 @@ class SearchController {
             .descriptionContains(enteredKeyword, caseSensitive: false)
             .findAllSync();
         for (CatalogedContainer container in containers) {
-          ContainerSearchObject containerSearchObject =
-              ContainerSearchObject(catalogedContainer: container);
+          SearchResult containerSearchObject =
+              SearchResult(catalogedContainer: container);
           if (!searchResults.contains(containerSearchObject)) {
             searchResults.add(containerSearchObject);
           }
@@ -72,8 +74,8 @@ class SearchController {
             .barcodeUIDContains(enteredKeyword, caseSensitive: false)
             .findAllSync();
         for (CatalogedContainer container in containers) {
-          ContainerSearchObject containerSearchObject =
-              ContainerSearchObject(catalogedContainer: container);
+          SearchResult containerSearchObject =
+              SearchResult(catalogedContainer: container);
           if (!searchResults.contains(containerSearchObject)) {
             searchResults.add(containerSearchObject);
           }
@@ -112,8 +114,8 @@ class SearchController {
             .findAllSync();
 
         for (CatalogedContainer container in containers) {
-          ContainerSearchObject containerSearchObject =
-              ContainerSearchObject(catalogedContainer: container);
+          SearchResult containerSearchObject =
+              SearchResult(catalogedContainer: container);
 
           int index =
               searchResults.indexWhere((element) => element.id == container.id);
@@ -183,8 +185,8 @@ class SearchController {
             .findAllSync();
 
         for (CatalogedContainer container in containers) {
-          ContainerSearchObject containerSearchObject =
-              ContainerSearchObject(catalogedContainer: container);
+          SearchResult containerSearchObject =
+              SearchResult(catalogedContainer: container);
 
           int index =
               searchResults.indexWhere((element) => element.id == container.id);
@@ -285,8 +287,8 @@ class SearchController {
               .findAllSync();
 
           for (CatalogedContainer container in containers) {
-            ContainerSearchObject containerSearchObject =
-                ContainerSearchObject(catalogedContainer: container);
+            SearchResult containerSearchObject =
+                SearchResult(catalogedContainer: container);
 
             int index = searchResults
                 .indexWhere((element) => element.id == container.id);
@@ -362,8 +364,8 @@ class SearchController {
           isar!.catalogedContainers.where().findAllSync();
 
       for (CatalogedContainer container in containers) {
-        ContainerSearchObject containerSearchObject =
-            ContainerSearchObject(catalogedContainer: container);
+        SearchResult containerSearchObject =
+            SearchResult(catalogedContainer: container);
 
         if (filters.contains('Tags')) {
           containerSearchObject.containerTags = isar!.containerTags
@@ -408,45 +410,4 @@ class SearchController {
       }
     }
   }
-}
-
-class ContainerSearchObject {
-  ContainerSearchObject({
-    required this.catalogedContainer,
-  });
-
-  ///Container Entry ID.
-  late final int id = catalogedContainer.id;
-
-  ///Container Entry.
-  final CatalogedContainer catalogedContainer;
-
-  ///List of ContainerTags.
-  List<ContainerTag> containerTags = [];
-
-  ///List of Photos.
-  List<Photo> photos = [];
-
-  ///List of MLObject Labels.
-  List<MLObjectLabel> mlObjectLabels = [];
-
-  ///List of Object Labels.
-  List<ObjectLabel> objectLabels = [];
-
-  ///List of ML Photo Labels.
-  List<MLPhotoLabel> mlPhotoLabels = [];
-
-  ///List of  Photo Labels.
-  List<PhotoLabel> photoLabels = [];
-
-  ///List of MLTextElements.
-  List<MLTextElement> mlTextElements = [];
-
-  @override
-  bool operator ==(Object other) {
-    return (other is ContainerSearchObject) && other.id == id;
-  }
-
-  @override
-  int get hashCode => id.hashCode;
 }

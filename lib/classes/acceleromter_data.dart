@@ -2,6 +2,7 @@
 
 import 'package:vector_math/vector_math_64.dart';
 
+///This is used to store accelerometer Data and to calculate the phones angle relative to gravity.
 class AccelerometerData {
   Vector3 userAccelerometerEvent;
   Vector3 accelerometerEvent;

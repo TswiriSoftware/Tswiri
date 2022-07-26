@@ -16,16 +16,13 @@ class GridViewer extends StatefulWidget {
 
 class _GridViewerState extends State<GridViewer> {
   late final CatalogedContainer _catalogedContainer = widget.catalogedContainer;
-  late List<Marker> markers = [];
 
-  final GridController _gridController = GridController();
+  late final GridController _gridController =
+      GridController(barcodeUID: _catalogedContainer.barcodeUID!);
   late final String? gridUID = _gridController.findGridUID(_catalogedContainer);
 
   @override
   void initState() {
-    if (gridUID != null) {
-      markers = _gridController.findGridMarkers(gridUID!);
-    }
     super.initState();
   }
 
@@ -83,9 +80,14 @@ class _GridViewerState extends State<GridViewer> {
                         minScale: 1,
                         child: CustomPaint(
                           painter: GridVisualizerPainter(
-                            gridUID: gridUID,
-                            gridController: _gridController,
-                            selectedBarcodeUID: _catalogedContainer.barcodeUID!,
+                            displayPoints:
+                                _gridController.calculateDisplayPoints(
+                              Size(
+                                MediaQuery.of(context).size.width,
+                                MediaQuery.of(context).size.height / 2,
+                              ),
+                              _catalogedContainer.barcodeUID,
+                            ),
                           ),
                         ),
                       ),
@@ -104,9 +106,12 @@ class _GridViewerState extends State<GridViewer> {
                 if (barcodeDataBatches != null &&
                     barcodeDataBatches.isNotEmpty) {
                   setState(() {
-                    _gridController.processData(barcodeDataBatches,
-                        gridUID ?? _catalogedContainer.barcodeUID!);
+                    _gridController.processData(
+                      barcodeDataBatches,
+                    );
                   });
+
+                  setState(() {});
                 }
               },
               child: Text(
@@ -133,9 +138,9 @@ class _GridViewerState extends State<GridViewer> {
             child: ListView.builder(
               padding: const EdgeInsets.all(8),
               primary: false,
-              itemCount: markers.length,
+              itemCount: _gridController.markers.length,
               itemBuilder: (context, index) {
-                return _markerCard(markers[index]);
+                return _markerCard(_gridController.markers[index]);
               },
             ),
           ),

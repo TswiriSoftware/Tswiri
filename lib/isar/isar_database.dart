@@ -66,7 +66,7 @@ Directory? photoDirectory;
 ///Initiate a isar connection
 ///
 ///- From Isolate pass in Directory
-Future<Isar> initiateIsar({String? directory, bool? inspector}) async {
+Isar initiateIsar({String? directory, bool? inspector}) {
   Isar isar = Isar.openSync(
     schemas: [
       //Barcode Batch.
@@ -129,8 +129,10 @@ Future<Isar> initiateIsar({String? directory, bool? inspector}) async {
     inspector: inspector ?? true,
   );
 
-  // isar.writeTxnSync((isar) => isar.containerTypes.clearSync());
+  return isar;
+}
 
+Future<void> initiatePhotoStorage() async {
   String storagePath = '${(await getExternalStorageDirectory())!.path}/photos';
 
   if (!await Directory(storagePath).exists()) {
@@ -138,6 +140,4 @@ Future<Isar> initiateIsar({String? directory, bool? inspector}) async {
   } else {
     photoDirectory = Directory(storagePath);
   }
-
-  return isar;
 }

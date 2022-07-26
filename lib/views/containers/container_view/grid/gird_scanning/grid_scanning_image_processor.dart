@@ -42,44 +42,44 @@ void gridScanningImageProcessor(SendPort sendPort) {
           offsetPoints.add(Offset(x, y));
         }
 
-        barcodeData.add([
-          barcode.displayValue, //Display value. [0]
+        barcodeData.add(
           [
-            //On Screen Points [1][]
-            offsetPoints[0].dx,
-            offsetPoints[0].dy,
-            offsetPoints[1].dx,
-            offsetPoints[1].dy,
-            offsetPoints[2].dx,
-            offsetPoints[2].dy,
-            offsetPoints[3].dx,
-            offsetPoints[3].dy,
+            barcode.displayValue, //Display value. [0]
+            [
+              //On Screen Points [1][]
+              offsetPoints[0].dx,
+              offsetPoints[0].dy,
+              offsetPoints[1].dx,
+              offsetPoints[1].dy,
+              offsetPoints[2].dx,
+              offsetPoints[2].dy,
+              offsetPoints[3].dx,
+              offsetPoints[3].dy,
+            ],
+            [
+              //On Image Points [2][]
+              cornerPoints[0].x.toDouble(), // Point1. x
+              cornerPoints[0].y.toDouble(), // Point1. y
+              cornerPoints[1].x.toDouble(), // Point2. x
+              cornerPoints[1].y.toDouble(), // Point2. y
+              cornerPoints[2].x.toDouble(), // Point3. x
+              cornerPoints[2].y.toDouble(), // Point3. y
+              cornerPoints[3].x.toDouble(), // Point4. x
+              cornerPoints[3].y.toDouble(), // Point5. y
+            ],
+            [
+              // Accelerometer Data [3]
+              message[2][0], //accelerometerEvent.x
+              message[2][1], //accelerometerEvent.y
+              message[2][2], //accelerometerEvent.z
+              message[2][3], //userAccelerometerEvent.x
+              message[2][4], //userAccelerometerEvent.y
+              message[2][5], //userAccelerometerEvent.z
+            ],
+            message[3], // timeStamp [4]
           ],
-          [
-            //On Image Points [2][]
-            cornerPoints[0].x.toDouble(), // Point1. x
-            cornerPoints[0].y.toDouble(), // Point1. y
-            cornerPoints[1].x.toDouble(), // Point2. x
-            cornerPoints[1].y.toDouble(), // Point2. y
-            cornerPoints[2].x.toDouble(), // Point3. x
-            cornerPoints[2].y.toDouble(), // Point3. y
-            cornerPoints[3].x.toDouble(), // Point4. x
-            cornerPoints[3].y.toDouble(), // Point5. y
-          ],
-          [
-            // Accelerometer Data [3]
-            message[2][0], //accelerometerEvent.x
-            message[2][1], //accelerometerEvent.y
-            message[2][2], //accelerometerEvent.z
-            message[2][3], //userAccelerometerEvent.x
-            message[2][4], //userAccelerometerEvent.y
-            message[2][5], //userAccelerometerEvent.z
-          ],
-          message[3], // timeStamp [4]
-        ]);
+        );
       }
-      //log(barcodeData.toString());
-
       sendPort.send(barcodeData);
     }
   }

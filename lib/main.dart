@@ -31,8 +31,9 @@ void main() async {
 
   //Initiate Isar
   isarDirectory = await getApplicationSupportDirectory();
-  isar = await initiateIsar(inspector: false);
+  isar = initiateIsar(inspector: false);
   createBasicContainerTypes();
+  await initiatePhotoStorage();
 
   //Load Settigns.
   loadAppSettings();

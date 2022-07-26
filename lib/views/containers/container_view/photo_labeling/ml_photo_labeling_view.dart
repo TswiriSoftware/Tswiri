@@ -716,6 +716,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
     //Decode photo.
     final decodedImage = await decodeImageFromList(photoFile.readAsBytesSync());
 
+    //Set photo size
     Size size =
         Size(decodedImage.width.toDouble(), decodedImage.height.toDouble());
 

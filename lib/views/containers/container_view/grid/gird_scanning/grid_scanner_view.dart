@@ -109,7 +109,7 @@ class _GridScannerViewState extends State<GridScannerView> {
             //Configure the Isolate.
             if (hasSentConfigIsolate1 == false ||
                 hasSentConfigIsolate2 == false) {
-              configureIsolate(inputImage);
+              configureImageProcessors(inputImage);
             }
 
             //Send Image Data.
@@ -158,7 +158,8 @@ class _GridScannerViewState extends State<GridScannerView> {
     );
   }
 
-  void configureIsolate(InputImage inputImage) async {
+  ///Configures the Image Processors.
+  void configureImageProcessors(InputImage inputImage) async {
     if (inputImage.inputImageData != null) {
       //Calculate Canvas Size.
       Size screenSize = Size(
