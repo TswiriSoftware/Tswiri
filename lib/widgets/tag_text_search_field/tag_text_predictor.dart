@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sunbird_2/isar/isar_database.dart';
+import 'package:sunbird/isar/isar_database.dart';
 
 class TagTextPredictor extends StatefulWidget {
   ///

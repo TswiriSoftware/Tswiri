@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
-import 'package:sunbird_2/scripts/coordinate_translator.dart';
+import 'package:sunbird/scripts/coordinate_translator.dart';
 
 class CameraCalibrationPainter extends CustomPainter {
   CameraCalibrationPainter({

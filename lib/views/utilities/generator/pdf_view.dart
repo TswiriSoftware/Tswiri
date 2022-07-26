@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
-import 'package:sunbird_2/views/utilities/generator/barcode_pdf_generator.dart';
+import 'package:sunbird/views/utilities/generator/barcode_pdf_generator.dart';
 
 class PdfView extends StatefulWidget {
   const PdfView(

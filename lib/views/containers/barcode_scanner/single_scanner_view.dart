@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
-import 'package:sunbird_2/globals/globals_export.dart';
+import 'package:sunbird/globals/globals_export.dart';
 
 import 'single_barcode_camera_view.dart';
 import 'single_barcode_painter.dart';

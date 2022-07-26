@@ -3,9 +3,9 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_object_detection/google_mlkit_object_detection.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:sunbird_2/globals/globals_export.dart';
-import 'package:sunbird_2/isar/isar_database.dart';
-import 'package:sunbird_2/scripts/coordinate_translator.dart';
+import 'package:sunbird/globals/globals_export.dart';
+import 'package:sunbird/isar/isar_database.dart';
+import 'package:sunbird/scripts/coordinate_translator.dart';
 import '../../../../classes/image_data.dart';
 
 class MLLabelPhotoPainter extends CustomPainter {

@@ -7,7 +7,7 @@ import 'package:flutter_archive/flutter_archive.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:sunbird_2/isar/isar_database.dart';
+import 'package:sunbird/isar/isar_database.dart';
 import 'package:image/image.dart' as img;
 
 class BackupView extends StatefulWidget {

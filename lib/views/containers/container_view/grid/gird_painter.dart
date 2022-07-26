@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:sunbird_2/classes/display_point.dart';
+import 'package:sunbird/classes/display_point.dart';
 
 class GridVisualizerPainter extends CustomPainter {
   GridVisualizerPainter({

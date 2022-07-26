@@ -1,8 +1,8 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:sunbird_2/isar/isar_database.dart';
-import 'package:sunbird_2/widgets/photo/photo_edit_view.dart';
+import 'package:sunbird/isar/isar_database.dart';
+import 'package:sunbird/widgets/photo/photo_edit_view.dart';
 
 class GalleryView extends StatefulWidget {
   const GalleryView({Key? key}) : super(key: key);

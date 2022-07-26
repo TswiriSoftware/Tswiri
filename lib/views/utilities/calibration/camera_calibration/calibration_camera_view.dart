@@ -5,7 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
-import 'package:sunbird_2/globals/globals_export.dart';
+import 'package:sunbird/globals/globals_export.dart';
 
 enum ScreenMode { liveFeed, gallery }
 

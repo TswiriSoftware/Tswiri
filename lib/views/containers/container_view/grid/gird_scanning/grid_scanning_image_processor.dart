@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'dart:math' as math;
 
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
-import 'package:sunbird_2/scripts/coordinate_translator.dart';
+import 'package:sunbird/scripts/coordinate_translator.dart';
 
 void gridScanningImageProcessor(SendPort sendPort) {
   ReceivePort receivePort = ReceivePort();

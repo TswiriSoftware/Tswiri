@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sunbird_2/views/settings/backup/backup_view.dart';
+import 'package:sunbird/views/settings/backup/backup_view.dart';
 
 import '../../globals/globals_export.dart';
 

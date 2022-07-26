@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:sensors_plus/sensors_plus.dart';
-import 'package:sunbird_2/globals/globals_export.dart';
-import 'package:sunbird_2/isar/isar_database.dart';
-import 'package:sunbird_2/views/search/navigator/navigator_camera_view.dart';
-import 'package:sunbird_2/views/search/navigator/navigator_painter.dart';
+import 'package:sunbird/globals/globals_export.dart';
+import 'package:sunbird/isar/isar_database.dart';
+import 'package:sunbird/views/search/navigator/navigator_camera_view.dart';
+import 'package:sunbird/views/search/navigator/navigator_painter.dart';
 // ignore: depend_on_referenced_packages
 import 'package:vector_math/vector_math_64.dart' as vm;
 

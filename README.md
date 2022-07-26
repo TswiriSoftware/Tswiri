@@ -1,4 +1,4 @@
-# sunbird_2
+# sunbird
 
 A new Flutter project.
 

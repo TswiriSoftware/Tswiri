@@ -2,8 +2,8 @@ import 'dart:ui';
 import 'package:flutter/widgets.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sunbird_2/globals/globals_export.dart';
-import 'package:sunbird_2/isar/isar_database.dart';
+import 'package:sunbird/globals/globals_export.dart';
+import 'package:sunbird/isar/isar_database.dart';
 
 ///Object used to calibrate the camera.
 class CameraCalibration {

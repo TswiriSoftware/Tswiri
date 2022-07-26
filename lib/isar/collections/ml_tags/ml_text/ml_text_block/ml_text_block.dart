@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:sunbird_2/isar/isar_database.dart';
+import 'package:sunbird/isar/isar_database.dart';
 part 'ml_text_block.g.dart';
 
 @Collection()

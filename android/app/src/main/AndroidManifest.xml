@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.sunbird_2">
+    package="com.example.sunbird">
    <application
-        android:label="sunbird_2"
+        android:label="sunbird"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sunbird_2/extentions/string_extentions.dart';
-import 'package:sunbird_2/globals/globals_export.dart';
-import 'package:sunbird_2/widgets/chips/custom_filter_chip.dart';
+import 'package:sunbird/extentions/string_extentions.dart';
+import 'package:sunbird/globals/globals_export.dart';
+import 'package:sunbird/widgets/chips/custom_filter_chip.dart';
 
 class SearchAppBar extends StatefulWidget {
   ///Default Search Bar.

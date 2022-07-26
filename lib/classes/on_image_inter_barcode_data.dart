@@ -1,4 +1,4 @@
-import 'package:sunbird_2/classes/on_image_barcode_data.dart';
+import 'package:sunbird/classes/on_image_barcode_data.dart';
 
 ///Describes the "Offset" between two barcodes.
 class OnImageInterBarcodeData {

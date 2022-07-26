@@ -1,6 +1,6 @@
 {
-    "name": "sunbird_2",
-    "short_name": "sunbird_2",
+    "name": "sunbird",
+    "short_name": "sunbird",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

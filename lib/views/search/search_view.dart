@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:sunbird_2/isar/isar_database.dart';
-import 'package:sunbird_2/views/containers/container_view/container_view.dart';
-import 'package:sunbird_2/views/search/navigator/navigator_view.dart';
-import 'package:sunbird_2/views/search/searh_controller/search_controller.dart';
-import 'package:sunbird_2/widgets/search_bar/search_bar.dart';
+import 'package:sunbird/isar/isar_database.dart';
+import 'package:sunbird/views/containers/container_view/container_view.dart';
+import 'package:sunbird/views/search/navigator/navigator_view.dart';
+import 'package:sunbird/views/search/searh_controller/search_controller.dart';
+import 'package:sunbird/widgets/search_bar/search_bar.dart';
 
 class SearchView extends StatefulWidget {
   const SearchView({

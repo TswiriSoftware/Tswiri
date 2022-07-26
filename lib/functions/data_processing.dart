@@ -1,11 +1,11 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:sunbird_2/classes/inter_barcode_vector.dart';
-import 'package:sunbird_2/classes/on_image_barcode_data.dart';
-import 'package:sunbird_2/classes/on_image_inter_barcode_data.dart';
-import 'package:sunbird_2/globals/globals_export.dart';
-import 'package:sunbird_2/isar/isar_database.dart';
+import 'package:sunbird/classes/inter_barcode_vector.dart';
+import 'package:sunbird/classes/on_image_barcode_data.dart';
+import 'package:sunbird/classes/on_image_inter_barcode_data.dart';
+import 'package:sunbird/globals/globals_export.dart';
+import 'package:sunbird/isar/isar_database.dart';
 // ignore: depend_on_referenced_packages
 import 'package:vector_math/vector_math_64.dart' as vm;
 

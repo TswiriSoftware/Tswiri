@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sunbird_2/globals/globals_export.dart';
+import 'package:sunbird/globals/globals_export.dart';
 
 class CustomFilterChip extends StatelessWidget {
   ///   Chip used to display a Filter.

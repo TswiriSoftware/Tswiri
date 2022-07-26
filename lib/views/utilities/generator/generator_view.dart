@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'package:sunbird_2/globals/globals_export.dart';
-import 'package:sunbird_2/isar/isar_database.dart';
-import 'package:sunbird_2/views/utilities/generator/pdf_view.dart';
+import 'package:sunbird/globals/globals_export.dart';
+import 'package:sunbird/isar/isar_database.dart';
+import 'package:sunbird/views/utilities/generator/pdf_view.dart';
 
 class GeneratorView extends StatefulWidget {
   const GeneratorView({Key? key}) : super(key: key);

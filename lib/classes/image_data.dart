@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image/image.dart' as img;
-import 'package:sunbird_2/isar/isar_database.dart';
+import 'package:sunbird/isar/isar_database.dart';
 
 ///ImageData
 ///

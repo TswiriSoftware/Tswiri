@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sunbird_2/classes/grid_controller.dart';
-import 'package:sunbird_2/globals/globals_export.dart';
-import 'package:sunbird_2/isar/isar_database.dart';
-import 'package:sunbird_2/views/containers/container_view/grid/gird_painter.dart';
-import 'package:sunbird_2/views/containers/container_view/grid/gird_scanning/grid_scanner_view.dart';
+import 'package:sunbird/classes/grid_controller.dart';
+import 'package:sunbird/globals/globals_export.dart';
+import 'package:sunbird/isar/isar_database.dart';
+import 'package:sunbird/views/containers/container_view/grid/gird_painter.dart';
+import 'package:sunbird/views/containers/container_view/grid/gird_scanning/grid_scanner_view.dart';
 
 class GridViewer extends StatefulWidget {
   const GridViewer({Key? key, required this.catalogedContainer})

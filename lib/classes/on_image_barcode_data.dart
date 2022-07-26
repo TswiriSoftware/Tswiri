@@ -1,7 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'dart:convert';
-import 'package:sunbird_2/classes/acceleromter_data.dart';
+import 'package:sunbird/classes/acceleromter_data.dart';
 import 'package:vector_math/vector_math_64.dart' as vm;
 import 'dart:ui';
 

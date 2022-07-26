@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:sensors_plus/sensors_plus.dart';
-import 'package:sunbird_2/globals/globals_export.dart';
+import 'package:sunbird/globals/globals_export.dart';
 import 'package:vector_math/vector_math_64.dart' as vm;
 
 import 'calibration_camera_view.dart';
