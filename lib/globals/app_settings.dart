@@ -40,6 +40,9 @@ String focalLengthPref = 'focalLength';
 bool colorModeEnabled = false;
 String colorModeEnabledPref = 'colorModeEnabled';
 
+//Isar version
+int isarVersion = 1;
+
 void loadAppSettings() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 

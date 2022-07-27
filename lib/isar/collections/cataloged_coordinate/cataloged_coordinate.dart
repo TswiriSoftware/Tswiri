@@ -13,7 +13,7 @@ class CatalogedCoordinate {
 
   ///Origin Barcode UID.
   @Name("gridUID")
-  late String gridUID;
+  late int gridUID;
 
   @Name("timestamp")
   late int timestamp;
@@ -30,6 +30,33 @@ class CatalogedCoordinate {
   String toString() {
     return '\ngridUID: $gridUID, barcodeUID: $barcodeUID, coordinate; $coordinate, timestamp: $timestamp';
   }
+
+  List<dynamic> toMessage() {
+    return [
+      'update', //[0]
+      barcodeUID, //[1]
+      gridUID, //[2]
+      timestamp, //[3]
+      [
+        coordinate!.x, // [4][0]
+        coordinate!.y, // [4][1]
+        coordinate!.z, // [4][2]
+      ],
+    ];
+  }
+}
+
+CatalogedCoordinate catalogedCoordinateFromMessage(List<dynamic> message) {
+  return CatalogedCoordinate()
+    ..barcodeUID = message[1]
+    ..coordinate = vm.Vector3(
+      message[4][0] as double,
+      message[4][1] as double,
+      message[4][2] as double,
+    )
+    ..gridUID = message[2] as int
+    ..timestamp = message[3] as int
+    ..rotation = null;
 }
 
 class Vector3Converter extends TypeConverter<vm.Vector3?, List<double>?> {

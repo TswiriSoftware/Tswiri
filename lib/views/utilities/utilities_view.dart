@@ -4,6 +4,7 @@ import 'calibration/calibration_view.dart';
 import 'container_types/container_types_view.dart';
 import 'gallery/gallery_view.dart';
 import 'generator/generator_view.dart';
+import 'grids/grids_view.dart';
 import 'navigator_card.dart';
 
 class UtilitiesView extends StatefulWidget {
@@ -67,11 +68,11 @@ class _UtilitiesViewState extends State<UtilitiesView> {
             icon: Icons.code_sharp,
             viewPage: ContainerTypesView(),
           ),
-          // NavigatorCard(
-          //   label: 'Markers',
-          //   icon: Icons.gps_fixed,
-          //   viewPage: MarkersView(),
-          // ),
+          NavigatorCard(
+            label: 'Grids',
+            icon: Icons.grid_4x4_sharp,
+            viewPage: MarkersView(),
+          ),
         ],
       ),
     );

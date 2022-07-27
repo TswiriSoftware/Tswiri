@@ -1,3 +1,4 @@
+import 'dart:developer' as d;
 import 'dart:math';
 import 'dart:ui';
 
@@ -83,8 +84,9 @@ double calculateRealUnit({
   required double diagonalLength,
   required String barcodeUID,
   required List<CatalogedBarcode> barcodeProperties,
+  double? passedDefaultBarcodeSize,
 }) {
-  double barcodeDiagonalLength = defaultBarcodeSize;
+  double barcodeDiagonalLength = passedDefaultBarcodeSize ?? defaultBarcodeSize;
 
   int index = barcodeProperties
       .indexWhere((element) => element.barcodeUID == barcodeUID);
@@ -97,13 +99,14 @@ double calculateRealUnit({
 }
 
 ///Calculate the distance from camera in (mm).
-double calculateDistanceFromCamera(
-    {required double barcodeOnImageDiagonalLength,
-    required String barcodeUID,
-    required double focalLength,
-    //required Isar isarDatabase,
-    required List<CatalogedBarcode> barcodeProperties}) {
-  double barcodeDiagonalLength = defaultBarcodeSize;
+double calculateDistanceFromCamera({
+  required double barcodeOnImageDiagonalLength,
+  required String barcodeUID,
+  required double focalLength,
+  required List<CatalogedBarcode> barcodeProperties,
+  double? passedDefaultBarcodeSize,
+}) {
+  double barcodeDiagonalLength = passedDefaultBarcodeSize ?? defaultBarcodeSize;
 
   int index = barcodeProperties
       .indexWhere((element) => element.barcodeUID == barcodeUID);
@@ -209,7 +212,7 @@ double calculateQuartileValue(
 
 ///Generate a list of coordinates from a list of interBarcodeVectors and the origin container.
 List<CatalogedCoordinate> generateCoordinates(
-  String gridUID,
+  int gridUID,
   List<InterBarcodeVector> interBarcodeVectors,
 ) {
   //1. Extract Barcodes
@@ -219,22 +222,31 @@ List<CatalogedCoordinate> generateCoordinates(
 
   //2. Create a list of all possible coordiantes.
   List<CatalogedCoordinate> coordinates = barcodes
-      .map((e) => CatalogedCoordinate()
-        ..barcodeUID = e
-        ..gridUID = gridUID
-        ..coordinate = null
-        ..rotation = null
-        ..timestamp = timestamp)
+      .map(
+        (e) => CatalogedCoordinate()
+          ..barcodeUID = e
+          ..gridUID = gridUID
+          ..coordinate = null
+          ..rotation = null
+          ..timestamp = timestamp,
+      )
       .toList();
 
   //3. Populate the Origin Coordinate.
-  int index =
-      coordinates.indexWhere((element) => element.barcodeUID == gridUID);
+  int index = coordinates.indexWhere((element) =>
+      element.barcodeUID == isar!.catalogedGrids.getSync(gridUID)!.barcodeUID);
 
-  if (index != -1) {
-    coordinates
-        .firstWhere((element) => element.barcodeUID == gridUID)
-        .coordinate = vm.Vector3(0, 0, 0);
+  if (index == -1) {
+    coordinates.add(
+      CatalogedCoordinate()
+        ..barcodeUID = isar!.catalogedGrids.getSync(gridUID)!.barcodeUID
+        ..coordinate = vm.Vector3(0, 0, 0)
+        ..gridUID = gridUID
+        ..rotation = null
+        ..timestamp = DateTime.now().millisecondsSinceEpoch,
+    );
+  } else {
+    coordinates[index].coordinate = vm.Vector3(0, 0, 0);
   }
 
   int nonNullPositions = 1;
@@ -342,7 +354,6 @@ List<CatalogedCoordinate> generateCoordinates(
       break;
     }
   }
-
   return coordinates;
 }
 

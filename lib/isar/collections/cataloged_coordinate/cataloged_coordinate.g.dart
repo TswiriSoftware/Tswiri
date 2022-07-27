@@ -16,7 +16,7 @@ extension GetCatalogedCoordinateCollection on Isar {
 const CatalogedCoordinateSchema = CollectionSchema(
   name: 'CatalogedCoordinate',
   schema:
-      '{"name":"CatalogedCoordinate","idName":"id","properties":[{"name":"barcodeUID","type":"String"},{"name":"coordinate","type":"DoubleList"},{"name":"gridUID","type":"String"},{"name":"rotation","type":"DoubleList"},{"name":"timestamp","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"CatalogedCoordinate","idName":"id","properties":[{"name":"barcodeUID","type":"String"},{"name":"coordinate","type":"DoubleList"},{"name":"gridUID","type":"Long"},{"name":"rotation","type":"DoubleList"},{"name":"timestamp","type":"Long"}],"indexes":[],"links":[]}',
   idName: 'id',
   propertyIds: {
     'barcodeUID': 0,
@@ -76,8 +76,7 @@ void _catalogedCoordinateSerializeNative(
   dynamicSize += (value1?.length ?? 0) * 8;
   final _coordinate = value1;
   final value2 = object.gridUID;
-  final _gridUID = IsarBinaryWriter.utf8Encoder.convert(value2);
-  dynamicSize += (_gridUID.length) as int;
+  final _gridUID = value2;
   final value3 = _catalogedCoordinateVector3Converter.toIsar(object.rotation);
   dynamicSize += (value3?.length ?? 0) * 8;
   final _rotation = value3;
@@ -91,7 +90,7 @@ void _catalogedCoordinateSerializeNative(
   final writer = IsarBinaryWriter(buffer, staticSize);
   writer.writeBytes(offsets[0], _barcodeUID);
   writer.writeDoubleList(offsets[1], _coordinate);
-  writer.writeBytes(offsets[2], _gridUID);
+  writer.writeLong(offsets[2], _gridUID);
   writer.writeDoubleList(offsets[3], _rotation);
   writer.writeLong(offsets[4], _timestamp);
 }
@@ -105,7 +104,7 @@ CatalogedCoordinate _catalogedCoordinateDeserializeNative(
   object.barcodeUID = reader.readString(offsets[0]);
   object.coordinate = _catalogedCoordinateVector3Converter
       .fromIsar(reader.readDoubleList(offsets[1]));
-  object.gridUID = reader.readString(offsets[2]);
+  object.gridUID = reader.readLong(offsets[2]);
   object.id = id;
   object.rotation = _catalogedCoordinateVector3Converter
       .fromIsar(reader.readDoubleList(offsets[3]));
@@ -124,7 +123,7 @@ P _catalogedCoordinateDeserializePropNative<P>(
       return (_catalogedCoordinateVector3Converter
           .fromIsar(reader.readDoubleList(offset))) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 3:
       return (_catalogedCoordinateVector3Converter
           .fromIsar(reader.readDoubleList(offset))) as P;
@@ -159,7 +158,8 @@ CatalogedCoordinate _catalogedCoordinateDeserializeWeb(
           ?.map((e) => e ?? double.negativeInfinity)
           .toList()
           .cast<double>());
-  object.gridUID = IsarNative.jsObjectGet(jsObj, 'gridUID') ?? '';
+  object.gridUID =
+      IsarNative.jsObjectGet(jsObj, 'gridUID') ?? double.negativeInfinity;
   object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
   object.rotation = _catalogedCoordinateVector3Converter.fromIsar(
       (IsarNative.jsObjectGet(jsObj, 'rotation') as List?)
@@ -182,7 +182,8 @@ P _catalogedCoordinateDeserializePropWeb<P>(Object jsObj, String propertyName) {
               .toList()
               .cast<double>())) as P;
     case 'gridUID':
-      return (IsarNative.jsObjectGet(jsObj, 'gridUID') ?? '') as P;
+      return (IsarNative.jsObjectGet(jsObj, 'gridUID') ??
+          double.negativeInfinity) as P;
     case 'id':
       return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
           as P;
@@ -428,22 +429,17 @@ extension CatalogedCoordinateQueryFilter on QueryBuilder<CatalogedCoordinate,
   }
 
   QueryBuilder<CatalogedCoordinate, CatalogedCoordinate, QAfterFilterCondition>
-      gridUIDEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      gridUIDEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
       property: 'gridUID',
       value: value,
-      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<CatalogedCoordinate, CatalogedCoordinate, QAfterFilterCondition>
       gridUIDGreaterThan(
-    String value, {
-    bool caseSensitive = true,
+    int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
@@ -451,14 +447,12 @@ extension CatalogedCoordinateQueryFilter on QueryBuilder<CatalogedCoordinate,
       include: include,
       property: 'gridUID',
       value: value,
-      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<CatalogedCoordinate, CatalogedCoordinate, QAfterFilterCondition>
       gridUIDLessThan(
-    String value, {
-    bool caseSensitive = true,
+    int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
@@ -466,15 +460,13 @@ extension CatalogedCoordinateQueryFilter on QueryBuilder<CatalogedCoordinate,
       include: include,
       property: 'gridUID',
       value: value,
-      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<CatalogedCoordinate, CatalogedCoordinate, QAfterFilterCondition>
       gridUIDBetween(
-    String lower,
-    String upper, {
-    bool caseSensitive = true,
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -484,53 +476,6 @@ extension CatalogedCoordinateQueryFilter on QueryBuilder<CatalogedCoordinate,
       includeLower: includeLower,
       upper: upper,
       includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<CatalogedCoordinate, CatalogedCoordinate, QAfterFilterCondition>
-      gridUIDStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'gridUID',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<CatalogedCoordinate, CatalogedCoordinate, QAfterFilterCondition>
-      gridUIDEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'gridUID',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<CatalogedCoordinate, CatalogedCoordinate, QAfterFilterCondition>
-      gridUIDContains(String value, {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'gridUID',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<CatalogedCoordinate, CatalogedCoordinate, QAfterFilterCondition>
-      gridUIDMatches(String pattern, {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'gridUID',
-      value: pattern,
-      caseSensitive: caseSensitive,
     ));
   }
 
@@ -783,8 +728,8 @@ extension CatalogedCoordinateQueryWhereDistinct
   }
 
   QueryBuilder<CatalogedCoordinate, CatalogedCoordinate, QDistinct>
-      distinctByGridUID({bool caseSensitive = true}) {
-    return addDistinctByInternal('gridUID', caseSensitive: caseSensitive);
+      distinctByGridUID() {
+    return addDistinctByInternal('gridUID');
   }
 
   QueryBuilder<CatalogedCoordinate, CatalogedCoordinate, QDistinct>
@@ -810,8 +755,7 @@ extension CatalogedCoordinateQueryProperty
     return addPropertyNameInternal('coordinate');
   }
 
-  QueryBuilder<CatalogedCoordinate, String, QQueryOperations>
-      gridUIDProperty() {
+  QueryBuilder<CatalogedCoordinate, int, QQueryOperations> gridUIDProperty() {
     return addPropertyNameInternal('gridUID');
   }
 

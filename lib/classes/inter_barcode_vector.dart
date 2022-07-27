@@ -46,6 +46,7 @@ class InterBarcodeVector {
     required OnImageInterBarcodeData interBarcodeData,
     required List<CatalogedBarcode> barcodeProperties,
     required double focalLength,
+    double? passedDefaultBarcodeSize,
   }) {
     //1. Calculate RealInterBarcodeOffset.
     //i. Calculate phone angle.
@@ -68,14 +69,18 @@ class InterBarcodeVector {
     //v. Calculate MMperPX.
     //Start.
     double startBarcodeMMperPX = calculateRealUnit(
-        diagonalLength: interBarcodeData.startBarcode.barcodeDiagonalLength,
-        barcodeUID: interBarcodeData.startBarcode.barcodeUID,
-        barcodeProperties: barcodeProperties);
+      diagonalLength: interBarcodeData.startBarcode.barcodeDiagonalLength,
+      barcodeUID: interBarcodeData.startBarcode.barcodeUID,
+      barcodeProperties: barcodeProperties,
+      passedDefaultBarcodeSize: passedDefaultBarcodeSize,
+    );
     //End.
     double endBarcodeMMperPX = calculateRealUnit(
-        diagonalLength: interBarcodeData.endBarcode.barcodeDiagonalLength,
-        barcodeUID: interBarcodeData.endBarcode.barcodeUID,
-        barcodeProperties: barcodeProperties);
+      diagonalLength: interBarcodeData.endBarcode.barcodeDiagonalLength,
+      barcodeUID: interBarcodeData.endBarcode.barcodeUID,
+      barcodeProperties: barcodeProperties,
+      passedDefaultBarcodeSize: passedDefaultBarcodeSize,
+    );
 
     //vi. Calculate RealOffsets.
     Offset realOffsetStartBarcode = interBarcodeOffset / startBarcodeMMperPX;
@@ -93,6 +98,7 @@ class InterBarcodeVector {
       barcodeUID: interBarcodeData.startBarcode.barcodeUID,
       focalLength: focalLength,
       barcodeProperties: barcodeProperties,
+      passedDefaultBarcodeSize: passedDefaultBarcodeSize,
     );
 
     //EndBarcode.
@@ -102,6 +108,7 @@ class InterBarcodeVector {
       barcodeUID: interBarcodeData.endBarcode.barcodeUID,
       focalLength: focalLength,
       barcodeProperties: barcodeProperties,
+      passedDefaultBarcodeSize: passedDefaultBarcodeSize,
     );
 
     //3. Calculate the zOffset.

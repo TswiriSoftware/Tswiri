@@ -9,6 +9,7 @@ import 'package:sunbird/isar/collections/cataloged_barcode/cataloged_barcode.dar
 import 'package:sunbird/isar/collections/camera_calibration/camera_calibration_entry.dart';
 import 'package:sunbird/isar/collections/cataloged_container/cataloged_container.dart';
 import 'package:sunbird/isar/collections/cataloged_coordinate/cataloged_coordinate.dart';
+import 'package:sunbird/isar/collections/cataloged_grid/cataloged_grid.dart';
 import 'package:sunbird/isar/collections/container_relationship/container_relationship.dart';
 import 'package:sunbird/isar/collections/container_tag/container_tag.dart';
 import 'package:sunbird/isar/collections/container_type/container_type.dart';
@@ -46,7 +47,7 @@ export 'package:sunbird/isar/collections/object_label/object_label.dart';
 export 'package:sunbird/isar/collections/photo/photo.dart';
 export 'package:sunbird/isar/collections/photo_label/photo_label.dart';
 export 'package:sunbird/isar/collections/tag_text/tag_text.dart';
-
+export 'package:sunbird/isar/collections/cataloged_grid/cataloged_grid.dart';
 export 'package:sunbird/isar/collections/cataloged_coordinate/cataloged_coordinate.dart';
 export 'package:sunbird/isar/collections/marker/marker.dart';
 
@@ -89,6 +90,9 @@ Isar initiateIsar({String? directory, bool? inspector}) {
 
       //Container Type.
       ContainerTypeSchema,
+
+      //Cataloged Grids
+      CatalogedGridSchema,
 
       //ML Detected Label Text.
       MLDetectedLabelTextSchema,

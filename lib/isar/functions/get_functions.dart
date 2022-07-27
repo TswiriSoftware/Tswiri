@@ -73,3 +73,22 @@ String getMLDetectedElementText(int detectedLabelTextID) {
 IconData getContainerTypeIcon(int containerTypeID) {
   return isar!.containerTypes.getSync(containerTypeID)!.iconData;
 }
+
+bool canDeleteMarker(Marker marker) {
+  CatalogedContainer? catalogedContainer = isar!.catalogedContainers
+      .filter()
+      .barcodeUIDMatches(marker.barcodeUID)
+      .findFirstSync();
+
+  if (catalogedContainer != null) {
+    ContainerType containerType =
+        isar!.containerTypes.getSync(catalogedContainer.containerTypeID)!;
+
+    if (!containerType.moveable) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  return false;
+}

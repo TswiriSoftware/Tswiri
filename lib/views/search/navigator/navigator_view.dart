@@ -25,7 +25,7 @@ class NavigatorView extends StatefulWidget {
     required this.gridUID,
   }) : super(key: key);
   final CatalogedContainer catalogedContainer;
-  final String gridUID;
+  final int gridUID;
   @override
   State<NavigatorView> createState() => _NavigatorViewState();
 }
@@ -72,7 +72,7 @@ class _NavigatorViewState extends State<NavigatorView> {
       userAccelerometerEvent = vm.Vector3(event.x, event.y, event.z);
     });
 
-    //Initiate Isolates.
+    //Initiate Image Processor Isolates.
     FlutterIsolate.spawn(
       navigationImageProcessor,
       [
@@ -99,6 +99,7 @@ class _NavigatorViewState extends State<NavigatorView> {
       ],
     );
 
+    //Spawn the Grid Processor.
     FlutterIsolate.spawn(
       gridProcessor,
       [
@@ -115,7 +116,6 @@ class _NavigatorViewState extends State<NavigatorView> {
         log('UI: ImageProcessor1 Port Set');
       } else if (message[0] == 'painterMessage') {
         drawImage(message);
-        log('draw');
       } else if (message[0] == 'error') {
         // errorHandler(message);
       }
@@ -127,7 +127,6 @@ class _NavigatorViewState extends State<NavigatorView> {
         log('UI: ImageProcessor2 Port Set');
       } else if (message[0] == 'painterMessage') {
         drawImage(message);
-        log('draw');
       } else if (message[0] == 'error') {
         // errorHandler(message);
       }
@@ -137,7 +136,7 @@ class _NavigatorViewState extends State<NavigatorView> {
       if (message[0] == 'Sendport') {
         _gridProcessor1 = message[1];
         log('UI: GridProcessor1 Port Set');
-      } else if (message[0] == 'Update') {
+      } else if (message[0] == 'update') {
         _imageProcessor1!.send(message);
         _imageProcessor2!.send(message);
       }
@@ -254,10 +253,8 @@ class _NavigatorViewState extends State<NavigatorView> {
     //Send Data.
     if (counter == 0) {
       _imageProcessor1!.send(message);
-      log('Sending Data.');
     } else if (counter == 3) {
       _imageProcessor2!.send(message);
-      log('Sending Data.');
     }
 
     counter++;

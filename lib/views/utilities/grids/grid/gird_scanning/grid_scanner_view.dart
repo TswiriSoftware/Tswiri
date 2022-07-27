@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:sensors_plus/sensors_plus.dart';
-import 'package:sunbird/views/containers/container_view/grid/gird_scanning/grid_scanning_image_processor.dart';
 // ignore: depend_on_referenced_packages
 import 'package:vector_math/vector_math_64.dart' as vm;
 import 'grid_scanner_camera_view.dart';
 import 'grid_scanner_painter.dart';
+import 'grid_scanning_image_processor.dart';
 
 ///Returns a single barcodeUID.
 class GridScannerView extends StatefulWidget {

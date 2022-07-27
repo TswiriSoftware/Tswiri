@@ -7,6 +7,7 @@ import 'package:flutter_archive/flutter_archive.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:image/image.dart' as img;
 
@@ -168,8 +169,8 @@ class _BackupViewState extends State<BackupView> {
     }
 
     try {
-      final zipFile =
-          File('${documentsDirectory.path}/sunbird_backup_$formattedDate.zip');
+      final zipFile = File(
+          '${documentsDirectory.path}/sunbird_backup_${formattedDate}_v$isarVersion.zip');
       await ZipFile.createFromDirectory(
         sourceDir: newBackupDirectory,
         zipFile: zipFile,

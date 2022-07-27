@@ -20,7 +20,7 @@ void navigationImageProcessor(List init) {
   // double focalLength = init[3]; //[3] focalLength //Not Required anymore ?
   String selectedBarcodeUID = init[4]; //[4] SelectedContainer BarcodeUID
   double defualtBarcodeSize = init[5]; //[5] Default Barcode Size.
-  String selectedBarcodeGrid = init[6]; //SelectedBarcodeGridUID.
+  int selectedBarcodeGrid = init[6]; //SelectedBarcodeGridUID.
 
   //2. ReceivePort.
   ReceivePort receivePort = ReceivePort();
@@ -70,8 +70,7 @@ void navigationImageProcessor(List init) {
 
       double? averageOnImageBarcodeSize;
       Offset? averageOffsetToBarcode;
-      //TODO: Grid Update Implementation.
-      List<OnImageBarcodeData> onImageBarcodeDatas = [];
+      List onImageBarcodeDatas = [];
 
       List<dynamic> barcodeToPaint = [];
 
@@ -128,7 +127,7 @@ void navigationImageProcessor(List init) {
             ),
           ),
         );
-        onImageBarcodeDatas.add(onImageBarcodeData);
+        onImageBarcodeDatas.add(onImageBarcodeData.toMessage());
 
         //Calculate phone angle.
         double phoneAngle =
@@ -199,7 +198,7 @@ void navigationImageProcessor(List init) {
 
             averageOffsetToBarcode ??= offsetToBarcode;
           } else {
-            //In the wrong grid. TODO: implement wrong Grid error.
+            //In the wrong grid. TODO: implement interGrid Navigation if possible else Throw message.
           }
         } else {
           //Coordiante not found. TODO: Possibly let the user know this barcode has not been scanned. Scafold message ?
@@ -219,6 +218,10 @@ void navigationImageProcessor(List init) {
       ];
 
       sendPort.send(painterMessage);
+
+      if (gridProcessor != null) {
+        gridProcessor!.send(onImageBarcodeDatas);
+      }
     }
   }
 
@@ -243,8 +246,27 @@ void navigationImageProcessor(List init) {
 
       log('I$id: InputImageData Configured');
     } else if (message[0] == 'process') {
-      log('Receiving Data.');
       _processImage(message);
+    } else if (message[0] == 'update') {
+      CatalogedCoordinate newCoordinate =
+          catalogedCoordinateFromMessage(message);
+
+      //Find the coordinate that has moved.
+      int index = coordinates.indexWhere(
+          (element) => element.barcodeUID == newCoordinate.barcodeUID);
+
+      if (index != -1) {
+        //If it exsits remove it and add the new coordiante.
+        coordinates.removeAt(index);
+        coordinates.add(newCoordinate);
+
+        if (targetCoordinate.barcodeUID == newCoordinate.barcodeUID) {
+          //If the target coordinate has moved update it.
+          targetCoordinate = newCoordinate;
+        }
+      } else {
+        coordinates.add(newCoordinate);
+      }
     }
   });
 }
