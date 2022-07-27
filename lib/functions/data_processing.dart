@@ -1,4 +1,3 @@
-import 'dart:developer' as d;
 import 'dart:math';
 import 'dart:ui';
 

@@ -7,6 +7,7 @@ import 'package:sunbird/classes/on_image_inter_barcode_data.dart';
 import 'package:sunbird/functions/data_processing.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
+// ignore: depend_on_referenced_packages
 import 'package:vector_math/vector_math_64.dart' as vm;
 
 class GridController {
