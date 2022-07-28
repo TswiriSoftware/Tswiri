@@ -54,19 +54,19 @@ dependencies:
   flutter_archive: ^5.0.0
   share_plus: ^4.0.10
   file_picker: ^4.6.1
+  flutter_launcher_icons: ^0.9.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^2.0.0
   isar_generator: ^2.2.1
   build_runner: ^2.1.4
+
+flutter_icons:
+  android: "ic_launcher"
+  image_path: "assets/icons/sunbird_icon.png"
+  adaptive_icon_background: "assets/icons/background.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

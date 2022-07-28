@@ -322,6 +322,55 @@ void navigationImageProcessor(List init) {
                 }
               } else {
                 //We are more than 1 grid above the target grid.
+
+                //Find the target barcode.
+                CatalogedGrid targetGrid = parentGrids[gridIndex - 1];
+
+                int indexOfTargetCoordinate = currentCoordinates.indexWhere(
+                    (element) =>
+                        element.barcodeUID == targetGrid.parentBarcodeUID);
+
+                if (indexOfTargetCoordinate != -1) {
+                  CatalogedCoordinate targetCoordinate =
+                      currentCoordinates[indexOfTargetCoordinate];
+
+                  //In the correct grid.
+                  Offset realScreenCenter = Offset(
+                          catalogedCoordinate.coordinate!.x,
+                          catalogedCoordinate.coordinate!.y) -
+                      realOffsetToScreenCenter;
+
+                  Offset offsetToBarcode = rotateOffset(
+                    offset: Offset(
+                          targetCoordinate.coordinate!.x,
+                          targetCoordinate.coordinate!.y,
+                        ) -
+                        realScreenCenter,
+                    angleRadians: -onImageBarcodeData.accelerometerData
+                        .calculatePhoneAngle(),
+                  );
+
+                  averageOffsetToBarcode ??= offsetToBarcode;
+                  openMe = true;
+                  if (targetCoordinate.barcodeUID == barcode.displayValue) {
+                    barcodeToPaint = [
+                      barcode.displayValue, //Display value. [0]
+                      [
+                        //On Screen Points [1]
+                        conrnerPoints[0].dx,
+                        conrnerPoints[0].dy,
+                        conrnerPoints[1].dx,
+                        conrnerPoints[1].dy,
+                        conrnerPoints[2].dx,
+                        conrnerPoints[2].dy,
+                        conrnerPoints[3].dx,
+                        conrnerPoints[3].dy,
+                      ],
+                    ];
+                  }
+                } else {
+                  //TODO: ERROR.
+                }
               }
             } else {
               //Current Grid is NOT a parent of the targetBarcode.

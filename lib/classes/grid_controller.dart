@@ -52,13 +52,12 @@ class GridController {
 
     //6. Create/Update Coordinates.
     isar!.writeTxnSync((isar) {
+      //1. detele IT if IT exists.
+      isar.catalogedCoordinates
+          .filter()
+          .gridUIDEqualTo(gridUID)
+          .deleteAllSync();
       for (var coordinate in coordinates) {
-        //1. detele IT if IT exists.
-        isar.catalogedCoordinates
-            .filter()
-            .barcodeUIDMatches(coordinate.barcodeUID)
-            .deleteAllSync();
-
         //2. input IT.
         isar.catalogedCoordinates.putSync(coordinate);
       }
