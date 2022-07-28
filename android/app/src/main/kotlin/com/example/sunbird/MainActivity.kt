@@ -1,4 +1,4 @@
-package com.example.sunbird
+package com.scholtz.sunbird
 
 import io.flutter.embedding.android.FlutterActivity
 

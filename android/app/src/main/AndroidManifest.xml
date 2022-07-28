@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.sunbird">
+    package="com.scholtz.sunbird">
    <application
         android:label="sunbird"
         android:name="${applicationName}"
