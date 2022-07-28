@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'package:sunbird/classes/acceleromter_data.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/views/search/navigator/navigator_camera_view.dart';
@@ -187,7 +188,9 @@ class _NavigatorViewState extends State<NavigatorView> {
     if (_isBusy) return;
     _isBusy = true;
 
-    final painter = NavigatorPainter(message: message);
+    final painter = NavigatorPainter(
+      message: message,
+    );
 
     _customPaint = CustomPaint(painter: painter);
 

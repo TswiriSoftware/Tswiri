@@ -1,5 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:sunbird/classes/acceleromter_data.dart';
+import 'package:sunbird/globals/globals_export.dart';
 
 Offset? averageOffsetToBarcode;
 
@@ -29,6 +31,10 @@ class NavigatorPainter extends CustomPainter {
     ..strokeWidth = 3.0
     ..color = Colors.blue;
 
+  final Paint textBackground = Paint()
+    ..style = PaintingStyle.fill
+    ..color = background;
+
   @override
   void paint(Canvas canvas, Size size) {
     Offset screenCenter = Offset(
@@ -46,6 +52,29 @@ class NavigatorPainter extends CustomPainter {
       ];
 
       canvas.drawPoints(PointMode.polygon, offsetPoints, barcodePaint);
+
+      if (message[4] == true) {
+        final textSpan = TextSpan(
+          text: 'Open Me',
+          style: TextStyle(
+            color: Colors.red[500],
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            background: textBackground,
+          ),
+        );
+        final textPainter = TextPainter(
+          textAlign: TextAlign.justify,
+          text: textSpan,
+          textDirection: TextDirection.ltr,
+        );
+        textPainter.layout(
+          minWidth: 0,
+          maxWidth: size.width,
+        );
+
+        textPainter.paint(canvas, offsetPoints[0]);
+      }
     }
 
     double finderCircleRadius = message[1] / 3;

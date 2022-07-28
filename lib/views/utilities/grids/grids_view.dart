@@ -75,6 +75,23 @@ class _MarkersViewState extends State<MarkersView> {
             ),
             const Divider(),
 
+            ///Parent.
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Parent:',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                Text(
+                  isar!.catalogedGrids.getSync(gridUID)?.parentBarcodeUID ??
+                      '-',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+            const Divider(),
+
             ///Number of containers.
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

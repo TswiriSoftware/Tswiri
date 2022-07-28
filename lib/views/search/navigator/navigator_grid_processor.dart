@@ -187,6 +187,7 @@ void gridProcessor(List init) {
             );
 
             if (index == -1) {
+              //it is NOT a marker.
               List message = newFixedCoordinate.toMessage();
               sendPort.send(message);
               isar.writeTxnSync((isar) {
@@ -197,6 +198,7 @@ void gridProcessor(List init) {
                 isar.catalogedCoordinates.putSync(newFixedCoordinate);
               });
             } else {
+              //it IS a marker.
               //TODO: HORIFIED.. Throw a 'very' unintrucive error :D.
             }
           }
@@ -204,7 +206,7 @@ void gridProcessor(List init) {
       }
     }
 
-    log(currentFixedCoordinates.toString());
+    // log(currentFixedCoordinates.toString());
   }
 
   receivePort.listen((message) {

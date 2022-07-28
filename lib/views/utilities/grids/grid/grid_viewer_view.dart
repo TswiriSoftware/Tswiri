@@ -29,7 +29,48 @@ class _GirdViewerState extends State<GirdViewer> {
   void initState() {
     _updateMarkers();
 
-    log(isar!.catalogedCoordinates.where().findAllSync().toString());
+    CatalogedGrid targetGrid = isar!.catalogedGrids.getSync(gridUID)!;
+
+    log(targetGrid.toString());
+
+    List<CatalogedGrid> parentGrids = [];
+
+    if (targetGrid.parentBarcodeUID != null) {
+      CatalogedCoordinate? catalogedCoordinate = isar!.catalogedCoordinates
+          .filter()
+          .barcodeUIDMatches(targetGrid.barcodeUID)
+          .findFirstSync();
+
+      int i = 1;
+      while (catalogedCoordinate != null && i < 100) {
+        CatalogedGrid? catalogedGrid =
+            isar!.catalogedGrids.getSync(catalogedCoordinate.gridUID);
+
+        if (catalogedGrid != null) {
+          parentGrids.add(catalogedGrid);
+
+          if (catalogedGrid.parentBarcodeUID != null) {
+            catalogedCoordinate = isar!.catalogedCoordinates
+                .filter()
+                .barcodeUIDMatches(catalogedGrid.parentBarcodeUID!)
+                .findFirstSync();
+            if (catalogedCoordinate != null) {
+              catalogedGrid =
+                  isar!.catalogedGrids.getSync(catalogedCoordinate.gridUID);
+            }
+          } else {
+            catalogedCoordinate = null;
+          }
+        } else {
+          catalogedCoordinate = null;
+        }
+
+        i++;
+      }
+
+      log(parentGrids.toString());
+    }
+
     super.initState();
   }
 

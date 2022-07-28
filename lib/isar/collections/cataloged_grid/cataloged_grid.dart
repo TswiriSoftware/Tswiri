@@ -16,6 +16,6 @@ class CatalogedGrid {
 
   @override
   String toString() {
-    return '\nbarcodeUID: $barcodeUID';
+    return '\nbarcodeUID: $barcodeUID, parentBarcodeUID: $parentBarcodeUID';
   }
 }

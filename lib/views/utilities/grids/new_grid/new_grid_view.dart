@@ -202,30 +202,9 @@ class _NewGridViewState extends State<NewGridView> {
                         ),
                       );
                       if (scannedBarcodeUID != null) {
-                        Marker? marker = isar!.markers
-                            .filter()
-                            .barcodeUIDMatches(scannedBarcodeUID)
-                            .findFirstSync();
-
-                        if (marker == null && mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Text(
-                                    'Barcode is not a marker',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        } else {
-                          setState(() {
-                            parentBarcodeUID = scannedBarcodeUID;
-                          });
-                        }
+                        setState(() {
+                          parentBarcodeUID = scannedBarcodeUID;
+                        });
                       }
                     },
                     child: Text(

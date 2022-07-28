@@ -59,6 +59,60 @@ void navigationImageProcessor(List init) {
   CatalogedCoordinate targetCoordinate = coordinates
       .firstWhere((element) => element.barcodeUID == selectedBarcodeUID);
 
+  //Parent Grids.
+  CatalogedGrid targetGrid =
+      isar.catalogedGrids.getSync(targetCoordinate.gridUID)!;
+
+  List<CatalogedGrid> parentGrids = [];
+
+  if (targetGrid.parentBarcodeUID != null) {
+    CatalogedCoordinate? catalogedCoordinate = isar.catalogedCoordinates
+        .filter()
+        .barcodeUIDMatches(targetGrid.barcodeUID)
+        .findFirstSync();
+
+    int i = 1;
+    while (catalogedCoordinate != null && i < 100) {
+      CatalogedGrid? catalogedGrid =
+          isar.catalogedGrids.getSync(catalogedCoordinate.gridUID);
+
+      if (catalogedGrid != null) {
+        parentGrids.add(catalogedGrid);
+
+        if (catalogedGrid.parentBarcodeUID != null) {
+          catalogedCoordinate = isar.catalogedCoordinates
+              .filter()
+              .barcodeUIDMatches(catalogedGrid.parentBarcodeUID!)
+              .findFirstSync();
+          if (catalogedCoordinate != null) {
+            catalogedGrid =
+                isar.catalogedGrids.getSync(catalogedCoordinate.gridUID);
+          }
+        } else {
+          catalogedCoordinate = null;
+        }
+      } else {
+        catalogedCoordinate = null;
+      }
+
+      i++;
+    }
+
+    log(parentGrids.toString());
+  }
+
+  List<CatalogedCoordinate> parentCoordinates = [];
+
+  for (var parentGrid in parentGrids) {
+    parentCoordinates.addAll(isar.catalogedCoordinates
+        .filter()
+        .gridUIDEqualTo(parentGrid.id)
+        .findAllSync());
+  }
+
+  log(parentGrids.length.toString());
+  log(parentGrids.toString());
+
   void _processImage(message) async {
     if (inputImageData != null && canvasSize != null) {
       InputImage inputImage = InputImage.fromBytes(
@@ -72,6 +126,7 @@ void navigationImageProcessor(List init) {
 
       double? averageOnImageBarcodeSize;
       Offset? averageOffsetToBarcode;
+      bool openMe = false;
       List onImageBarcodeDatas = [];
 
       List<dynamic> barcodeToPaint = [];
@@ -79,6 +134,7 @@ void navigationImageProcessor(List init) {
       for (Barcode barcode in barcodes) {
         List<Offset> conrnerPoints = <Offset>[];
         List<math.Point<num>> cornerPoints = barcode.cornerPoints!;
+
         for (var point in cornerPoints) {
           double x = translateX(point.x.toDouble(),
               inputImageData!.imageRotation, canvasSize!, inputImageData!.size);
@@ -129,6 +185,7 @@ void navigationImageProcessor(List init) {
             ),
           ),
         );
+
         onImageBarcodeDatas.add(onImageBarcodeData.toMessage());
 
         //Calculate phone angle.
@@ -192,18 +249,88 @@ void navigationImageProcessor(List init) {
                     catalogedCoordinate.coordinate!.y) -
                 realOffsetToScreenCenter;
 
-            Offset offsetToBarcode = Offset(
-                  targetCoordinate.coordinate!.x,
-                  targetCoordinate.coordinate!.y,
-                ) -
-                realScreenCenter;
+            Offset offsetToBarcode = rotateOffset(
+              offset: Offset(
+                    targetCoordinate.coordinate!.x,
+                    targetCoordinate.coordinate!.y,
+                  ) -
+                  realScreenCenter,
+              angleRadians:
+                  -onImageBarcodeData.accelerometerData.calculatePhoneAngle(),
+            );
 
             averageOffsetToBarcode ??= offsetToBarcode;
           } else {
-            //In the wrong grid. TODO: implement interGrid Navigation if possible else Throw message.
+            //In the wrong grid.
+            int gridIndex = parentGrids.indexWhere(
+                (element) => element.id == catalogedCoordinate.gridUID);
+
+            if (gridIndex != -1) {
+              //Current Grid IS a parent of the targetBarcode.
+
+              //Grid Reference.
+              CatalogedGrid currentGrid = parentGrids[gridIndex];
+
+              //Grid coordinates.
+              List<CatalogedCoordinate> currentCoordinates = parentCoordinates
+                  .where((element) => element.gridUID == currentGrid.id)
+                  .toList();
+
+              int indexOfParentBarcode = currentCoordinates.indexWhere(
+                  (element) =>
+                      element.barcodeUID == targetGrid.parentBarcodeUID);
+
+              if (indexOfParentBarcode != -1) {
+                //We are 1 grid above the target Grid
+
+                CatalogedCoordinate targetCoordinate =
+                    currentCoordinates[indexOfParentBarcode];
+
+                //In the correct grid.
+                Offset realScreenCenter = Offset(
+                        catalogedCoordinate.coordinate!.x,
+                        catalogedCoordinate.coordinate!.y) -
+                    realOffsetToScreenCenter;
+
+                Offset offsetToBarcode = rotateOffset(
+                  offset: Offset(
+                        targetCoordinate.coordinate!.x,
+                        targetCoordinate.coordinate!.y,
+                      ) -
+                      realScreenCenter,
+                  angleRadians: -onImageBarcodeData.accelerometerData
+                      .calculatePhoneAngle(),
+                );
+
+                averageOffsetToBarcode ??= offsetToBarcode;
+                openMe = true;
+                if (targetCoordinate.barcodeUID == barcode.displayValue) {
+                  barcodeToPaint = [
+                    barcode.displayValue, //Display value. [0]
+                    [
+                      //On Screen Points [1]
+                      conrnerPoints[0].dx,
+                      conrnerPoints[0].dy,
+                      conrnerPoints[1].dx,
+                      conrnerPoints[1].dy,
+                      conrnerPoints[2].dx,
+                      conrnerPoints[2].dy,
+                      conrnerPoints[3].dx,
+                      conrnerPoints[3].dy,
+                    ],
+                  ];
+                }
+              } else {
+                //We are more than 1 grid above the target grid.
+              }
+            } else {
+              //Current Grid is NOT a parent of the targetBarcode.
+              // TODO: Throw error message.
+            }
           }
         } else {
-          //Coordiante not found. TODO: Possibly let the user know this barcode has not been scanned. Scafold message ?
+          //Coordiante not found.
+          //TODO: Possibly let the user know this barcode has not been scanned. Scafold message ?
 
         }
       }
@@ -217,6 +344,7 @@ void navigationImageProcessor(List init) {
           averageOffsetToBarcode?.dy ?? 0,
         ],
         barcodeToPaint, // Selected Barcode on Screen Points [3].
+        openMe, //Should openBox [4]
       ];
 
       sendPort.send(painterMessage);
