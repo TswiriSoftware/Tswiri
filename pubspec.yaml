@@ -64,9 +64,13 @@ dev_dependencies:
   build_runner: ^2.1.4
 
 flutter_icons:
-  android: "ic_launcher"
+  android: true
   image_path: "assets/icons/sunbird_icon.png"
   adaptive_icon_background: "assets/icons/background.png"
+  adaptive_icon_foreground: "assets/icons/sunbird_icon.png"
+
+
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

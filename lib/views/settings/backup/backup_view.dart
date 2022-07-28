@@ -25,6 +25,10 @@ class _BackupViewState extends State<BackupView> {
 
   bool _isBusy = false;
 
+  File? selectedFile;
+  bool canRestore = false;
+  Directory? unzippedDirectory;
+
   @override
   void initState() {
     super.initState();
@@ -52,7 +56,12 @@ class _BackupViewState extends State<BackupView> {
         ? const Center(
             child: CircularProgressIndicator(),
           )
-        : _backupCard();
+        : Column(
+            children: [
+              _restoreCard(),
+              _backupCard(),
+            ],
+          );
   }
 
   Widget _backupCard() {
@@ -67,7 +76,6 @@ class _BackupViewState extends State<BackupView> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _backupButton(),
-                  _restoreButton(),
                 ],
               ),
             ],
@@ -81,18 +89,78 @@ class _BackupViewState extends State<BackupView> {
     return ElevatedButton(
       onPressed: _backup,
       child: Text(
-        "Backup",
+        "Create Backup",
         style: Theme.of(context).textTheme.bodyMedium,
       ),
     );
   }
 
-  Widget _restoreButton() {
-    return ElevatedButton(
-      onPressed: _restore,
-      child: Text(
-        'Restore',
-        style: Theme.of(context).textTheme.bodyMedium,
+  Widget _restoreCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                selectedFile != null
+                    ? _selectedFileCard()
+                    : Text(
+                        'Select File (zip)',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+              ],
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                setState(() {
+                  selectedFile = null;
+                  canRestore = false;
+                  unzippedDirectory = null;
+                });
+
+                FilePickerResult? result = await FilePicker.platform.pickFiles(
+                  allowedExtensions: ['zip'],
+                  type: FileType.custom,
+                );
+
+                if (result != null) {
+                  _unzip(File(result.files.single.path!));
+                }
+              },
+              child: Text(
+                'select',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+            const Divider(),
+            canRestore
+                ? ElevatedButton(
+                    onPressed: () {
+                      _restore(unzippedDirectory!);
+                    },
+                    child: Text(
+                      'Restore',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _selectedFileCard() {
+    return Card(
+      color: background[300],
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          selectedFile!.path.split('/').last,
+        ),
       ),
     );
   }
@@ -196,108 +264,119 @@ class _BackupViewState extends State<BackupView> {
   }
 
   ///Restores user data from a zip file
-  void _restore() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      allowedExtensions: ['zip'],
-      type: FileType.custom,
-    );
+  void _restore(Directory unzippedDirectory) async {
+    // //Support Directory.
+    // Directory temporaryDirectory = await getTemporaryDirectory();
 
-    if (result != null) {
-      File restoreFile = File(result.files.single.path!);
+    // String restoredFilePath = restoreFile.path.split('/').last.split('.').first;
 
-      //Support Directory.
-      Directory temporaryDirectory = await getTemporaryDirectory();
+    // Directory unzippedDirectory =
+    //     Directory('${temporaryDirectory.path}/$restoredFilePath');
 
-      String restoredFilePath =
-          restoreFile.path.split('/').last.split('.').first;
+    // if (unzippedDirectory.existsSync()) {
+    //   unzippedDirectory.deleteSync(recursive: true);
+    //   unzippedDirectory.createSync();
+    // } else {
+    //   unzippedDirectory.create();
+    // }
 
-      Directory unzippedDirectory =
-          Directory('${temporaryDirectory.path}/$restoredFilePath');
+    //Isar Directory.
+    Directory isarFolder = Directory('${isarDirectory!.path}/isar');
 
-      if (unzippedDirectory.existsSync()) {
-        unzippedDirectory.deleteSync(recursive: true);
-        unzippedDirectory.createSync();
-      } else {
-        unzippedDirectory.create();
+    // final zipFile = restoreFile;
+    // final destinationDir = unzippedDirectory;
+    // try {
+    //   await ZipFile.extractToDirectory(
+    //       zipFile: zipFile, destinationDir: destinationDir);
+    // } catch (e) {
+    //   log(e.toString());
+    // }
+
+    //Close Isar.
+    await isar!.close();
+
+    // log(unzippedDirectory.path);
+    // log(isarFolder.path);
+
+    File restoreDAT = File('${unzippedDirectory.path}/isar/mdbx.dat');
+    File restorelLCK = File('${unzippedDirectory.path}/isar/mdbx.lck');
+
+    if (restoreDAT.existsSync() && restorelLCK.existsSync()) {
+      //Delete these files.
+      File('${isarFolder.path}/mdbx.dat');
+      File('${isarFolder.path}/mdbx.lck');
+
+      //Copy restored Files over
+      restoreDAT.copySync('${isarFolder.path}/mdbx.dat');
+      restorelLCK.copySync('${isarFolder.path}/mdbx.lck');
+
+      //Delete all photo files.
+      photoDirectory!.deleteSync(recursive: true);
+      String storagePath =
+          '${(await getExternalStorageDirectory())!.path}/photos';
+      photoDirectory = await Directory(storagePath).create();
+
+      //Unzipped Photos.
+      Directory unzippedPhotos = Directory('${unzippedDirectory.path}/photos');
+      var files = unzippedPhotos.listSync(recursive: true, followLinks: false);
+
+      //Restore Photos and thumbnails.
+      for (var file in files) {
+        File photoFile = File(file.path);
+        log(photoDirectory!.path);
+        photoFile.copySync(
+            '${photoDirectory!.path}/${photoFile.path.split('/').last}');
+
+        String photoName = photoFile.path.split('/').last.split('.').first;
+        String extention = photoFile.path.split('/').last.split('.').last;
+        String photoThumbnailPath =
+            '${photoDirectory!.path}/${photoName}_thumbnail.$extention';
+        img.Image referenceImage = img.decodeJpg(photoFile.readAsBytesSync())!;
+        img.Image thumbnailImage = img.copyResize(referenceImage, width: 120);
+        File(photoThumbnailPath)
+            .writeAsBytesSync(img.encodePng(thumbnailImage));
       }
-
-      //Isar Directory.
-      Directory isarFolder = Directory('${isarDirectory!.path}/isar');
-
-      final zipFile = restoreFile;
-      final destinationDir = unzippedDirectory;
-      try {
-        await ZipFile.extractToDirectory(
-            zipFile: zipFile, destinationDir: destinationDir);
-      } catch (e) {
-        log(e.toString());
-      }
-
-      //Close Isar.
-      await isar!.close();
-
-      log(unzippedDirectory.path);
-      log(isarFolder.path);
-
-      File restoreDAT = File('${unzippedDirectory.path}/isar/mdbx.dat');
-      File restorelLCK = File('${unzippedDirectory.path}/isar/mdbx.lck');
-
-      if (restoreDAT.existsSync() && restorelLCK.existsSync()) {
-        //Delete these files.
-        File('${isarFolder.path}/mdbx.dat');
-        File('${isarFolder.path}/mdbx.lck');
-
-        //Copy restored Files over
-        restoreDAT.copySync('${isarFolder.path}/mdbx.dat');
-        restorelLCK.copySync('${isarFolder.path}/mdbx.lck');
-
-        //Delete all photo files.
-        photoDirectory!.deleteSync(recursive: true);
-        String storagePath =
-            '${(await getExternalStorageDirectory())!.path}/photos';
-        photoDirectory = await Directory(storagePath).create();
-
-        //Unzipped Photos.
-        Directory unzippedPhotos =
-            Directory('${unzippedDirectory.path}/photos');
-        var files =
-            unzippedPhotos.listSync(recursive: true, followLinks: false);
-
-        //Restore Photos and thumbnails.
-        for (var file in files) {
-          File photoFile = File(file.path);
-          log(photoDirectory!.path);
-          photoFile.copySync(
-              '${photoDirectory!.path}/${photoFile.path.split('/').last}');
-
-          String photoName = photoFile.path.split('/').last.split('.').first;
-          String extention = photoFile.path.split('/').last.split('.').last;
-          String photoThumbnailPath =
-              '${photoDirectory!.path}/${photoName}_thumbnail.$extention';
-          img.Image referenceImage =
-              img.decodeJpg(photoFile.readAsBytesSync())!;
-          img.Image thumbnailImage = img.copyResize(referenceImage, width: 120);
-          File(photoThumbnailPath)
-              .writeAsBytesSync(img.encodePng(thumbnailImage));
-        }
-      }
-
-      //Open Isar.
-      isar = initiateIsar(inspector: false);
-    } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Text(
-                'Restore Canceled',
-                style: TextStyle(fontSize: 16),
-              ),
-            ],
-          ),
-        ),
-      );
     }
+
+    //Open Isar.
+    isar = initiateIsar(inspector: false);
+  }
+
+  void _unzip(File restoreFile) async {
+    //Support Directory.
+    Directory temporaryDirectory = await getTemporaryDirectory();
+
+    String restoredFilePath = restoreFile.path.split('/').last.split('.').first;
+
+    setState(() {
+      unzippedDirectory =
+          Directory('${temporaryDirectory.path}/$restoredFilePath');
+    });
+
+    if (unzippedDirectory!.existsSync()) {
+      unzippedDirectory!.deleteSync(recursive: true);
+      unzippedDirectory!.createSync();
+    } else {
+      unzippedDirectory!.create();
+    }
+
+    final zipFile = restoreFile;
+    final destinationDir = unzippedDirectory;
+    try {
+      await ZipFile.extractToDirectory(
+          zipFile: zipFile, destinationDir: destinationDir!);
+    } catch (e) {
+      log(e.toString());
+    }
+
+    File restoreDAT = File('${unzippedDirectory!.path}/isar/mdbx.dat');
+    File restorelLCK = File('${unzippedDirectory!.path}/isar/mdbx.lck');
+
+    setState(() {
+      if (restoreDAT.existsSync() && restorelLCK.existsSync()) {
+        canRestore = true;
+        selectedFile = restoreFile;
+      }
+    });
   }
 }
