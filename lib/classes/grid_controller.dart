@@ -16,6 +16,7 @@ class GridController {
   });
 
   int gridUID;
+  late CatalogedGrid catalogedGrid = isar!.catalogedGrids.getSync(gridUID)!;
 
   late List<Marker> markers = findGridMarkers();
 

@@ -11,53 +11,22 @@ import 'gird_scanning/grid_scanner_view.dart';
 class GirdViewer extends StatefulWidget {
   const GirdViewer({
     Key? key,
-    required this.catalogedContainer,
     required this.gridUID,
   }) : super(key: key);
 
-  final CatalogedContainer? catalogedContainer;
-  final int? gridUID;
+  final int gridUID;
 
   @override
   State<GirdViewer> createState() => _GirdViewerState();
 }
 
 class _GirdViewerState extends State<GirdViewer> {
-  GridController? _gridController;
-
-  late int? gridUID;
-
+  late int gridUID = widget.gridUID;
+  late final GridController _gridController = GridController(gridUID: gridUID);
   List<Marker> markers = [];
 
   @override
   void initState() {
-    if (widget.gridUID != null) {
-      gridUID = widget.gridUID;
-      _gridController = GridController(gridUID: gridUID!);
-    } else if (widget.catalogedContainer != null) {
-      //1. Check if a grid containing this barcode exists.
-
-      CatalogedCoordinate? catalogedCoordinate = isar!.catalogedCoordinates
-          .filter()
-          .barcodeUIDMatches(widget.catalogedContainer!.barcodeUID!)
-          .findFirstSync();
-
-      if (catalogedCoordinate != null) {
-        // Grid Exists
-        _gridController = GridController(gridUID: catalogedCoordinate.gridUID);
-      } else {
-        //Create a new grid.
-        CatalogedGrid newGrid = CatalogedGrid()
-          ..barcodeUID = widget.catalogedContainer!.barcodeUID!;
-
-        //write to isar
-        isar!.writeTxnSync((isar) {
-          int newGridUID = isar.catalogedGrids.putSync(newGrid);
-          _gridController = GridController(gridUID: newGridUID);
-        });
-      }
-    }
-
     _updateMarkers();
 
     log(isar!.catalogedCoordinates.where().findAllSync().toString());
@@ -75,7 +44,7 @@ class _GirdViewerState extends State<GirdViewer> {
   AppBar _appBar() {
     return AppBar(
         title: Text(
-          'ID: ${_gridController?.gridUID}',
+          'ID: ${_gridController.gridUID}',
           style: Theme.of(context).textTheme.titleMedium,
         ),
         centerTitle: true);
@@ -87,6 +56,7 @@ class _GirdViewerState extends State<GirdViewer> {
         children: [
           _gridView(),
           _markersCard(),
+          _editCard(),
         ],
       ),
     );
@@ -99,7 +69,7 @@ class _GirdViewerState extends State<GirdViewer> {
         child: Column(
           children: [
             Text(
-              'Grid: ${_gridController?.gridUID}',
+              'Grid: ${_gridController.gridUID}',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Card(
@@ -112,7 +82,7 @@ class _GirdViewerState extends State<GirdViewer> {
                   minScale: 1,
                   child: CustomPaint(
                     painter: GridVisualizerPainter(
-                      displayPoints: _gridController!.calculateDisplayPoints(
+                      displayPoints: _gridController.calculateDisplayPoints(
                         Size(
                           MediaQuery.of(context).size.width,
                           MediaQuery.of(context).size.height / 2,
@@ -132,7 +102,7 @@ class _GirdViewerState extends State<GirdViewer> {
                   onPressed: () async {
                     isar!.writeTxnSync((isar) => isar.catalogedCoordinates
                         .filter()
-                        .gridUIDEqualTo(gridUID!)
+                        .gridUIDEqualTo(gridUID)
                         .deleteAllSync());
                     _updateMarkers();
                   },
@@ -153,7 +123,7 @@ class _GirdViewerState extends State<GirdViewer> {
                     if (barcodeDataBatches != null &&
                         barcodeDataBatches.isNotEmpty) {
                       setState(() {
-                        _gridController!.processData(
+                        _gridController.processData(
                           barcodeDataBatches,
                         );
                       });
@@ -302,7 +272,7 @@ class _GirdViewerState extends State<GirdViewer> {
         markers.clear();
         List<String> gridBarcodes = isar!.catalogedCoordinates
             .filter()
-            .gridUIDEqualTo(_gridController!.gridUID)
+            .gridUIDEqualTo(_gridController.gridUID)
             .findAllSync()
             .map((e) => e.barcodeUID)
             .toList();
@@ -314,5 +284,210 @@ class _GirdViewerState extends State<GirdViewer> {
             .findAllSync();
       }
     });
+  }
+
+  Widget _editCard() {
+    return Card(
+      child: ExpansionTile(
+        title: Text(
+          'Edit',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        children: [
+          _originBarcode(),
+          _parentBarcode(),
+        ],
+      ),
+    );
+  }
+
+  Widget _originBarcode() {
+    return Card(
+      color: background[300],
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  'Origin Barcode UID: ',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    _gridController.catalogedGrid.barcodeUID,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  ElevatedButton(
+                    style: TextButton.styleFrom(
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                    onPressed: () async {
+                      String? scannedBarcodeUID = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const SingleBarcodeScannerView(),
+                        ),
+                      );
+                      if (scannedBarcodeUID != null) {
+                        Marker? marker = isar!.markers
+                            .filter()
+                            .barcodeUIDMatches(scannedBarcodeUID)
+                            .findFirstSync();
+
+                        if (marker == null && mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Text(
+                                    'Barcode is not a marker are you sure?',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                          setState(() {
+                            isar!.writeTxnSync((isar) {
+                              _gridController.catalogedGrid.barcodeUID =
+                                  scannedBarcodeUID;
+                              isar.catalogedGrids.putSync(
+                                  _gridController.catalogedGrid,
+                                  replaceOnConflict: true);
+                            });
+                          });
+                        } else {
+                          setState(() {
+                            isar!.writeTxnSync((isar) {
+                              _gridController.catalogedGrid.barcodeUID =
+                                  scannedBarcodeUID;
+                              isar.catalogedGrids.putSync(
+                                  _gridController.catalogedGrid,
+                                  replaceOnConflict: true);
+                            });
+                          });
+                        }
+                      }
+                    },
+                    child: Text(
+                      'Scan',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _parentBarcode() {
+    return Card(
+      color: background[300],
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  'Parent Barcode UID: ',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    _gridController.catalogedGrid.parentBarcodeUID ?? '-',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  ElevatedButton(
+                    style: TextButton.styleFrom(
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                    onPressed: () async {
+                      String? scannedBarcodeUID = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const SingleBarcodeScannerView(),
+                        ),
+                      );
+                      if (scannedBarcodeUID != null) {
+                        Marker? marker = isar!.markers
+                            .filter()
+                            .barcodeUIDMatches(scannedBarcodeUID)
+                            .findFirstSync();
+
+                        if (marker == null && mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Text(
+                                    'Barcode is not a marker are you sure?',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                          setState(() {
+                            isar!.writeTxnSync((isar) {
+                              _gridController.catalogedGrid.parentBarcodeUID =
+                                  scannedBarcodeUID;
+                              isar.catalogedGrids.putSync(
+                                  _gridController.catalogedGrid,
+                                  replaceOnConflict: true);
+                            });
+                          });
+                        } else {
+                          setState(() {
+                            isar!.writeTxnSync((isar) {
+                              _gridController.catalogedGrid.parentBarcodeUID =
+                                  scannedBarcodeUID;
+                              isar.catalogedGrids.putSync(
+                                  _gridController.catalogedGrid,
+                                  replaceOnConflict: true);
+                            });
+                          });
+                        }
+                      }
+                    },
+                    child: Text(
+                      'Scan',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -1,7 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-
 part of 'cataloged_grid.dart';
 
 // **************************************************************************
@@ -17,9 +15,9 @@ extension GetCatalogedGridCollection on Isar {
 const CatalogedGridSchema = CollectionSchema(
   name: 'CatalogedGrid',
   schema:
-      '{"name":"CatalogedGrid","idName":"id","properties":[{"name":"barcodeUID","type":"String"}],"indexes":[],"links":[]}',
+      '{"name":"CatalogedGrid","idName":"id","properties":[{"name":"barcodeUID","type":"String"},{"name":"parentBarcodeUID","type":"String"}],"indexes":[],"links":[]}',
   idName: 'id',
-  propertyIds: {'barcodeUID': 0},
+  propertyIds: {'barcodeUID': 0, 'parentBarcodeUID': 1},
   listProperties: {},
   indexIds: {},
   indexValueTypes: {},
@@ -65,6 +63,12 @@ void _catalogedGridSerializeNative(
   final value0 = object.barcodeUID;
   final _barcodeUID = IsarBinaryWriter.utf8Encoder.convert(value0);
   dynamicSize += (_barcodeUID.length) as int;
+  final value1 = object.parentBarcodeUID;
+  IsarUint8List? _parentBarcodeUID;
+  if (value1 != null) {
+    _parentBarcodeUID = IsarBinaryWriter.utf8Encoder.convert(value1);
+  }
+  dynamicSize += (_parentBarcodeUID?.length ?? 0) as int;
   final size = staticSize + dynamicSize;
 
   rawObj.buffer = alloc(size);
@@ -72,6 +76,7 @@ void _catalogedGridSerializeNative(
   final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
   writer.writeBytes(offsets[0], _barcodeUID);
+  writer.writeBytes(offsets[1], _parentBarcodeUID);
 }
 
 CatalogedGrid _catalogedGridDeserializeNative(
@@ -82,6 +87,7 @@ CatalogedGrid _catalogedGridDeserializeNative(
   final object = CatalogedGrid();
   object.barcodeUID = reader.readString(offsets[0]);
   object.id = id;
+  object.parentBarcodeUID = reader.readStringOrNull(offsets[1]);
   return object;
 }
 
@@ -92,6 +98,8 @@ P _catalogedGridDeserializePropNative<P>(
       return id as P;
     case 0:
       return (reader.readString(offset)) as P;
+    case 1:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
   }
@@ -102,6 +110,7 @@ dynamic _catalogedGridSerializeWeb(
   final jsObj = IsarNative.newJsObject();
   IsarNative.jsObjectSet(jsObj, 'barcodeUID', object.barcodeUID);
   IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(jsObj, 'parentBarcodeUID', object.parentBarcodeUID);
   return jsObj;
 }
 
@@ -110,6 +119,7 @@ CatalogedGrid _catalogedGridDeserializeWeb(
   final object = CatalogedGrid();
   object.barcodeUID = IsarNative.jsObjectGet(jsObj, 'barcodeUID') ?? '';
   object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+  object.parentBarcodeUID = IsarNative.jsObjectGet(jsObj, 'parentBarcodeUID');
   return object;
 }
 
@@ -120,6 +130,8 @@ P _catalogedGridDeserializePropWeb<P>(Object jsObj, String propertyName) {
     case 'id':
       return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
           as P;
+    case 'parentBarcodeUID':
+      return (IsarNative.jsObjectGet(jsObj, 'parentBarcodeUID')) as P;
     default:
       throw 'Illegal propertyName';
   }
@@ -352,6 +364,122 @@ extension CatalogedGridQueryFilter
       includeUpper: includeUpper,
     ));
   }
+
+  QueryBuilder<CatalogedGrid, CatalogedGrid, QAfterFilterCondition>
+      parentBarcodeUIDIsNull() {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.isNull,
+      property: 'parentBarcodeUID',
+      value: null,
+    ));
+  }
+
+  QueryBuilder<CatalogedGrid, CatalogedGrid, QAfterFilterCondition>
+      parentBarcodeUIDEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'parentBarcodeUID',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<CatalogedGrid, CatalogedGrid, QAfterFilterCondition>
+      parentBarcodeUIDGreaterThan(
+    String? value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'parentBarcodeUID',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<CatalogedGrid, CatalogedGrid, QAfterFilterCondition>
+      parentBarcodeUIDLessThan(
+    String? value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'parentBarcodeUID',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<CatalogedGrid, CatalogedGrid, QAfterFilterCondition>
+      parentBarcodeUIDBetween(
+    String? lower,
+    String? upper, {
+    bool caseSensitive = true,
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'parentBarcodeUID',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<CatalogedGrid, CatalogedGrid, QAfterFilterCondition>
+      parentBarcodeUIDStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'parentBarcodeUID',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<CatalogedGrid, CatalogedGrid, QAfterFilterCondition>
+      parentBarcodeUIDEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'parentBarcodeUID',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<CatalogedGrid, CatalogedGrid, QAfterFilterCondition>
+      parentBarcodeUIDContains(String value, {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'parentBarcodeUID',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<CatalogedGrid, CatalogedGrid, QAfterFilterCondition>
+      parentBarcodeUIDMatches(String pattern, {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'parentBarcodeUID',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
+  }
 }
 
 extension CatalogedGridQueryLinks
@@ -375,6 +503,16 @@ extension CatalogedGridQueryWhereSortBy
   QueryBuilder<CatalogedGrid, CatalogedGrid, QAfterSortBy> sortByIdDesc() {
     return addSortByInternal('id', Sort.desc);
   }
+
+  QueryBuilder<CatalogedGrid, CatalogedGrid, QAfterSortBy>
+      sortByParentBarcodeUID() {
+    return addSortByInternal('parentBarcodeUID', Sort.asc);
+  }
+
+  QueryBuilder<CatalogedGrid, CatalogedGrid, QAfterSortBy>
+      sortByParentBarcodeUIDDesc() {
+    return addSortByInternal('parentBarcodeUID', Sort.desc);
+  }
 }
 
 extension CatalogedGridQueryWhereSortThenBy
@@ -395,6 +533,16 @@ extension CatalogedGridQueryWhereSortThenBy
   QueryBuilder<CatalogedGrid, CatalogedGrid, QAfterSortBy> thenByIdDesc() {
     return addSortByInternal('id', Sort.desc);
   }
+
+  QueryBuilder<CatalogedGrid, CatalogedGrid, QAfterSortBy>
+      thenByParentBarcodeUID() {
+    return addSortByInternal('parentBarcodeUID', Sort.asc);
+  }
+
+  QueryBuilder<CatalogedGrid, CatalogedGrid, QAfterSortBy>
+      thenByParentBarcodeUIDDesc() {
+    return addSortByInternal('parentBarcodeUID', Sort.desc);
+  }
 }
 
 extension CatalogedGridQueryWhereDistinct
@@ -407,6 +555,12 @@ extension CatalogedGridQueryWhereDistinct
   QueryBuilder<CatalogedGrid, CatalogedGrid, QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
+
+  QueryBuilder<CatalogedGrid, CatalogedGrid, QDistinct>
+      distinctByParentBarcodeUID({bool caseSensitive = true}) {
+    return addDistinctByInternal('parentBarcodeUID',
+        caseSensitive: caseSensitive);
+  }
 }
 
 extension CatalogedGridQueryProperty
@@ -417,5 +571,10 @@ extension CatalogedGridQueryProperty
 
   QueryBuilder<CatalogedGrid, int, QQueryOperations> idProperty() {
     return addPropertyNameInternal('id');
+  }
+
+  QueryBuilder<CatalogedGrid, String?, QQueryOperations>
+      parentBarcodeUIDProperty() {
+    return addPropertyNameInternal('parentBarcodeUID');
   }
 }

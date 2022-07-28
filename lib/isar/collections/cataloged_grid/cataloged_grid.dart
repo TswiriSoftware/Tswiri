@@ -10,6 +10,10 @@ class CatalogedGrid {
   @Name("barcodeUID")
   late String barcodeUID;
 
+  ///Barcode UID.
+  @Name("parentBarcodeUID")
+  late String? parentBarcodeUID;
+
   @override
   String toString() {
     return '\nbarcodeUID: $barcodeUID';

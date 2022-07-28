@@ -117,3 +117,11 @@ void deletePhoto(Photo photo) {
   File(photo.getPhotoPath()).deleteSync();
   File(photo.getPhotoThumbnailPath()).deleteSync();
 }
+
+///Delete's a grid and all stored data from [int] gridUID.
+void deleteGrid(int gridUID) {
+  isar!.writeTxnSync((isar) {
+    isar.catalogedGrids.deleteSync(gridUID);
+    isar.catalogedCoordinates.filter().gridUIDEqualTo(gridUID).deleteAllSync();
+  });
+}
