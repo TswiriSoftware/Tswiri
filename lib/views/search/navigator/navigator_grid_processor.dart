@@ -7,8 +7,6 @@ import 'package:sunbird/functions/data_processing_isolates.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:vector_math/vector_math_64.dart' as vm;
 
-//TODO: Implement.
-
 ///This is a isolate that updates positions (improve this over time.)
 void gridProcessor(List init) {
   //1. InitalMessage.
@@ -30,7 +28,7 @@ void gridProcessor(List init) {
       isar.catalogedBarcodes.where().findAllSync();
 
   //4. Get all coordiantes.
-  List<CatalogedCoordinate> catalogedCoordinates =
+  List<CatalogedCoordinate> storedCoordinates =
       isar.catalogedCoordinates.where().findAllSync();
 
   //5. Get all markers.
@@ -46,10 +44,6 @@ void gridProcessor(List init) {
   //7. List of fixed BarcodeUIDs.
   List<String> currentFixedBarcodes =
       currentFixedCoordinates.map((e) => e.barcodeUID).toList();
-
-  //8. List of all stored coordiantes.
-  List<CatalogedCoordinate> storedCoordinates =
-      isar.catalogedCoordinates.where().findAllSync();
 
   log('GP: Setup Complete');
 

@@ -350,7 +350,19 @@ class ContainerSearchCard extends StatelessWidget {
                         ),
                       );
                     } else {
-                      //TODO: implement scaffold message by way of a function.
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Text(
+                                'Does not belong to a grid',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
                     }
                   },
                   child: Text(

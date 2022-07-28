@@ -268,21 +268,19 @@ class _GirdViewerState extends State<GirdViewer> {
 
   void _updateMarkers() {
     setState(() {
-      if (_gridController != null) {
-        markers.clear();
-        List<String> gridBarcodes = isar!.catalogedCoordinates
-            .filter()
-            .gridUIDEqualTo(_gridController.gridUID)
-            .findAllSync()
-            .map((e) => e.barcodeUID)
-            .toList();
+      markers.clear();
+      List<String> gridBarcodes = isar!.catalogedCoordinates
+          .filter()
+          .gridUIDEqualTo(_gridController.gridUID)
+          .findAllSync()
+          .map((e) => e.barcodeUID)
+          .toList();
 
-        markers = isar!.markers
-            .filter()
-            .repeat(gridBarcodes,
-                (q, String element) => q.barcodeUIDMatches(element))
-            .findAllSync();
-      }
+      markers = isar!.markers
+          .filter()
+          .repeat(
+              gridBarcodes, (q, String element) => q.barcodeUIDMatches(element))
+          .findAllSync();
     });
   }
 
