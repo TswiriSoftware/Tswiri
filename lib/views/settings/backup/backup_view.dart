@@ -265,38 +265,14 @@ class _BackupViewState extends State<BackupView> {
 
   ///Restores user data from a zip file
   void _restore(Directory unzippedDirectory) async {
-    // //Support Directory.
-    // Directory temporaryDirectory = await getTemporaryDirectory();
-
-    // String restoredFilePath = restoreFile.path.split('/').last.split('.').first;
-
-    // Directory unzippedDirectory =
-    //     Directory('${temporaryDirectory.path}/$restoredFilePath');
-
-    // if (unzippedDirectory.existsSync()) {
-    //   unzippedDirectory.deleteSync(recursive: true);
-    //   unzippedDirectory.createSync();
-    // } else {
-    //   unzippedDirectory.create();
-    // }
-
+    setState(() {
+      _isBusy = true;
+    });
     //Isar Directory.
     Directory isarFolder = Directory('${isarDirectory!.path}/isar');
 
-    // final zipFile = restoreFile;
-    // final destinationDir = unzippedDirectory;
-    // try {
-    //   await ZipFile.extractToDirectory(
-    //       zipFile: zipFile, destinationDir: destinationDir);
-    // } catch (e) {
-    //   log(e.toString());
-    // }
-
     //Close Isar.
     await isar!.close();
-
-    // log(unzippedDirectory.path);
-    // log(isarFolder.path);
 
     File restoreDAT = File('${unzippedDirectory.path}/isar/mdbx.dat');
     File restorelLCK = File('${unzippedDirectory.path}/isar/mdbx.lck');
@@ -340,6 +316,10 @@ class _BackupViewState extends State<BackupView> {
 
     //Open Isar.
     isar = initiateIsar(inspector: false);
+
+    setState(() {
+      _isBusy = false;
+    });
   }
 
   void _unzip(File restoreFile) async {
