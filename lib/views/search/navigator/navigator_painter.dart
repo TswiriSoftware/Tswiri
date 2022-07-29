@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:sunbird/classes/acceleromter_data.dart';
 import 'package:sunbird/globals/globals_export.dart';
 
 Offset? averageOffsetToBarcode;
