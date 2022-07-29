@@ -3,9 +3,34 @@
 A Flutter Project...
 
 ## Packages:
-Isar : https://pub.dev/packages/isar/license
 
+camera : 
 
+file_picker :
+flutter_archive :
+flutter_isolate :
+flutter isar libs : https://pub.dev/packages/isar_flutter_libs/license
+flutter_pdfview :
+flutter_launcher_icons :
+
+google_mlkit_barcode_scanning : 
+google_mlkit_image_labeling : 
+google_mlkit_object_detection : 
+google_mlkit_text_recognition : 
+
+isar : https://pub.dev/packages/isar/license
+intl :
+
+numberpicker : 
+
+pdf : 
+printing :
+path_provider : 
+permission_handler : 
+
+shared_preferences : 
+sensors_plus : 
+share_plus : 
 
 
 ## Copyright 2022
