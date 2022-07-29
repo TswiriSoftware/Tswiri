@@ -11,6 +11,9 @@ class SearchResult {
   ///Container Entry.
   final CatalogedContainer catalogedContainer;
 
+  late ContainerType containerType =
+      isar!.containerTypes.getSync(catalogedContainer.containerTypeID)!;
+
   ///List of ContainerTags.
   List<ContainerTag> containerTags = [];
 

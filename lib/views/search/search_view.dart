@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/views/containers/container_view/container_view.dart';
 import 'package:sunbird/views/search/navigator/navigator_view.dart';
@@ -312,6 +313,10 @@ class ContainerSearchCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
+                  style: colorModeEnabled
+                      ? ElevatedButton.styleFrom(
+                          primary: searchObject.containerType.containerColor)
+                      : null,
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -331,6 +336,10 @@ class ContainerSearchCard extends StatelessWidget {
                   ),
                 ),
                 ElevatedButton(
+                  style: colorModeEnabled
+                      ? ElevatedButton.styleFrom(
+                          primary: searchObject.containerType.containerColor)
+                      : null,
                   onPressed: () async {
                     CatalogedCoordinate? catalogedCoordiante = isar!
                         .catalogedCoordinates
