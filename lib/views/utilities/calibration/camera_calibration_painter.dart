@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
+import 'dart:math' as m;
 
 class CameraCalibrationVisualizerPainter extends CustomPainter {
   CameraCalibrationVisualizerPainter();
@@ -24,8 +25,10 @@ class CameraCalibrationVisualizerPainter extends CustomPainter {
     //Draw the equation
     List<Offset> equationPoints = [];
     for (var i = 50; i < 2000; i++) {
+      double defualtBarcodeDiagonalSize = defaultBarcodeSize * m.sqrt(2);
+
       double distanceFromCamera =
-          focalLength * defaultBarcodeSize / i.toDouble();
+          focalLength * defualtBarcodeDiagonalSize / i.toDouble();
       Offset dataPoint = Offset(i.toDouble(), distanceFromCamera);
 
       equationPoints.add(Offset(

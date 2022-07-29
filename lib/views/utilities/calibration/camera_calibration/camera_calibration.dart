@@ -4,6 +4,7 @@ import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
+import 'dart:math' as m;
 
 ///Object used to calibrate the camera.
 class CameraCalibration {
@@ -18,8 +19,9 @@ class CameraCalibration {
   Map<int, Barcode> barcodeData;
 
   Future<void> calibrateCamera() async {
+    double defualtBarcodeDiagonalSize = defaultBarcodeSize * m.sqrt(2);
     //1. Get the barcode size, otherwise default.
-    double barcodeSize = defaultBarcodeSize;
+    double barcodeSize = defualtBarcodeDiagonalSize;
 
     String? barcodeUID = barcodeData.entries.first.value.displayValue;
     if (barcodeUID != null) {
@@ -31,7 +33,7 @@ class CameraCalibration {
 
       if (barcodeProperty != null) {
         //Set barcode size
-        barcodeSize = barcodeProperty.size;
+        barcodeSize = barcodeProperty.size * m.sqrt(2);
       }
     }
 

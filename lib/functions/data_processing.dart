@@ -8,6 +8,7 @@ import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
 // ignore: depend_on_referenced_packages
 import 'package:vector_math/vector_math_64.dart' as vm;
+import 'dart:math' as m;
 
 ///Generate a list of OnImageInterBarcodeData from barcodeDataBatches.
 ///
@@ -85,7 +86,10 @@ double calculateRealUnit({
   required List<CatalogedBarcode> barcodeProperties,
   double? passedDefaultBarcodeSize,
 }) {
-  double barcodeDiagonalLength = passedDefaultBarcodeSize ?? defaultBarcodeSize;
+  double defualtBarcodeDiagonalSize = defaultBarcodeSize * m.sqrt(2);
+
+  double barcodeDiagonalLength =
+      passedDefaultBarcodeSize ?? defualtBarcodeDiagonalSize;
 
   int index = barcodeProperties
       .indexWhere((element) => element.barcodeUID == barcodeUID);
@@ -105,7 +109,10 @@ double calculateDistanceFromCamera({
   required List<CatalogedBarcode> barcodeProperties,
   double? passedDefaultBarcodeSize,
 }) {
-  double barcodeDiagonalLength = passedDefaultBarcodeSize ?? defaultBarcodeSize;
+  double defualtBarcodeDiagonalSize = defaultBarcodeSize * m.sqrt(2);
+
+  double barcodeDiagonalLength =
+      passedDefaultBarcodeSize ?? defualtBarcodeDiagonalSize;
 
   int index = barcodeProperties
       .indexWhere((element) => element.barcodeUID == barcodeUID);

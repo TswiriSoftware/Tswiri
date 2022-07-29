@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
+import 'package:sunbird/views/utilities/generator/barcode_import/barcode_import_scanner.dart';
 import 'package:sunbird/views/utilities/generator/pdf_view.dart';
 
 class GeneratorView extends StatefulWidget {
@@ -60,6 +63,35 @@ class _GeneratorViewState extends State<GeneratorView> {
         style: Theme.of(context).textTheme.titleMedium,
       ),
       centerTitle: true,
+      actions: [
+        PopupMenuButton(
+          itemBuilder: (context) {
+            return [
+              PopupMenuItem<int>(
+                value: 0,
+                child: Text(
+                  "Import Barcodes",
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+            ];
+          },
+          onSelected: (value) async {
+            if (value == 0) {
+              Set<String>? scannedBarcodes = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const BarcodeImportScannerView(),
+                ),
+              );
+
+              if (scannedBarcodes != null && scannedBarcodes.isNotEmpty) {
+                _importBarcodes(scannedBarcodes);
+              }
+            }
+          },
+        ),
+      ],
     );
   }
 
@@ -553,6 +585,41 @@ class _GeneratorViewState extends State<GeneratorView> {
     _updateBarcodeBatches();
 
     _createPDF(newBarcodeBatch);
+  }
+
+  void _importBarcodes(Set<String> scannedBarcodes) {
+    //Time of creation
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
+
+    List<int> scannedBarcodeIDs =
+        scannedBarcodes.map((e) => int.parse(e.split('_').first)).toList();
+
+    scannedBarcodeIDs.sort();
+
+    List<CatalogedBarcode> barcodeProperties = [];
+
+    for (var scannedBarcode in scannedBarcodes) {
+      barcodeProperties.add(
+        CatalogedBarcode()
+          ..barcodeUID = scannedBarcode
+          ..size = defaultBarcodeSize,
+      );
+    }
+
+    BarcodeBatch newBarcodeBatch = BarcodeBatch()
+      ..barcodeUIDs = scannedBarcodes.toList()
+      ..startUID = scannedBarcodeIDs.first
+      ..endUID = scannedBarcodeIDs.last
+      ..size = barcodeSize
+      ..timestamp = timestamp;
+
+    //Write to database.
+    isar!.writeTxnSync((isar) {
+      isar.catalogedBarcodes.putAllSync(barcodeProperties);
+      isar.barcodeBatchs.putSync(newBarcodeBatch);
+    });
+
+    _updateBarcodeBatches();
   }
 
   void _createPDF(BarcodeBatch barcodeGenerationEntry) async {
