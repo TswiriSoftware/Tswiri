@@ -43,6 +43,10 @@ String colorModeEnabledPref = 'colorModeEnabled';
 //Isar version
 int isarVersion = 1;
 
+//Getting started.
+bool hasShownGettingStarted = false;
+String hasShownGettingStartedPref = 'hasShownGettingStarted';
+
 void loadAppSettings() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -65,9 +69,12 @@ void loadAppSettings() async {
   //Text Detection.
   textDetection = prefs.getBool(textDetectionPref) ?? true;
 
-  //Focal Length
+  //Focal Length.
   focalLength = prefs.getDouble(focalLengthPref) ?? 1.0;
 
-  //Color Mode
+  //Color Mode.
   colorModeEnabled = prefs.getBool(colorModeEnabledPref) ?? false;
+
+  //Getting Started.
+  hasShownGettingStarted = prefs.getBool(hasShownGettingStartedPref) ?? false;
 }

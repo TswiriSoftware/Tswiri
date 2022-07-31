@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/views/containers/container_view/container_view.dart';
 import 'package:sunbird/views/search/navigator/navigator_view.dart';
 import 'package:sunbird/views/search/searh_controller/search_controller.dart';
+import 'package:sunbird/views/tutorial/getting_started_view.dart';
 import 'package:sunbird/widgets/search_bar/search_bar.dart';
 
 class SearchView extends StatefulWidget {
@@ -69,6 +71,12 @@ class _SearchViewState extends State<SearchView> {
             Icons.search_sharp,
           ),
         ),
+        // Builder(builder: (context) {
+        //   if (hasShownGettingStarted == false) {
+        //     _showMyDialog();
+        //   }
+        //   return SizedBox.shrink();
+        // }),
       ],
     );
   }
@@ -108,11 +116,38 @@ class _SearchViewState extends State<SearchView> {
   Widget _body() {
     return ListView.builder(
       padding: const EdgeInsets.only(bottom: 100),
-      itemCount: _searchController.searchResults.length,
+      itemCount: _searchController.searchResults.length + 1,
       itemBuilder: (context, index) {
-        return _containerCard(
-          _searchController.searchResults[index],
-        );
+        if (index == 0 && hasShownGettingStarted == false) {
+          return InkWell(
+            onTap: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const GettingStartedView(),
+                ),
+              );
+              setState(() {
+                hasShownGettingStarted = true;
+              });
+
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              await prefs.setBool(hasShownGettingStartedPref, true);
+            },
+            child: const Card(
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Center(child: Text('Getting Started')),
+              ),
+            ),
+          );
+        } else if (index != 0) {
+          return _containerCard(
+            _searchController.searchResults[index - 1],
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
       },
     );
   }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sunbird/views/tutorial/getting_started_view.dart';
+import 'package:sunbird/views/tutorial/tutorial_view.dart';
 import 'barcodes/barcodes_view.dart';
 import 'calibration/calibration_view.dart';
 import 'container_types/container_types_view.dart';
@@ -40,7 +42,8 @@ class _UtilitiesViewState extends State<UtilitiesView> {
   Widget _body() {
     return Center(
       child: GridView.count(
-        padding: const EdgeInsets.all(8.0),
+        padding:
+            const EdgeInsets.only(top: 8.0, bottom: 100, left: 8, right: 8),
         crossAxisCount: 2,
         children: const [
           NavigatorCard(
@@ -72,6 +75,11 @@ class _UtilitiesViewState extends State<UtilitiesView> {
             label: 'Grids',
             icon: Icons.grid_4x4_sharp,
             viewPage: MarkersView(),
+          ),
+          NavigatorCard(
+            label: 'Getting Started',
+            icon: Icons.help_sharp,
+            viewPage: GettingStartedView(),
           ),
         ],
       ),
