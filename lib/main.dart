@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sunbird/views/tutorial/getting_started_view.dart';
 import 'globals/globals_export.dart';
 import 'isar/isar_database.dart';
 import 'views/containers/containers_view/containers_view.dart';
@@ -25,19 +23,13 @@ void main() async {
   //Get Camera descriptions.
   cameras = await availableCameras();
 
-  //Request Permissions.
-  var storageStatus = await Permission.storage.status;
-  if (storageStatus.isDenied) {
-    Permission.storage.request();
-  }
-
   //Initiate Isar
   isarDirectory = await getApplicationSupportDirectory();
   isar = initiateIsar(inspector: false);
   createBasicContainerTypes();
   await initiatePhotoStorage();
 
-  //Load Settigns.
+  //Load App Settigns.
   loadAppSettings();
 
   runApp(const MyApp());
@@ -74,8 +66,6 @@ class _HomePageState extends State<HomePage>
       length: 4,
       initialIndex: 1,
     );
-
-    // _showMyDialog();
     super.initState();
   }
 
