@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sunbird/views/tutorial/getting_started_view.dart';
-import 'package:sunbird/views/tutorial/tutorial_view.dart';
+import 'package:sunbird/views/utilities/getting_started/getting_started_view.dart';
 import 'barcodes/barcodes_view.dart';
 import 'calibration/calibration_view.dart';
 import 'container_types/container_types_view.dart';
