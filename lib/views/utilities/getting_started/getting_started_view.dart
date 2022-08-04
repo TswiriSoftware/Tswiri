@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sunbird/globals/globals_export.dart';
-import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/views/containers/new_container_view/new_container_view.dart';
 import 'package:sunbird/views/utilities/generator/generator_view.dart';
 import 'package:sunbird/views/utilities/getting_started/widgets/sub_title_text.dart';

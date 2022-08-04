@@ -507,23 +507,47 @@ class _GeneratorViewState extends State<GeneratorView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    isar!.writeTxnSync((isar) {
-                      isar.barcodeBatchs.deleteSync(batch.id);
-                      isar.catalogedBarcodes
-                          .filter()
-                          .repeat(
-                              batch.barcodeUIDs,
-                              (q, String element) =>
-                                  q.barcodeUIDMatches(element))
-                          .deleteAllSync();
-                    });
-                    _updateBarcodeBatches();
-                  },
-                  child: Text(
-                    'Delete',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                Visibility(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      bool canDelete = true;
+                      for (var barcodeUID in batch.barcodeUIDs) {
+                        CatalogedContainer? catalogedContainer = isar!
+                            .catalogedContainers
+                            .filter()
+                            .barcodeUIDMatches(barcodeUID)
+                            .findFirstSync();
+                        if (catalogedContainer != null) {
+                          canDelete = false;
+                        }
+                      }
+
+                      if (canDelete == true) {
+                        isar!.catalogedContainers.filter().repeat(
+                            batch.barcodeUIDs,
+                            (q, String barcodeUID) =>
+                                q.barcodeUIDMatches(barcodeUID));
+
+                        isar!.writeTxnSync((isar) {
+                          isar.barcodeBatchs.deleteSync(batch.id);
+                          isar.catalogedBarcodes
+                              .filter()
+                              .repeat(
+                                  batch.barcodeUIDs,
+                                  (q, String element) =>
+                                      q.barcodeUIDMatches(element))
+                              .deleteAllSync();
+                        });
+                      } else {
+                        //TODO: Scaffold Message.
+                      }
+
+                      _updateBarcodeBatches();
+                    },
+                    child: Text(
+                      'Delete',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                   ),
                 ),
                 ElevatedButton(
