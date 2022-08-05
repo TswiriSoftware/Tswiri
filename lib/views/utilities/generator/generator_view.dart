@@ -540,6 +540,19 @@ class _GeneratorViewState extends State<GeneratorView> {
                         });
                       } else {
                         //TODO: Scaffold Message.
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Text(
+                                  'A barcode from this batch is in use.',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
                       }
 
                       _updateBarcodeBatches();
