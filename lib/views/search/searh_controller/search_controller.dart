@@ -33,6 +33,190 @@ class SearchController {
   /// |     |  |       |          |      |   |
   /// |     |  |_____  |_____     |     _|_  |_____
   ///
+  ///
+  ///Search the database
+  ///
+  ///            \/     \/
+  ///            ||     ||
+  ///   \ \      /\     /\      / /
+  ///    \ \     \/_____\/     / /
+  ///     \ \____/| 0 0 |\____/ /
+  ///      \____/_|  o  |_\____/
+  ///           \ \     / /
+  ///           / /     \ \
+  ///           \ \     / /
+  ///
+  ///           _____   _____  _______  ___  _____
+  /// |     |  |       |          |      |   |
+  /// |_____|  |_____  |          |      |   |
+  /// |     |  |       |          |      |   |
+  /// |     |  |_____  |_____     |     _|_  |_____
+  ///
+  /// 'Tags': 'Search by container tags', *
+  ///
+  /// 'ML Labels': 'Search ML labels',
+  ///
+  /// 'Photo Labels': 'Search by User Labels', *
+  ///
+  /// 'Name': 'Search by container Name', *
+  ///
+  /// 'Description': 'Search by container Description', *
+  ///
+  /// 'Barcode': 'Search by container Barcodes', *
+  ///
+  /// 'ML Text': 'Search by detected text',
+
+  void searchV2({String? enteredKeyword}) {
+    if (enteredKeyword != null && enteredKeyword.isNotEmpty) {
+      //Trim and Normilize enteredKeyword.
+      enteredKeyword = enteredKeyword.trim().toLowerCase();
+
+      List<SearchResult> searchResults = [];
+
+      ///Loop through Name results.
+      if (filters.contains('Name')) {
+        nameSearch(enteredKeyword).forEach(
+          (element) {
+            if (!searchResults.contains(element)) {
+              searchResults.add(element);
+            }
+          },
+        );
+      }
+
+      ///Loop through Description results.
+      if (filters.contains('Description')) {
+        descriptionSearch(enteredKeyword).forEach(
+          (element) {
+            if (!searchResults.contains(element)) {
+              searchResults.add(element);
+            }
+          },
+        );
+      }
+
+      ///Loop through Barcode results.
+      if (filters.contains('Barcode')) {
+        barcodeSearch(enteredKeyword).forEach(
+          (element) {
+            if (!searchResults.contains(element)) {
+              searchResults.add(element);
+            }
+          },
+        );
+      }
+
+      if (filters.contains('Tags') || filters.contains('User Labels')) {
+        //TagTexts that contain this enteredKeyword.
+        List<TagText> tagTexts = isar!.tagTexts
+            .filter()
+            .textContains(enteredKeyword, caseSensitive: false)
+            .findAllSync();
+
+        List<int> tagTextIDs = tagTexts.map((e) => e.id).toList();
+
+        log('\n\nNumber of TagTexts: ${tagTexts.length}');
+        //Search Container Tags.
+        if (filters.contains('Tags') && tagTextIDs.isNotEmpty) {
+          //Filter Container Tags.
+          List<ContainerTag> containerTags = isar!.containerTags
+              .filter()
+              .repeat(
+                  tagTextIDs, (q, int element) => q.tagTextIDEqualTo(element))
+              .findAllSync();
+
+          log('Number of containerTags: ${containerTags.length}');
+
+          List<CatalogedContainer> containers = isar!.catalogedContainers
+              .filter()
+              .repeat(
+                  containerTags,
+                  (q, ContainerTag element) =>
+                      q.containerUIDMatches(element.containerUID))
+              .findAllSync();
+
+          log('Number of containers: ${containers.length}\n\n');
+
+          for (CatalogedContainer container in containers) {
+            SearchResult searchResult = SearchResult(
+              catalogedContainer: container,
+            );
+
+            searchResult.containerTags = containerTags
+                .where(
+                    (element) => element.containerUID == container.containerUID)
+                .toList();
+
+            int index = searchResults
+                .indexWhere((element) => element.id == container.id);
+
+            if (index == -1) {
+              searchResults.add(searchResult);
+            } else {
+              searchResults[index].merge(searchResult);
+            }
+          }
+        }
+        //Search Photo Labels.
+        if (filters.contains('Photo Labels') && tagTextIDs.isNotEmpty) {}
+      }
+
+      if (filters.contains('ML Labels')) {
+        //MLDetectedLabelTexts that contain this enteredKeyword.
+        List<MLDetectedLabelText> mlDetectedLabelTexts = isar!
+            .mLDetectedLabelTexts
+            .filter()
+            .detectedLabelTextContains(enteredKeyword, caseSensitive: false)
+            .findAllSync();
+
+        log('\n\nNumber of mlDetectedLabelTexts: ${mlDetectedLabelTexts.length}');
+      }
+
+      if (filters.contains('ML Text')) {
+        //MLDetectedElementText that contain this enteredKeyword.
+        List<MLDetectedElementText> mlDetectedElementTexts = isar!
+            .mLDetectedElementTexts
+            .filter()
+            .detectedTextContains(enteredKeyword, caseSensitive: false)
+            .findAllSync();
+
+        log('\n\nNumber of mlDetectedElementTexts: ${mlDetectedElementTexts.length}');
+      }
+    } else {
+      //Return Defaults.
+
+    }
+  }
+
+  ///Find containers which name contain the enteredKeyword.
+  List<SearchResult> nameSearch(String enteredKeyword) {
+    List<CatalogedContainer> containers = isar!.catalogedContainers
+        .filter()
+        .nameContains(enteredKeyword, caseSensitive: false)
+        .findAllSync();
+
+    return containers.map((e) => SearchResult(catalogedContainer: e)).toList();
+  }
+
+  ///Find containers which description contain the enteredKeyword.
+  List<SearchResult> descriptionSearch(String enteredKeyword) {
+    List<CatalogedContainer> containers = isar!.catalogedContainers
+        .filter()
+        .descriptionContains(enteredKeyword, caseSensitive: false)
+        .findAllSync();
+
+    return containers.map((e) => SearchResult(catalogedContainer: e)).toList();
+  }
+
+  ///Find containers which barcodeUID contain the enteredKeyword..contains('Photo Objec
+  List<SearchResult> barcodeSearch(String enteredKeyword) {
+    List<CatalogedContainer> containers = isar!.catalogedContainers
+        .filter()
+        .barcodeUIDContains(enteredKeyword, caseSensitive: false)
+        .findAllSync();
+
+    return containers.map((e) => SearchResult(catalogedContainer: e)).toList();
+  }
 
   void search({String? enteredKeyword}) {
     if (enteredKeyword != null && enteredKeyword.isNotEmpty) {
