@@ -153,7 +153,7 @@ class SearchController {
             if (index == -1) {
               searchResults.add(searchResult);
             } else {
-              searchResults[index].merge(searchResult);
+              // searchResults[index].merge(searchResult);
             }
           }
         }
