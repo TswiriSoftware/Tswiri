@@ -28,8 +28,8 @@ class _SearchViewState extends State<SearchView> {
       SearchController(filters: searchFilters);
   Map<String, String> filterTypes = {
     'Tags': 'Search by container tags',
-    'Photo Labels': 'Search by photo labels',
-    'Photo Objects': 'Search by photo objects',
+    'ML Labels': 'Search by photo labels',
+    'Photo Labels': 'Search by User Labels',
     'Name': 'Search by container Name',
     'Description': 'Search by container Description',
     'Barcode': 'Search by container Barcodes',
