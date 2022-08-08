@@ -42,4 +42,37 @@ class SearchResult {
 
   @override
   int get hashCode => id.hashCode;
+
+  ///Merges this with arg.
+  void merge(SearchResult searchResult) {
+    //4. Container tags
+    containerTags = searchResult.containerTags;
+
+    //5. Photos
+    if (photos.isEmpty) {
+      photos = searchResult.photos;
+    } else {
+      List<int> photoIDs = photos.map((e) => e.id).toList();
+      for (Photo photo in searchResult.photos) {
+        if (!photoIDs.contains(photo.id)) {
+          photos.add(photo);
+        }
+      }
+    }
+
+    //6. MLObject Labels.
+    mlObjectLabels = searchResult.mlObjectLabels;
+
+    //7. Object Labels.
+    objectLabels = searchResult.objectLabels;
+
+    //8. ML Photo Labels.
+    mlPhotoLabels = searchResult.mlPhotoLabels;
+
+    //9. Photo Labels.
+    photoLabels = searchResult.photoLabels;
+
+    //10. MLTextElements.
+    mlTextElements = searchResult.mlTextElements;
+  }
 }
