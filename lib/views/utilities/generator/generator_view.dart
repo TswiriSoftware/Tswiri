@@ -539,7 +539,6 @@ class _GeneratorViewState extends State<GeneratorView> {
                               .deleteAllSync();
                         });
                       } else {
-                        //TODO: Scaffold Message.
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Row(

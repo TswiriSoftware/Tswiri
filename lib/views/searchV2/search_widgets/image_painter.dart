@@ -23,22 +23,23 @@ class ImagePainter extends CustomPainter {
     double boundingBoxWidth = boundingBox.width;
     double boundingBoxHeight = boundingBox.height;
 
-    if (boundingBoxWidth >= boundingBoxHeight) {
+    if (boundingBoxWidth > boundingBoxHeight) {
       //Width bigger
-      log('width: $boundingBoxWidth');
       boundingBoxHeight = boundingBoxHeight * photoAspectRatio;
     } else {
       //Height Bigger
-      log('width: $boundingBoxHeight');
       boundingBoxWidth = boundingBoxWidth * photoAspectRatio;
     }
 
-    //TODO: maintain Aspect Ratio.
+    log('width: $boundingBoxWidth');
+    log('height: $boundingBoxHeight');
+
     final dst = Offset.zero & size;
     final src = Rect.fromCenter(
-        center: boundingBox.center,
-        width: boundingBoxWidth,
-        height: boundingBoxHeight);
+      center: boundingBox.center,
+      width: boundingBoxWidth,
+      height: boundingBoxHeight,
+    );
 
     canvas.drawImageRect(image, src, dst, Paint());
   }

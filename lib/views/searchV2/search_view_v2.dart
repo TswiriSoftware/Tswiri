@@ -1,24 +1,10 @@
-import 'dart:developer';
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_launcher_icons/utils.dart';
-import 'package:sunbird/globals/globals_export.dart';
-import 'package:sunbird/isar/collections/cataloged_container/cataloged_container.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/views/containers/container_view/container_view.dart';
-import 'package:sunbird/views/searchV2/search_contoller_v2/image_painter.dart';
 import 'package:sunbird/views/searchV2/search_contoller_v2/search_controller_v2.dart';
 import 'package:sunbird/views/searchV2/search_contoller_v2/search_results.dart';
-import 'package:sunbird/views/searchV2/search_widget.dart';
+import 'package:sunbird/views/searchV2/search_widgets/search_widgets.dart';
 import 'package:sunbird/widgets/search_bar/search_bar.dart';
-import '../search/searh_controller/search_controller.dart';
-
-import 'dart:ui' as ui;
-
-import 'search_contoller_v2/text_painter.dart';
 
 class SearchViewV2 extends StatefulWidget {
   const SearchViewV2({
@@ -150,6 +136,8 @@ class _SearchViewV2State extends State<SearchViewV2> {
           MaterialPageRoute(
             builder: (context) => ContainerView(
               catalogedContainer: catalogedContainer,
+              tagsExpanded: true,
+              photosExpaned: true,
             ),
           ),
         );
@@ -187,19 +175,9 @@ class _SearchViewV2State extends State<SearchViewV2> {
             return MLTextElementResultCard(result: result as MLTextResult);
 
           default:
-            return SizedBox.shrink();
+            return const SizedBox.shrink();
         }
       }),
     );
   }
-}
-
-Future<ui.Image> getUiImage(String imageAssetPath) async {
-  final decodedImage = File(imageAssetPath).readAsBytesSync();
-
-  final codec = await ui.instantiateImageCodec(
-    decodedImage,
-  );
-
-  return (await codec.getNextFrame()).image;
 }

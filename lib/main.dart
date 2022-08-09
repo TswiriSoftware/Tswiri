@@ -6,7 +6,6 @@ import 'package:sunbird/views/searchV2/search_view_v2.dart';
 import 'globals/globals_export.dart';
 import 'isar/isar_database.dart';
 import 'views/containers/containers_view/containers_view.dart';
-import 'views/search/search_view.dart';
 import 'views/settings/settings_view.dart';
 import 'views/utilities/utilities_view.dart';
 
@@ -17,8 +16,6 @@ void main() async {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-
-  //TODO: Implement Firebase.
 
   //Get Camera descriptions.
   cameras = await availableCameras();

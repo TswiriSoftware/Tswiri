@@ -2,12 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:sunbird/globals/globals_export.dart';
-import 'package:sunbird/views/searchV2/search_contoller_v2/text_painter.dart';
+import 'package:sunbird/views/searchV2/search_widgets/text_painter.dart';
 
 import 'dart:ui' as ui;
-import 'search_contoller_v2/image_painter.dart';
-import 'search_contoller_v2/search_results.dart';
+import 'image_painter.dart';
+import '../search_contoller_v2/search_results.dart';
 
+///Displays NameResult.
 class NameResultCard extends StatelessWidget {
   const NameResultCard({
     Key? key,
@@ -30,6 +31,7 @@ class NameResultCard extends StatelessWidget {
   }
 }
 
+///Displays DescriptionResult.
 class DescriptionResultCard extends StatelessWidget {
   const DescriptionResultCard({
     Key? key,
@@ -52,6 +54,7 @@ class DescriptionResultCard extends StatelessWidget {
   }
 }
 
+///Displays ContainerTagResult.
 class ContainerTagResultCard extends StatelessWidget {
   const ContainerTagResultCard({
     Key? key,
@@ -74,6 +77,7 @@ class ContainerTagResultCard extends StatelessWidget {
   }
 }
 
+///Displays PhotoLabelResult.
 class PhotoLabelResultCard extends StatelessWidget {
   const PhotoLabelResultCard({
     Key? key,
@@ -115,6 +119,7 @@ class PhotoLabelResultCard extends StatelessWidget {
   }
 }
 
+///Displays ObjectLabelResult.
 class ObjectLabelResultCard extends StatelessWidget {
   const ObjectLabelResultCard({
     Key? key,
@@ -176,6 +181,7 @@ class ObjectLabelResultCard extends StatelessWidget {
   }
 }
 
+///Displays MLPhotoLabelResult.
 class MLPhotoLabelResultCard extends StatelessWidget {
   const MLPhotoLabelResultCard({
     Key? key,
@@ -217,6 +223,7 @@ class MLPhotoLabelResultCard extends StatelessWidget {
   }
 }
 
+///Displays MLObjectLabelResult.
 class MLObjectLabelResultCard extends StatelessWidget {
   const MLObjectLabelResultCard({
     Key? key,
@@ -241,7 +248,7 @@ class MLObjectLabelResultCard extends StatelessWidget {
                     Radius.circular(10),
                   ),
                   child: CustomPaint(
-                    size: const Size(100, 100),
+                    size: const Size(150, 150),
                     painter: ImagePainter(
                       result.mlObject,
                       snapshot.data!,
@@ -278,6 +285,7 @@ class MLObjectLabelResultCard extends StatelessWidget {
   }
 }
 
+///Displays MLTextElementResult.
 class MLTextElementResultCard extends StatelessWidget {
   const MLTextElementResultCard({
     Key? key,

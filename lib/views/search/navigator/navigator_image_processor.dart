@@ -374,21 +374,21 @@ void navigationImageProcessor(List init) {
             } else {
               //Current Grid is NOT a parent of the targetBarcode.
               // TODO: Throw error message.
-              List errorMessage = [
-                'error',
-                'wrong_grid',
-                targetCoordinate.gridUID, //Target Grid
-                parentGrids.map((e) => e.id).toList(), //List Of Parent Grids.
-              ];
+              // List errorMessage = [
+              //   'error',
+              //   'wrong_grid',
+              //   targetCoordinate.gridUID, //Target Grid
+              //   parentGrids.map((e) => e.id).toList(), //List Of Parent Grids.
+              // ];
             }
           }
         } else {
           //Coordiante not found.
           //TODO: Possibly let the user know this barcode has not been scanned. Scafold message ?
-          List errorMessage = [
-            'error',
-            'unkown_barcode',
-          ];
+          // List errorMessage = [
+          //   'error',
+          //   'unkown_barcode',
+          // ];
         }
       }
 

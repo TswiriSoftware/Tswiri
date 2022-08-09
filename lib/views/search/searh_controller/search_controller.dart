@@ -3,8 +3,6 @@ import 'package:sunbird/isar/isar_database.dart';
 import 'search_result.dart';
 export 'search_result.dart';
 
-//TODO: Sort by confidence.
-
 class SearchController {
   SearchController({
     required this.filters,

@@ -21,8 +21,6 @@ class BackupView extends StatefulWidget {
 }
 
 class _BackupViewState extends State<BackupView> {
-  //TODO: improve UI.
-
   bool _isBusy = false;
 
   File? selectedFile;

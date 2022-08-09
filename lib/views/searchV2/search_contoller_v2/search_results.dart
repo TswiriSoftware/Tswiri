@@ -117,7 +117,7 @@ class PhotoLabelResult implements Result {
   ///The photoLabel Text.
   String photoLabel;
 
-  ///The Photo. (Photo is linked TODO: Discuss)
+  ///The Photo.
   Photo photo;
 
   @override
@@ -150,7 +150,7 @@ class ObjectLabelResult implements Result {
   ///The mlObject (for cut-outs)
   MLObject mlObject;
 
-  ///The Photo. (Photo is linked TODO: Discuss)
+  ///The Photo.
   Photo photo;
 
   @override
@@ -179,7 +179,7 @@ class MLPhotoLabelResult implements Result {
   ///The photoLabel Text.
   String mlPhotoLabel;
 
-  ///The Photo. (Photo is linked TODO: Discuss)
+  ///The Photo.
   Photo photo;
 
   @override
@@ -212,7 +212,7 @@ class MLObjectLabelResult implements Result {
   ///The mlObject (for cut-outs)
   MLObject mlObject;
 
-  ///The Photo. (Photo is linked TODO: Discuss)
+  ///The Photo.
   Photo photo;
 
   @override
@@ -245,7 +245,7 @@ class MLTextResult implements Result {
   ///The mlObject (for cut-outs)
   MLTextElement mlTextElement;
 
-  ///The Photo. (Photo is linked TODO: Discuss)
+  ///The Photo.
   Photo photo;
 
   @override
