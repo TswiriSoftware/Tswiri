@@ -17,24 +17,6 @@ class SearchController {
   List<String> filters;
 
   ///Search the database
-  ///            \/     \/
-  ///            ||     ||
-  ///   \ \      /\     /\      / /
-  ///    \ \     \/_____\/     / /
-  ///     \ \____/| 0 0 |\____/ /
-  ///      \____/_|  o  |_\____/
-  ///           \ \     / /
-  ///           / /     \ \
-  ///           \ \     / /
-  ///
-  ///           _____   _____  _______  ___  _____
-  /// |     |  |       |          |      |   |
-  /// |_____|  |_____  |          |      |   |
-  /// |     |  |       |          |      |   |
-  /// |     |  |_____  |_____     |     _|_  |_____
-  ///
-  ///
-  ///Search the database
   ///
   ///            \/     \/
   ///            ||     ||
@@ -71,7 +53,7 @@ class SearchController {
       //Trim and Normilize enteredKeyword.
       enteredKeyword = enteredKeyword.trim().toLowerCase();
 
-      List<SearchResult> searchResults = [];
+      searchResults.clear();
 
       ///Loop through Name results.
       if (filters.contains('Name')) {
@@ -106,7 +88,7 @@ class SearchController {
         );
       }
 
-      if (filters.contains('Tags') || filters.contains('User Labels')) {
+      if (filters.contains('Tags') || filters.contains('Photo Labels')) {
         //TagTexts that contain this enteredKeyword.
         List<TagText> tagTexts = isar!.tagTexts
             .filter()
@@ -115,7 +97,7 @@ class SearchController {
 
         List<int> tagTextIDs = tagTexts.map((e) => e.id).toList();
 
-        log('\n\nNumber of TagTexts: ${tagTexts.length}');
+        // log('\n\nNumber of TagTexts: ${tagTexts.length}');
         //Search Container Tags.
         if (filters.contains('Tags') && tagTextIDs.isNotEmpty) {
           //Filter Container Tags.
@@ -125,40 +107,152 @@ class SearchController {
                   tagTextIDs, (q, int element) => q.tagTextIDEqualTo(element))
               .findAllSync();
 
-          log('Number of containerTags: ${containerTags.length}');
+          // log('Number of containerTags: ${containerTags.length}');
 
-          List<CatalogedContainer> containers = isar!.catalogedContainers
-              .filter()
-              .repeat(
-                  containerTags,
-                  (q, ContainerTag element) =>
-                      q.containerUIDMatches(element.containerUID))
-              .findAllSync();
+          if (containerTags.isNotEmpty) {
+            List<CatalogedContainer> containers = isar!.catalogedContainers
+                .filter()
+                .repeat(
+                    containerTags,
+                    (q, ContainerTag element) =>
+                        q.containerUIDMatches(element.containerUID))
+                .findAllSync();
 
-          log('Number of containers: ${containers.length}\n\n');
+            // log('Number of containers: ${containers.length}\n\n');
 
-          for (CatalogedContainer container in containers) {
-            SearchResult searchResult = SearchResult(
-              catalogedContainer: container,
-            );
+            for (CatalogedContainer container in containers) {
+              SearchResult searchResult = SearchResult(
+                catalogedContainer: container,
+              );
 
-            searchResult.containerTags = containerTags
-                .where(
-                    (element) => element.containerUID == container.containerUID)
-                .toList();
+              searchResult.containerTags = containerTags
+                  .where((element) =>
+                      element.containerUID == container.containerUID)
+                  .toList();
 
-            int index = searchResults
-                .indexWhere((element) => element.id == container.id);
+              int index = searchResults
+                  .indexWhere((element) => element.id == container.id);
 
-            if (index == -1) {
-              searchResults.add(searchResult);
-            } else {
-              // searchResults[index].merge(searchResult);
+              if (index == -1) {
+                searchResults.add(searchResult);
+              } else {
+                searchResults[index].merge(searchResult);
+              }
             }
           }
         }
         //Search Photo Labels.
-        if (filters.contains('Photo Labels') && tagTextIDs.isNotEmpty) {}
+        if (filters.contains('Photo Labels') && tagTextIDs.isNotEmpty) {
+          //Filter Photo Labels.
+          List<PhotoLabel> photoLabels = isar!.photoLabels
+              .filter()
+              .repeat(
+                  tagTextIDs, (q, int element) => q.tagTextIDEqualTo(element))
+              .findAllSync();
+
+          log('Number of photoLabels: ${photoLabels.length}\n\n');
+
+          //Filter Object Labels.
+          List<ObjectLabel> objectLabels = isar!.objectLabels
+              .filter()
+              .repeat(
+                  tagTextIDs, (q, int element) => q.tagTextIDEqualTo(element))
+              .findAllSync();
+
+          // log('Number of objectLabels: ${objectLabels.length}\n\n');
+
+          //Find the relevant objects.
+          List<MLObject> mlObjects = [];
+          if (objectLabels.isNotEmpty) {
+            mlObjects = isar!.mLObjects
+                .filter()
+                .repeat(objectLabels,
+                    (q, ObjectLabel objectLabel) => q.idEqualTo(objectLabel.id))
+                .findAllSync();
+          }
+
+          // log('Number of mlObjects: ${mlObjects.length}\n\n');
+
+          if (photoLabels.isNotEmpty || mlObjects.isNotEmpty) {
+            //Find relevant Photos.
+            List<Photo> photos = isar!.photos
+                .filter()
+                .group(
+                  (q) => q
+                      .repeat(
+                        photoLabels,
+                        (q, PhotoLabel e) => q.idEqualTo(e.photoID),
+                      )
+                      .repeat(
+                        mlObjects,
+                        (q, MLObject e) => q.idEqualTo(e.photoID),
+                      ),
+                )
+                .findAllSync();
+
+            log('Number of photos: ${photos.length}\n\n');
+
+            if (photos.isNotEmpty) {
+              //Find relevant containers.
+              List<CatalogedContainer> containers = isar!.catalogedContainers
+                  .filter()
+                  .repeat(
+                      photos,
+                      (q, Photo photo) =>
+                          q.containerUIDMatches(photo.containerUID!))
+                  .findAllSync();
+
+              for (CatalogedContainer container in containers) {
+                //Create the search object.
+                SearchResult searchResult =
+                    SearchResult(catalogedContainer: container);
+
+                //Find Relevant Photos.
+                List<Photo> containerPhotos = photos
+                    .where((element) =>
+                        element.containerUID == container.containerUID)
+                    .toList();
+
+                //List of photoIDs.
+                List<int> photoIDs = containerPhotos.map((e) => e.id).toList();
+
+                //Find the relevant photoLabels.
+                List<PhotoLabel> containerPhotoLabels = photoLabels
+                    .where((element) => photoIDs.contains(element.photoID))
+                    .toList();
+
+                //Find the relevant MLObjects.
+                List<MLObject> containerMLObjects = mlObjects
+                    .where((element) => photoIDs.contains(element.photoID))
+                    .toList();
+
+                //MLObjectIDs.
+                List<int> objectIDs =
+                    containerMLObjects.map((e) => e.id).toList();
+
+                //Find relevant container object labels.
+                List<ObjectLabel> containerObjectLabels = objectLabels
+                    .where((element) => objectIDs.contains(element.objectID))
+                    .toList();
+
+                //Update the Search Result.
+                searchResult.photos = containerPhotos;
+                searchResult.photoLabels = containerPhotoLabels;
+                searchResult.objectLabels = containerObjectLabels;
+
+                //Check if it exists.
+                int index = searchResults
+                    .indexWhere((element) => element.id == container.id);
+
+                if (index == -1) {
+                  searchResults.add(searchResult);
+                } else {
+                  searchResults[index].merge(searchResult);
+                }
+              }
+            }
+          }
+        }
       }
 
       if (filters.contains('ML Labels')) {

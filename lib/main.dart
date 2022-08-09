@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sunbird/views/searchV2/search_view_v2.dart';
 import 'globals/globals_export.dart';
 import 'isar/isar_database.dart';
 import 'views/containers/containers_view/containers_view.dart';
@@ -86,7 +87,7 @@ class _HomePageState extends State<HomePage>
             isSearching = value;
           }),
         ),
-        SearchView(
+        SearchViewV2(
           isSearching: (value) => setState(() {
             isSearching = value;
           }),

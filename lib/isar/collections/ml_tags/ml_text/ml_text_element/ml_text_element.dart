@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:isar/isar.dart';
 part 'ml_text_element.g.dart';
@@ -36,6 +37,12 @@ class MLTextElement {
   @override
   String toString() {
     return 'ID: $id, LineID: $lineID, LineIndex: $lineIndex, DetectedElementTextID: $detectedElementTextID, CornerPoints: $cornerPoints';
+  }
+
+  Rect getBoundingBox() {
+    return Rect.fromPoints(
+        Offset(cornerPoints[0].x.toDouble(), cornerPoints[0].y.toDouble()),
+        Offset(cornerPoints[2].x.toDouble(), cornerPoints[2].y.toDouble()));
   }
 }
 

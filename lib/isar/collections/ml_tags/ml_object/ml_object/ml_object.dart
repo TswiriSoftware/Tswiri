@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:isar/isar.dart';
 part 'ml_object.g.dart';
 
@@ -43,4 +45,9 @@ class MLObject {
 
   @override
   int get hashCode => id.hashCode;
+
+  Rect getBoundingBox() {
+    return Rect.fromLTRB(
+        boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3]);
+  }
 }

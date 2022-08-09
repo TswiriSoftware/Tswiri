@@ -55,6 +55,7 @@ dependencies:
   share_plus: ^4.0.10
   file_picker: ^4.6.1
   flutter_launcher_icons: ^0.9.3
+  string_similarity: ^2.0.0
 
 dev_dependencies:
   flutter_test:

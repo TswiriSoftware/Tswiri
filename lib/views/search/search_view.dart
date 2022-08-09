@@ -40,7 +40,7 @@ class _SearchViewState extends State<SearchView> {
 
   @override
   void initState() {
-    _searchController.search();
+    _searchController.searchV2();
     super.initState();
   }
 
@@ -83,24 +83,24 @@ class _SearchViewState extends State<SearchView> {
         filterTypes: filterTypes.entries.map((e) => e.key).toList(),
         filterChange: (enteredKeyWord) {
           setState(() {
-            _searchController.search(enteredKeyword: enteredKeyWord);
+            _searchController.searchV2(enteredKeyword: enteredKeyWord);
           });
         },
         onCancel: () {
           setState(() {
             isSearching = false;
             widget.isSearching(isSearching);
-            _searchController.search();
+            _searchController.searchV2();
           });
         },
         onChanged: (value) {
           setState(() {
-            _searchController.search(enteredKeyword: value);
+            _searchController.searchV2(enteredKeyword: value);
           });
         },
         onSubmitted: (value) {
           setState(() {
-            _searchController.search(enteredKeyword: value);
+            _searchController.searchV2(enteredKeyword: value);
           });
         },
       ),
