@@ -34,9 +34,9 @@ class SinglePainter extends CustomPainter {
       ..color = Colors.blue;
 
     final Paint centerBarcodeColor = Paint()
-      ..style = PaintingStyle.stroke
+      ..style = PaintingStyle.fill
       ..strokeWidth = 3.0
-      ..color = Colors.greenAccent;
+      ..color = Colors.greenAccent.withOpacity(0.5);
 
     final Paint background = Paint()..color = const Color(0x99000000);
 
@@ -89,9 +89,11 @@ class SinglePainter extends CustomPainter {
         );
 
         if (currentBarcode == barcode.displayValue) {
+          Path path = Path();
+          path.addPolygon(offsetPoints, true);
+          canvas.drawPath(path, centerBarcodeColor);
           //Draw center barcode Edges.
-          canvas.drawPoints(
-              PointMode.polygon, offsetPoints, centerBarcodeColor);
+
         } else {
           //Draw other barcode Edges.
           canvas.drawPoints(PointMode.polygon, offsetPoints, barcodeColor);

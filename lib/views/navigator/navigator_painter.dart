@@ -11,9 +11,9 @@ class NavigatorPainter extends CustomPainter {
   final List message;
 
   final Paint barcodePaint = Paint()
-    ..style = PaintingStyle.stroke
+    ..style = PaintingStyle.fill
     ..strokeWidth = 2
-    ..color = Colors.lightGreenAccent;
+    ..color = Colors.lightGreenAccent.withOpacity(0.5);
 
   final Paint finderCircleGreen = Paint()
     ..style = PaintingStyle.stroke
@@ -50,7 +50,10 @@ class NavigatorPainter extends CustomPainter {
         Offset(message[3][1][0], message[3][1][1]),
       ];
 
-      canvas.drawPoints(PointMode.polygon, offsetPoints, barcodePaint);
+      // canvas.drawPoints(PointMode.polygon, offsetPoints, barcodePaint);
+      Path path = Path();
+      path.addPolygon(offsetPoints, true);
+      canvas.drawPath(path, barcodePaint);
 
       if (message[4] == true) {
         final textSpan = TextSpan(

@@ -12,11 +12,15 @@ class CustomTextField extends StatefulWidget {
     required this.label,
     required this.initialValue,
     required this.onSubmitted,
+    this.maxLines,
+    this.textInputType,
   }) : super(key: key);
 
   final String label;
   final String? initialValue;
   final void Function(String) onSubmitted;
+  final int? maxLines;
+  final TextInputType? textInputType;
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -41,6 +45,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
         focusNode: _focusNode,
         onSubmitted: widget.onSubmitted,
         textCapitalization: TextCapitalization.sentences,
+        maxLines: widget.maxLines,
+        keyboardType: widget.textInputType,
         decoration: InputDecoration(
           filled: true,
           fillColor: background[500],

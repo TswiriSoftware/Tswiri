@@ -2,9 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:sunbird/globals/globals_export.dart';
+import 'package:sunbird/isar/functions/change_functions.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/classes/image_data.dart';
+import 'package:sunbird/views/containers/barcode_scanner/single_scanner_view.dart';
 import 'package:sunbird/views/containers/container_view/photo_labeling/ml_photo_labeling_camera_view.dart';
+import 'package:sunbird/views/navigator/navigator_view.dart';
 import 'package:sunbird/views/utilities/grids/grid/grid_viewer_view.dart';
 import 'package:sunbird/views/utilities/grids/new_grid/new_grid_view.dart';
 import 'package:sunbird/widgets/photo/photo_edit_view.dart';
@@ -20,11 +23,13 @@ class ContainerView extends StatefulWidget {
     this.tagsExpanded,
     this.photosExpaned,
     this.childrenExpanded,
+    this.parentExpaned,
   }) : super(key: key);
   final CatalogedContainer catalogedContainer;
   final bool? tagsExpanded;
   final bool? photosExpaned;
   final bool? childrenExpanded;
+  final bool? parentExpaned;
   @override
   State<ContainerView> createState() => _ContainerViewState();
 }
@@ -40,21 +45,26 @@ class _ContainerViewState extends State<ContainerView> {
       .containerUIDMatches(_catalogedContainer.containerUID)
       .findAllSync();
 
-  late List<Photo> photos = isar!.photos
+  late List<Photo> _photos = isar!.photos
       .filter()
       .containerUIDMatches(_catalogedContainer.containerUID)
       .findAllSync();
 
-  late ContainerType containerType =
+  late final ContainerType _containerType =
       isar!.containerTypes.getSync(_catalogedContainer.containerTypeID)!;
 
-  late Color containerColor = containerType.containerColor;
+  late Color containerColor = _containerType.containerColor;
 
   late List<ContainerRelationship> containerRelationships = isar!
       .containerRelationships
       .filter()
       .parentUIDMatches(_catalogedContainer.containerUID)
       .findAllSync();
+
+  late ContainerRelationship? parentContainer = isar!.containerRelationships
+      .filter()
+      .containerUIDMatches(_catalogedContainer.containerUID)
+      .findFirstSync();
 
   bool isAddingTag = false;
   bool isEditingPhoto = false;
@@ -63,6 +73,7 @@ class _ContainerViewState extends State<ContainerView> {
   late bool? tagsExpanded = widget.tagsExpanded ?? false;
   late bool? photosExpaned = widget.photosExpaned ?? false;
   late bool? childrenExpanded = widget.childrenExpanded ?? false;
+  late bool? parentExpanded = widget.parentExpaned ?? false;
 
   @override
   void initState() {
@@ -95,10 +106,26 @@ class _ContainerViewState extends State<ContainerView> {
   Widget _infoWidget() {
     return IconButton(
       onPressed: () {
-        //TODO: Info Screen.
+        CatalogedCoordinate? catalogedCoordiante = isar!.catalogedCoordinates
+            .filter()
+            .barcodeUIDMatches(_catalogedContainer.barcodeUID!)
+            .findFirstSync();
+
+        if (catalogedCoordiante != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NavigatorView(
+                  catalogedContainer: _catalogedContainer,
+                  gridUID: catalogedCoordiante.gridUID),
+            ),
+          );
+        } else {
+          // TODO: Show scafold message.
+        }
       },
-      icon: Icon(
-        getContainerTypeIcon(_catalogedContainer.containerTypeID),
+      icon: const Icon(
+        Icons.location_searching,
       ),
     );
   }
@@ -128,6 +155,7 @@ class _ContainerViewState extends State<ContainerView> {
           children: [
             _nameTextField(),
             _descriptionTextField(),
+            _parentCard(),
             _tagsCard(),
             _photosCard(),
             _containerChildren(),
@@ -144,29 +172,29 @@ class _ContainerViewState extends State<ContainerView> {
       photo: _photo!,
       onLeft: () {
         setState(() {
-          int index = photos.indexWhere((element) => element == _photo);
+          int index = _photos.indexWhere((element) => element == _photo);
           if (index == 0) {
-            index = photos.length - 1;
+            index = _photos.length - 1;
           } else {
             index = index - 1;
           }
-          _photo = photos[index];
+          _photo = _photos[index];
           _photoEditViewKey.currentState?.updatePhoto(_photo!);
         });
       },
       onRight: () {
         setState(() {
-          int index = photos.indexWhere((element) => element == _photo);
-          if (index == photos.length - 1) {
+          int index = _photos.indexWhere((element) => element == _photo);
+          if (index == _photos.length - 1) {
             index = 0;
           } else {
             index = index + 1;
           }
-          _photo = photos[index];
+          _photo = _photos[index];
           _photoEditViewKey.currentState?.updatePhoto(_photo!);
         });
       },
-      navigationEnabeld: photos.length > 1,
+      navigationEnabeld: _photos.length > 1,
     );
   }
 
@@ -217,6 +245,98 @@ class _ContainerViewState extends State<ContainerView> {
               .putSync(_catalogedContainer, replaceOnConflict: true);
         });
       },
+    );
+  }
+
+  Widget _parentCard() {
+    return Card(
+      child: ExpansionTile(
+        initiallyExpanded: parentExpanded ?? false,
+        title: Text(
+          'Parent',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        onExpansionChanged: (value) {
+          setState(() {
+            parentExpanded = value;
+          });
+        },
+        children: [
+          parentContainer != null
+              ? Card(
+                  color: background[300],
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          parentContainer!.parentUID!,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            String? barcodeUID = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const SingleBarcodeScannerView(),
+                              ),
+                            );
+
+                            if (barcodeUID != null) {
+                              CatalogedContainer? catalogedContainer = isar!
+                                  .catalogedContainers
+                                  .filter()
+                                  .barcodeUIDMatches(barcodeUID)
+                                  .findFirstSync();
+
+                              if (catalogedContainer != null &&
+                                  barcodeUID !=
+                                      _catalogedContainer.barcodeUID) {
+                                bool hasChangedParent = changeParent(
+                                  currentContainer: _catalogedContainer,
+                                  parentContainer: catalogedContainer,
+                                );
+
+                                if (hasChangedParent == true) {
+                                  setState(() {
+                                    parentContainer = isar!
+                                        .containerRelationships
+                                        .filter()
+                                        .containerUIDMatches(
+                                            _catalogedContainer.containerUID)
+                                        .findFirstSync();
+                                  });
+                                } else {
+                                  //TODO: throw error.
+                                }
+                              }
+                            }
+                          },
+                          child: Text(
+                            'Change',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {},
+                      child: Text(
+                        'Scan Parent',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
+        ],
+      ),
     );
   }
 
@@ -303,7 +423,7 @@ class _ContainerViewState extends State<ContainerView> {
             child: Wrap(
               children: [
                 _newPhotoCard(),
-                for (var photo in photos) _photoCard(photo),
+                for (var photo in _photos) _photoCard(photo),
               ],
             ),
           ),
@@ -429,7 +549,7 @@ class _ContainerViewState extends State<ContainerView> {
             builder: (context) => NewContainerView(
               parentContainerUID: _catalogedContainer,
               preferredContainerType: isar!.containerTypes
-                  .getSync(containerType.preferredChildContainer),
+                  .getSync(_containerType.preferredChildContainer),
             ),
           ),
         );
@@ -561,7 +681,7 @@ class _ContainerViewState extends State<ContainerView> {
   ///Updates the photos.
   void _updatePhotosDisplay() {
     setState(() {
-      photos = isar!.photos
+      _photos = isar!.photos
           .filter()
           .containerUIDMatches(_catalogedContainer.containerUID)
           .findAllSync();

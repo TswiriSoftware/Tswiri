@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sunbird/extentions/string_extentions.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
+import 'package:sunbird/views/utilities/container_types/container_type_editor/container_type_editor_view.dart';
 
 class ContainerTypesView extends StatefulWidget {
   const ContainerTypesView({Key? key}) : super(key: key);
@@ -47,43 +48,68 @@ class _ContainerTypesViewState extends State<ContainerTypesView> {
   }
 
   Widget _containerTypeCard(ContainerType containerType) {
-    return Card(
-      // shape: RoundedRectangleBorder(
-      //   side: BorderSide(
-      //     color: Color(int.parse(containerType.containerColor)),
-      //     width: 0.4,
-      //   ),
-      //   borderRadius: BorderRadius.circular(10),
-      // ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  containerType.containerTypeName.capitalizeFirstCharacter(),
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                Icon(containerType.iconData),
-              ],
+    return InkWell(
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ContainerTypeEditorView(
+              containerType: containerType,
             ),
-            Divider(
-              color: colorModeEnabled ? containerType.containerColor : null,
-              thickness: 1,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(containerType.containerDescription),
-            ),
-            const Divider(),
-            Text('Contains: ${containerType.canContain}'),
-            Text('Enclosing: ${containerType.enclosing}'),
-          ],
+          ),
+        );
+
+        setState(() {
+          containerTypes = isar!.containerTypes.where().findAllSync();
+        });
+      },
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    containerType.containerTypeName.capitalizeFirstCharacter(),
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Icon(containerType.iconData),
+                ],
+              ),
+              Divider(
+                color: colorModeEnabled ? containerType.containerColor : null,
+                thickness: 1,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(containerType.containerDescription),
+              ),
+              const Divider(),
+              Row(
+                children: [
+                  Text(
+                    'Can contain: ',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  for (int x in containerType.canContain)
+                    Text(
+                        '${isar!.containerTypes.getSync(x)!.containerTypeName}, '),
+                ],
+              ),
+              const Divider(),
+              Text('Enclosing: ${containerType.enclosing}'),
+              const Divider(),
+              Text('Moveable: ${containerType.moveable}'),
+            ],
+          ),
         ),
       ),
     );
   }
+
+  //TODO: New ContainerType.
+
 }
