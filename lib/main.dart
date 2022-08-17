@@ -2,7 +2,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:sunbird/views/searchV2/search_view_v2.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:sunbird/views/search/search_view.dart';
 import 'globals/globals_export.dart';
 import 'isar/isar_database.dart';
 import 'views/containers/containers_view/containers_view.dart';
@@ -11,6 +12,17 @@ import 'views/utilities/utilities_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await SentryFlutter.init(
+    (options) {
+      options.dsn =
+          'https://71d4f2ab67d54ec59fd8eb2a42d00fc8@o1364118.ingest.sentry.io/6657903';
+      // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+      // We recommend adjusting this value in production.
+      options.tracesSampleRate = 1.0;
+    },
+    appRunner: () => runApp(MyApp()),
+  );
 
   //Force portraitUp.
   SystemChrome.setPreferredOrientations([
@@ -63,6 +75,7 @@ class _HomePageState extends State<HomePage>
       length: 4,
       initialIndex: 1,
     );
+
     super.initState();
   }
 
@@ -84,7 +97,7 @@ class _HomePageState extends State<HomePage>
             isSearching = value;
           }),
         ),
-        SearchViewV2(
+        SearchView(
           isSearching: (value) => setState(() {
             isSearching = value;
           }),

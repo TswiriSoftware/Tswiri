@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:sunbird/globals/globals_export.dart';
-import 'package:sunbird/views/searchV2/search_widgets/text_painter.dart';
+import 'package:sunbird/views/search/search_widgets/text_painter.dart';
 
 import 'dart:ui' as ui;
 import 'image_painter.dart';
-import '../search_contoller_v2/search_results.dart';
+import '../search_controller/search_results.dart';
 
 ///Displays NameResult.
 class NameResultCard extends StatelessWidget {

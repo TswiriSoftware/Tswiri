@@ -1,9 +1,9 @@
 import 'package:string_similarity/string_similarity.dart';
 import 'package:sunbird/isar/isar_database.dart';
-import 'package:sunbird/views/searchV2/search_contoller_v2/search_results.dart';
+import 'package:sunbird/views/search/search_controller/search_results.dart';
 
-class SearchControllerV2 {
-  SearchControllerV2({
+class SearchController {
+  SearchController({
     required this.filters,
   });
 

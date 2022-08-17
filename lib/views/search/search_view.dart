@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/views/containers/container_view/container_view.dart';
-import 'package:sunbird/views/searchV2/search_contoller_v2/search_controller_v2.dart';
-import 'package:sunbird/views/searchV2/search_contoller_v2/search_results.dart';
-import 'package:sunbird/views/searchV2/search_widgets/search_widgets.dart';
+import 'package:sunbird/views/search/search_controller/search_controller.dart';
+import 'package:sunbird/views/search/search_controller/search_results.dart';
+import 'package:sunbird/views/search/search_widgets/search_widgets.dart';
 import 'package:sunbird/widgets/search_bar/search_bar.dart';
 
-class SearchViewV2 extends StatefulWidget {
-  const SearchViewV2({
+class SearchView extends StatefulWidget {
+  const SearchView({
     Key? key,
     required this.isSearching,
   }) : super(key: key);
   final void Function(bool) isSearching;
 
   @override
-  State<SearchViewV2> createState() => _SearchViewV2State();
+  State<SearchView> createState() => _SearchViewState();
 }
 
 ///Search Filters.
@@ -28,9 +28,9 @@ List<String> searchFilters = [
   'ML Text',
 ];
 
-class _SearchViewV2State extends State<SearchViewV2> {
-  final SearchControllerV2 _searchController =
-      SearchControllerV2(filters: searchFilters);
+class _SearchViewState extends State<SearchView> {
+  final SearchController _searchController =
+      SearchController(filters: searchFilters);
 
   Map<String, String> filterTypes = {
     'Tags': 'Search by container tags',

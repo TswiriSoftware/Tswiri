@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sunbird/globals/colors.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
-import 'package:sunbird/views/containers/barcode_scanner/single_scanner_view.dart';
+import 'package:sunbird/views/ml_kit_views/single_scanner_view.dart';
 import 'package:sunbird/views/utilities/grids/grid/grid_viewer_view.dart';
 
 class NewGridView extends StatefulWidget {
