@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 GoogleSignInAccount? _currentUser;
 
@@ -114,8 +115,11 @@ class _GoogleBackupViewState extends State<GoogleBackupView> {
   Future<void> _handleSignIn() async {
     try {
       await _googleSignIn.signIn();
-    } catch (error) {
-      log(error.toString());
+    } catch (exception, stackTrace) {
+      await Sentry.captureException(
+        exception,
+        stackTrace: stackTrace,
+      );
     }
   }
 
