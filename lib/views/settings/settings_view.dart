@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sunbird/views/settings/backup/backup_options_view.dart';
 import 'package:sunbird/views/settings/google_backup/google_backup_view.dart';
 import 'package:sunbird/views/settings/manual_backup/manual_backup_view.dart';
 
@@ -69,7 +70,7 @@ class _SettingsViewState extends State<SettingsView> {
           _imageLabeling(),
           _objectDetection(),
           _textDetection(),
-          _manageGoogleBackup(),
+          _manageBackup(),
         ],
       ),
     );
@@ -370,7 +371,7 @@ class _SettingsViewState extends State<SettingsView> {
     );
   }
 
-  Widget _manageGoogleBackup() {
+  Widget _manageBackup() {
     return Container(
       margin: const EdgeInsets.all(8),
       padding: const EdgeInsets.all(8),
@@ -387,25 +388,12 @@ class _SettingsViewState extends State<SettingsView> {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => const BackupView(),
+                  builder: (context) => const BackupOptionsView(),
                 ),
               );
             },
             child: Text(
-              'Manual Backup',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const GoogleBackupView(),
-                ),
-              );
-            },
-            child: Text(
-              'Google Backup',
+              'Manage Backup',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),

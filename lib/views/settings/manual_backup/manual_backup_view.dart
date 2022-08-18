@@ -15,14 +15,14 @@ import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/views/settings/manual_backup/create_backup_isolate.dart';
 import 'package:sunbird/views/settings/manual_backup/restore_backup_isolate.dart';
 
-class BackupView extends StatefulWidget {
-  const BackupView({Key? key}) : super(key: key);
+class ManualBackupView extends StatefulWidget {
+  const ManualBackupView({Key? key}) : super(key: key);
 
   @override
-  State<BackupView> createState() => _BackupViewState();
+  State<ManualBackupView> createState() => _ManualBackupViewState();
 }
 
-class _BackupViewState extends State<BackupView> {
+class _ManualBackupViewState extends State<ManualBackupView> {
   bool _isBusy = false;
 
   File? selectedFile;
@@ -91,8 +91,8 @@ class _BackupViewState extends State<BackupView> {
           )
         : Column(
             children: [
-              _restoreCard(),
               _backupCard(),
+              _restoreCard(),
             ],
           );
   }
@@ -121,7 +121,6 @@ class _BackupViewState extends State<BackupView> {
   Widget _backupButton() {
     return ElevatedButton(
       onPressed: () async {
-        ///Test Function.
         try {
           createBackup();
         } catch (exception, stackTrace) {

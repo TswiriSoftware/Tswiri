@@ -19,14 +19,14 @@ class _GoogleBackupViewState extends State<GoogleBackupView> {
 
   @override
   void initState() {
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
+    googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
       setState(() {
         _currentUser = account;
       });
       if (_currentUser != null) {}
     });
 
-    _googleSignIn.signInSilently();
+    googleSignIn.signInSilently();
     super.initState();
   }
 
@@ -51,19 +51,26 @@ class _GoogleBackupViewState extends State<GoogleBackupView> {
   Widget _body() {
     return Center(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Builder(builder: (context) {
-            final GoogleSignInAccount? user = _currentUser;
-            if (user != null) {
-              return Column(
-                children: [
-                  _loggedInWidget(user),
-                ],
-              );
-            } else {
-              return _loginWidget();
-            }
-          }),
+          Builder(
+            builder: (context) {
+              final GoogleSignInAccount? user = _currentUser;
+              if (user != null) {
+                return Column(
+                  children: [
+                    _loggedInWidget(user),
+                  ],
+                );
+              } else {
+                return _loginWidget();
+              }
+            },
+          ),
+          Text(
+            'Coming Soon',
+            style: Theme.of(context).textTheme.bodyMedium,
+          )
         ],
       ),
     );
@@ -114,7 +121,7 @@ class _GoogleBackupViewState extends State<GoogleBackupView> {
 
   Future<void> _handleSignIn() async {
     try {
-      await _googleSignIn.signIn();
+      await googleSignIn.signIn();
     } catch (exception, stackTrace) {
       await Sentry.captureException(
         exception,
@@ -124,13 +131,13 @@ class _GoogleBackupViewState extends State<GoogleBackupView> {
   }
 
   Future<void> _handleSignOut() async {
-    if (await _googleSignIn.isSignedIn()) {
-      _googleSignIn.disconnect();
+    if (await googleSignIn.isSignedIn()) {
+      googleSignIn.disconnect();
     }
   }
 }
 
-GoogleSignIn _googleSignIn = GoogleSignIn(
+GoogleSignIn googleSignIn = GoogleSignIn(
   //Optional clientId
   //clientId: '479882132969-9i9aqik3jfjd7qhci1nqf0bm2g71rm1u.apps.googleusercontent.com',
   scopes: <String>[

@@ -95,10 +95,6 @@ Future<void> createBackupIsolate(List init) async {
     log(e.toString());
   }
 
-  // log(isarFolder.existsSync().toString(), name: 'Isar Folder');
-  // log(backupFolder.existsSync().toString(), name: 'Backup Folder');
-  // log(formattedDate, name: 'FormattedDate');
-
   sendPort.send([
     'done',
   ]);
