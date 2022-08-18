@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
@@ -37,10 +35,6 @@ class _ContainersViewState extends State<ContainersView> {
       enteredKeyWord: null,
       containerFilters: containerFilters,
     );
-
-    log(isar!.containerRelationships.where().findAllSync().toString());
-
-    // isar!.writeTxnSync((isar) => isar.containerRelationships.clearSync());
     super.initState();
   }
 

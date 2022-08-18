@@ -13,17 +13,6 @@ import 'views/utilities/utilities_view.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await SentryFlutter.init(
-    (options) {
-      options.dsn =
-          'https://71d4f2ab67d54ec59fd8eb2a42d00fc8@o1364118.ingest.sentry.io/6657903';
-      // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-      // We recommend adjusting this value in production.
-      options.tracesSampleRate = 1.0;
-    },
-    appRunner: () => runApp(MyApp()),
-  );
-
   //Force portraitUp.
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -41,7 +30,18 @@ void main() async {
   //Load App Settigns.
   loadAppSettings();
 
-  runApp(const MyApp());
+  await SentryFlutter.init(
+    (options) {
+      options.dsn =
+          'https://71d4f2ab67d54ec59fd8eb2a42d00fc8@o1364118.ingest.sentry.io/6657903';
+      // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+      // We recommend adjusting this value in production.
+      options.tracesSampleRate = 1.0;
+    },
+    appRunner: () => runApp(const MyApp()),
+  );
+
+  // runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
