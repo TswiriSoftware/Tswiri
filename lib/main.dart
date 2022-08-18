@@ -37,8 +37,14 @@ void main() async {
       // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
       // We recommend adjusting this value in production.
       options.tracesSampleRate = 1.0;
+      options.enableAutoPerformanceTracking = true;
     },
-    appRunner: () => runApp(const MyApp()),
+    appRunner: () => runApp(
+      DefaultAssetBundle(
+        bundle: SentryAssetBundle(),
+        child: const MyApp(),
+      ),
+    ),
   );
 
   // runApp(const MyApp());
@@ -52,6 +58,9 @@ class MyApp extends StatelessWidget {
       theme: themeData(),
       home: const HomePage(),
       debugShowCheckedModeBanner: false,
+      navigatorObservers: [
+        SentryNavigatorObserver(),
+      ],
     );
   }
 }
