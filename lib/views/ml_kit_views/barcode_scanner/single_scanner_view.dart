@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:sunbird/globals/globals_export.dart';
 
-import 'barcode_scanner/single_barcode_camera_view.dart';
-import 'barcode_scanner/single_barcode_painter.dart';
+import 'single_barcode_camera_view.dart';
+import 'single_barcode_painter.dart';
 
 ///Returns a single barcodeUID.
 class SingleBarcodeScannerView extends StatefulWidget {

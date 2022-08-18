@@ -4,7 +4,7 @@ import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/views/containers/container_view/container_view.dart';
 
-import '../../ml_kit_views/single_scanner_view.dart';
+import '../../ml_kit_views/barcode_scanner/single_scanner_view.dart';
 
 class NewContainerView extends StatefulWidget {
   ///This view is used to create new containers.

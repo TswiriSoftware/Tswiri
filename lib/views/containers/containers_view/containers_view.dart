@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
-import 'package:sunbird/views/ml_kit_views/single_scanner_view.dart';
+import 'package:sunbird/views/ml_kit_views/barcode_scanner/single_scanner_view.dart';
 import 'package:sunbird/views/containers/container_view/container_view.dart';
 import 'package:sunbird/views/containers/containers_view/container_search_controller.dart';
 import 'package:sunbird/views/containers/new_container_view/new_container_view.dart';

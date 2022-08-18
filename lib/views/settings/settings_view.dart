@@ -2,7 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sunbird/views/settings/backup/backup_view.dart';
+import 'package:sunbird/views/settings/google_backup/google_backup_view.dart';
+import 'package:sunbird/views/settings/manual_backup/manual_backup_view.dart';
 
 import '../../globals/globals_export.dart';
 
@@ -380,7 +381,7 @@ class _SettingsViewState extends State<SettingsView> {
         ),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           ElevatedButton(
             onPressed: () {
@@ -391,7 +392,20 @@ class _SettingsViewState extends State<SettingsView> {
               );
             },
             child: Text(
-              'Manage Backup',
+              'Manual Backup',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const GoogleBackupView(),
+                ),
+              );
+            },
+            child: Text(
+              'Google Backup',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),

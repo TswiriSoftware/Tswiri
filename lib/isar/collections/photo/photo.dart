@@ -48,12 +48,20 @@ class Photo {
     return '\nID: $id, containerID: $containerUID ';
   }
 
-  String getPhotoPath() {
-    return '${photoDirectory!.path}/$photoName.$extention';
+  String getPhotoPath({String? directory}) {
+    if (directory != null) {
+      return '$directory/$photoName.$extention';
+    } else {
+      return '${photoDirectory!.path}/$photoName.$extention';
+    }
   }
 
-  String getPhotoThumbnailPath() {
-    return '${photoDirectory!.path}/${photoName}_thumbnail.$extention';
+  String getPhotoThumbnailPath({String? directory}) {
+    if (directory != null) {
+      return '$directory/${photoName}__thumbnail.$extention';
+    } else {
+      return '${photoDirectory!.path}/${photoName}_thumbnail.$extention';
+    }
   }
 
   // Map toJson() => {
