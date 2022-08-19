@@ -54,6 +54,8 @@ class _NavigatorViewState extends State<NavigatorView> {
   //Painter
   bool _isBusy = false;
 
+  bool _isHandelingError = false;
+
   // //Dialogs
   // bool _showingDialog = false;
 
@@ -117,7 +119,7 @@ class _NavigatorViewState extends State<NavigatorView> {
       } else if (message[0] == 'painterMessage') {
         drawImage(message);
       } else if (message[0] == 'error') {
-        // errorHandler(message);
+        _errorHandler(message);
       }
     });
 
@@ -128,7 +130,7 @@ class _NavigatorViewState extends State<NavigatorView> {
       } else if (message[0] == 'painterMessage') {
         drawImage(message);
       } else if (message[0] == 'error') {
-        // errorHandler(message);
+        _errorHandler(message);
       }
     });
 
@@ -265,5 +267,88 @@ class _NavigatorViewState extends State<NavigatorView> {
         counter = 0;
       });
     }
+  }
+
+  void _errorHandler(List message) async {
+    if (_isHandelingError) return;
+    setState(() {
+      _isHandelingError = true;
+    });
+
+    switch (message[2]) {
+      case 'wrong_grid':
+
+        //Show popup.
+        await _showWrongGridDialog(message);
+        break;
+      case 'unkown_barcode':
+
+        //Snackbar :D.
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'unkown barcode',
+            ),
+            duration: Duration(milliseconds: 500),
+          ),
+        );
+
+        await Future.delayed(const Duration(milliseconds: 500));
+        break;
+      default:
+    }
+
+    setState(() {
+      _isHandelingError = false;
+    });
+  }
+
+  Future<void> _showWrongGridDialog(List message) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        List<CatalogedContainer> catalogedContainers = [];
+        List<int> gridIDs = message[3];
+
+        for (int gridID in gridIDs) {
+          CatalogedGrid? catalogedGrid = isar!.catalogedGrids.getSync(gridID);
+          if (catalogedGrid != null) {
+            CatalogedContainer? catalogedContainer = isar!.catalogedContainers
+                .filter()
+                .barcodeUIDMatches(catalogedGrid.barcodeUID)
+                .findFirstSync();
+
+            if (catalogedContainer != null) {
+              catalogedContainers.add(catalogedContainer);
+            }
+          }
+        }
+
+        return AlertDialog(
+          title: const Text('Wrong Grid'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                const Text('This is a WIP dialog.'),
+                const Text('Please go to any of these Containers'),
+                for (CatalogedContainer catalogedContainer
+                    in catalogedContainers)
+                  Text(catalogedContainer.name ??
+                      catalogedContainer.containerUID),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('done'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

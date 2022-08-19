@@ -64,7 +64,9 @@ class _ChangeParentViewState extends State<ChangeParentView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(_containerRelationship.parentUID!),
+                Text(
+                  _containerRelationship.parentUID!,
+                ),
               ],
             ),
           ],
