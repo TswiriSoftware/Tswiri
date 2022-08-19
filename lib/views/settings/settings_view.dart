@@ -23,6 +23,7 @@ class _SettingsViewState extends State<SettingsView> {
       TextEditingController();
   final TextEditingController _objectDetectionConfidence =
       TextEditingController();
+
   @override
   void initState() {
     _loadSettings();
@@ -49,6 +50,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _body() {
     return SingleChildScrollView(
+      padding: const EdgeInsets.only(bottom: 150),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,

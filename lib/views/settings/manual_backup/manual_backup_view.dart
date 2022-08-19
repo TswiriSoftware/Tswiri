@@ -36,6 +36,8 @@ class _ManualBackupViewState extends State<ManualBackupView> {
   FlutterIsolate? _backupIsolate;
   FlutterIsolate? _restoreIsolate;
 
+  double progress = 0;
+
   @override
   void initState() {
     _uiPort1.listen((message) {
@@ -43,11 +45,15 @@ class _ManualBackupViewState extends State<ManualBackupView> {
         killBackupIsolate();
       } else if (message[0] == 'path') {
         shareBackup(message[1]);
+      } else if (message[0] == 'progress') {
+        setState(() {
+          log(progress.toString());
+          progress = message[1];
+        });
       }
     });
 
     _uiPort2.listen((message) {
-      //TODO: loading bar.
       if (message[0] == 'done') {
         killRestoreisolate();
       } else if (message[0] == 'error') {
@@ -60,8 +66,14 @@ class _ManualBackupViewState extends State<ManualBackupView> {
             log('version_error');
             killRestoreisolate();
             break;
+
           default:
         }
+      } else if (message[0] == 'progress') {
+        setState(() {
+          log(progress.toString());
+          progress = message[1];
+        });
       }
     });
     super.initState();
@@ -86,8 +98,17 @@ class _ManualBackupViewState extends State<ManualBackupView> {
 
   Widget _body() {
     return _isBusy
-        ? const Center(
-            child: CircularProgressIndicator(),
+        ? Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const CircularProgressIndicator(),
+                Text(
+                  '${progress.toStringAsFixed(2)}%',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
           )
         : Column(
             children: [
@@ -225,6 +246,7 @@ class _ManualBackupViewState extends State<ManualBackupView> {
       log('killed backupIsolate');
       setState(() {
         _isBusy = false;
+        progress = 0;
       });
     }
     if (!isar!.isOpen) {
@@ -292,6 +314,7 @@ class _ManualBackupViewState extends State<ManualBackupView> {
       log('killed restoreIsolate');
       setState(() {
         _isBusy = false;
+        progress = 0;
       });
     }
     if (!isar!.isOpen) {

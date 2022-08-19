@@ -5,8 +5,8 @@ import 'dart:isolate';
 import 'package:flutter_archive/flutter_archive.dart';
 import 'package:image/image.dart' as img;
 
+///Restores a backup zip file.
 Future<void> restoreBackupIsolate(List init) async {
-  log('Create backup isolate running');
   //1. InitalMessage.
   SendPort sendPort = init[0]; //[0] SendPort.
   String isarDirectory = init[1]; //[1] Isar Directory.
@@ -52,8 +52,10 @@ Future<void> restoreBackupIsolate(List init) async {
       File restorelLCK = File('${unzippedDirectory.path}/isar/mdbx.lck');
 
       if (restoreDAT.existsSync() && restorelLCK.existsSync()) {
-        log('restoreDAT && restorelLCK');
-        //PROCEED
+        sendPort.send([
+          'progress',
+          0,
+        ]);
 
         Directory isarDataFolder = Directory('$isarDirectory/isar');
 
@@ -75,8 +77,16 @@ Future<void> restoreBackupIsolate(List init) async {
         //Unzipped Photos.
         Directory unzippedPhotos =
             Directory('${unzippedDirectory.path}/photos');
+
         var files =
             unzippedPhotos.listSync(recursive: true, followLinks: false);
+
+        int numberOfFiles = files.length + 2;
+        int x = 2;
+        sendPort.send([
+          'progress',
+          ((x / numberOfFiles) * 100),
+        ]);
 
         //Restore Photos and thumbnails.
         for (var file in files) {
@@ -94,6 +104,12 @@ Future<void> restoreBackupIsolate(List init) async {
           img.Image thumbnailImage = img.copyResize(referenceImage, width: 120);
           File(photoThumbnailPath)
               .writeAsBytesSync(img.encodePng(thumbnailImage));
+
+          x++;
+          sendPort.send([
+            'progress',
+            ((x / numberOfFiles) * 100),
+          ]);
         }
 
         sendPort.send([

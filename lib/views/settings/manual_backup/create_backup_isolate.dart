@@ -4,7 +4,6 @@ import 'dart:isolate';
 
 import 'package:flutter_archive/flutter_archive.dart';
 import 'package:intl/intl.dart';
-import 'package:sunbird/isar/collections/photo/photo.dart';
 import 'package:sunbird/isar/isar_database.dart';
 
 Future<void> createBackupIsolate(List init) async {
@@ -56,11 +55,26 @@ Future<void> createBackupIsolate(List init) async {
   //8. Copy over all photos to new directory.
   List<Photo> photos = isar.photos.where().findAllSync();
 
+  sendPort.send([
+    'progress',
+    0,
+  ]);
+
+  int files = photos.length + 2;
+  int x = 0;
+
   for (var photo in photos) {
+    sendPort.send([
+      'progress',
+      ((x / files) * 100),
+    ]);
+
     File photoFile = File(photo.getPhotoPath(directory: photoDirectory));
 
     photoFile
         .copySync('$newBackupPhotosPath${photo.photoName}.${photo.extention}');
+
+    x++;
   }
 
   final folder = isarDataFolder.listSync(recursive: true, followLinks: false);
@@ -75,6 +89,11 @@ Future<void> createBackupIsolate(List init) async {
   for (var file in folder) {
     File isarFile = File(file.path);
     isarFile.copySync(isarBackupDirectory.path + isarFile.path.split('/').last);
+    x++;
+    sendPort.send([
+      'progress',
+      ((x / files) * 100),
+    ]);
   }
 
   try {
