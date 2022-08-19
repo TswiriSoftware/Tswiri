@@ -7,6 +7,7 @@ import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/functions/change_functions.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/classes/image_data.dart';
+import 'package:sunbird/views/containers/container_view/change_parent/change_parent_view.dart';
 import 'package:sunbird/views/ml_kit_views/barcode_scanner/single_scanner_view.dart';
 import 'package:sunbird/views/containers/container_view/photo_labeling/ml_photo_labeling_camera_view.dart';
 import 'package:sunbird/views/ml_kit_views/navigator/navigator_view.dart';
@@ -63,7 +64,8 @@ class _ContainerViewState extends State<ContainerView> {
       .parentUIDMatches(_catalogedContainer.containerUID)
       .findAllSync();
 
-  late ContainerRelationship? parentContainer = isar!.containerRelationships
+  late ContainerRelationship? containerRelationship = isar!
+      .containerRelationships
       .filter()
       .containerUIDMatches(_catalogedContainer.containerUID)
       .findFirstSync();
@@ -100,13 +102,13 @@ class _ContainerViewState extends State<ContainerView> {
       ),
       centerTitle: true,
       actions: [
-        isEditingPhoto ? _cancelPhotoEdit() : _infoWidget(),
+        isEditingPhoto ? _cancelPhotoEdit() : _findButton(),
       ],
     );
   }
 
-  Widget _infoWidget() {
-    return IconButton(
+  Widget _findButton() {
+    return TextButton(
       onPressed: () {
         CatalogedCoordinate? catalogedCoordiante = isar!.catalogedCoordinates
             .filter()
@@ -123,11 +125,35 @@ class _ContainerViewState extends State<ContainerView> {
             ),
           );
         } else {
-          // TODO: Show scafold message.
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Cannot find container',
+                  ),
+                  TextButton(
+                      onPressed: () {
+                        //TODO: implement help screen.
+                      },
+                      child: const Text(
+                        'Help',
+                        style: TextStyle(color: sunbirdOrange, fontSize: 16),
+                      ))
+                ],
+              ),
+            ),
+          );
         }
       },
-      icon: const Icon(
-        Icons.location_searching,
+      child: Row(
+        children: const [
+          Text('Find '),
+          Icon(
+            Icons.location_searching,
+          ),
+        ],
       ),
     );
   }
@@ -264,7 +290,7 @@ class _ContainerViewState extends State<ContainerView> {
           });
         },
         children: [
-          parentContainer != null
+          containerRelationship != null
               ? Card(
                   color: background[300],
                   child: Padding(
@@ -273,11 +299,22 @@ class _ContainerViewState extends State<ContainerView> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          parentContainer!.parentUID!,
+                          containerRelationship!.parentUID!,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         ElevatedButton(
                           onPressed: () async {
+                            //TODO: implement parent change screen.
+
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => ChangeParentView(
+                            //       containerRelationship: containerRelationship!,
+                            //     ),
+                            //   ),
+                            // );
+
                             String? barcodeUID = await Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -303,7 +340,7 @@ class _ContainerViewState extends State<ContainerView> {
 
                                 if (hasChangedParent == true) {
                                   setState(() {
-                                    parentContainer = isar!
+                                    containerRelationship = isar!
                                         .containerRelationships
                                         .filter()
                                         .containerUIDMatches(
