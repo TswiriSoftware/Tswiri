@@ -19,6 +19,10 @@ class CatalogedBarcode {
   @Name("size")
   late double size;
 
+  ///Side length (mm)
+  @Name("batchID")
+  late int batchID;
+
   @override
   bool operator ==(Object other) {
     return other is CatalogedBarcode &&

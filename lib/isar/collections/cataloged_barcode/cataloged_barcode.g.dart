@@ -1,7 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-
 part of 'cataloged_barcode.dart';
 
 // **************************************************************************
@@ -17,9 +15,9 @@ extension GetCatalogedBarcodeCollection on Isar {
 const CatalogedBarcodeSchema = CollectionSchema(
   name: 'CatalogedBarcode',
   schema:
-      '{"name":"CatalogedBarcode","idName":"id","properties":[{"name":"barcodeUID","type":"String"},{"name":"hashCode","type":"Long"},{"name":"size","type":"Double"}],"indexes":[],"links":[]}',
+      '{"name":"CatalogedBarcode","idName":"id","properties":[{"name":"barcodeUID","type":"String"},{"name":"batchID","type":"Long"},{"name":"hashCode","type":"Long"},{"name":"size","type":"Double"}],"indexes":[],"links":[]}',
   idName: 'id',
-  propertyIds: {'barcodeUID': 0, 'hashCode': 1, 'size': 2},
+  propertyIds: {'barcodeUID': 0, 'batchID': 1, 'hashCode': 2, 'size': 3},
   listProperties: {},
   indexIds: {},
   indexValueTypes: {},
@@ -65,10 +63,12 @@ void _catalogedBarcodeSerializeNative(
   final value0 = object.barcodeUID;
   final _barcodeUID = IsarBinaryWriter.utf8Encoder.convert(value0);
   dynamicSize += (_barcodeUID.length) as int;
-  final value1 = object.hashCode;
-  final _hashCode = value1;
-  final value2 = object.size;
-  final _size = value2;
+  final value1 = object.batchID;
+  final _batchID = value1;
+  final value2 = object.hashCode;
+  final _hashCode = value2;
+  final value3 = object.size;
+  final _size = value3;
   final size = staticSize + dynamicSize;
 
   rawObj.buffer = alloc(size);
@@ -76,8 +76,9 @@ void _catalogedBarcodeSerializeNative(
   final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
   writer.writeBytes(offsets[0], _barcodeUID);
-  writer.writeLong(offsets[1], _hashCode);
-  writer.writeDouble(offsets[2], _size);
+  writer.writeLong(offsets[1], _batchID);
+  writer.writeLong(offsets[2], _hashCode);
+  writer.writeDouble(offsets[3], _size);
 }
 
 CatalogedBarcode _catalogedBarcodeDeserializeNative(
@@ -87,8 +88,9 @@ CatalogedBarcode _catalogedBarcodeDeserializeNative(
     List<int> offsets) {
   final object = CatalogedBarcode();
   object.barcodeUID = reader.readString(offsets[0]);
+  object.batchID = reader.readLong(offsets[1]);
   object.id = id;
-  object.size = reader.readDouble(offsets[2]);
+  object.size = reader.readDouble(offsets[3]);
   return object;
 }
 
@@ -102,6 +104,8 @@ P _catalogedBarcodeDeserializePropNative<P>(
     case 1:
       return (reader.readLong(offset)) as P;
     case 2:
+      return (reader.readLong(offset)) as P;
+    case 3:
       return (reader.readDouble(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
@@ -112,6 +116,7 @@ dynamic _catalogedBarcodeSerializeWeb(
     IsarCollection<CatalogedBarcode> collection, CatalogedBarcode object) {
   final jsObj = IsarNative.newJsObject();
   IsarNative.jsObjectSet(jsObj, 'barcodeUID', object.barcodeUID);
+  IsarNative.jsObjectSet(jsObj, 'batchID', object.batchID);
   IsarNative.jsObjectSet(jsObj, 'hashCode', object.hashCode);
   IsarNative.jsObjectSet(jsObj, 'id', object.id);
   IsarNative.jsObjectSet(jsObj, 'size', object.size);
@@ -122,6 +127,8 @@ CatalogedBarcode _catalogedBarcodeDeserializeWeb(
     IsarCollection<CatalogedBarcode> collection, dynamic jsObj) {
   final object = CatalogedBarcode();
   object.barcodeUID = IsarNative.jsObjectGet(jsObj, 'barcodeUID') ?? '';
+  object.batchID =
+      IsarNative.jsObjectGet(jsObj, 'batchID') ?? double.negativeInfinity;
   object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
   object.size =
       IsarNative.jsObjectGet(jsObj, 'size') ?? double.negativeInfinity;
@@ -132,6 +139,9 @@ P _catalogedBarcodeDeserializePropWeb<P>(Object jsObj, String propertyName) {
   switch (propertyName) {
     case 'barcodeUID':
       return (IsarNative.jsObjectGet(jsObj, 'barcodeUID') ?? '') as P;
+    case 'batchID':
+      return (IsarNative.jsObjectGet(jsObj, 'batchID') ??
+          double.negativeInfinity) as P;
     case 'hashCode':
       return (IsarNative.jsObjectGet(jsObj, 'hashCode') ??
           double.negativeInfinity) as P;
@@ -324,6 +334,57 @@ extension CatalogedBarcodeQueryFilter
   }
 
   QueryBuilder<CatalogedBarcode, CatalogedBarcode, QAfterFilterCondition>
+      batchIDEqualTo(int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'batchID',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<CatalogedBarcode, CatalogedBarcode, QAfterFilterCondition>
+      batchIDGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'batchID',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<CatalogedBarcode, CatalogedBarcode, QAfterFilterCondition>
+      batchIDLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'batchID',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<CatalogedBarcode, CatalogedBarcode, QAfterFilterCondition>
+      batchIDBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'batchID',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
+
+  QueryBuilder<CatalogedBarcode, CatalogedBarcode, QAfterFilterCondition>
       hashCodeEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
@@ -473,6 +534,16 @@ extension CatalogedBarcodeQueryWhereSortBy
   }
 
   QueryBuilder<CatalogedBarcode, CatalogedBarcode, QAfterSortBy>
+      sortByBatchID() {
+    return addSortByInternal('batchID', Sort.asc);
+  }
+
+  QueryBuilder<CatalogedBarcode, CatalogedBarcode, QAfterSortBy>
+      sortByBatchIDDesc() {
+    return addSortByInternal('batchID', Sort.desc);
+  }
+
+  QueryBuilder<CatalogedBarcode, CatalogedBarcode, QAfterSortBy>
       sortByHashCode() {
     return addSortByInternal('hashCode', Sort.asc);
   }
@@ -514,6 +585,16 @@ extension CatalogedBarcodeQueryWhereSortThenBy
   }
 
   QueryBuilder<CatalogedBarcode, CatalogedBarcode, QAfterSortBy>
+      thenByBatchID() {
+    return addSortByInternal('batchID', Sort.asc);
+  }
+
+  QueryBuilder<CatalogedBarcode, CatalogedBarcode, QAfterSortBy>
+      thenByBatchIDDesc() {
+    return addSortByInternal('batchID', Sort.desc);
+  }
+
+  QueryBuilder<CatalogedBarcode, CatalogedBarcode, QAfterSortBy>
       thenByHashCode() {
     return addSortByInternal('hashCode', Sort.asc);
   }
@@ -550,6 +631,11 @@ extension CatalogedBarcodeQueryWhereDistinct
   }
 
   QueryBuilder<CatalogedBarcode, CatalogedBarcode, QDistinct>
+      distinctByBatchID() {
+    return addDistinctByInternal('batchID');
+  }
+
+  QueryBuilder<CatalogedBarcode, CatalogedBarcode, QDistinct>
       distinctByHashCode() {
     return addDistinctByInternal('hashCode');
   }
@@ -568,6 +654,10 @@ extension CatalogedBarcodeQueryProperty
   QueryBuilder<CatalogedBarcode, String, QQueryOperations>
       barcodeUIDProperty() {
     return addPropertyNameInternal('barcodeUID');
+  }
+
+  QueryBuilder<CatalogedBarcode, int, QQueryOperations> batchIDProperty() {
+    return addPropertyNameInternal('batchID');
   }
 
   QueryBuilder<CatalogedBarcode, int, QQueryOperations> hashCodeProperty() {

@@ -411,22 +411,19 @@ class _GeneratorViewState extends State<GeneratorView> {
               thickness: 0.2,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
-                  'from:',
+                  'Number of barcodes: ',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 Text(
-                  '${batch.startUID}',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                Text(
-                  'to',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                Text(
-                  '${batch.endUID}',
+                  isar!.catalogedBarcodes
+                      .filter()
+                      .batchIDEqualTo(batch.id)
+                      .findAllSync()
+                      .length
+                      .toString(),
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ],
@@ -435,7 +432,7 @@ class _GeneratorViewState extends State<GeneratorView> {
               thickness: 0.2,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
                   'Size:',
@@ -461,6 +458,21 @@ class _GeneratorViewState extends State<GeneratorView> {
 
                                 isar!.writeTxnSync((isar) => isar.barcodeBatchs
                                     .putSync(batch, replaceOnConflict: true));
+
+                                List<CatalogedBarcode> relatedBarcodes = isar!
+                                    .catalogedBarcodes
+                                    .filter()
+                                    .batchIDEqualTo(batch.id)
+                                    .findAllSync();
+
+                                isar!.writeTxnSync((isar) {
+                                  for (CatalogedBarcode barcode
+                                      in relatedBarcodes) {
+                                    barcode.size = newSize;
+                                    isar.catalogedBarcodes.putSync(barcode,
+                                        replaceOnConflict: true);
+                                  }
+                                });
 
                                 _updateBarcodeBatches();
                               }
@@ -509,49 +521,67 @@ class _GeneratorViewState extends State<GeneratorView> {
               children: [
                 Visibility(
                   child: ElevatedButton(
-                    onPressed: () {
-                      bool canDelete = true;
-                      for (var barcodeUID in batch.barcodeUIDs) {
-                        CatalogedContainer? catalogedContainer = isar!
-                            .catalogedContainers
-                            .filter()
-                            .barcodeUIDMatches(barcodeUID)
-                            .findFirstSync();
-                        if (catalogedContainer != null) {
-                          canDelete = false;
-                        }
-                      }
-
-                      if (canDelete == true) {
-                        isar!.catalogedContainers.filter().repeat(
-                            batch.barcodeUIDs,
-                            (q, String barcodeUID) =>
-                                q.barcodeUIDMatches(barcodeUID));
-
-                        isar!.writeTxnSync((isar) {
-                          isar.barcodeBatchs.deleteSync(batch.id);
-                          isar.catalogedBarcodes
-                              .filter()
-                              .repeat(
-                                  batch.barcodeUIDs,
-                                  (q, String element) =>
-                                      q.barcodeUIDMatches(element))
-                              .deleteAllSync();
-                        });
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Text(
-                                  'A barcode from this batch is in use.',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ],
+                    onPressed: () async {
+                      bool? approved = await showDialog(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Delete Barcode Batch'),
+                          content: const Text(
+                              'Are you sure you want delete all the barcodes related to this batch ?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Cancel'),
                             ),
-                          ),
-                        );
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: const Text('OK'),
+                            ),
+                          ],
+                          actionsAlignment: MainAxisAlignment.spaceBetween,
+                        ),
+                      );
+
+                      if (approved != null && approved == true) {
+                        bool canDelete = true;
+                        isar!.catalogedBarcodes
+                            .filter()
+                            .batchIDEqualTo(batch.id)
+                            .findAllSync()
+                            .forEach((element) {
+                          CatalogedContainer? catalogedContainer = isar!
+                              .catalogedContainers
+                              .filter()
+                              .barcodeUIDMatches(element.barcodeUID)
+                              .findFirstSync();
+                          if (catalogedContainer != null) {
+                            canDelete = false;
+                          }
+                        });
+
+                        if (canDelete == true) {
+                          isar!.writeTxnSync((isar) {
+                            isar.barcodeBatchs.deleteSync(batch.id);
+                            isar.catalogedBarcodes
+                                .filter()
+                                .batchIDEqualTo(batch.id)
+                                .deleteAllSync();
+                          });
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Text(
+                                    'A barcode from this batch is in use.',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
                       }
 
                       _updateBarcodeBatches();
@@ -562,13 +592,16 @@ class _GeneratorViewState extends State<GeneratorView> {
                     ),
                   ),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    _createPDF(batch);
-                  },
-                  child: Text(
-                    'Generate',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                Visibility(
+                  visible: !batch.imported,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _createPDF(batch);
+                    },
+                    child: Text(
+                      'Generate',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                   ),
                 ),
               ],
@@ -584,36 +617,32 @@ class _GeneratorViewState extends State<GeneratorView> {
     int timestamp = DateTime.now().millisecondsSinceEpoch;
 
     //Generate BarcodeProperties
-    List<String> barcodeUIDs = [];
-    List<CatalogedBarcode> barcodeProperties = [];
-
     int startUID = 1;
 
     if (barcodeBatches.isNotEmpty) {
-      startUID = barcodeBatches.last.endUID + 1;
+      startUID = barcodeBatches.last.rangeEnd + 1;
     }
 
     int endUID = startUID + numberOfBarocdes - 1;
 
-    for (var i = startUID; i <= endUID; i++) {
-      String barcodeUID = '${i}_$timestamp';
-      barcodeUIDs.add(barcodeUID);
-      barcodeProperties.add(CatalogedBarcode()
-        ..barcodeUID = barcodeUID
-        ..size = barcodeSize);
-    }
-
     BarcodeBatch newBarcodeBatch = BarcodeBatch()
-      ..barcodeUIDs = barcodeUIDs
-      ..startUID = startUID
-      ..endUID = endUID
       ..size = barcodeSize
-      ..timestamp = timestamp;
+      ..timestamp = timestamp
+      ..rangeStart = startUID
+      ..rangeEnd = endUID
+      ..imported = false;
 
     //Write to database.
     isar!.writeTxnSync((isar) {
-      isar.catalogedBarcodes.putAllSync(barcodeProperties);
-      isar.barcodeBatchs.putSync(newBarcodeBatch);
+      int batchID = isar.barcodeBatchs.putSync(newBarcodeBatch);
+
+      for (var i = startUID; i <= endUID; i++) {
+        String barcodeUID = '${i}_$timestamp';
+        isar.catalogedBarcodes.putSync(CatalogedBarcode()
+          ..barcodeUID = barcodeUID
+          ..size = barcodeSize
+          ..batchID = batchID);
+      }
     });
 
     _updateBarcodeBatches();
@@ -630,41 +659,45 @@ class _GeneratorViewState extends State<GeneratorView> {
 
     scannedBarcodeIDs.sort();
 
-    List<CatalogedBarcode> barcodeProperties = [];
-
-    for (var scannedBarcode in scannedBarcodes) {
-      barcodeProperties.add(
-        CatalogedBarcode()
-          ..barcodeUID = scannedBarcode
-          ..size = defaultBarcodeSize,
-      );
-    }
-
     BarcodeBatch newBarcodeBatch = BarcodeBatch()
-      ..barcodeUIDs = scannedBarcodes.toList()
-      ..startUID = scannedBarcodeIDs.first
-      ..endUID = scannedBarcodeIDs.last
       ..size = barcodeSize
-      ..timestamp = timestamp;
+      ..timestamp = timestamp
+      ..imported = true
+      ..rangeStart = scannedBarcodeIDs.first
+      ..rangeEnd = scannedBarcodeIDs.last;
 
     //Write to database.
     isar!.writeTxnSync((isar) {
-      isar.catalogedBarcodes.putAllSync(barcodeProperties);
-      isar.barcodeBatchs.putSync(newBarcodeBatch);
+      int batchID = isar.barcodeBatchs.putSync(newBarcodeBatch);
+
+      for (var scannedBarcode in scannedBarcodes) {
+        isar.catalogedBarcodes.putSync(
+          CatalogedBarcode()
+            ..barcodeUID = scannedBarcode
+            ..size = defaultBarcodeSize
+            ..batchID = batchID,
+        );
+      }
     });
 
     _updateBarcodeBatches();
   }
 
-  void _createPDF(BarcodeBatch barcodeGenerationEntry) async {
+  void _createPDF(BarcodeBatch barcodeBatch) async {
+    List<String> barcodeUIDs = [];
+
+    for (var i = barcodeBatch.rangeStart; i <= barcodeBatch.rangeEnd; i++) {
+      barcodeUIDs.add('${i}_${barcodeBatch.timestamp}');
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => PdfView(
-          barcodeUIDs: barcodeGenerationEntry.barcodeUIDs,
-          size: barcodeGenerationEntry.size,
-          start: barcodeGenerationEntry.startUID,
-          end: barcodeGenerationEntry.endUID,
+          barcodeUIDs: barcodeUIDs,
+          size: barcodeBatch.size,
+          start: barcodeBatch.rangeStart,
+          end: barcodeBatch.rangeEnd,
         ),
       ),
     );
