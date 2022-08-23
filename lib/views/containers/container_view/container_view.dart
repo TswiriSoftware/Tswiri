@@ -1,13 +1,10 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/functions/change_functions.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/classes/image_data.dart';
-import 'package:sunbird/views/containers/container_view/change_parent/change_parent_view.dart';
 import 'package:sunbird/views/ml_kit_views/barcode_scanner/single_scanner_view.dart';
 import 'package:sunbird/views/containers/container_view/photo_labeling/ml_photo_labeling_camera_view.dart';
 import 'package:sunbird/views/ml_kit_views/navigator/navigator_view.dart';

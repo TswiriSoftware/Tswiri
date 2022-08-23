@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/views/settings/backup/classes/google_drive_backup.dart';
 import 'package:googleapis/drive/v3.dart' as drive;

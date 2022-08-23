@@ -1,5 +1,3 @@
-import 'package:sunbird/isar/collections/cataloged_container/cataloged_container.dart';
-import 'package:sunbird/isar/collections/container_relationship/container_relationship.dart';
 import 'package:sunbird/isar/isar_database.dart';
 
 bool changeParent({
