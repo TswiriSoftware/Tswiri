@@ -2,18 +2,13 @@
 
 import 'dart:developer';
 import 'dart:io';
-import 'dart:isolate';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_isolate/flutter_isolate.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
-import 'package:sunbird/views/settings/manual_backup/create_backup_isolate.dart';
-import 'package:sunbird/views/settings/manual_backup/restore_backup_isolate.dart';
+import 'package:sunbird/views/settings/backup/classes/backup.dart';
 
 class ManualBackupView extends StatefulWidget {
   const ManualBackupView({Key? key}) : super(key: key);
@@ -28,54 +23,11 @@ class _ManualBackupViewState extends State<ManualBackupView> {
   File? selectedFile;
   bool canRestore = false;
 
-  //UI- Port.
-  final ReceivePort _uiPort1 = ReceivePort('create backup');
-  final ReceivePort _uiPort2 = ReceivePort('restore backup');
-
-  //Isolates.
-  FlutterIsolate? _backupIsolate;
-  FlutterIsolate? _restoreIsolate;
-
-  double progress = 0;
+  ValueNotifier<double> progressNotifier = ValueNotifier(0);
+  late final Backup _backup = Backup(progressNotifier: progressNotifier);
 
   @override
   void initState() {
-    _uiPort1.listen((message) {
-      if (message[0] == 'done') {
-        killBackupIsolate();
-      } else if (message[0] == 'path') {
-        shareBackup(message[1]);
-      } else if (message[0] == 'progress') {
-        setState(() {
-          log(progress.toString());
-          progress = message[1];
-        });
-      }
-    });
-
-    _uiPort2.listen((message) {
-      if (message[0] == 'done') {
-        killRestoreisolate();
-      } else if (message[0] == 'error') {
-        switch (message[1]) {
-          case 'file_error':
-            log('file_error');
-            killRestoreisolate();
-            break;
-          case 'version_error':
-            log('version_error');
-            killRestoreisolate();
-            break;
-
-          default:
-        }
-      } else if (message[0] == 'progress') {
-        setState(() {
-          log(progress.toString());
-          progress = message[1];
-        });
-      }
-    });
     super.initState();
   }
 
@@ -103,9 +55,14 @@ class _ManualBackupViewState extends State<ManualBackupView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const CircularProgressIndicator(),
-                Text(
-                  '${progress.toStringAsFixed(2)}%',
-                  style: Theme.of(context).textTheme.bodyLarge,
+                ValueListenableBuilder(
+                  valueListenable: progressNotifier,
+                  builder: ((context, double value, child) {
+                    log(value.toString());
+                    return Text(
+                      '${value.toStringAsFixed(2)}%',
+                    );
+                  }),
                 ),
               ],
             ),
@@ -129,31 +86,34 @@ class _ManualBackupViewState extends State<ManualBackupView> {
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _backupButton(),
+                  ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        setState(() {
+                          _isBusy = true;
+                        });
+                        String filePath = await _backup.createBackupFile();
+                        await shareBackup(filePath);
+                        setState(() {
+                          _isBusy = false;
+                        });
+                      } catch (exception, stackTrace) {
+                        await Sentry.captureException(
+                          exception,
+                          stackTrace: stackTrace,
+                        );
+                      }
+                    },
+                    child: Text(
+                      "Create Backup",
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
                 ],
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _backupButton() {
-    return ElevatedButton(
-      onPressed: () async {
-        try {
-          createBackup();
-        } catch (exception, stackTrace) {
-          await Sentry.captureException(
-            exception,
-            stackTrace: stackTrace,
-          );
-        }
-      },
-      child: Text(
-        "Create Backup",
-        style: Theme.of(context).textTheme.bodyMedium,
       ),
     );
   }
@@ -196,9 +156,19 @@ class _ManualBackupViewState extends State<ManualBackupView> {
             const Divider(),
             selectedFile != null
                 ? ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (selectedFile != null) {
-                        _restore(selectedFile!);
+                        setState(() {
+                          _isBusy = true;
+                        });
+                        await _backup.restoreBackupFile(selectedFile!.path);
+
+                        await isar!.close();
+                        isar = initiateIsar();
+
+                        setState(() {
+                          _isBusy = false;
+                        });
                       }
                     },
                     child: Text(
@@ -213,49 +183,8 @@ class _ManualBackupViewState extends State<ManualBackupView> {
     );
   }
 
-  ///Create the backup.
-  void createBackup() async {
-    await isar!.close();
-
-    setState(() {
-      _isBusy = true;
-    });
-
-    //Temporary Directory.
-    Directory temporaryDirectory = await getTemporaryDirectory();
-
-    _backupIsolate = await FlutterIsolate.spawn(
-      createBackupIsolate,
-      [
-        _uiPort1.sendPort,
-        isarDirectory!.path,
-        temporaryDirectory.path,
-        isarVersion.toString(),
-        photoDirectory!.path,
-      ],
-    );
-  }
-
-  ///Kill the backup isolate.
-  void killBackupIsolate() {
-    if (_backupIsolate != null) {
-      _backupIsolate!.kill();
-      setState(() {
-        _backupIsolate = null;
-      });
-      log('killed backupIsolate');
-      setState(() {
-        _isBusy = false;
-        progress = 0;
-      });
-    }
-    if (!isar!.isOpen) {
-      isar = initiateIsar(inspector: false);
-    }
-  }
-
   ///Share the backupFile.
-  void shareBackup(String backupPath) async {
+  Future<void> shareBackup(String backupPath) async {
     await Share.shareFiles([backupPath], text: 'sunbird_backup');
   }
 
@@ -277,48 +206,5 @@ class _ManualBackupViewState extends State<ManualBackupView> {
     }
 
     setState(() {});
-  }
-
-  ///Restores user data from a zip file (Directory unzippedDirectory)
-  void _restore(File selectedFile) async {
-    setState(() {
-      _isBusy = true;
-    });
-
-    await isar!.close();
-
-    //Temporary Directory.
-    Directory temporaryDirectory = await getTemporaryDirectory();
-
-    _restoreIsolate = await FlutterIsolate.spawn(
-      restoreBackupIsolate,
-      [
-        _uiPort2.sendPort,
-        isarDirectory!.path,
-        temporaryDirectory.path,
-        isarVersion.toString(),
-        photoDirectory!.path,
-        selectedFile.path,
-        (await getExternalStorageDirectory())!.path,
-      ],
-    );
-  }
-
-  ///Kill the restoreIsolate.
-  void killRestoreisolate() {
-    if (_restoreIsolate != null) {
-      _restoreIsolate!.kill();
-      setState(() {
-        _restoreIsolate = null;
-      });
-      log('killed restoreIsolate');
-      setState(() {
-        _isBusy = false;
-        progress = 0;
-      });
-    }
-    if (!isar!.isOpen) {
-      isar = initiateIsar(inspector: false);
-    }
   }
 }

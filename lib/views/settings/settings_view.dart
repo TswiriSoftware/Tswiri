@@ -3,8 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sunbird/views/settings/backup/backup_options_view.dart';
-import 'package:sunbird/views/settings/google_backup/google_backup_view.dart';
-import 'package:sunbird/views/settings/manual_backup/manual_backup_view.dart';
+import 'package:sunbird/views/settings/backup/manual_backup_view.dart';
 
 import '../../globals/globals_export.dart';
 

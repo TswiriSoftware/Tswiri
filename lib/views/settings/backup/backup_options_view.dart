@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sunbird/views/settings/google_backup/google_backup_view.dart';
-import 'package:sunbird/views/settings/manual_backup/manual_backup_view.dart';
+import 'package:sunbird/views/settings/backup/google_drive_view.dart';
+import 'package:sunbird/views/settings/backup/manual_backup_view.dart';
 import 'package:sunbird/views/utilities/navigator_card.dart';
 
 class BackupOptionsView extends StatefulWidget {
@@ -49,7 +49,7 @@ class _BackupOptionsViewState extends State<BackupOptionsView> {
           NavigatorCard(
             label: 'Google Drive Backup',
             icon: Icons.drive_folder_upload,
-            viewPage: GoogleBackupView(),
+            viewPage: GoogleDriveView(),
           ),
         ],
       ),

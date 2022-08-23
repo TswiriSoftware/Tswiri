@@ -57,7 +57,7 @@ Future<void> createBackupIsolate(List init) async {
 
   sendPort.send([
     'progress',
-    0,
+    0.0,
   ]);
 
   int files = photos.length + 2;

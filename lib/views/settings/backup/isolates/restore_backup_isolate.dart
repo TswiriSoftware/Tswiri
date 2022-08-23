@@ -54,7 +54,7 @@ Future<void> restoreBackupIsolate(List init) async {
       if (restoreDAT.existsSync() && restorelLCK.existsSync()) {
         sendPort.send([
           'progress',
-          0,
+          0.0,
         ]);
 
         Directory isarDataFolder = Directory('$isarDirectory/isar');
