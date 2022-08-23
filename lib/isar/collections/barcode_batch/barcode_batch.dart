@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:isar/isar.dart';
 part 'barcode_batch.g.dart';
 
