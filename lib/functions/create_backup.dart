@@ -6,13 +6,17 @@ import 'package:flutter_archive/flutter_archive.dart';
 import 'package:intl/intl.dart';
 import 'package:sunbird/isar/isar_database.dart';
 
-Future<void> createBackupIsolate(List init) async {
+Future<void> createBackup(List init) async {
   //1. InitalMessage.
   SendPort sendPort = init[0]; //[0] SendPort.
   String isarDirectory = init[1]; //[1] Isar Directory.
   String temporaryDirectory = init[2]; //[2] Backup folder.
   String isarVersion = init[3]; //[3] isarVersion.
   String photoDirectory = init[4]; //[4] photoDirectory.
+  String fileName = init[5]; //[5] fileName.
+
+  log(isarDirectory, name: 'Isar Directory');
+  log(photoDirectory, name: 'Photo Directory');
 
   //2. Initiate isar.
   Isar isar = initiateIsar(directory: isarDirectory, inspector: false);
@@ -32,6 +36,8 @@ Future<void> createBackupIsolate(List init) async {
   //6. Create backup directory.
   Directory newBackupDirectory =
       Directory('${backupDirectory.path}backup_$formattedDate');
+
+  log(newBackupDirectory.path, name: 'Backup Directory');
   if (!newBackupDirectory.existsSync()) {
     newBackupDirectory.createSync(recursive: true);
   } else {
@@ -49,6 +55,8 @@ Future<void> createBackupIsolate(List init) async {
     newBackupPhotos.deleteSync(recursive: true);
     newBackupPhotos.createSync(recursive: true);
   }
+
+  log(newBackupPhotos.path, name: 'Photo Backup Directory');
 
   String newBackupPhotosPath = '${newBackupPhotos.path}/';
 
@@ -97,8 +105,7 @@ Future<void> createBackupIsolate(List init) async {
   }
 
   try {
-    final zipFile = File(
-        '$temporaryDirectory/sunbird_backup_${formattedDate}_v$isarVersion.zip');
+    final zipFile = File('$temporaryDirectory/${fileName}_$isarVersion.zip');
     await ZipFile.createFromDirectory(
       sourceDir: newBackupDirectory,
       zipFile: zipFile,

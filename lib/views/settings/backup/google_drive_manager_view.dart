@@ -1,11 +1,14 @@
+// ignore_for_file: unused_local_variable
+
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
+import 'package:sunbird/functions/backup_restore_functions.dart';
 import 'package:sunbird/isar/isar_database.dart';
-import 'package:sunbird/views/settings/backup/classes/google_drive_backup.dart';
+import 'package:sunbird/classes/google_drive_manager.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 
 class GoogleDriveView extends StatefulWidget {
@@ -15,11 +18,11 @@ class GoogleDriveView extends StatefulWidget {
   State<GoogleDriveView> createState() => _GoogleDriveViewState();
 }
 
-GoogleSignInAccount? _currentUser;
+GoogleSignInAccount? currentUser;
 
 class _GoogleDriveViewState extends State<GoogleDriveView> {
   ValueNotifier<double> progressNotifier = ValueNotifier(0);
-  GoogleDriveBackup? _backup;
+  GoogleDriveManager? _backup;
   Future<drive.File?>? latestFile;
 
   bool _isBusy = false;
@@ -72,7 +75,7 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          _currentUser != null && !_isBusy ? _singedIn() : _signIn(),
+          currentUser != null ? _singedIn() : _signIn(),
           _isBusy
               ? Card(
                   child: Padding(
@@ -115,10 +118,10 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
   Widget _userTile() {
     return ListTile(
       leading: GoogleUserCircleAvatar(
-        identity: _currentUser!,
+        identity: currentUser!,
       ),
-      title: Text(_currentUser!.displayName ?? ''),
-      subtitle: Text(_currentUser!.email),
+      title: Text(currentUser!.displayName ?? ''),
+      subtitle: Text(currentUser!.email),
       trailing: IconButton(
         onPressed: () {
           _handleSignOut();
@@ -157,18 +160,19 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
 
                     setProcess('Creating new backup');
 
-                    String filePath = await _backup!.createBackupFile();
-                    log(filePath.toString());
+                    File? file = await createBackupFile(
+                      progressNotifier: progressNotifier,
+                      fileName: generateBackupFileName(),
+                    );
 
-                    setProcess('Uploading');
-
-                    bool uploaded = await _backup!.uploadFile(File(filePath));
-
-                    setProcess('done');
-
-                    await Future.delayed(const Duration(milliseconds: 200));
-
-                    latestFile = _backup!.getLatestBackup();
+                    if (file != null) {
+                      setProcess('Uploading');
+                      setProcess('done');
+                      await Future.delayed(const Duration(milliseconds: 200));
+                      latestFile = _backup!.getLatestBackup();
+                    } else {
+                      //TODO: error
+                    }
 
                     setState(() {
                       _isBusy = false;
@@ -186,18 +190,20 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
 
                   setProcess('Creating new backup');
 
-                  String filePath = await _backup!.createBackupFile();
-                  log(filePath.toString());
+                  File? file = await createBackupFile(
+                    progressNotifier: progressNotifier,
+                    fileName: generateBackupFileName(),
+                  );
 
-                  setProcess('Uploading');
-
-                  bool uploaded = await _backup!.uploadFile(File(filePath));
-
-                  setProcess('done');
-
-                  await Future.delayed(const Duration(milliseconds: 200));
-
-                  latestFile = _backup!.getLatestBackup();
+                  if (file != null) {
+                    setProcess('Uploading');
+                    bool uploaded = await _backup!.uploadFile(file);
+                    setProcess('done');
+                    await Future.delayed(const Duration(milliseconds: 200));
+                    latestFile = _backup!.getLatestBackup();
+                  } else {
+                    //TODO: error
+                  }
 
                   setState(() {
                     _isBusy = false;
@@ -234,9 +240,6 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
                 ),
                 trailing: IconButton(
                   onPressed: () async {
-                    //TODO: download and restore last backup.
-                    //TODO:
-
                     bool? approved = await showDialog(
                       context: context,
                       builder: (BuildContext context) => AlertDialog(
@@ -268,7 +271,9 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
 
                       if (downloadedFile != null) {
                         setProcess('Restoring');
-                        await _backup!.restoreBackupFile(downloadedFile.path);
+                        await restoreBackupFile(
+                            progressNotifier: progressNotifier,
+                            backupFile: File(downloadedFile.path));
                       }
 
                       await isar!.close();
@@ -283,7 +288,7 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
                 ),
               );
             } else {
-              return Text('no backups found');
+              return const Text('no backups found');
             }
           },
         );
@@ -324,7 +329,7 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
       await googleSignIn.signIn();
       if (await googleSignIn.isSignedIn() && googleSignIn.currentUser != null) {
         setState(() {
-          _currentUser = googleSignIn.currentUser;
+          currentUser = googleSignIn.currentUser;
         });
 
         await initiateDriveApi();
@@ -338,20 +343,19 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
     if (await googleSignIn.isSignedIn()) {
       googleSignIn.disconnect();
       setState(() {
-        _currentUser = null;
+        currentUser = null;
       });
     }
   }
 
   Future<void> initiateDriveApi() async {
-    if (_currentUser != null) {
-      final authHeaders = await _currentUser!.authHeaders;
+    if (currentUser != null) {
+      final authHeaders = await currentUser!.authHeaders;
       final authenticateClient = GoogleAuthClient(authHeaders);
       final driveApi = drive.DriveApi(authenticateClient);
 
       setState(() {
-        _backup = GoogleDriveBackup(
-          progressNotifier: progressNotifier,
+        _backup = GoogleDriveManager(
           driveApi: driveApi,
         );
       });

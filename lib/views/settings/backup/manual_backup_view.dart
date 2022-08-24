@@ -1,30 +1,29 @@
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: unused_import
 
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
-import 'package:sunbird/views/settings/backup/classes/backup.dart';
+import 'package:sunbird/functions/backup_restore_functions.dart';
 
-class ManualBackupView extends StatefulWidget {
-  const ManualBackupView({Key? key}) : super(key: key);
+class BackupView extends StatefulWidget {
+  const BackupView({Key? key}) : super(key: key);
 
   @override
-  State<ManualBackupView> createState() => _ManualBackupViewState();
+  State<BackupView> createState() => _BackupViewState();
 }
 
-class _ManualBackupViewState extends State<ManualBackupView> {
+class _BackupViewState extends State<BackupView> {
+  //Shows if the app is busy with a process.
   bool _isBusy = false;
-
-  File? selectedFile;
-  bool canRestore = false;
-
+  final TextEditingController _textFieldController = TextEditingController();
   ValueNotifier<double> progressNotifier = ValueNotifier(0);
-  late final Backup _backup = Backup(progressNotifier: progressNotifier);
+  File? selectedFile;
 
   @override
   void initState() {
@@ -41,159 +40,224 @@ class _ManualBackupViewState extends State<ManualBackupView> {
 
   AppBar _appBar() {
     return AppBar(
-        title: Text(
-          'Backup',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        centerTitle: true);
+      title: Text(
+        'Backup',
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+      centerTitle: true,
+    );
   }
 
   Widget _body() {
-    return _isBusy
-        ? Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const CircularProgressIndicator(),
-                ValueListenableBuilder(
-                  valueListenable: progressNotifier,
-                  builder: ((context, double value, child) {
-                    log(value.toString());
-                    return Text(
-                      '${value.toStringAsFixed(2)}%',
-                    );
-                  }),
-                ),
-              ],
-            ),
-          )
-        : Column(
-            children: [
-              _backupCard(),
-              _restoreCard(),
-            ],
-          );
+    if (_isBusy) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(),
+            Text("${progressNotifier.value.toStringAsFixed(2)}%")
+          ],
+        ),
+      );
+    } else {
+      return SingleChildScrollView(
+        child: Column(
+          children: [
+            _newBackup(),
+            _restoreBackup(),
+          ],
+        ),
+      );
+    }
   }
 
-  Widget _backupCard() {
-    return Center(
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ElevatedButton(
-                    onPressed: () async {
-                      try {
-                        setState(() {
-                          _isBusy = true;
-                        });
-                        String filePath = await _backup.createBackupFile();
-                        await shareBackup(filePath);
-                        setState(() {
-                          _isBusy = false;
-                        });
-                      } catch (exception, stackTrace) {
-                        await Sentry.captureException(
-                          exception,
-                          stackTrace: stackTrace,
-                        );
-                      }
-                    },
-                    child: Text(
-                      "Create Backup",
-                      style: Theme.of(context).textTheme.bodyMedium,
+  Widget _newBackup() {
+    return Card(
+      child: ListTile(
+        leading: const Icon(Icons.backup_sharp),
+        title: Text(
+          'Create backup',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        trailing: ElevatedButton(
+          onPressed: () async {
+            setIsBusy();
+
+            String? fileName = await _getBackupFileName();
+
+            if (fileName != null) {
+              File? file = await createBackupFile(
+                  progressNotifier: progressNotifier, fileName: fileName);
+
+              if (file != null) {
+                await Share.shareFiles([file.path], text: 'sunbird_backup');
+              } else if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Backup Failed',
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
+                );
+              }
+            }
+
+            progressNotifier.value = 0.0;
+            setIsBusy();
+          },
+          child: Text('Create Backup',
+              style: Theme.of(context).textTheme.bodyMedium),
         ),
       ),
     );
   }
 
-  Widget _restoreCard() {
+  Widget _restoreBackup() {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                selectedFile != null
-                    ? Card(
-                        color: background[300],
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            selectedFile!.path.split('/').last,
-                          ),
-                        ),
-                      )
-                    : Text(
-                        'Select File (zip)',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-              ],
+      child: Column(
+        children: [
+          ListTile(
+            leading: const Icon(
+              Icons.restore,
             ),
-            ElevatedButton(
+            title: selectedFile == null
+                ? Text(
+                    'Select a file',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  )
+                : Text(selectedFile!.path.split('/').last),
+            trailing: ElevatedButton(
               onPressed: () async {
-                selectBackupFile();
+                await selectBackupFile();
               },
               child: Text(
-                'select',
+                selectedFile == null ? 'Select' : 'Change',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
-            const Divider(),
-            selectedFile != null
-                ? ElevatedButton(
-                    onPressed: () async {
-                      if (selectedFile != null) {
-                        setState(() {
-                          _isBusy = true;
-                        });
-                        await _backup.restoreBackupFile(selectedFile!.path);
+          ),
+          const Divider(),
+          selectedFile != null
+              ? ElevatedButton(
+                  onPressed: () async {
+                    setIsBusy();
+                    if (selectedFile != null) {
+                      bool? restored = await restoreBackupFile(
+                        progressNotifier: progressNotifier,
+                        backupFile: selectedFile!,
+                      );
 
-                        await isar!.close();
-                        isar = initiateIsar();
-
-                        setState(() {
-                          _isBusy = false;
-                        });
+                      if (mounted) {
+                        switch (restored) {
+                          case null:
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'unkown error',
+                                ),
+                              ),
+                            );
+                            break;
+                          case true:
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Success',
+                                ),
+                              ),
+                            );
+                            break;
+                          case false:
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'File error',
+                                ),
+                              ),
+                            );
+                            break;
+                          default:
+                        }
                       }
-                    },
-                    child: Text(
-                      'Restore',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  )
-                : const SizedBox.shrink(),
-          ],
-        ),
+                    }
+                    setIsBusy();
+                  },
+                  child: Text(
+                    'Restore',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ],
       ),
     );
   }
 
-  ///Share the backupFile.
-  Future<void> shareBackup(String backupPath) async {
-    await Share.shareFiles([backupPath], text: 'sunbird_backup');
+  ///Sets the isBusy variable.
+  void setIsBusy() {
+    setState(() {
+      _isBusy = !_isBusy;
+    });
+  }
+
+  ///Alert dialog requesting file name.
+  Future<String?> _getBackupFileName() async {
+    _textFieldController.text = generateBackupFileName();
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text(
+          'Enter backup name',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        content: Row(
+          children: [
+            Flexible(
+              child: TextFormField(
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: background[500],
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                  labelText: 'name',
+                  labelStyle:
+                      const TextStyle(fontSize: 15, color: Colors.white),
+                  border: const OutlineInputBorder(
+                      borderSide: BorderSide(color: sunbirdOrange)),
+                  focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: sunbirdOrange)),
+                ),
+                controller: _textFieldController,
+              ),
+            ),
+            const Text('.zip'),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, null),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(
+                  context,
+                  _textFieldController.text.isNotEmpty
+                      ? _textFieldController.text
+                      : null);
+            },
+            child: const Text('OK'),
+          ),
+        ],
+        actionsAlignment: MainAxisAlignment.spaceBetween,
+      ),
+    );
   }
 
   ///Select the backup file.
-  void selectBackupFile() async {
+  Future<void> selectBackupFile() async {
     setState(() {
       selectedFile = null;
-      canRestore = false;
-      // unzippedDirectory = null;
     });
 
     FilePickerResult? result = await FilePicker.platform.pickFiles(

@@ -47,7 +47,11 @@ int isarVersion = 1;
 bool hasShownGettingStarted = false;
 String hasShownGettingStartedPref = 'hasShownGettingStarted';
 
-void loadAppSettings() async {
+//Current Space.
+String? currentSpacePath;
+String currentSpacePathPref = 'currentSpacePath';
+
+Future<void> loadAppSettings() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   //Default barcode size.
@@ -77,4 +81,7 @@ void loadAppSettings() async {
 
   //Getting Started.
   hasShownGettingStarted = prefs.getBool(hasShownGettingStartedPref) ?? false;
+
+  //Spaces
+  currentSpacePath = prefs.getString(currentSpacePathPref);
 }

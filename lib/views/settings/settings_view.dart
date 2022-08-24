@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sunbird/views/settings/backup/backup_options_view.dart';
-import 'package:sunbird/views/settings/backup/manual_backup_view.dart';
+import 'package:sunbird/views/settings/spaces/spaces_view.dart';
 
 import '../../globals/globals_export.dart';
 
@@ -72,194 +72,155 @@ class _SettingsViewState extends State<SettingsView> {
           _objectDetection(),
           _textDetection(),
           _manageBackup(),
+          _spaces(),
         ],
       ),
     );
   }
 
   Widget _defaultBarcodeSize() {
-    return Container(
-      margin: const EdgeInsets.all(8),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: background[400],
-        borderRadius: const BorderRadius.all(
-          Radius.circular(5),
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            Text(
+              'Default Barcode Size: ',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            Flexible(
+              child: TextField(
+                controller: _barcodeSizeController,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                onSubmitted: (value) async {
+                  setState(() {
+                    if (double.tryParse(value) != null) {
+                      _barcodeSizeController.text =
+                          double.tryParse(value).toString();
+                      prefs.setDouble(defaultBarcodeSizePref,
+                          double.tryParse(value) ?? defaultBarcodeSize);
+                    } else {
+                      _barcodeSizeController.text =
+                          defaultBarcodeSize.toString();
+                    }
+                  });
+                },
+              ),
+            ),
+            Text(
+              ' x ',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            Flexible(
+              child: TextField(
+                controller: _barcodeSizeController,
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
+              ),
+            ),
+            Text(
+              'mm',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ],
         ),
-      ),
-      child: Row(
-        children: [
-          Text(
-            'Default Barcode Size: ',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          Flexible(
-            child: TextField(
-              controller: _barcodeSizeController,
-              keyboardType: TextInputType.number,
-              textAlign: TextAlign.center,
-              onSubmitted: (value) async {
-                setState(() {
-                  if (double.tryParse(value) != null) {
-                    _barcodeSizeController.text =
-                        double.tryParse(value).toString();
-                    prefs.setDouble(defaultBarcodeSizePref,
-                        double.tryParse(value) ?? defaultBarcodeSize);
-                  } else {
-                    _barcodeSizeController.text = defaultBarcodeSize.toString();
-                  }
-                });
-              },
-            ),
-          ),
-          Text(
-            ' x ',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          Flexible(
-            child: TextField(
-              controller: _barcodeSizeController,
-              textAlign: TextAlign.center,
-              keyboardType: TextInputType.number,
-            ),
-          ),
-          Text(
-            'mm',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ],
       ),
     );
   }
 
   Widget _vibration() {
-    return Container(
-      margin: const EdgeInsets.all(8),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: background[400],
-        borderRadius: const BorderRadius.all(
-          Radius.circular(5),
+    return Card(
+      child: ListTile(
+        title: Text(
+          'Vibration',
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Vibration',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          Checkbox(
-            value: vibrate,
-            onChanged: (value) {
-              setState(() {
-                vibrate = value ?? true;
-                prefs.setBool(vibratePref, value ?? true);
-              });
-            },
-          ),
-        ],
+        trailing: Checkbox(
+          value: vibrate,
+          onChanged: (value) {
+            setState(() {
+              vibrate = value ?? true;
+              prefs.setBool(vibratePref, value ?? true);
+            });
+          },
+        ),
       ),
     );
   }
 
   Widget _colorMode() {
-    return Container(
-      margin: const EdgeInsets.all(8),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: background[400],
-        borderRadius: const BorderRadius.all(
-          Radius.circular(5),
+    return Card(
+      child: ListTile(
+        title: Text(
+          'Color Mode',
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Color Mode',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          Checkbox(
-            value: colorModeEnabled,
-            onChanged: (value) {
-              setState(() {
-                colorModeEnabled = value ?? false;
-                prefs.setBool(colorModeEnabledPref, value ?? false);
-              });
-              log(colorModeEnabled.toString());
-            },
-          ),
-        ],
+        trailing: Checkbox(
+          value: colorModeEnabled,
+          onChanged: (value) {
+            setState(() {
+              colorModeEnabled = value ?? false;
+              prefs.setBool(colorModeEnabledPref, value ?? false);
+            });
+            log(colorModeEnabled.toString());
+          },
+        ),
       ),
     );
   }
 
   Widget _imageLabeling() {
-    return Container(
-      margin: const EdgeInsets.all(8),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: background[400],
-        borderRadius: const BorderRadius.all(
-          Radius.circular(5),
-        ),
-      ),
+    return Card(
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Image Labeling',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              Checkbox(
-                value: imageLabeling,
-                onChanged: (value) {
-                  setState(() {
-                    imageLabeling = value ?? true;
-                    prefs.setBool(imageLabelingPref, value ?? true);
-                  });
-                },
-              ),
-            ],
+          ListTile(
+            title: Text(
+              'Image Labeling',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            trailing: Checkbox(
+              value: imageLabeling,
+              onChanged: (value) {
+                setState(() {
+                  imageLabeling = value ?? true;
+                  prefs.setBool(imageLabelingPref, value ?? true);
+                });
+              },
+            ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Confidence Threshold: ',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width / 5,
-                child: TextField(
-                  controller: _imageLabelingConfidence,
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  onSubmitted: (value) {
-                    double enteredValue =
-                        double.tryParse(value) ?? imageLabelingConfidence;
-                    if (enteredValue > 0 && enteredValue < 1) {
-                      setState(() {
-                        imageLabelingConfidence = enteredValue;
-                        prefs.setDouble(
-                            imageLabelingConfidencePref, enteredValue);
-                        _imageLabelingConfidence.text =
-                            imageLabelingConfidence.toString();
-                      });
-                    } else {
-                      imageLabelingConfidence =
-                          prefs.getDouble(imageLabelingConfidencePref) ??
-                              imageLabelingConfidence;
+          ListTile(
+            title: Text(
+              'Confidence Threshold: ',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            trailing: SizedBox(
+              width: MediaQuery.of(context).size.width / 5,
+              child: TextField(
+                controller: _imageLabelingConfidence,
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
+                onSubmitted: (value) {
+                  double enteredValue =
+                      double.tryParse(value) ?? imageLabelingConfidence;
+                  if (enteredValue > 0 && enteredValue < 1) {
+                    setState(() {
+                      imageLabelingConfidence = enteredValue;
+                      prefs.setDouble(
+                          imageLabelingConfidencePref, enteredValue);
                       _imageLabelingConfidence.text =
                           imageLabelingConfidence.toString();
-                    }
-                  },
-                ),
+                    });
+                  } else {
+                    imageLabelingConfidence =
+                        prefs.getDouble(imageLabelingConfidencePref) ??
+                            imageLabelingConfidence;
+                    _imageLabelingConfidence.text =
+                        imageLabelingConfidence.toString();
+                  }
+                },
               ),
-            ],
+            ),
           ),
         ],
       ),
@@ -267,70 +228,56 @@ class _SettingsViewState extends State<SettingsView> {
   }
 
   Widget _objectDetection() {
-    return Container(
-      margin: const EdgeInsets.all(8),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: background[400],
-        borderRadius: const BorderRadius.all(
-          Radius.circular(5),
-        ),
-      ),
+    return Card(
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Object Detection',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              Checkbox(
-                value: objectDetection,
-                onChanged: (value) {
-                  setState(() {
-                    objectDetection = value ?? true;
-                    prefs.setBool(objectDetectionPref, value ?? true);
-                  });
-                },
-              ),
-            ],
+          ListTile(
+            title: Text(
+              'Object Detection',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            trailing: Checkbox(
+              value: objectDetection,
+              onChanged: (value) {
+                setState(() {
+                  objectDetection = value ?? true;
+                  prefs.setBool(objectDetectionPref, value ?? true);
+                });
+              },
+            ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Confidence Threshold: ',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width / 5,
-                child: TextField(
-                  controller: _objectDetectionConfidence,
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  onSubmitted: (value) {
-                    double enteredValue =
-                        double.tryParse(value) ?? objectDetectionConfidence;
-                    if (enteredValue > 0 && enteredValue < 1) {
-                      setState(() {
-                        objectDetectionConfidence = enteredValue;
-                        prefs.setDouble(
-                            objectDetectionConfidencePref, enteredValue);
-                        _objectDetectionConfidence.text =
-                            objectDetectionConfidence.toString();
-                      });
-                    } else {
-                      objectDetectionConfidence =
-                          prefs.getDouble(objectDetectionConfidencePref) ??
-                              objectDetectionConfidence;
+          ListTile(
+            title: Text(
+              'Confidence Threshold: ',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            trailing: SizedBox(
+              width: MediaQuery.of(context).size.width / 5,
+              child: TextField(
+                controller: _objectDetectionConfidence,
+                textAlign: TextAlign.center,
+                keyboardType: const TextInputType.numberWithOptions(),
+                onSubmitted: (value) {
+                  double enteredValue =
+                      double.tryParse(value) ?? objectDetectionConfidence;
+                  if (enteredValue > 0 && enteredValue < 1) {
+                    setState(() {
+                      objectDetectionConfidence = enteredValue;
+                      prefs.setDouble(
+                          objectDetectionConfidencePref, enteredValue);
                       _objectDetectionConfidence.text =
                           objectDetectionConfidence.toString();
-                    }
-                  },
-                ),
+                    });
+                  } else {
+                    objectDetectionConfidence =
+                        prefs.getDouble(objectDetectionConfidencePref) ??
+                            objectDetectionConfidence;
+                    _objectDetectionConfidence.text =
+                        objectDetectionConfidence.toString();
+                  }
+                },
               ),
-            ],
+            ),
           ),
         ],
       ),
@@ -338,67 +285,71 @@ class _SettingsViewState extends State<SettingsView> {
   }
 
   Widget _textDetection() {
-    return Container(
-      margin: const EdgeInsets.all(8),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: background[400],
-        borderRadius: const BorderRadius.all(
-          Radius.circular(5),
+    return Card(
+      child: ListTile(
+        title: Text(
+          'Text Detection',
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Text Detection',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              Checkbox(
-                value: textDetection,
-                onChanged: (value) {
-                  setState(() {
-                    textDetection = value ?? true;
-                    prefs.setBool(textDetectionPref, value ?? true);
-                  });
-                },
-              ),
-            ],
-          ),
-        ],
+        trailing: Checkbox(
+          value: textDetection,
+          onChanged: (value) {
+            setState(() {
+              textDetection = value ?? true;
+              prefs.setBool(textDetectionPref, value ?? true);
+            });
+          },
+        ),
       ),
     );
   }
 
   Widget _manageBackup() {
-    return Container(
-      margin: const EdgeInsets.all(8),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: background[400],
-        borderRadius: const BorderRadius.all(
-          Radius.circular(5),
+    return Card(
+      child: ListTile(
+        title: Text(
+          'Manage Backup',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        trailing: IconButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const BackupOptionsView(),
+              ),
+            );
+          },
+          icon: const Icon(
+            Icons.backup,
+            color: sunbirdOrange,
+            size: 30,
+          ),
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const BackupOptionsView(),
-                ),
-              );
-            },
-            child: Text(
-              'Manage Backup',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+    );
+  }
+
+  Widget _spaces() {
+    return Card(
+      child: ListTile(
+        title: Text(
+          'Spaces',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        trailing: IconButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const SpacesView(),
+              ),
+            );
+          },
+          icon: const Icon(
+            Icons.space_dashboard_sharp,
+            color: sunbirdOrange,
+            size: 30,
           ),
-        ],
+        ),
       ),
     );
   }

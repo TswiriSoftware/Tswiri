@@ -1,7 +1,10 @@
+// ignore_for_file: unused_import
+
+import 'dart:developer';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sunbird/views/search/search_view.dart';
 import 'globals/globals_export.dart';
@@ -21,14 +24,14 @@ void main() async {
   //Get Camera descriptions.
   cameras = await availableCameras();
 
+  //Load App Settigns.
+  await loadAppSettings();
+  await initiateIsarDirectory(currentSpacePath);
+  await initiatePhotoStorage(currentSpacePath);
+
   //Initiate Isar
-  isarDirectory = await getApplicationSupportDirectory();
   isar = initiateIsar(inspector: false);
   createBasicContainerTypes();
-  await initiatePhotoStorage();
-
-  //Load App Settigns.
-  loadAppSettings();
 
   await SentryFlutter.init(
     (options) {
@@ -47,6 +50,7 @@ void main() async {
     ),
   );
 
+  //Run app without Sentry.
   // runApp(const MyApp());
 }
 

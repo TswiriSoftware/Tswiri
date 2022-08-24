@@ -1,8 +1,11 @@
 // ignore_for_file: unnecessary_import
 
+import 'dart:developer';
 import 'dart:io';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sunbird/globals/globals_export.dart';
 
 import 'package:sunbird/isar/collections/barcode_batch/barcode_batch.dart';
 import 'package:sunbird/isar/collections/cataloged_barcode/cataloged_barcode.dart';
@@ -136,12 +139,57 @@ Isar initiateIsar({String? directory, bool? inspector}) {
   return isar;
 }
 
-Future<void> initiatePhotoStorage() async {
-  String storagePath = '${(await getExternalStorageDirectory())!.path}/photos';
+Future<void> initiatePhotoStorage(String? currentSpacePath) async {
+  String storagePath;
+  if (currentSpacePath == null) {
+    storagePath =
+        '${(await getApplicationSupportDirectory()).path}/main_space/photos';
+  } else {
+    storagePath = '$currentSpacePath/photos';
+  }
 
   if (!await Directory(storagePath).exists()) {
     photoDirectory = await Directory(storagePath).create();
   } else {
     photoDirectory = Directory(storagePath);
+  }
+}
+
+Future<void> initiateIsarDirectory(String? currentSpacePath) async {
+  String storagePath;
+  if (currentSpacePath == null) {
+    storagePath = '${(await getApplicationSupportDirectory()).path}/main_space';
+    currentSpacePath = isarDirectory!.path;
+  } else {
+    storagePath = currentSpacePath;
+  }
+
+  if (!await Directory(storagePath).exists()) {
+    isarDirectory = await Directory(storagePath).create();
+  } else {
+    isarDirectory = Directory(storagePath);
+  }
+}
+
+Future<void> swapSpace(Directory directory) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  currentSpacePath = directory.path;
+  prefs.setString(currentSpacePathPref, currentSpacePath!);
+
+  await isar!.close();
+  isarDirectory = directory;
+  log(isarDirectory.toString());
+  await Future.delayed(const Duration(milliseconds: 200));
+  isar = initiateIsar(directory: isarDirectory!.path, inspector: true);
+}
+
+Future<bool> createNewSpace(String spaceName) async {
+  String storagePath =
+      '${(await getApplicationSupportDirectory()).path}/${spaceName}_space';
+  if (!await Directory(storagePath).exists()) {
+    await Directory(storagePath).create();
+    return true;
+  } else {
+    return false;
   }
 }

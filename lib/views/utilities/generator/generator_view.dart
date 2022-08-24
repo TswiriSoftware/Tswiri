@@ -567,7 +567,7 @@ class _GeneratorViewState extends State<GeneratorView> {
                                 .batchIDEqualTo(batch.id)
                                 .deleteAllSync();
                           });
-                        } else {
+                        } else if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Row(
