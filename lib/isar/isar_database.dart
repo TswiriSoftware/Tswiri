@@ -159,7 +159,7 @@ Future<void> initiateIsarDirectory(String? currentSpacePath) async {
   String storagePath;
   if (currentSpacePath == null) {
     storagePath = '${(await getApplicationSupportDirectory()).path}/main_space';
-    currentSpacePath = isarDirectory!.path;
+    currentSpacePath = storagePath;
   } else {
     storagePath = currentSpacePath;
   }
@@ -192,4 +192,15 @@ Future<bool> createNewSpace(String spaceName) async {
   } else {
     return false;
   }
+}
+
+Future<List<String>> getSpacesOnDevice() async {
+  List<String> existingSpaces = [];
+  Directory directory = (await getApplicationSupportDirectory());
+  for (var element in directory.listSync()) {
+    if (element is Directory) {
+      existingSpaces.add(element.path.split('/').last);
+    }
+  }
+  return existingSpaces;
 }

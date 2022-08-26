@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sunbird/functions/backup_restore_functions.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/classes/google_drive_manager.dart';
@@ -107,9 +108,7 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
         children: [
           _userTile(),
           const Divider(),
-          _latestFile(),
-          const Divider(),
-          _restore(),
+          _driveActions(),
         ],
       ),
     );
@@ -131,86 +130,34 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
     );
   }
 
-  Widget _latestFile() {
+  Widget _driveActions() {
     return Builder(builder: (context) {
       if (_backup != null) {
         return FutureBuilder<drive.File?>(
           future: latestFile,
           builder: (context, snapshot) {
-            if (snapshot.data != null) {
-              DateTime? backupTime = snapshot.data!.createdTime?.toLocal();
-              return ListTile(
-                leading: const CircleAvatar(
-                  child: Icon(Icons.backup_sharp),
-                ),
-                title: Text(
-                  'Last Backup',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                subtitle: Text(backupTime != null
-                    ? DateFormat('yyyy-MM-dd  kk:mm')
-                        .format(backupTime)
-                        .toString()
-                    : 'cannot retrive time'),
-                trailing: IconButton(
-                  onPressed: () async {
-                    setState(() {
-                      _isBusy = true;
-                    });
-
-                    setProcess('Creating new backup');
-
-                    File? file = await createBackupFile(
-                      progressNotifier: progressNotifier,
-                      fileName: generateBackupFileName(),
-                    );
-
-                    if (file != null) {
-                      setProcess('Uploading');
-                      setProcess('done');
-                      await Future.delayed(const Duration(milliseconds: 200));
-                      latestFile = _backup!.getLatestBackup();
-                    } else {
-                      //TODO: error
-                    }
-
-                    setState(() {
-                      _isBusy = false;
-                    });
-                  },
-                  icon: const Icon(Icons.upload),
-                ),
-              );
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.data != null) {
+                return Column(
+                  children: [
+                    _lastBackup(snapshot.data!),
+                    const Divider(),
+                    _restoreBackup(snapshot.data!),
+                    const Divider(),
+                    const Divider(),
+                    _restoreSpaces(),
+                  ],
+                );
+              } else {
+                return Column(
+                  children: [
+                    _createBackup(),
+                    _restoreSpaces(),
+                  ],
+                );
+              }
             } else {
-              return ElevatedButton(
-                onPressed: () async {
-                  setState(() {
-                    _isBusy = true;
-                  });
-
-                  setProcess('Creating new backup');
-
-                  File? file = await createBackupFile(
-                    progressNotifier: progressNotifier,
-                    fileName: generateBackupFileName(),
-                  );
-
-                  if (file != null) {
-                    setProcess('Uploading');
-                    bool uploaded = await _backup!.uploadFile(file);
-                    setProcess('done');
-                    await Future.delayed(const Duration(milliseconds: 200));
-                    latestFile = _backup!.getLatestBackup();
-                  } else {
-                    //TODO: error
-                  }
-
-                  setState(() {
-                    _isBusy = false;
-                  });
-                },
-                child: const Text('Create backup'),
-              );
+              return const CircularProgressIndicator();
             }
           },
         );
@@ -220,82 +167,190 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
     });
   }
 
-  Widget _restore() {
-    return Builder(builder: (context) {
-      if (_backup != null) {
-        return FutureBuilder<drive.File?>(
-          future: latestFile,
-          builder: (context, snapshot) {
-            if (snapshot.data != null) {
-              return ListTile(
-                leading: const CircleAvatar(
-                  child: Icon(Icons.cloud_download),
+  Widget _lastBackup(drive.File snapshot) {
+    return ListTile(
+      leading: const CircleAvatar(
+        child: Icon(Icons.backup_sharp),
+      ),
+      title: Text(
+        'Last Backup',
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+      subtitle:
+          Text(DateFormat('yyyy-MM-dd – kk:mm').format(snapshot.createdTime!)),
+      trailing: IconButton(
+        onPressed: () async {
+          setState(() {
+            _isBusy = true;
+          });
+
+          setProcess('Creating new backup');
+
+          File? file = await createBackupFile(
+            progressNotifier: progressNotifier,
+            fileName: generateBackupFileName(),
+          );
+
+          if (file != null) {
+            setProcess('Uploading');
+            setProcess('done');
+            await Future.delayed(const Duration(milliseconds: 200));
+            latestFile = _backup!.getLatestBackup();
+          } else {
+            //TODO: error
+          }
+
+          setState(() {
+            _isBusy = false;
+          });
+        },
+        icon: const Icon(Icons.upload),
+      ),
+    );
+  }
+
+  Widget _createBackup() {
+    return ElevatedButton(
+      onPressed: () async {
+        setState(() {
+          _isBusy = true;
+        });
+
+        setProcess('Creating new backup');
+
+        File? file = await createBackupFile(
+          progressNotifier: progressNotifier,
+          fileName: generateBackupFileName(),
+        );
+
+        if (file != null) {
+          setProcess('Uploading');
+          bool uploaded = await _backup!.uploadFile(file);
+          setProcess('done');
+          await Future.delayed(const Duration(milliseconds: 200));
+          latestFile = _backup!.getLatestBackup();
+        } else {
+          //TODO: error
+        }
+
+        setState(() {
+          _isBusy = false;
+        });
+      },
+      child: const Text('Create backup'),
+    );
+  }
+
+  Widget _restoreBackup(drive.File snapshot) {
+    return ListTile(
+      leading: const CircleAvatar(
+        child: Icon(Icons.cloud_download),
+      ),
+      title: Text(
+        'Restore',
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+      subtitle: Text(
+        snapshot.name?.toString() ?? 'cannot retrive name',
+      ),
+      trailing: IconButton(
+        onPressed: () async {
+          bool? approved = await showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('Restore'),
+              content: const Text(
+                  'Are you sure you want to restore from google drive?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text('Cancel'),
                 ),
-                title: Text(
-                  'Restore',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                TextButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  child: const Text('OK'),
                 ),
-                subtitle: Text(
-                  snapshot.data?.name.toString() ?? 'cannot retrive name',
-                ),
-                trailing: IconButton(
-                  onPressed: () async {
-                    bool? approved = await showDialog(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Restore'),
-                        content: const Text(
-                            'Are you sure you want to restore from google drive?'),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: const Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, true),
-                            child: const Text('OK'),
-                          ),
-                        ],
-                        actionsAlignment: MainAxisAlignment.spaceBetween,
-                      ),
-                    );
+              ],
+              actionsAlignment: MainAxisAlignment.spaceBetween,
+            ),
+          );
 
-                    if (approved != null && approved == true) {
-                      setState(() {
-                        _isBusy = true;
-                      });
+          if (approved != null && approved == true) {
+            setState(() {
+              _isBusy = true;
+            });
 
-                      setProcess('Downloading');
-                      File? downloadedFile =
-                          await _backup!.downloadFile(snapshot.data!);
+            setProcess('Downloading');
+            File? downloadedFile = await _backup!.downloadFile(snapshot);
 
-                      if (downloadedFile != null) {
-                        setProcess('Restoring');
-                        await restoreBackupFile(
-                            progressNotifier: progressNotifier,
-                            backupFile: File(downloadedFile.path));
-                      }
+            if (downloadedFile != null) {
+              setProcess('Restoring');
+              await restoreBackupFile(
+                  progressNotifier: progressNotifier,
+                  backupFile: File(downloadedFile.path));
+            }
 
-                      await isar!.close();
-                      isar = initiateIsar();
+            await isar!.close();
+            isar = initiateIsar();
 
-                      setState(() {
-                        _isBusy = false;
-                      });
-                    }
-                  },
-                  icon: const Icon(Icons.restore),
-                ),
-              );
-            } else {
-              return const Text('no backups found');
+            setState(() {
+              _isBusy = false;
+            });
+          }
+        },
+        icon: const Icon(Icons.restore),
+      ),
+    );
+  }
+
+  Widget _restoreSpaces() {
+    return ListTile(
+      leading: const Icon(Icons.space_dashboard_sharp),
+      title: Text(
+        'Restore Spaces (Names)',
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+      trailing: ElevatedButton(
+          onPressed: () async {
+            List<String>? spaces = await _backup!.getSpaces();
+
+            if (spaces != null) {
+              //check what spaces exist.
+              List<String> existingSpaces = await getSpacesOnDevice();
+
+              log(existingSpaces.toString(), name: 'Existing Spaces');
+              log(spaces.toString(), name: 'Google Spaces');
+
+              int numberOfRestoredSpaces = 0;
+              for (String space in spaces) {
+                if (!existingSpaces.contains(space)) {
+                  await createNewSpace(space.split('_').first);
+                  numberOfRestoredSpaces++;
+                }
+              }
+
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Space names restored: $numberOfRestoredSpaces',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
             }
           },
-        );
-      } else {
-        return const CircularProgressIndicator();
-      }
-    });
+          child: Text(
+            'Restore',
+            style: Theme.of(context).textTheme.bodyMedium,
+          )),
+    );
   }
 
   Widget _signIn() {
@@ -326,7 +381,12 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
 
   void _handleSignIn() async {
     try {
-      await googleSignIn.signIn();
+      try {
+        await googleSignIn.signIn();
+      } catch (e) {
+        log(e.toString());
+      }
+
       if (await googleSignIn.isSignedIn() && googleSignIn.currentUser != null) {
         setState(() {
           currentUser = googleSignIn.currentUser;
@@ -334,7 +394,7 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
 
         await initiateDriveApi();
       }
-    } catch (exception, stackTrace) {
+    } catch (exception) {
       log('$exception');
     }
   }

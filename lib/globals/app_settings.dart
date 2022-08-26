@@ -1,9 +1,10 @@
 import 'package:camera/camera.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //Camera Settings
 List<CameraDescription> cameras = [];
-ResolutionPreset cameraResolution = ResolutionPreset.high;
+ResolutionPreset cameraResolution = ResolutionPreset.max;
 
 ///Default Barcode Size.
 double defaultBarcodeSize = 80;
@@ -83,5 +84,6 @@ Future<void> loadAppSettings() async {
   hasShownGettingStarted = prefs.getBool(hasShownGettingStartedPref) ?? false;
 
   //Spaces
-  currentSpacePath = prefs.getString(currentSpacePathPref);
+  currentSpacePath = prefs.getString(currentSpacePathPref) ??
+      '${(await getApplicationSupportDirectory()).path}/main_space';
 }

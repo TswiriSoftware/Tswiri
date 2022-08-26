@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -14,8 +15,6 @@ class SpacesView extends StatefulWidget {
 
 class _SpacesViewState extends State<SpacesView> {
   List<Directory> spaceDirectories = [];
-
-  //TODO: Sync with google drive...
 
   @override
   void initState() {

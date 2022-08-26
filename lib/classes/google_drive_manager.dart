@@ -96,6 +96,33 @@ class GoogleDriveManager {
     }
   }
 
+  Future<List<String>?> getSpaces() async {
+    String? sunbirdFolderId = await getSunbirdFolderID();
+    const mimeType = "application/vnd.google-apps.folder";
+    try {
+      final found = await driveApi.files.list(
+        q: "mimeType = '$mimeType' and '$sunbirdFolderId' in parents and trashed = false",
+        $fields: "files(id, name)",
+      );
+
+      final files = found.files;
+
+      if (files == null) {
+        log("Sign-in first Error");
+        return null;
+      } else {
+        List<String> spaces = [];
+        for (var file in found.files!) {
+          spaces.add(file.name!);
+        }
+        return spaces;
+      }
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
   ///Returns the latest backup file.
   Future<drive.File?> getLatestBackup() async {
     log('getting latest');
@@ -105,7 +132,7 @@ class GoogleDriveManager {
         spaces: 'drive',
         q: "'$sunbirdFolderId' in parents and trashed = false",
         orderBy: "createdTime",
-        $fields: "*");
+        $fields: "files(id, name, createdTime)");
 
     if (fileList.files != null && fileList.files!.isNotEmpty) {
       return fileList.files?.last;
