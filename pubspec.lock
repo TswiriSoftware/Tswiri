@@ -987,6 +987,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  sunbird_package:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: master
+      resolved-ref: "0aa4c8073c00a5c340078935f2865fa7e8ff6744"
+      url: "https://github.com/049er/sunbird_package.git"
+    source: git
+    version: "0.0.1"
   term_glyph:
     dependency: transitive
     description:

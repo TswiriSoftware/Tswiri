@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sunbird/views/search/search_view.dart';
+import 'package:sunbird_package/sunbird_package.dart';
 import 'globals/globals_export.dart';
 import 'isar/isar_database.dart';
 import 'views/containers/containers_view/containers_view.dart';
@@ -59,7 +60,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: themeData(),
+      theme: sunbirdTheme,
       home: const HomePage(),
       debugShowCheckedModeBanner: false,
       navigatorObservers: [
