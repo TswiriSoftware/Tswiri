@@ -4,7 +4,7 @@ import 'package:sunbird/views/containers/container_view/container_view.dart';
 import 'package:sunbird/views/search/search_controller/search_controller.dart';
 import 'package:sunbird/views/search/search_controller/search_results.dart';
 import 'package:sunbird/views/search/search_widgets/search_widgets.dart';
-import 'package:sunbird/widgets/search_bar/search_bar.dart';
+import 'package:sunbird_base/widgets/sunbird_search_bar.dart';
 
 class SearchView extends StatefulWidget {
   const SearchView({
@@ -84,10 +84,10 @@ class _SearchViewState extends State<SearchView> {
   PreferredSize _searchBar() {
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight + 50),
-      child: SearchAppBar(
+      child: SearchBar(
         filters: searchFilters,
         filterTypes: filterTypes.entries.map((e) => e.key).toList(),
-        filterChange: (enteredKeyWord) {
+        onFilterChange: (enteredKeyWord) {
           setState(() {
             _searchController.search(enteredKeyword: enteredKeyWord);
           });

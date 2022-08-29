@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
+import 'package:sunbird_base/colors/colors.dart';
 
 ///Creates a new CatalogedContainer.
 ///

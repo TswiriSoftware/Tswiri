@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/views/utilities/generator/generator_view.dart';
-import 'package:sunbird/widgets/search_bar/search_bar.dart';
+import 'package:sunbird_base/widgets/sunbird_search_bar.dart';
 
 class BarcodesView extends StatefulWidget {
   const BarcodesView({Key? key}) : super(key: key);
@@ -62,10 +62,10 @@ class _BarcodesViewState extends State<BarcodesView> {
   PreferredSizeWidget _searchBar() {
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight + 50),
-      child: SearchAppBar(
+      child: SearchBar(
         filters: barcodeFilters,
         filterTypes: barcodeFilterTypes.entries.map((e) => e.key).toList(),
-        filterChange: (enteredKeyWord) {
+        onFilterChange: (enteredKeyWord) {
           _getBarcodes();
         },
         onCancel: () {

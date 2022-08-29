@@ -2,9 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:sunbird/classes/grid_controller.dart';
-import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/views/ml_kit_views/barcode_scanner/single_scanner_view.dart';
+import 'package:sunbird_base/colors/colors.dart';
 import 'gird_painter.dart';
 import 'gird_scanning/grid_scanner_view.dart';
 

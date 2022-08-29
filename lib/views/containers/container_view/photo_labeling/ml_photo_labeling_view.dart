@@ -10,6 +10,7 @@ import 'package:sunbird/scripts/get_model.dart';
 import 'package:sunbird/classes/image_data.dart';
 import 'package:sunbird/views/containers/container_view/photo_labeling/ml_label_photo_painter.dart';
 import 'package:sunbird/widgets/tag_text_search_field/tag_text_predictor.dart';
+import 'package:sunbird_base/colors/colors.dart';
 
 class MlPhotoLabelingView extends StatefulWidget {
   const MlPhotoLabelingView({

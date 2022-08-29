@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/views/search/search_widgets/text_painter.dart';
+import 'package:sunbird_base/colors/colors.dart';
 
 import 'dart:ui' as ui;
 import 'image_painter.dart';

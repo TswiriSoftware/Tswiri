@@ -49,7 +49,7 @@ packages:
       name: barcode
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.2"
+    version: "2.2.3"
   boolean_selector:
     dependency: transitive
     description:
@@ -112,7 +112,7 @@ packages:
       name: built_value
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "8.4.0"
+    version: "8.4.1"
   camera:
     dependency: "direct main"
     description:
@@ -133,7 +133,7 @@ packages:
       name: camera_avfoundation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.8+3"
+    version: "0.9.8+5"
   camera_platform_interface:
     dependency: transitive
     description:
@@ -252,7 +252,7 @@ packages:
       name: file
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.1.2"
+    version: "6.1.4"
   file_picker:
     dependency: "direct main"
     description:
@@ -638,7 +638,7 @@ packages:
       name: path_provider_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.19"
+    version: "2.0.20"
   path_provider_ios:
     dependency: transitive
     description:
@@ -680,7 +680,7 @@ packages:
       name: pdf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.8.2"
+    version: "3.8.3"
   permission_handler:
     dependency: "direct main"
     description:
@@ -771,7 +771,7 @@ packages:
       name: pubspec_parse
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   qr:
     dependency: transitive
     description:
@@ -987,13 +987,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
-  sunbird_package:
+  sunbird_base:
     dependency: "direct main"
     description:
       path: "."
       ref: master
-      resolved-ref: "0aa4c8073c00a5c340078935f2865fa7e8ff6744"
-      url: "https://github.com/049er/sunbird_package.git"
+      resolved-ref: c1221c460ac8d365bd89416c40b1807cc38e6373
+      url: "http://github.com/049er/sunbird_base.git"
     source: git
     version: "0.0.1"
   term_glyph:
@@ -1016,7 +1016,7 @@ packages:
       name: time
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.1"
+    version: "2.1.2"
   timing:
     dependency: transitive
     description:
@@ -1128,7 +1128,7 @@ packages:
       name: xdg_directories
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.0+1"
+    version: "0.2.0+2"
   xml:
     dependency: transitive
     description:

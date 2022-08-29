@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:sunbird/globals/globals_export.dart';
+import 'package:sunbird/globals/app_settings.dart';
 import 'package:sunbird/isar/functions/change_functions.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/classes/image_data.dart';
@@ -12,8 +12,8 @@ import 'package:sunbird/views/utilities/grids/grid/grid_viewer_view.dart';
 import 'package:sunbird/views/utilities/grids/new_grid/new_grid_view.dart';
 import 'package:sunbird/widgets/photo/photo_edit_view.dart';
 import 'package:sunbird/widgets/tag_text_search_field/tag_text_predictor.dart';
-import 'package:sunbird/widgets/text_field/custom_text_field.dart';
-
+import 'package:sunbird_base/colors/colors.dart';
+import 'package:sunbird_base/widgets/custom_text_field.dart';
 import '../new_container_view/new_container_view.dart';
 
 class ContainerView extends StatefulWidget {

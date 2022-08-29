@@ -5,6 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/views/containers/container_view/photo_labeling/ml_photo_labeling_view.dart';
+import 'package:sunbird_base/colors/colors.dart';
 
 class MLPhotoLabelingCameraView extends StatefulWidget {
   const MLPhotoLabelingCameraView({Key? key}) : super(key: key);

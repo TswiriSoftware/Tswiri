@@ -5,7 +5,8 @@ import 'package:sunbird/views/ml_kit_views/barcode_scanner/single_scanner_view.d
 import 'package:sunbird/views/containers/container_view/container_view.dart';
 import 'package:sunbird/views/containers/containers_view/container_search_controller.dart';
 import 'package:sunbird/views/containers/new_container_view/new_container_view.dart';
-import 'package:sunbird/widgets/search_bar/search_bar.dart';
+import 'package:sunbird_base/colors/colors.dart';
+import 'package:sunbird_base/widgets/search_text_field.dart';
 
 class ContainersView extends StatefulWidget {
   const ContainersView({

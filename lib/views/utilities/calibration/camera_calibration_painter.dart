@@ -5,6 +5,8 @@ import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'dart:math' as m;
 
+import 'package:sunbird_base/colors/colors.dart';
+
 class CameraCalibrationVisualizerPainter extends CustomPainter {
   CameraCalibrationVisualizerPainter();
 
