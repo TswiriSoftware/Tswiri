@@ -88,6 +88,8 @@ class SearchController {
           .sort((a, b) => b.textSimilarity.compareTo(a.textSimilarity));
     } else {
       //Defaults.
+      //Clear the search results.
+      searchResults.clear();
 
       searchResults.addAll(nameSearch(''));
     }

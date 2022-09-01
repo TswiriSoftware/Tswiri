@@ -62,7 +62,7 @@ dependencies:
   google_sign_in: ^5.4.1
   sunbird_base:
     git:
-      url: http://github.com/049er/sunbird_base.git
+      url: https://github.com/sunbirdsoftware/sunbird_base.git
       ref: master # branch name
   
   

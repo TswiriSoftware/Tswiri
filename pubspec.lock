@@ -992,8 +992,8 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: c1221c460ac8d365bd89416c40b1807cc38e6373
-      url: "http://github.com/049er/sunbird_base.git"
+      resolved-ref: "5aec99eb0993d1a86368d28617ad119d63755b5f"
+      url: "https://github.com/sunbirdsoftware/sunbird_base.git"
     source: git
     version: "0.0.1"
   term_glyph:

@@ -4,6 +4,7 @@ import 'package:sunbird/views/containers/container_view/container_view.dart';
 import 'package:sunbird/views/search/search_controller/search_controller.dart';
 import 'package:sunbird/views/search/search_controller/search_results.dart';
 import 'package:sunbird/views/search/search_widgets/search_widgets.dart';
+import 'package:sunbird/views/search/shopping_cart/shopping_cart_view.dart';
 import 'package:sunbird_base/widgets/sunbird_search_bar.dart';
 
 class SearchView extends StatefulWidget {
@@ -65,6 +66,19 @@ class _SearchViewState extends State<SearchView> {
         style: Theme.of(context).textTheme.titleMedium,
       ),
       centerTitle: true,
+      leading: IconButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ShoppingCartView(),
+            ),
+          );
+        },
+        icon: shoppingList.isNotEmpty
+            ? const Icon(Icons.shopping_cart_checkout_sharp)
+            : const Icon(Icons.shopping_cart),
+      ),
       actions: [
         IconButton(
           onPressed: () {

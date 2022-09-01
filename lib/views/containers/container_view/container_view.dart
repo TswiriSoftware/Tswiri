@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:sunbird/globals/app_settings.dart';
 import 'package:sunbird/isar/functions/change_functions.dart';
@@ -8,6 +7,7 @@ import 'package:sunbird/classes/image_data.dart';
 import 'package:sunbird/views/ml_kit_views/barcode_scanner/single_scanner_view.dart';
 import 'package:sunbird/views/containers/container_view/photo_labeling/ml_photo_labeling_camera_view.dart';
 import 'package:sunbird/views/ml_kit_views/navigator/navigator_view.dart';
+import 'package:sunbird/views/search/shopping_cart/shopping_cart_view.dart';
 import 'package:sunbird/views/utilities/grids/grid/grid_viewer_view.dart';
 import 'package:sunbird/views/utilities/grids/new_grid/new_grid_view.dart';
 import 'package:sunbird/widgets/photo/photo_edit_view.dart';
@@ -67,6 +67,11 @@ class _ContainerViewState extends State<ContainerView> {
       .containerUIDMatches(_catalogedContainer.containerUID)
       .findFirstSync();
 
+  late CatalogedCoordinate? catalogedCoordiante = isar!.catalogedCoordinates
+      .filter()
+      .barcodeUIDMatches(_catalogedContainer.barcodeUID!)
+      .findFirstSync();
+
   bool isAddingTag = false;
   bool isEditingPhoto = false;
   Photo? _photo;
@@ -75,6 +80,7 @@ class _ContainerViewState extends State<ContainerView> {
   late bool? photosExpaned = widget.photosExpaned ?? false;
   late bool? childrenExpanded = widget.childrenExpanded ?? false;
   late bool? parentExpanded = widget.parentExpaned ?? false;
+  late bool isInShoppingList = shoppingList.contains(_catalogedContainer);
 
   @override
   void initState() {
@@ -99,9 +105,56 @@ class _ContainerViewState extends State<ContainerView> {
       ),
       centerTitle: true,
       actions: [
-        isEditingPhoto ? _cancelPhotoEdit() : _findButton(),
+        isEditingPhoto ? _cancelPhotoEdit() : _popUpMenu(),
       ],
     );
+  }
+
+  Widget _popUpMenu() {
+    return PopupMenuButton(itemBuilder: (context) {
+      return [
+        PopupMenuItem<int>(
+          value: 0,
+          child: Text(
+            "Find",
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        ),
+        PopupMenuItem<int>(
+          value: 1,
+          child: Text(
+            isInShoppingList ? "Remove from cart" : "Add to cart",
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        ),
+      ];
+    }, onSelected: (value) {
+      if (value == 0) {
+        if (catalogedCoordiante != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NavigatorView(
+                  catalogedContainer: _catalogedContainer,
+                  gridUID: catalogedCoordiante!.gridUID),
+            ),
+          );
+        } else {
+          cannotFindPosition();
+        }
+      } else if (value == 1) {
+        if (isInShoppingList) {
+          shoppingList.removeWhere((element) =>
+              element.containerUID == _catalogedContainer.containerUID);
+        } else {
+          if (catalogedCoordiante != null) {
+            shoppingList.add(_catalogedContainer);
+          } else {
+            cannotFindPosition();
+          }
+        }
+      }
+    });
   }
 
   Widget _findButton() {
@@ -240,7 +293,7 @@ class _ContainerViewState extends State<ContainerView> {
         isar!.writeTxnSync(
             (isar) => isar.containerTags.putSync(newContainerTag));
 
-        _updateTagsDisplay();
+        _updateAssignedTags();
       },
     );
   }
@@ -429,11 +482,11 @@ class _ContainerViewState extends State<ContainerView> {
         isar!.writeTxnSync(
             (isar) => isar.containerTags.deleteSync(containerTag.id));
 
-        _updateTagsDisplay();
+        _updateAssignedTags();
 
-        ///Let the TagTextPredictor know this tag has been removed.
-        _tagTextPredictorKey.currentState
-            ?.updateAssignedTags(containerTag.tagTextID);
+        // ///Let the TagTextPredictor know this tag has been removed.
+        // _tagTextPredictorKey.currentState
+        //     ?.updateAssignedTags(containerTag.tagTextID);
       },
     );
   }
@@ -705,7 +758,7 @@ class _ContainerViewState extends State<ContainerView> {
   }
 
   ///Update the list of tags displayed.
-  void _updateTagsDisplay() {
+  void _updateAssignedTags() {
     setState(() {
       assignedTags = isar!.containerTags
           .filter()
@@ -732,5 +785,29 @@ class _ContainerViewState extends State<ContainerView> {
           .parentUIDMatches(_catalogedContainer.containerUID)
           .findAllSync();
     });
+  }
+
+  void cannotFindPosition() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Cannot find container',
+            ),
+            TextButton(
+              onPressed: () {
+                //TODO: implement help screen.
+              },
+              child: const Text(
+                'Help',
+                style: TextStyle(color: sunbirdOrange, fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
