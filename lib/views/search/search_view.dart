@@ -78,7 +78,7 @@ class _SearchViewState extends State<SearchView> {
             ),
           );
         },
-        icon: Provider.of<ShoppingCart>(context).shoppingList.isNotEmpty
+        icon: Provider.of<ShoppingCart>(context).itemList.isNotEmpty
             ? const Icon(Icons.shopping_cart_checkout_sharp)
             : const Icon(Icons.shopping_cart),
       ),
@@ -113,7 +113,7 @@ class _SearchViewState extends State<SearchView> {
           setState(() {
             isSearching = false;
             widget.isSearching(isSearching);
-            _searchController.search();
+            // _searchController.search();
           });
         },
         onChanged: (value) {

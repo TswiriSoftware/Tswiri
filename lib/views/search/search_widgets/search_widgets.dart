@@ -35,7 +35,7 @@ class NameResultCard extends StatelessWidget {
           ),
           ShoppingCartIconButton(
             containerUID: nameResult.containerUID,
-            item: nameResult.name,
+            item: nameResult,
           ),
         ],
       ),
@@ -50,7 +50,8 @@ class ShoppingCartIconButton extends StatelessWidget {
     required this.item,
   }) : super(key: key);
   final String containerUID;
-  final String item;
+  final Result item;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -61,12 +62,13 @@ class ShoppingCartIconButton extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Provider.of<ShoppingCart>(context, listen: false)
-                      .isInShoppingCart(containerUID)
+              child: Provider.of<ShoppingCart>(context)
+                      .itemList
+                      .any((element) => element.uid == item.uid)
                   ? IconButton(
                       onPressed: () {
                         Provider.of<ShoppingCart>(context, listen: false)
-                            .modifyShoppingCartContainerUID(containerUID, item);
+                            .removeItem(item);
                       },
                       icon: const Icon(
                         Icons.remove_shopping_cart_sharp,
@@ -75,7 +77,7 @@ class ShoppingCartIconButton extends StatelessWidget {
                   : IconButton(
                       onPressed: () {
                         Provider.of<ShoppingCart>(context, listen: false)
-                            .modifyShoppingCartContainerUID(containerUID, item);
+                            .addItem(item);
                       },
                       icon: const Icon(
                         Icons.add_shopping_cart,
@@ -113,7 +115,7 @@ class DescriptionResultCard extends StatelessWidget {
           ),
           ShoppingCartIconButton(
             containerUID: descriptionResult.containerUID,
-            item: descriptionResult.description,
+            item: descriptionResult,
           ),
         ],
       ),
@@ -145,7 +147,7 @@ class ContainerTagResultCard extends StatelessWidget {
           ),
           ShoppingCartIconButton(
             containerUID: containerTagResult.containerUID,
-            item: containerTagResult.tag,
+            item: containerTagResult,
           ),
         ],
       ),
@@ -191,7 +193,7 @@ class PhotoLabelResultCard extends StatelessWidget {
           ),
           ShoppingCartIconButton(
               containerUID: photoLabelResult.containerUID,
-              item: photoLabelResult.photoLabel),
+              item: photoLabelResult),
         ],
       ),
     );
@@ -256,7 +258,7 @@ class ObjectLabelResultCard extends StatelessWidget {
           ),
           ShoppingCartIconButton(
             containerUID: result.containerUID,
-            item: result.objectLabel,
+            item: result,
           ),
         ],
       ),
@@ -302,7 +304,7 @@ class MLPhotoLabelResultCard extends StatelessWidget {
           ),
           ShoppingCartIconButton(
             containerUID: mlphotoLabelResult.containerUID,
-            item: mlphotoLabelResult.mlPhotoLabel,
+            item: mlphotoLabelResult,
           ),
         ],
       ),
@@ -368,7 +370,7 @@ class MLObjectLabelResultCard extends StatelessWidget {
           ),
           ShoppingCartIconButton(
             containerUID: result.containerUID,
-            item: result.mlObjectLabel,
+            item: result,
           ),
         ],
       ),
@@ -434,7 +436,7 @@ class MLTextElementResultCard extends StatelessWidget {
           ),
           ShoppingCartIconButton(
             containerUID: result.containerUID,
-            item: result.mlText,
+            item: result,
           ),
         ],
       ),

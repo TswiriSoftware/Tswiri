@@ -83,10 +83,6 @@ class _ContainerViewState extends State<ContainerView> {
   late bool? childrenExpanded = widget.childrenExpanded ?? false;
   late bool? parentExpanded = widget.parentExpaned ?? false;
 
-  late ShoppingCartItem item = ShoppingCartItem(
-      catalogedContainer: _catalogedContainer,
-      selectedItem: _catalogedContainer.containerUID);
-
   @override
   void initState() {
     super.initState();
@@ -126,15 +122,6 @@ class _ContainerViewState extends State<ContainerView> {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
-          PopupMenuItem<int>(
-            value: 1,
-            child: Text(
-              Provider.of<ShoppingCart>(context, listen: false).exists(item)
-                  ? 'Remove from cart'
-                  : 'Add to cart',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ),
         ];
       },
       onSelected: (value) {
@@ -148,13 +135,6 @@ class _ContainerViewState extends State<ContainerView> {
                     gridUID: catalogedCoordiante!.gridUID),
               ),
             );
-          } else {
-            cannotFindPosition();
-          }
-        } else if (value == 1) {
-          if (catalogedCoordiante != null) {
-            Provider.of<ShoppingCart>(context, listen: false)
-                .modifyShoppingCart(item);
           } else {
             cannotFindPosition();
           }

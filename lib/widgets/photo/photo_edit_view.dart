@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:sunbird/classes/image_data.dart';
-import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/views/containers/container_view/photo_labeling/ml_label_photo_painter.dart';
 import 'package:sunbird/widgets/tag_text_search_field/tag_text_predictor.dart';
