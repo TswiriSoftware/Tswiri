@@ -64,6 +64,7 @@ dependencies:
     git:
       url: https://github.com/sunbirdsoftware/sunbird_base.git
       ref: master # branch name
+  provider: ^6.0.3
   
   
 dev_dependencies:

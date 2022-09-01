@@ -5,8 +5,10 @@ import 'dart:developer';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sunbird/views/search/search_view.dart';
+import 'package:sunbird/views/search/shopping_cart/shopping_cart.dart';
 import 'package:sunbird_base/theme/theme.dart';
 import 'globals/globals_export.dart';
 import 'isar/isar_database.dart';
@@ -46,7 +48,10 @@ void main() async {
     appRunner: () => runApp(
       DefaultAssetBundle(
         bundle: SentryAssetBundle(),
-        child: const MyApp(),
+        child: ChangeNotifierProvider(
+          child: const MyApp(),
+          create: (context) => ShoppingCart(),
+        ),
       ),
     ),
   );

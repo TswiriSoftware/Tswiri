@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/views/containers/container_view/container_view.dart';
 import 'package:sunbird/views/search/search_controller/search_controller.dart';
 import 'package:sunbird/views/search/search_controller/search_results.dart';
 import 'package:sunbird/views/search/search_widgets/search_widgets.dart';
+import 'package:sunbird/views/search/shopping_cart/shopping_cart.dart';
 import 'package:sunbird/views/search/shopping_cart/shopping_cart_view.dart';
 import 'package:sunbird_base/widgets/sunbird_search_bar.dart';
 
@@ -44,6 +46,7 @@ class _SearchViewState extends State<SearchView> {
   };
 
   bool isSearching = false;
+  // bool shoppingCartEmpty = shoppingList.isEmpty;
 
   @override
   void initState() {
@@ -75,7 +78,7 @@ class _SearchViewState extends State<SearchView> {
             ),
           );
         },
-        icon: shoppingList.isNotEmpty
+        icon: Provider.of<ShoppingCart>(context).shoppingList.isNotEmpty
             ? const Icon(Icons.shopping_cart_checkout_sharp)
             : const Icon(Icons.shopping_cart),
       ),
@@ -129,13 +132,14 @@ class _SearchViewState extends State<SearchView> {
 
   Widget _body() {
     return GridView.builder(
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 200,
-        ),
-        itemCount: _searchController.searchResults.length,
-        itemBuilder: (context, index) {
-          return _searchResultCard(_searchController.searchResults[index]);
-        });
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 200,
+      ),
+      itemCount: _searchController.searchResults.length,
+      itemBuilder: (context, index) {
+        return _searchResultCard(_searchController.searchResults[index]);
+      },
+    );
   }
 
   Widget _searchResultCard(Result result) {
@@ -146,7 +150,7 @@ class _SearchViewState extends State<SearchView> {
 
     return InkWell(
       onTap: () async {
-        Navigator.of(context).push(
+        await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => ContainerView(
               catalogedContainer: catalogedContainer,
@@ -155,6 +159,9 @@ class _SearchViewState extends State<SearchView> {
             ),
           ),
         );
+        // setState(() {
+        //   shoppingCartEmpty = shoppingList.isEmpty;
+        // });
       },
       child: Builder(builder: (context) {
         switch (result.runtimeType) {

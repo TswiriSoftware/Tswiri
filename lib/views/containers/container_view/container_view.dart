@@ -1,5 +1,7 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sunbird/globals/app_settings.dart';
 import 'package:sunbird/isar/functions/change_functions.dart';
 import 'package:sunbird/isar/isar_database.dart';
@@ -7,6 +9,7 @@ import 'package:sunbird/classes/image_data.dart';
 import 'package:sunbird/views/ml_kit_views/barcode_scanner/single_scanner_view.dart';
 import 'package:sunbird/views/containers/container_view/photo_labeling/ml_photo_labeling_camera_view.dart';
 import 'package:sunbird/views/ml_kit_views/navigator/navigator_view.dart';
+import 'package:sunbird/views/search/shopping_cart/shopping_cart.dart';
 import 'package:sunbird/views/search/shopping_cart/shopping_cart_view.dart';
 import 'package:sunbird/views/utilities/grids/grid/grid_viewer_view.dart';
 import 'package:sunbird/views/utilities/grids/new_grid/new_grid_view.dart';
@@ -80,7 +83,10 @@ class _ContainerViewState extends State<ContainerView> {
   late bool? photosExpaned = widget.photosExpaned ?? false;
   late bool? childrenExpanded = widget.childrenExpanded ?? false;
   late bool? parentExpanded = widget.parentExpaned ?? false;
-  late bool isInShoppingList = shoppingList.contains(_catalogedContainer);
+
+  late ShoppingCartItem item = ShoppingCartItem(
+      catalogedContainer: _catalogedContainer,
+      selectedItem: _catalogedContainer.containerUID);
 
   @override
   void initState() {
@@ -111,50 +117,51 @@ class _ContainerViewState extends State<ContainerView> {
   }
 
   Widget _popUpMenu() {
-    return PopupMenuButton(itemBuilder: (context) {
-      return [
-        PopupMenuItem<int>(
-          value: 0,
-          child: Text(
-            "Find",
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-        ),
-        PopupMenuItem<int>(
-          value: 1,
-          child: Text(
-            isInShoppingList ? "Remove from cart" : "Add to cart",
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-        ),
-      ];
-    }, onSelected: (value) {
-      if (value == 0) {
-        if (catalogedCoordiante != null) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => NavigatorView(
-                  catalogedContainer: _catalogedContainer,
-                  gridUID: catalogedCoordiante!.gridUID),
+    return PopupMenuButton(
+      itemBuilder: (context) {
+        return [
+          PopupMenuItem<int>(
+            value: 0,
+            child: Text(
+              "Find",
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
-          );
-        } else {
-          cannotFindPosition();
-        }
-      } else if (value == 1) {
-        if (isInShoppingList) {
-          shoppingList.removeWhere((element) =>
-              element.containerUID == _catalogedContainer.containerUID);
-        } else {
+          ),
+          PopupMenuItem<int>(
+            value: 1,
+            child: Text(
+              Provider.of<ShoppingCart>(context, listen: false).exists(item)
+                  ? 'Remove from cart'
+                  : 'Add to cart',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ),
+        ];
+      },
+      onSelected: (value) {
+        if (value == 0) {
           if (catalogedCoordiante != null) {
-            shoppingList.add(_catalogedContainer);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NavigatorView(
+                    catalogedContainer: _catalogedContainer,
+                    gridUID: catalogedCoordiante!.gridUID),
+              ),
+            );
+          } else {
+            cannotFindPosition();
+          }
+        } else if (value == 1) {
+          if (catalogedCoordiante != null) {
+            Provider.of<ShoppingCart>(context, listen: false)
+                .modifyShoppingCart(item);
           } else {
             cannotFindPosition();
           }
         }
-      }
-    });
+      },
+    );
   }
 
   Widget _findButton() {

@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/views/search/search_widgets/text_painter.dart';
+import 'package:sunbird/views/search/shopping_cart/shopping_cart.dart';
 import 'package:sunbird_base/colors/colors.dart';
 
 import 'dart:ui' as ui;
@@ -21,13 +23,68 @@ class NameResultCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: background[300],
-      child: Chip(
-        backgroundColor: sunbirdOrange,
-        label: Text(
-          nameResult.name,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+      child: Stack(
+        alignment: AlignmentDirectional.center,
+        children: [
+          Chip(
+            backgroundColor: sunbirdOrange,
+            label: Text(
+              nameResult.name,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          ShoppingCartIconButton(
+            containerUID: nameResult.containerUID,
+            item: nameResult.name,
+          ),
+        ],
       ),
+    );
+  }
+}
+
+class ShoppingCartIconButton extends StatelessWidget {
+  const ShoppingCartIconButton({
+    Key? key,
+    required this.containerUID,
+    required this.item,
+  }) : super(key: key);
+  final String containerUID;
+  final String item;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Provider.of<ShoppingCart>(context, listen: false)
+                      .isInShoppingCart(containerUID)
+                  ? IconButton(
+                      onPressed: () {
+                        Provider.of<ShoppingCart>(context, listen: false)
+                            .modifyShoppingCartContainerUID(containerUID, item);
+                      },
+                      icon: const Icon(
+                        Icons.remove_shopping_cart_sharp,
+                      ),
+                    )
+                  : IconButton(
+                      onPressed: () {
+                        Provider.of<ShoppingCart>(context, listen: false)
+                            .modifyShoppingCartContainerUID(containerUID, item);
+                      },
+                      icon: const Icon(
+                        Icons.add_shopping_cart,
+                      ),
+                    ),
+            ),
+          ],
+        )
+      ],
     );
   }
 }
@@ -44,12 +101,21 @@ class DescriptionResultCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: background[300],
-      child: Chip(
-        backgroundColor: sunbirdOrange,
-        label: Text(
-          descriptionResult.description,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+      child: Stack(
+        alignment: AlignmentDirectional.center,
+        children: [
+          Chip(
+            backgroundColor: sunbirdOrange,
+            label: Text(
+              descriptionResult.description,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          ShoppingCartIconButton(
+            containerUID: descriptionResult.containerUID,
+            item: descriptionResult.description,
+          ),
+        ],
       ),
     );
   }
@@ -67,12 +133,21 @@ class ContainerTagResultCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: background[300],
-      child: Chip(
-        backgroundColor: sunbirdOrange,
-        label: Text(
-          containerTagResult.tag,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+      child: Stack(
+        alignment: AlignmentDirectional.center,
+        children: [
+          Chip(
+            backgroundColor: sunbirdOrange,
+            label: Text(
+              containerTagResult.tag,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          ShoppingCartIconButton(
+            containerUID: containerTagResult.containerUID,
+            item: containerTagResult.tag,
+          ),
+        ],
       ),
     );
   }
@@ -114,6 +189,9 @@ class PhotoLabelResultCard extends StatelessWidget {
               ),
             ],
           ),
+          ShoppingCartIconButton(
+              containerUID: photoLabelResult.containerUID,
+              item: photoLabelResult.photoLabel),
         ],
       ),
     );
@@ -176,6 +254,10 @@ class ObjectLabelResultCard extends StatelessWidget {
               ),
             ],
           ),
+          ShoppingCartIconButton(
+            containerUID: result.containerUID,
+            item: result.objectLabel,
+          ),
         ],
       ),
     );
@@ -217,6 +299,10 @@ class MLPhotoLabelResultCard extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+          ShoppingCartIconButton(
+            containerUID: mlphotoLabelResult.containerUID,
+            item: mlphotoLabelResult.mlPhotoLabel,
           ),
         ],
       ),
@@ -280,6 +366,10 @@ class MLObjectLabelResultCard extends StatelessWidget {
               ),
             ],
           ),
+          ShoppingCartIconButton(
+            containerUID: result.containerUID,
+            item: result.mlObjectLabel,
+          ),
         ],
       ),
     );
@@ -341,6 +431,10 @@ class MLTextElementResultCard extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+          ShoppingCartIconButton(
+            containerUID: result.containerUID,
+            item: result.mlText,
           ),
         ],
       ),
