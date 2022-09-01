@@ -10,13 +10,12 @@ import 'package:sunbird/views/ml_kit_views/barcode_scanner/single_scanner_view.d
 import 'package:sunbird/views/containers/container_view/photo_labeling/ml_photo_labeling_camera_view.dart';
 import 'package:sunbird/views/ml_kit_views/navigator/navigator_view.dart';
 import 'package:sunbird/views/search/shopping_cart/shopping_cart.dart';
-import 'package:sunbird/views/search/shopping_cart/shopping_cart_view.dart';
 import 'package:sunbird/views/utilities/grids/grid/grid_viewer_view.dart';
 import 'package:sunbird/views/utilities/grids/new_grid/new_grid_view.dart';
 import 'package:sunbird/widgets/photo/photo_edit_view.dart';
 import 'package:sunbird/widgets/tag_text_search_field/tag_text_predictor.dart';
-import 'package:sunbird_base/colors/colors.dart';
-import 'package:sunbird_base/widgets/custom_text_field.dart';
+import 'package:tswiri_base/colors/colors.dart';
+import 'package:tswiri_base/widgets/custom_text_field.dart';
 import '../new_container_view/new_container_view.dart';
 
 class ContainerView extends StatefulWidget {

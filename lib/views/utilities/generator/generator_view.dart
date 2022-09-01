@@ -5,7 +5,7 @@ import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/views/utilities/generator/barcode_import/barcode_import_scanner.dart';
 import 'package:sunbird/views/utilities/generator/pdf_view.dart';
-import 'package:sunbird_base/colors/colors.dart';
+import 'package:tswiri_base/colors/colors.dart';
 
 class GeneratorView extends StatefulWidget {
   const GeneratorView({Key? key}) : super(key: key);

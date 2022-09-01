@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
-import 'package:sunbird_base/colors/colors.dart';
+import 'package:tswiri_base/colors/colors.dart';
 
 class SpacesView extends StatefulWidget {
   const SpacesView({Key? key}) : super(key: key);

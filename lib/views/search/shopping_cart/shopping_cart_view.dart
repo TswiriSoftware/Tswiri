@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sunbird/isar/isar_database.dart';
-import 'package:sunbird/views/containers/container_view/container_view.dart';
 import 'package:sunbird/views/ml_kit_views/navigator/navigator_view.dart';
 import 'package:sunbird/views/search/shopping_cart/shopping_cart.dart';
 

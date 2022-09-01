@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sunbird_base/colors/colors.dart';
+import 'package:tswiri_base/colors/colors.dart';
 
 class TextBodyDivider extends StatelessWidget {
   const TextBodyDivider({Key? key}) : super(key: key);

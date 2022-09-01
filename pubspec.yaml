@@ -60,9 +60,9 @@ dependencies:
   googleapis: ^9.1.0
   googleapis_auth: ^1.3.1
   google_sign_in: ^5.4.1
-  sunbird_base:
+  tswiri_base:
     git:
-      url: https://github.com/sunbirdsoftware/sunbird_base.git
+      url: https://github.com/TswiriSoftware/tswiri_base.git
       ref: master # branch name
   provider: ^6.0.3
   

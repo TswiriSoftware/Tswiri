@@ -3,7 +3,7 @@ import 'package:sunbird/globals/globals_export.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/views/utilities/calibration/camera_calibration/camera_calibration.dart';
 import 'package:sunbird/views/utilities/calibration/camera_calibration_painter.dart';
-import 'package:sunbird_base/colors/colors.dart';
+import 'package:tswiri_base/colors/colors.dart';
 
 import 'camera_calibration/camera_calibration_view.dart';
 

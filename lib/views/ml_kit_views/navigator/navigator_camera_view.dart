@@ -6,7 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:sunbird/globals/globals_export.dart';
-import 'package:sunbird_base/colors/colors.dart';
+import 'package:tswiri_base/colors/colors.dart';
+import 'package:tswiri_base/widgets/custom_text_field.dart';
 
 enum ScreenMode { liveFeed, gallery }
 

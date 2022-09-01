@@ -7,7 +7,7 @@ import 'package:sunbird/views/search/search_controller/search_results.dart';
 import 'package:sunbird/views/search/search_widgets/search_widgets.dart';
 import 'package:sunbird/views/search/shopping_cart/shopping_cart.dart';
 import 'package:sunbird/views/search/shopping_cart/shopping_cart_view.dart';
-import 'package:sunbird_base/widgets/sunbird_search_bar.dart';
+import 'package:tswiri_base/widgets/sunbird_search_bar.dart';
 
 class SearchView extends StatefulWidget {
   const SearchView({

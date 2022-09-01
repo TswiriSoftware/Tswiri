@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sunbird/views/search/search_view.dart';
 import 'package:sunbird/views/search/shopping_cart/shopping_cart.dart';
-import 'package:sunbird_base/theme/theme.dart';
+import 'package:tswiri_base/theme/theme.dart';
 import 'globals/globals_export.dart';
 import 'isar/isar_database.dart';
 import 'views/containers/containers_view/containers_view.dart';

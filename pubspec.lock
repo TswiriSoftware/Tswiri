@@ -1001,15 +1001,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
-  sunbird_base:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: master
-      resolved-ref: "5aec99eb0993d1a86368d28617ad119d63755b5f"
-      url: "https://github.com/sunbirdsoftware/sunbird_base.git"
-    source: git
-    version: "0.0.1"
   term_glyph:
     dependency: transitive
     description:
@@ -1038,6 +1029,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  tswiri_base:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: master
+      resolved-ref: "98cfb7c82361f0b4b57174bc2d3a11a2f08f5be6"
+      url: "https://github.com/TswiriSoftware/tswiri_base.git"
+    source: git
+    version: "0.0.1"
   typed_data:
     dependency: transitive
     description:
