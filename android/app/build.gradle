@@ -21,23 +21,20 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.google.gms.google-services'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
-def keystoreProperties = new Properties()
-   def keystorePropertiesFile = rootProject.file('key.properties')
-   if (keystorePropertiesFile.exists()) {
-       keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-   }
-
-
-
 android {
-    compileSdkVersion 31
-    
-    //ndkPath = "/home/werner/sdk/ndk/24.0.8215888/"
+    compileSdkVersion 33
+    ndkVersion flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -53,23 +50,13 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.scholtz.sunbird"
-        minSdkVersion 23
-        targetSdkVersion 31
+        minSdkVersion 21
+        targetSdkVersion 32
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        multiDexEnabled true
-        // ndk {
-        //     abiFilters += listOf("arm64-v8a")
-        // }
-
     }
-    // lintOptions {
-    //     disable 'InvalidPackage'
-    //     checkReleaseBuilds false
-    //     abortOnError false
-    // } 
+    
     signingConfigs {
        release {
            keyAlias keystoreProperties['keyAlias']
@@ -78,16 +65,13 @@ android {
            storePassword keystoreProperties['storePassword']
        }
    }
-   
+
    buildTypes {
        release {
            signingConfig signingConfigs.release
        }
    }
-   aaptOptions {
-        noCompress 'tflite'
-        noCompress 'lite'
-    }
+
 }
 
 flutter {
@@ -95,25 +79,5 @@ flutter {
 }
 
 dependencies {
-    implementation platform('com.google.firebase:firebase-bom:30.1.0')
-    implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-core:16.0.9'
-
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
-
-//android.buildTypes.release.ndk.debugSymbolLevel = 'symbol_table'
-    
-    
-    //implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:16.2.1'
-
-    // implementation 'com.google.android.gms:play-services-mlkit-image-labeling:16.0.5'
-    // implementation 'com.google.mlkit:image-labeling-custom:16.3.1'
-    // implementation 'com.google.mlkit:image-labeling-automl:16.2.1'
-    // implementation 'com.google.mlkit:translate:16.1.2'
-    // implementation 'com.google.mlkit:entity-extraction:16.0.0-beta2'
-
-    // implementation 'com.google.mlkit:object-detection:16.2.7'
-    // implementation 'com.google.mlkit:object-detection-custom:16.3.3'
-    // implementation 'com.google.mlkit:linkfirebase:16.1.1'
-
-    // implementation 'com.google.mlkit:text-recognition:16.0.0-beta1'
