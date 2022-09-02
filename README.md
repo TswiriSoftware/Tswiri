@@ -1,14 +1,7 @@
-<<<<<<< HEAD
+
 # Sunbird
-=======
-# sunbird
->>>>>>> fresh
 
 A Flutter Project...
-
-<<<<<<< HEAD
-
-
 
 ## Copyright 2022 (BSD-3-Clause)
 
