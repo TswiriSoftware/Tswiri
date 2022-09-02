@@ -185,16 +185,19 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
           });
 
           setProcess('Creating new backup');
-
+          log('Creating new backup');
           File? file = await createBackupFile(
             progressNotifier: progressNotifier,
             fileName: generateBackupFileName(),
           );
 
+          log(file?.path.toString() ?? 'aa');
+
           if (file != null) {
             setProcess('Uploading');
+            _backup!.uploadFile(file);
+            await Future.delayed(const Duration(milliseconds: 2500));
             setProcess('done');
-            await Future.delayed(const Duration(milliseconds: 200));
             latestFile = _backup!.getLatestBackup();
           } else {
             //TODO: error
@@ -225,8 +228,10 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
 
         if (file != null) {
           setProcess('Uploading');
+          log('Uploading');
           bool uploaded = await _backup!.uploadFile(file);
           setProcess('done');
+          log('done');
           await Future.delayed(const Duration(milliseconds: 200));
           latestFile = _backup!.getLatestBackup();
         } else {

@@ -135,7 +135,7 @@ class GoogleDriveManager {
         $fields: "files(id, name, createdTime)");
 
     if (fileList.files != null && fileList.files!.isNotEmpty) {
-      return fileList.files?.last;
+      return fileList.files!.last;
     } else {
       return null;
     }
