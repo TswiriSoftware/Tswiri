@@ -1,7 +1,5 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:sunbird/globals/app_settings.dart';
 import 'package:sunbird/isar/functions/change_functions.dart';
 import 'package:sunbird/isar/isar_database.dart';
@@ -9,7 +7,6 @@ import 'package:sunbird/classes/image_data.dart';
 import 'package:sunbird/views/ml_kit_views/barcode_scanner/single_scanner_view.dart';
 import 'package:sunbird/views/containers/container_view/photo_labeling/ml_photo_labeling_camera_view.dart';
 import 'package:sunbird/views/ml_kit_views/navigator/navigator_view.dart';
-import 'package:sunbird/views/search/shopping_cart/shopping_cart.dart';
 import 'package:sunbird/views/utilities/grids/grid/grid_viewer_view.dart';
 import 'package:sunbird/views/utilities/grids/new_grid/new_grid_view.dart';
 import 'package:sunbird/widgets/photo/photo_edit_view.dart';
@@ -140,57 +137,6 @@ class _ContainerViewState extends State<ContainerView> {
           }
         }
       },
-    );
-  }
-
-  Widget _findButton() {
-    return TextButton(
-      onPressed: () {
-        CatalogedCoordinate? catalogedCoordiante = isar!.catalogedCoordinates
-            .filter()
-            .barcodeUIDMatches(_catalogedContainer.barcodeUID!)
-            .findFirstSync();
-
-        if (catalogedCoordiante != null) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => NavigatorView(
-                  catalogedContainer: _catalogedContainer,
-                  gridUID: catalogedCoordiante.gridUID),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Cannot find container',
-                  ),
-                  TextButton(
-                      onPressed: () {
-                        //TODO: implement help screen.
-                      },
-                      child: const Text(
-                        'Help',
-                        style: TextStyle(color: sunbirdOrange, fontSize: 16),
-                      ))
-                ],
-              ),
-            ),
-          );
-        }
-      },
-      child: Row(
-        children: const [
-          Text('Find '),
-          Icon(
-            Icons.location_searching,
-          ),
-        ],
-      ),
     );
   }
 

@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sunbird/functions/backup_restore_functions.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/classes/google_drive_manager.dart';
