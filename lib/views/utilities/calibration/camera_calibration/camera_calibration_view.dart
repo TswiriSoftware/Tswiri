@@ -21,18 +21,12 @@ class CameraCalibrationView extends StatefulWidget {
 }
 
 class _CameraCalibrationViewState extends State<CameraCalibrationView> {
-<<<<<<< HEAD:lib/views/calibration/camera/camera_calibration_view.dart
-  
-  BarcodeScanner barcodeScanner =
-      GoogleMlKit.vision.barcodeScanner([BarcodeFormat.qrCode]);
-=======
   //Initialize barcode scanner
   final _barcodeScanner = BarcodeScanner(
     formats: [
       BarcodeFormat.qrCode,
     ],
   );
->>>>>>> fresh:lib/views/utilities/calibration/camera_calibration/camera_calibration_view.dart
 
   bool _canProcess = true;
   bool _isBusy = false;

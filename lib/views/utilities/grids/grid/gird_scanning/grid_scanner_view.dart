@@ -38,11 +38,6 @@ class _GridScannerViewState extends State<GridScannerView> {
   bool hasConfiguredIsolate1 = false;
   bool hasConfiguredIsolate2 = false;
 
-<<<<<<< HEAD:lib/views/scanning/position/position_scanner_view.dart
-  // bool x = false;
-
-=======
->>>>>>> fresh:lib/views/utilities/grids/grid/gird_scanning/grid_scanner_view.dart
   int counter1 = 0;
 
   List<dynamic> barcodeDataBatches = [];
