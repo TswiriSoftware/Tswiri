@@ -39,6 +39,7 @@ void main() async {
     (options) {
       options.dsn =
           'https://71d4f2ab67d54ec59fd8eb2a42d00fc8@o1364118.ingest.sentry.io/6657903';
+
       // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
       // We recommend adjusting this value in production.
       options.tracesSampleRate = 1.0;
