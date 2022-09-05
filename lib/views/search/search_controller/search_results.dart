@@ -10,6 +10,7 @@ abstract class Result {
     required this.textSimilarity,
   });
 
+  ///The UID of this result. (type_id)
   String uid;
 
   ///The containerUID of this result.
@@ -32,6 +33,9 @@ abstract class Result {
       return false;
     }
   }
+
+  @override
+  int get hashCode => uid.hashCode;
 }
 
 ///Name Result.
@@ -43,6 +47,8 @@ class NameResult implements Result {
     required this.name,
   });
 
+  ///The UID of this result. (type_id)
+  @override
   String uid;
 
   ///ContainerUID.
@@ -71,6 +77,8 @@ class DescriptionResult implements Result {
     required this.description,
   });
 
+  ///The UID of this result. (type_id)
+  @override
   String uid;
 
   ///ContainerUID.
@@ -98,6 +106,9 @@ class ContainerTagResult implements Result {
     required this.textSimilarity,
     required this.tag,
   });
+
+  ///The UID of this result. (type_id)
+  @override
   String uid;
 
   ///ContainerUID.
@@ -126,6 +137,9 @@ class PhotoLabelResult implements Result {
     required this.photoLabel,
     required this.photo,
   });
+
+  ///The UID of this result. (type_id)
+  @override
   String uid;
 
   ///ContainerUID.
@@ -158,6 +172,9 @@ class ObjectLabelResult implements Result {
     required this.mlObject,
     required this.photo,
   });
+
+  ///The UID of this result. (type_id)
+  @override
   String uid;
 
   ///ContainerUID.
@@ -192,6 +209,9 @@ class MLPhotoLabelResult implements Result {
     required this.mlPhotoLabel,
     required this.photo,
   });
+
+  ///The UID of this result. (type_id)
+  @override
   String uid;
 
   ///ContainerUID.
@@ -212,15 +232,6 @@ class MLPhotoLabelResult implements Result {
   String toString() {
     return 'Description Result, "$mlPhotoLabel", $textSimilarity, $containerUID\n';
   }
-
-  @override
-  bool operator ==(other) {
-    if (other is MLPhotoLabelResult && other.mlPhotoLabel == mlPhotoLabel) {
-      return true;
-    } else {
-      return false;
-    }
-  }
 }
 
 ///MLObjectLabel Result.
@@ -233,6 +244,9 @@ class MLObjectLabelResult implements Result {
     required this.mlObject,
     required this.photo,
   });
+
+  ///The UID of this result. (type_id)
+  @override
   String uid;
 
   ///ContainerUID.
@@ -268,6 +282,9 @@ class MLTextResult implements Result {
     required this.mlTextElement,
     required this.photo,
   });
+
+  ///The UID of this result. (type_id)
+  @override
   String uid;
 
   ///ContainerUID.

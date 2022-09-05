@@ -106,7 +106,7 @@ class SearchController {
     return containers.map(
       (e) {
         return NameResult(
-            uid: '${e.id}_${e.containerUID}',
+            uid: 'nr_${e.id}',
             containerUID: e.containerUID,
             textSimilarity: enteredKeyword.similarityTo(e.name),
             name: e.name ?? 'err');
@@ -156,7 +156,7 @@ class SearchController {
           //Create ContainerTag Result.
           results.add(
             ContainerTagResult(
-              uid: '${catalogedContainer.id}_${tagText.text}',
+              uid: 'ct_${catalogedContainer.id}',
               containerUID: catalogedContainer.containerUID,
               textSimilarity: enteredKeyword.similarityTo(tagText.text),
               tag: tagText.text,
@@ -182,7 +182,7 @@ class SearchController {
         Photo? photo = isar!.photos.getSync(photoLabel.photoID);
         if (photo != null) {
           results.add(PhotoLabelResult(
-            uid: '${photo.containerUID!}_${tagText.text}',
+            uid: 'plr_${photoLabel.id}',
             containerUID: photo.containerUID!,
             textSimilarity: enteredKeyword.similarityTo(tagText.text),
             photoLabel: tagText.text,
@@ -218,7 +218,7 @@ class SearchController {
             //Create ObjectLabelResult.
             results.add(
               ObjectLabelResult(
-                uid: '${photo.containerUID!}_${tagText.text}',
+                uid: '${photo.containerUID!}_${objectLabel.id}',
                 containerUID: photo.containerUID!,
                 textSimilarity: enteredKeyword.similarityTo(tagText.text),
                 objectLabel: tagText.text,
@@ -256,8 +256,7 @@ class SearchController {
           //Create MLPhotoLabelResult.
           results.add(
             MLPhotoLabelResult(
-              uid:
-                  '${photo.containerUID!}_${mlDetectedLabel.detectedLabelText}',
+              uid: 'mlplr_${photo.id}_${mlPhotoLabel.id}',
               containerUID: photo.containerUID!,
               textSimilarity: enteredKeyword
                   .similarityTo(mlDetectedLabel.detectedLabelText),
@@ -292,8 +291,7 @@ class SearchController {
             //Create MLObjectLabelResult.
             results.add(
               MLObjectLabelResult(
-                uid:
-                    '${photo.containerUID!}_${mlDetectedLabel.detectedLabelText}',
+                uid: 'mlolr_${mlObjectLabel.id}',
                 containerUID: photo.containerUID!,
                 textSimilarity: enteredKeyword
                     .similarityTo(mlDetectedLabel.detectedLabelText),
@@ -327,8 +325,7 @@ class SearchController {
         if (photo != null) {
           results.add(
             MLTextResult(
-              uid:
-                  '${photo.containerUID!}_${mlDetectedElementText.detectedText}',
+              uid: 'mlter_${mlTextElement.id}',
               containerUID: photo.containerUID!,
               textSimilarity: enteredKeyword
                   .similarityTo(mlDetectedElementText.detectedText),
