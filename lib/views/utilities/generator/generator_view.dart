@@ -37,8 +37,6 @@ class _GeneratorViewState extends State<GeneratorView> {
   late List<BarcodeBatch> barcodeBatches =
       isar!.barcodeBatchs.where().findAllSync();
 
-  final TextEditingController _batchSizeController = TextEditingController();
-  final FocusNode _batchSizeNode = FocusNode();
   bool isEditingSize = false;
 
   @override
@@ -441,16 +439,20 @@ class _GeneratorViewState extends State<GeneratorView> {
                 ),
                 Builder(builder: (context) {
                   if (isEditingSize == true) {
-                    _batchSizeController.text = batch.size.toString();
+                    //  TextEditingController batchSizeController =
+                    //     TextEditingController();
+                    //  FocusNode batchSizeNode = FocusNode();
+                    // batchSizeController.text = batch.size.toString();
                     return Row(
                       children: [
                         SizedBox(
                           width: 100,
-                          child: TextField(
-                            controller: _batchSizeController,
-                            focusNode: _batchSizeNode,
+                          child: TextFormField(
+                            key: UniqueKey(),
+                            initialValue: batch.size.toString(),
                             keyboardType: TextInputType.number,
-                            onSubmitted: (value) {
+                            textAlign: TextAlign.center,
+                            onFieldSubmitted: (value) {
                               double newSize =
                                   double.tryParse(value) ?? batch.size;
 
@@ -483,6 +485,44 @@ class _GeneratorViewState extends State<GeneratorView> {
                               });
                             },
                           ),
+                          // child: TextField(
+
+                          //   // controller: batchSizeController,
+                          //   // focusNode: batchSizeNode,
+                          //   keyboardType: TextInputType.number,
+                          //   onSubmitted: (value) {
+                          // double newSize =
+                          //     double.tryParse(value) ?? batch.size;
+
+                          // if (newSize != batch.size) {
+                          //   batch.size = newSize;
+
+                          //   isar!.writeTxnSync((isar) => isar.barcodeBatchs
+                          //       .putSync(batch, replaceOnConflict: true));
+
+                          //   List<CatalogedBarcode> relatedBarcodes = isar!
+                          //       .catalogedBarcodes
+                          //       .filter()
+                          //       .batchIDEqualTo(batch.id)
+                          //       .findAllSync();
+
+                          //   isar!.writeTxnSync((isar) {
+                          //     for (CatalogedBarcode barcode
+                          //         in relatedBarcodes) {
+                          //       barcode.size = newSize;
+                          //       isar.catalogedBarcodes.putSync(barcode,
+                          //           replaceOnConflict: true);
+                          //     }
+                          //   });
+
+                          //   _updateBarcodeBatches();
+                          // }
+
+                          // setState(() {
+                          //   isEditingSize = false;
+                          // });
+                          //   },
+                          // ),
                         ),
                         Text(
                           'mm',
@@ -495,7 +535,6 @@ class _GeneratorViewState extends State<GeneratorView> {
                     onTap: () {
                       setState(() {
                         isEditingSize = true;
-                        _batchSizeNode.requestFocus();
                       });
                     },
                     child: Column(

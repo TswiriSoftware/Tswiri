@@ -24,11 +24,13 @@ class ContainerView extends StatefulWidget {
     this.childrenExpanded,
     this.parentExpaned,
   }) : super(key: key);
+
   final CatalogedContainer catalogedContainer;
   final bool? tagsExpanded;
   final bool? photosExpaned;
   final bool? childrenExpanded;
   final bool? parentExpaned;
+
   @override
   State<ContainerView> createState() => _ContainerViewState();
 }
@@ -416,9 +418,9 @@ class _ContainerViewState extends State<ContainerView> {
 
         _updateAssignedTags();
 
-        // ///Let the TagTextPredictor know this tag has been removed.
-        // _tagTextPredictorKey.currentState
-        //     ?.updateAssignedTags(containerTag.tagTextID);
+        ///Let the TagTextPredictor know this tag has been removed.
+        _tagTextPredictorKey.currentState
+            ?.updateAssignedTags(containerTag.tagTextID);
       },
     );
   }
@@ -448,7 +450,6 @@ class _ContainerViewState extends State<ContainerView> {
               ],
             ),
           ),
-          // const Divider(),
         ],
       ),
     );

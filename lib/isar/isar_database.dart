@@ -99,24 +99,31 @@ Isar initiateIsar({String? directory, bool? inspector}) {
 
       //ML Detected Label Text.
       MLDetectedLabelTextSchema,
+
       //Ml Label.
       MLPhotoLabelSchema,
+
       //Photo Label.
       PhotoLabelSchema,
 
       //Ml Object.
       MLObjectSchema,
+
       //ML Object Label.
       MLObjectLabelSchema,
+
       //Object Label.
       ObjectLabelSchema,
 
       //ML Detected Text Element Text.
       MLDetectedElementTextSchema,
+
       //ML Text Block.
       MLTextBlockSchema,
+
       //ML Text Element.
       MLTextElementSchema,
+
       //ML Text Line.
       MLTextLineSchema,
 
