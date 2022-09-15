@@ -105,7 +105,7 @@ class _GalleryViewState extends State<GalleryView> {
           }
         });
         _updatePhoto();
-        log('left');
+        // log('left');
       },
       onRight: () {
         setState(() {

@@ -22,7 +22,7 @@ class _GridsViewState extends State<GridsView> {
 
   @override
   void initState() {
-    log(isar!.markers.where().findAllSync().toString());
+    // log(isar!.markers.where().findAllSync().toString());
     super.initState();
   }
 

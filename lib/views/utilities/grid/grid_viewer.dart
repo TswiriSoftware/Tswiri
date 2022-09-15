@@ -32,7 +32,7 @@ class _GirdViewerState extends State<GirdViewer> {
 
     CatalogedGrid targetGrid = isar!.catalogedGrids.getSync(gridUID)!;
 
-    log(targetGrid.toString());
+    // log(targetGrid.toString());
 
     List<CatalogedGrid> parentGrids = [];
 
@@ -69,7 +69,7 @@ class _GirdViewerState extends State<GirdViewer> {
         i++;
       }
 
-      log(parentGrids.toString());
+      // log(parentGrids.toString());
     }
 
     super.initState();

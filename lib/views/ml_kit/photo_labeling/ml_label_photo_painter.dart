@@ -128,7 +128,7 @@ class MLLabelPhotoPainter extends CustomPainter {
 
         // log(textElements.toString());
 
-        log(imageData.mLDetectedElementTexts.length.toString());
+        // log(imageData.mLDetectedElementTexts.length.toString());
 
         List<String> blockText = textElements
             .map((e) => imageData.mLDetectedElementTexts

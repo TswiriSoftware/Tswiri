@@ -68,7 +68,12 @@ class _MLPhotoLabelingCameraViewState extends State<MLPhotoLabelingCameraView> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           // If the Future is complete, display the preview.
-          _controller.setFlashMode(FlashMode.off);
+
+          if (flashOnPhotos) {
+            _controller.setFlashMode(FlashMode.torch);
+          } else {
+            _controller.setFlashMode(FlashMode.off);
+          }
           return Stack(
             fit: StackFit.expand,
             children: [

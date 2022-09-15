@@ -90,7 +90,7 @@ void gridScanningImageProcessor(SendPort sendPort) {
         //Process the image.
         processImage(message);
       } else if (message is List) {
-        log('configured');
+        // log('configured');
         //Configure InputImageData.
         inputImageData = InputImageData(
           size: Size(message[1], message[0]),

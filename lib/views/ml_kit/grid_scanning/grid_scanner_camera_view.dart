@@ -8,7 +8,6 @@ import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart
 import 'package:tswiri_database/models/settings/app_settings.dart';
 import 'package:tswiri_widgets/colors/colors.dart';
 
-
 enum ScreenMode { liveFeed, gallery }
 
 class GridScannerCameraView extends StatefulWidget {
@@ -139,6 +138,9 @@ class _GridScannerCameraViewState extends State<GridScannerCameraView> {
         maxZoomLevel = value;
       });
       _controller?.startImageStream(_processCameraImage);
+      if (flashOnGrids) {
+        _controller?.setFlashMode(FlashMode.torch);
+      }
       setState(() {});
     });
   }

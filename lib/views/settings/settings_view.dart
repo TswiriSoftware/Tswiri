@@ -66,27 +66,207 @@ class _SettingsViewState extends State<SettingsView> {
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          _defaultBarcodeSize(),
+          _manageBackup(),
           _vibration(),
           _colorMode(),
-          _imageLabeling(),
-          _objectDetection(),
-          _textDetection(),
-          _manageBackup(),
-          _spaces(),
+          _defaultQRCodeSize(),
+          _flashSettings(),
+          _advancedSettings(),
         ],
       ),
     );
   }
 
-  Widget _defaultBarcodeSize() {
+  Widget _advancedSettings() {
+    return Card(
+      child: ExpansionTile(
+        title: Text(
+          'Advanced',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        children: [
+          _spaces(),
+          _imageLabeling(),
+          _objectDetection(),
+          _textDetection(),
+        ],
+      ),
+    );
+  }
+
+  Widget _flashSettings() {
+    return Card(
+      child: ExpansionTile(
+        title: Text(
+          'Flash Settings',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        children: [
+          _photoFlash(),
+          _gridFlash(),
+          _barcodeFlash(),
+          _navigationFlash(),
+        ],
+      ),
+    );
+  }
+
+  Widget _photoFlash() {
+    return Card(
+      color: background[300],
+      child: ListTile(
+        title: Text(
+          'Photo Flash',
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        subtitle: Text(
+          '(default setting)',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        trailing: flashOnPhotos
+            ? TextButton(
+                onPressed: () async {
+                  prefs.setBool(flashOnPhotosPref, false);
+                  setState(() {
+                    flashOnPhotos = false;
+                  });
+                },
+                child: const Text(
+                  'ON',
+                ),
+              )
+            : TextButton(
+                onPressed: () async {
+                  prefs.setBool(flashOnPhotosPref, true);
+                  setState(() {
+                    flashOnPhotos = true;
+                  });
+                },
+                child: const Text('OFF'),
+              ),
+      ),
+    );
+  }
+
+  Widget _gridFlash() {
+    return Card(
+      color: background[300],
+      child: ListTile(
+        title: Text(
+          'Grid Flash',
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        subtitle: Text(
+          '(default setting)',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        trailing: flashOnGrids
+            ? TextButton(
+                onPressed: () async {
+                  prefs.setBool(flashOnGridsPref, false);
+                  setState(() {
+                    flashOnGrids = false;
+                  });
+                },
+                child: const Text(
+                  'ON',
+                ),
+              )
+            : TextButton(
+                onPressed: () async {
+                  prefs.setBool(flashOnGridsPref, true);
+                  setState(() {
+                    flashOnGrids = true;
+                  });
+                },
+                child: const Text('OFF'),
+              ),
+      ),
+    );
+  }
+
+  Widget _barcodeFlash() {
+    return Card(
+      color: background[300],
+      child: ListTile(
+        title: Text(
+          'Barcode Flash',
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        subtitle: Text(
+          '(default setting)',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        trailing: flashOnBarcodes
+            ? TextButton(
+                onPressed: () async {
+                  prefs.setBool(flashOnBarcodesPref, false);
+                  setState(() {
+                    flashOnBarcodes = false;
+                  });
+                },
+                child: const Text(
+                  'ON',
+                ),
+              )
+            : TextButton(
+                onPressed: () async {
+                  prefs.setBool(flashOnBarcodesPref, true);
+                  setState(() {
+                    flashOnBarcodes = true;
+                  });
+                },
+                child: const Text('OFF'),
+              ),
+      ),
+    );
+  }
+
+  Widget _navigationFlash() {
+    return Card(
+      color: background[300],
+      child: ListTile(
+        title: Text(
+          'Navigation Flash',
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        subtitle: Text(
+          '(default setting)',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        trailing: flashOnNavigation
+            ? TextButton(
+                onPressed: () async {
+                  prefs.setBool(flashOnNavigationPref, false);
+                  setState(() {
+                    flashOnNavigation = false;
+                  });
+                },
+                child: const Text(
+                  'ON',
+                ),
+              )
+            : TextButton(
+                onPressed: () async {
+                  prefs.setBool(flashOnNavigationPref, true);
+                  setState(() {
+                    flashOnNavigation = true;
+                  });
+                },
+                child: const Text('OFF'),
+              ),
+      ),
+    );
+  }
+
+  Widget _defaultQRCodeSize() {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         child: Row(
           children: [
             Text(
-              'Default Barcode Size: ',
+              'QRCode Size:',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             Flexible(
@@ -173,6 +353,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _imageLabeling() {
     return Card(
+      color: background[300],
       child: Column(
         children: [
           ListTile(
@@ -230,6 +411,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _objectDetection() {
     return Card(
+      color: background[300],
       child: Column(
         children: [
           ListTile(
@@ -287,6 +469,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _textDetection() {
     return Card(
+      color: background[300],
       child: ListTile(
         title: Text(
           'Text Detection',
@@ -307,20 +490,20 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _manageBackup() {
     return Card(
-      child: ListTile(
-        title: Text(
-          'Manage Backup',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        trailing: IconButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const BackupOptionsView(),
-              ),
-            );
-          },
-          icon: const Icon(
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const BackupOptionsView(),
+            ),
+          );
+        },
+        child: ListTile(
+          title: Text(
+            'Manage Backup',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          trailing: const Icon(
             Icons.backup,
             color: tswiriOrange,
             size: 30,
@@ -332,20 +515,21 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _spaces() {
     return Card(
-      child: ListTile(
-        title: Text(
-          'Spaces',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        trailing: IconButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const SpacesView(),
-              ),
-            );
-          },
-          icon: const Icon(
+      color: background[300],
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const SpacesView(),
+            ),
+          );
+        },
+        child: ListTile(
+          title: Text(
+            'Spaces (WIP)',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          trailing: const Icon(
             Icons.space_dashboard_sharp,
             color: tswiriOrange,
             size: 30,

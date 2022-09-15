@@ -99,7 +99,7 @@ void navigationImageProcessor(List init) {
       i++;
     }
 
-    log(parentGrids.toString());
+    // log(parentGrids.toString());
   }
 
   List<CatalogedCoordinate> parentCoordinates = [];
@@ -111,8 +111,8 @@ void navigationImageProcessor(List init) {
         .findAllSync());
   }
 
-  log(parentGrids.length.toString());
-  log(parentGrids.toString());
+  // log(parentGrids.length.toString());
+  // log(parentGrids.toString());
 
   void _processImage(message) async {
     if (inputImageData != null && canvasSize != null) {
@@ -434,7 +434,7 @@ void navigationImageProcessor(List init) {
       //Grid Processor.
       gridProcessor = message[6];
 
-      log('I$id: InputImageData Configured');
+      // log('I$id: InputImageData Configured');
     } else if (message[0] == 'process') {
       _processImage(message);
     } else if (message[0] == 'update') {

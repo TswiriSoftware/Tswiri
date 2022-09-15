@@ -1,5 +1,6 @@
 // ignore_for_file: curly_braces_in_flow_control_structures, library_private_types_in_public_api
 
+import 'dart:developer';
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
@@ -33,7 +34,7 @@ class _SingleBarcodeCameraViewState extends State<SingleBarcodeCameraView> {
   CameraController? _controller;
   int _cameraIndex = 0;
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
-  bool flash = false;
+  bool flash = flashOnBarcodes;
 
   @override
   void initState() {
@@ -44,6 +45,7 @@ class _SingleBarcodeCameraViewState extends State<SingleBarcodeCameraView> {
       }
     }
     _startLiveFeed();
+    log(flashOnBarcodes.toString());
   }
 
   @override
@@ -139,8 +141,15 @@ class _SingleBarcodeCameraViewState extends State<SingleBarcodeCameraView> {
         maxZoomLevel = value;
       });
       _controller?.startImageStream(_processCameraImage);
+
+      if (flashOnBarcodes) {
+        _controller?.setFlashMode(FlashMode.torch);
+      }
+
       setState(() {});
     });
+
+    setState(() {});
   }
 
   Future _stopLiveFeed() async {

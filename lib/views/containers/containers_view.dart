@@ -1,6 +1,6 @@
 import 'package:tswiri/views/containers/container/container_view.dart';
 import 'package:tswiri/views/containers/container_card.dart';
-import 'package:tswiri/views/containers/new_container/new_container_view%20copy.dart';
+import 'package:tswiri/views/containers/new_container/new_container_view.dart';
 import 'package:tswiri/views/containers/new_container_card.dart';
 import 'package:tswiri/views/ml_kit/barcode_scanner/single_scanner_view.dart';
 import 'package:flutter/material.dart';
@@ -239,7 +239,7 @@ class _ContainersViewState extends State<ContainersView> {
             });
           }
         },
-        backgroundColor: background[300]!,
+        backgroundColor: background,
         defaultFilterColor: tswiriOrange,
         filterChipColorMap: null,
       ),

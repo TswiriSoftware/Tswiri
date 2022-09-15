@@ -47,7 +47,7 @@ void gridProcessor(List init) {
   List<String> currentFixedBarcodes =
       currentFixedCoordinates.map((e) => e.barcodeUID).toList();
 
-  log('GP: Setup Complete');
+  // log('GP: Setup Complete');
 
   List<InterBarcodeVector> realVectors = [];
   List<InterBarcodeVector> averagedInterBarcodeVectors = [];

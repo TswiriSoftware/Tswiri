@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tswiri/views/containers/containers_view.dart';
 import 'package:tswiri/views/search/search_view.dart';
 import 'package:tswiri/views/settings/settings_view.dart';
 import 'package:tswiri/views/utilities/utilities_view.dart';
 import 'package:tswiri_database/export.dart';
+import 'package:tswiri_database/functions/isar/create_functions.dart';
 import 'package:tswiri_database/mobile_database.dart';
 import 'package:tswiri_database/models/search/shopping_cart.dart';
 import 'package:tswiri_database/models/settings/app_settings.dart';
@@ -30,6 +32,7 @@ Future<void> main() async {
 
   //Initiate Isar.
   isar = initiateMobileIsar();
+  createBasicContainerTypes();
 
   //Clear temp directory whenever the app is opened.
   Directory tempDir = await getTemporaryDirectory();
@@ -37,7 +40,7 @@ Future<void> main() async {
   tempDir.create();
 
   //Populate the database for testing.
-  // createBasicContainerTypes();
+
   // populateDatabase();
 
   //Run app with shoppingcart provider.
@@ -58,6 +61,7 @@ class MyApp extends StatelessWidget {
       title: 'Tswiri Example',
       theme: tswiriTheme,
       home: const MyHomePage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -82,6 +86,13 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   void initState() {
     super.initState();
+
+    //Show the beta warning for the app.
+    if (hasShownBetaWarning == false) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        showBetaWarning();
+      });
+    }
   }
 
   @override
@@ -150,6 +161,45 @@ class _MyHomePageState extends State<MyHomePage>
           ),
         ),
       ],
+    );
+  }
+
+  void showBetaWarning() async {
+    await showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) => Center(
+        child: AlertDialog(
+          title: const Text('Beta Warning'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: [
+                Text(
+                  'Use only for testing or experimenting.',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Text(
+                  'You could lose all your data at some point.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Noted'),
+              onPressed: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                prefs.setBool(hasShownBetaWarningPref, true);
+                hasShownBetaWarning = true;
+                if (mounted) {
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

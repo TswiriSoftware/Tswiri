@@ -138,6 +138,10 @@ class _NavigatorCameraViewState extends State<NavigatorCameraView> {
         maxZoomLevel = value;
       });
       _controller?.startImageStream(_processCameraImage);
+
+      if (flashOnNavigation) {
+        _controller?.setFlashMode(FlashMode.torch);
+      }
       setState(() {});
     });
   }

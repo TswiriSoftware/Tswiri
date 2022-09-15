@@ -169,6 +169,11 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
   }
 
   Widget _lastBackup(drive.File snapshot) {
+    var dateFormat = DateFormat('yyyy-MM-dd kk:mm');
+    var utcDate = dateFormat.format(snapshot.createdTime!);
+    var localDate = dateFormat.parse(utcDate, true).toLocal().toString();
+    String createdDate = dateFormat.format(DateTime.parse(localDate));
+    // DateFormat('yyyy-MM-dd – kk:mm').format(snapshot.createdTime!)
     return ListTile(
       leading: const CircleAvatar(
         child: Icon(Icons.backup_sharp),
@@ -177,8 +182,7 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
         'Last Backup',
         style: Theme.of(context).textTheme.bodyMedium,
       ),
-      subtitle:
-          Text(DateFormat('yyyy-MM-dd – kk:mm').format(snapshot.createdTime!)),
+      subtitle: Text(createdDate),
       trailing: IconButton(
         onPressed: () async {
           setState(() {
@@ -186,15 +190,13 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
           });
 
           setProcess('Creating new backup');
-          log('Creating new backup');
+          // log('Creating new backup');
           File? file = await createBackupFile(
             progressCallback: (event) {
-              //TODO: implement this.
+              setProcess(event);
             },
             fileName: generateBackupFileName(),
           );
-
-          log(file?.path.toString() ?? 'aa');
 
           if (file != null) {
             setProcess('Uploading');
@@ -233,10 +235,10 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
 
         if (file != null) {
           setProcess('Uploading');
-          log('Uploading');
+          // log('Uploading');
           bool uploaded = await _backup!.uploadFile(file);
           setProcess('done');
-          log('done');
+          // log('done');
           await Future.delayed(const Duration(milliseconds: 200));
           latestFile = _backup!.getLatestBackup();
         } else {
@@ -297,7 +299,7 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
               setProcess('Restoring');
               await restoreBackupFile(
                   progressCallback: (event) {
-                    //TODO: implement this.
+                    setProcess(event);
                   },
                   backupFile: File(downloadedFile.path));
             }
@@ -330,8 +332,8 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
               //check what spaces exist.
               List<String> existingSpaces = await getSpacesOnDevice();
 
-              log(existingSpaces.toString(), name: 'Existing Spaces');
-              log(spaces.toString(), name: 'Google Spaces');
+              // log(existingSpaces.toString(), name: 'Existing Spaces');
+              // log(spaces.toString(), name: 'Google Spaces');
 
               int numberOfRestoredSpaces = 0;
               for (String space in spaces) {
@@ -396,7 +398,7 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
       try {
         await googleSignIn.signIn();
       } catch (e) {
-        log(e.toString());
+        // log(e.toString());
       }
 
       if (await googleSignIn.isSignedIn() && googleSignIn.currentUser != null) {
