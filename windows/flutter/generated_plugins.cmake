@@ -3,10 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  isar_flutter_libs
-  permission_handler_windows
   printing
-  sentry_flutter
   url_launcher_windows
 )
 

@@ -1,4 +1,4 @@
-package com.scholtz.sunbird
+package com.nanoedge.tswiri
 
 import io.flutter.embedding.android.FlutterActivity
 
