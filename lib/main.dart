@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sunbird/views/search/search_view.dart';
 import 'package:sunbird/views/search/shopping_cart/shopping_cart.dart';
 import 'package:tswiri_base/theme/theme.dart';
@@ -75,8 +76,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-bool hasShownBetaDialog = false;
-
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -110,7 +109,9 @@ class _HomePageState extends State<HomePage>
         ),
         actions: [
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.setBool(hasShownBetaDialogPref, true);
               setState(() {
                 hasShownBetaDialog = true;
               });

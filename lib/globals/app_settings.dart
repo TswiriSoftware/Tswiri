@@ -52,6 +52,9 @@ String hasShownGettingStartedPref = 'hasShownGettingStarted';
 String? currentSpacePath;
 String currentSpacePathPref = 'currentSpacePath';
 
+bool hasShownBetaDialog = false;
+String hasShownBetaDialogPref = 'hasShownBetaDialog';
+
 Future<void> loadAppSettings() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -86,4 +89,7 @@ Future<void> loadAppSettings() async {
   //Spaces
   currentSpacePath = prefs.getString(currentSpacePathPref) ??
       '${(await getApplicationSupportDirectory()).path}/main_space';
+
+  //Beta dialog
+  hasShownBetaDialog = prefs.getBool(hasShownBetaDialogPref) ?? false;
 }
