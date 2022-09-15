@@ -4,8 +4,6 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:isolate';
-
-import 'package:flutter/material.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
