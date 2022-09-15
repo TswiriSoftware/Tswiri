@@ -74,7 +74,7 @@ class _CalibrationCameraViewState extends State<CalibrationCameraView> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         FloatingActionButton(
-          backgroundColor: sunbirdOrange,
+          backgroundColor: tswiriOrange,
           heroTag: 'flash',
           child: Icon(
             Platform.isIOS

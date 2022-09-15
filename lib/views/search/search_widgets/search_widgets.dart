@@ -26,7 +26,7 @@ class NameResultCard extends StatelessWidget {
         alignment: AlignmentDirectional.center,
         children: [
           Chip(
-            backgroundColor: sunbirdOrange,
+            backgroundColor: tswiriOrange,
             label: Text(
               nameResult.name,
               style: Theme.of(context).textTheme.bodyMedium,
@@ -106,7 +106,7 @@ class DescriptionResultCard extends StatelessWidget {
         alignment: AlignmentDirectional.center,
         children: [
           Chip(
-            backgroundColor: sunbirdOrange,
+            backgroundColor: tswiriOrange,
             label: Text(
               descriptionResult.description,
               style: Theme.of(context).textTheme.bodyMedium,
@@ -138,7 +138,7 @@ class ContainerTagResultCard extends StatelessWidget {
         alignment: AlignmentDirectional.center,
         children: [
           Chip(
-            backgroundColor: sunbirdOrange,
+            backgroundColor: tswiriOrange,
             label: Text(
               containerTagResult.tag,
               style: Theme.of(context).textTheme.bodyMedium,
@@ -182,7 +182,7 @@ class PhotoLabelResultCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Chip(
-                backgroundColor: sunbirdOrange,
+                backgroundColor: tswiriOrange,
                 label: Text(
                   photoLabelResult.photoLabel,
                   style: Theme.of(context).textTheme.bodyMedium,
@@ -247,7 +247,7 @@ class ObjectLabelResultCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Chip(
-                backgroundColor: sunbirdOrange,
+                backgroundColor: tswiriOrange,
                 label: Text(
                   result.objectLabel,
                   style: Theme.of(context).textTheme.bodyMedium,
@@ -293,7 +293,7 @@ class MLPhotoLabelResultCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Chip(
-                backgroundColor: sunbirdOrange,
+                backgroundColor: tswiriOrange,
                 label: Text(
                   mlphotoLabelResult.mlPhotoLabel,
                   style: Theme.of(context).textTheme.bodyMedium,
@@ -359,7 +359,7 @@ class MLObjectLabelResultCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Chip(
-                backgroundColor: sunbirdOrange,
+                backgroundColor: tswiriOrange,
                 label: Text(
                   result.mlObjectLabel,
                   style: Theme.of(context).textTheme.bodyMedium,
@@ -425,7 +425,7 @@ class MLTextElementResultCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Chip(
-                backgroundColor: sunbirdOrange,
+                backgroundColor: tswiriOrange,
                 label: Text(
                   result.mlText,
                   style: Theme.of(context).textTheme.bodyMedium,

@@ -66,7 +66,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: sunbirdTheme,
+      theme: tswiriTheme,
       home: const HomePage(),
       debugShowCheckedModeBanner: false,
       navigatorObservers: [

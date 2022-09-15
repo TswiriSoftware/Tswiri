@@ -337,7 +337,7 @@ packages:
       name: google_mlkit_barcode_scanning
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.0"
+    version: "0.4.0"
   google_mlkit_commons:
     dependency: transitive
     description:
@@ -351,21 +351,21 @@ packages:
       name: google_mlkit_image_labeling
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.0"
+    version: "0.4.0"
   google_mlkit_object_detection:
     dependency: "direct main"
     description:
       name: google_mlkit_object_detection
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.0"
+    version: "0.5.0"
   google_mlkit_text_recognition:
     dependency: "direct main"
     description:
       name: google_mlkit_text_recognition
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.0"
+    version: "0.4.0"
   google_sign_in:
     dependency: "direct main"
     description:
@@ -834,7 +834,7 @@ packages:
       name: share_plus
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.0.10+1"
+    version: "4.1.0"
   share_plus_linux:
     dependency: transitive
     description:
@@ -1027,7 +1027,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "599968a9fade705097487509c6a53aa90e6b8787"
+      resolved-ref: ba1cd438962fe2913b0fb8e9d8c7732520b34fb0
       url: "https://github.com/TswiriSoftware/tswiri_base.git"
     source: git
     version: "0.0.1"
@@ -1036,7 +1036,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "98ec9385485f65c8b3fad354e55059addfddc719"
+      resolved-ref: "83b234a5d2eacdd7598814aac399bbbb4b0febb0"
       url: "https://github.com/TswiriSoftware/tswiri_database.git"
     source: git
     version: "0.0.1"

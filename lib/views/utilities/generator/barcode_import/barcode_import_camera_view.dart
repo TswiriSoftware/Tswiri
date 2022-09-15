@@ -75,7 +75,7 @@ class _BarcodeImportCameraViewState extends State<BarcodeImportCameraView> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         FloatingActionButton(
-          backgroundColor: sunbirdOrange,
+          backgroundColor: tswiriOrange,
           heroTag: 'flash',
           child: Icon(
             Platform.isIOS

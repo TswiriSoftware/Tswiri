@@ -74,7 +74,7 @@ class _GridScannerCameraViewState extends State<GridScannerCameraView> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         FloatingActionButton(
-          backgroundColor: sunbirdOrange,
+          backgroundColor: tswiriOrange,
           heroTag: 'flash',
           child: Icon(
             Platform.isIOS

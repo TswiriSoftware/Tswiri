@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:googleapis/artifactregistry/v1.dart';
 import 'package:sunbird/classes/image_data.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/views/containers/container_view/photo_labeling/ml_label_photo_painter.dart';
@@ -577,7 +576,7 @@ class PhotoEditViewState extends State<PhotoEditView> {
                     },
                     icon: const Icon(
                       Icons.chevron_left,
-                      color: sunbirdOrange,
+                      color: tswiriOrange,
                     ),
                   ),
                 ),
@@ -590,7 +589,7 @@ class PhotoEditViewState extends State<PhotoEditView> {
                     },
                     icon: const Icon(
                       Icons.chevron_right,
-                      color: sunbirdOrange,
+                      color: tswiriOrange,
                     ),
                   ),
                 ),

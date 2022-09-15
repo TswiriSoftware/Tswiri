@@ -359,7 +359,7 @@ class CustomExpansionTile extends StatelessWidget {
             hasDone
                 ? const Icon(
                     Icons.check_sharp,
-                    color: sunbirdOrange,
+                    color: tswiriOrange,
                   )
                 : const SizedBox.shrink(),
           ],

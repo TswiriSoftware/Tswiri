@@ -6,7 +6,7 @@ import 'package:sunbird/views/containers/container_view/container_view.dart';
 import 'package:sunbird/views/containers/containers_view/container_search_controller.dart';
 import 'package:sunbird/views/containers/new_container_view/new_container_view.dart';
 import 'package:tswiri_base/colors/colors.dart';
-import 'package:tswiri_base/widgets/sunbird_search_bar.dart';
+import 'package:tswiri_base/widgets/general/sunbird_search_bar.dart';
 
 class ContainersView extends StatefulWidget {
   const ContainersView({
@@ -277,7 +277,7 @@ class _ContainersViewState extends State<ContainersView> {
         shape: selectedContainers.contains(catalogedContainer)
             ? RoundedRectangleBorder(
                 side: const BorderSide(
-                  color: sunbirdOrange,
+                  color: tswiriOrange,
                   width: 0.5,
                 ),
                 borderRadius: BorderRadius.circular(10),
@@ -351,7 +351,7 @@ class _ContainersViewState extends State<ContainersView> {
       child: Card(
         shape: RoundedRectangleBorder(
           side: const BorderSide(
-            color: sunbirdOrange,
+            color: tswiriOrange,
             width: 0.5,
           ),
           borderRadius: BorderRadius.circular(10),
