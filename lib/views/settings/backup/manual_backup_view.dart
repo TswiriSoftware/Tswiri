@@ -24,7 +24,7 @@ class _BackupViewState extends State<BackupView> {
   //Shows if the app is busy with a process.
   bool _isBusy = false;
   final TextEditingController _textFieldController = TextEditingController();
-  ValueNotifier<double> progressNotifier = ValueNotifier(0);
+  double progress = 0.0;
   File? selectedFile;
 
   @override
@@ -58,7 +58,7 @@ class _BackupViewState extends State<BackupView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const CircularProgressIndicator(),
-            Text("${progressNotifier.value.toStringAsFixed(2)}%")
+            Text("${progress.toStringAsFixed(2)}%")
           ],
         ),
       );
@@ -90,7 +90,13 @@ class _BackupViewState extends State<BackupView> {
 
             if (fileName != null) {
               File? file = await createBackupFile(
-                  progressNotifier: progressNotifier, fileName: fileName);
+                fileName: fileName,
+                progress: (value) {
+                  setState(() {
+                    progress = value;
+                  });
+                },
+              );
 
               if (file != null) {
                 await Share.shareFiles([file.path], text: 'sunbird_backup');
@@ -105,7 +111,7 @@ class _BackupViewState extends State<BackupView> {
               }
             }
 
-            progressNotifier.value = 0.0;
+            progress = 0.0;
             setIsBusy();
           },
           child: Text('Create Backup',
@@ -146,9 +152,12 @@ class _BackupViewState extends State<BackupView> {
                     setIsBusy();
                     if (selectedFile != null) {
                       bool? restored = await restoreBackupFile(
-                        progressNotifier: progressNotifier,
-                        backupFile: selectedFile!,
-                      );
+                          backupFile: selectedFile!,
+                          progress: (value) {
+                            setState(() {
+                              progress = value;
+                            });
+                          });
 
                       if (mounted) {
                         switch (restored) {

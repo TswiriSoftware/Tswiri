@@ -185,7 +185,8 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
         children: [
           SizedBox(
             width: _imageData!.size.height,
-            height: _imageData!.size.width,
+            height: _imageData!.size.height /
+                (_imageData!.size.width / MediaQuery.of(context).size.width),
             child: Stack(
               fit: StackFit.expand,
               children: [

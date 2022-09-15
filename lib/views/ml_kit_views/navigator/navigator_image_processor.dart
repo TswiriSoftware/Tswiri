@@ -113,7 +113,7 @@ void navigationImageProcessor(List init) {
   log(parentGrids.length.toString());
   log(parentGrids.toString());
 
-  void _processImage(message) async {
+  void processImage(message) async {
     if (inputImageData != null && canvasSize != null) {
       InputImage inputImage = InputImage.fromBytes(
         bytes:
@@ -435,7 +435,7 @@ void navigationImageProcessor(List init) {
 
       log('I$id: InputImageData Configured');
     } else if (message[0] == 'process') {
-      _processImage(message);
+      processImage(message);
     } else if (message[0] == 'update') {
       CatalogedCoordinate newCoordinate =
           catalogedCoordinateFromMessage(message);

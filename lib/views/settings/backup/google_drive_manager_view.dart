@@ -21,7 +21,8 @@ class GoogleDriveView extends StatefulWidget {
 GoogleSignInAccount? currentUser;
 
 class _GoogleDriveViewState extends State<GoogleDriveView> {
-  ValueNotifier<double> progressNotifier = ValueNotifier(0);
+  // ValueNotifier<double> progressNotifier = ValueNotifier(0);
+  double progress = 0.0;
   GoogleDriveManager? _backup;
   Future<drive.File?>? latestFile;
 
@@ -186,9 +187,12 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
           setProcess('Creating new backup');
           log('Creating new backup');
           File? file = await createBackupFile(
-            progressNotifier: progressNotifier,
-            fileName: generateBackupFileName(),
-          );
+              fileName: generateBackupFileName(),
+              progress: (value) {
+                setState(() {
+                  progress = value;
+                });
+              });
 
           log(file?.path.toString() ?? 'aa');
 
@@ -221,7 +225,11 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
         setProcess('Creating new backup');
 
         File? file = await createBackupFile(
-          progressNotifier: progressNotifier,
+          progress: (value) {
+            setState(() {
+              progress = value;
+            });
+          },
           fileName: generateBackupFileName(),
         );
 
@@ -290,7 +298,11 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
             if (downloadedFile != null) {
               setProcess('Restoring');
               await restoreBackupFile(
-                  progressNotifier: progressNotifier,
+                  progress: (value) {
+                    setState(() {
+                      progress = value;
+                    });
+                  },
                   backupFile: File(downloadedFile.path));
             }
 

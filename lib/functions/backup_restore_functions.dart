@@ -20,8 +20,8 @@ import 'package:sunbird/functions/restore_backup.dart';
 /// - On fails it returns null.
 ///
 Future<File?> createBackupFile({
-  required ValueNotifier<double> progressNotifier,
   required String fileName,
+  required void Function(double) progress,
 }) async {
   FlutterIsolate? _isolate;
   ReceivePort _uiPort = ReceivePort();
@@ -52,7 +52,7 @@ Future<File?> createBackupFile({
         completer.complete(File(message[1].toString()));
         break;
       case 'progress':
-        progressNotifier.value = message[1] as double;
+        progress(message[1] as double);
         break;
       default:
     }
@@ -63,8 +63,8 @@ Future<File?> createBackupFile({
 
 ///Restores a backup file to the current Space.
 Future<bool?> restoreBackupFile({
-  required ValueNotifier<double> progressNotifier,
   required File backupFile,
+  required void Function(double) progress,
 }) async {
   FlutterIsolate? _isolate;
   ReceivePort _uiPort = ReceivePort();
@@ -108,7 +108,7 @@ Future<bool?> restoreBackupFile({
         default:
       }
     } else if (message[0] == 'progress') {
-      progressNotifier.value = message[1] as double;
+      progress(message[1] as double);
     }
   });
 

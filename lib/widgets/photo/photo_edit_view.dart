@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:googleapis/artifactregistry/v1.dart';
 import 'package:sunbird/classes/image_data.dart';
 import 'package:sunbird/isar/isar_database.dart';
 import 'package:sunbird/views/containers/container_view/photo_labeling/ml_label_photo_painter.dart';
@@ -47,8 +48,8 @@ class PhotoEditViewState extends State<PhotoEditView> {
           ///Photo display && painter.
           Card(
             child: SizedBox(
-              width: _photo.photoSize.height,
-              height: _photo.photoSize.width,
+              height: _photo.photoSize.height /
+                  (_photo.photoSize.width / MediaQuery.of(context).size.width),
               child: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -56,7 +57,7 @@ class PhotoEditViewState extends State<PhotoEditView> {
                     borderRadius: BorderRadius.circular(8),
                     child: Image.file(
                       File(_photo.getPhotoPath()),
-                      fit: BoxFit.cover,
+                      fit: BoxFit.scaleDown,
                     ),
                   ),
                   CustomPaint(

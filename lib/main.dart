@@ -75,6 +75,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
+bool hasShownBetaDialog = false;
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -99,6 +101,25 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    if (hasShownBetaDialog == false) {
+      return // set up the AlertDialog
+          AlertDialog(
+        title: const Text("Heavy Beta"),
+        content: const Text(
+          "The app is in heavy beta please don't use it unless it is for experimental reasons",
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                hasShownBetaDialog = true;
+              });
+            },
+            child: const Text('Agree'),
+          ),
+        ],
+      );
+    }
     return Scaffold(
       body: _tabBarView(),
       bottomSheet: isSearching ? const SizedBox.shrink() : _bottomSheet(),

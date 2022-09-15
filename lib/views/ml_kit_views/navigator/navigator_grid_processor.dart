@@ -51,7 +51,6 @@ void gridProcessor(List init) {
   List<InterBarcodeVector> averagedInterBarcodeVectors = [];
   List<InterBarcodeVector> usedInterBarcodeVectors = [];
 
-  /// this function is called by
   void processBarcodes(List message) {
     //1. Create realInterBarcodeVectors.
     List<InterBarcodeVector> interBarcodeVectorEntries =

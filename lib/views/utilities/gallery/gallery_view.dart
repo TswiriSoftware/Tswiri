@@ -83,7 +83,7 @@ class _GalleryViewState extends State<GalleryView> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Image.file(
-              File(photo.getPhotoPath()),
+              File(photo.getPhotoThumbnailPath()),
               fit: BoxFit.cover,
             ),
           ),
