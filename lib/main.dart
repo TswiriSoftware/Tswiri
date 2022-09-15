@@ -103,9 +103,9 @@ class _HomePageState extends State<HomePage>
     if (hasShownBetaDialog == false) {
       return // set up the AlertDialog
           AlertDialog(
-        title: const Text("Heavy Beta"),
+        title: const Text("Beta"),
         content: const Text(
-          "The app is in heavy beta please don't use it unless it is for experimental reasons",
+          "The app is in beta please don't use it unless it is for experimental reasons",
         ),
         actions: [
           ElevatedButton(
