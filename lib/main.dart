@@ -1,33 +1,84 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:tswiri/views/containers/containers_view.dart';
+import 'package:tswiri/views/search/search_view.dart';
+import 'package:tswiri/views/settings/settings_view.dart';
+import 'package:tswiri/views/utilities/utilities_view.dart';
+import 'package:tswiri_database/export.dart';
+import 'package:tswiri_database/mobile_database.dart';
+import 'package:tswiri_database/models/search/shopping_cart.dart';
+import 'package:tswiri_database/models/settings/app_settings.dart';
+import 'package:tswiri_widgets/theme/theme.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  //Force portraitUp.
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
+
+  //Load app settings.
+  await loadAppSettings();
+
+  //Initiate Isar Storage Directories.
+  await initiateIsarDirectory();
+  await initiatePhotoStorage();
+
+  //Initiate Isar.
+  isar = initiateMobileIsar();
+
+  //Clear temp directory whenever the app is opened.
+  Directory tempDir = await getTemporaryDirectory();
+  tempDir.deleteSync(recursive: true);
+  tempDir.create();
+
+  //Populate the database for testing.
+  // createBasicContainerTypes();
+  // populateDatabase();
+
+  //Run app with shoppingcart provider.
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ShoppingCart(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tswiri',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      title: 'Tswiri Example',
+      theme: tswiriTheme,
       home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
+  //Tab controller.
+  late final TabController _tabController = TabController(
+    vsync: this,
+    length: 4,
+    initialIndex: 1,
+  );
+  bool isSearching = false;
+
   @override
   void initState() {
     super.initState();
@@ -36,26 +87,69 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBar(),
-      body: _body(),
+      body: _tabBarView(),
+      bottomSheet: _bottomSheet(),
     );
   }
 
-  AppBar _appBar() {
-    return AppBar(
-      title: Text(
-        'Tswiri',
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
-      centerTitle: true,
+  Widget _tabBarView() {
+    return TabBarView(
+      physics: isSearching ? const NeverScrollableScrollPhysics() : null,
+      controller: _tabController,
+      children: [
+        ContainersView(
+          isSearching: (value) => setState(() {
+            isSearching = value;
+          }),
+        ),
+        SearchView(
+          isSearching: (value) => setState(() {
+            isSearching = value;
+          }),
+        ),
+        const UtilitiesView(),
+        const SettingsView(),
+      ],
     );
   }
 
-  Widget _body() {
-    return Center(
-      child: Column(
-        children: [],
-      ),
+  Widget _bottomSheet() {
+    return TabBar(
+      // isScrollable: !isSearching,
+      controller: _tabController,
+      labelPadding: const EdgeInsets.all(2.5),
+      tabs: const [
+        Tooltip(
+          message: "Containers",
+          child: Tab(
+            icon: Icon(
+              Icons.account_tree_sharp,
+            ),
+          ),
+        ),
+        Tooltip(
+          message: "Search",
+          child: Tab(
+            icon: Icon(
+              Icons.search_sharp,
+            ),
+          ),
+        ),
+        Tooltip(
+          message: "Utilities",
+          child: Tab(
+            icon: Icon(Icons.build_sharp),
+          ),
+        ),
+        Tooltip(
+          message: "Settings",
+          child: Tab(
+            icon: Icon(
+              Icons.settings_sharp,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

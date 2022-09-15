@@ -238,7 +238,7 @@ packages:
       name: ffi
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1"
+    version: "1.2.1"
   file:
     dependency: transitive
     description:
@@ -265,6 +265,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_archive:
+    dependency: transitive
+    description:
+      name: flutter_archive
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.0.0"
   flutter_isolate:
     dependency: "direct main"
     description:
@@ -464,6 +471,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.3"
+  isar:
+    dependency: transitive
+    description:
+      name: isar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.5.0"
+  isar_flutter_libs:
+    dependency: transitive
+    description:
+      name: isar_flutter_libs
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.5.0"
   js:
     dependency: transitive
     description:
@@ -603,7 +624,7 @@ packages:
       name: path_provider_windows
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.3"
+    version: "2.0.7"
   pdf:
     dependency: transitive
     description:
@@ -889,6 +910,24 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  tswiri_database:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: stable
+      resolved-ref: "2b14fb19f3299139aa0ff579dce5903ff3c5b314"
+      url: "https://github.com/TswiriSoftware/tswiri_database.git"
+    source: git
+    version: "0.0.1"
+  tswiri_widgets:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: stable
+      resolved-ref: "6a8b1471acf3111892507d4a6e86e09177bbe630"
+      url: "https://github.com/TswiriSoftware/tswiri_widgets.git"
+    source: git
+    version: "0.0.1"
   typed_data:
     dependency: transitive
     description:
@@ -986,7 +1025,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.0"
+    version: "2.6.1"
   xdg_directories:
     dependency: transitive
     description:
@@ -1010,4 +1049,4 @@ packages:
     version: "3.1.1"
 sdks:
   dart: ">=2.18.0 <3.0.0"
-  flutter: ">=3.0.0"
+  flutter: ">=2.10.0"

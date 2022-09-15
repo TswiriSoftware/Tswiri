@@ -59,6 +59,16 @@ dependencies:
   flutter_pdfview: ^1.2.3
   flutter_launcher_icons: ^0.10.0
 
+  tswiri_widgets:
+    git:
+      url: https://github.com/TswiriSoftware/tswiri_widgets.git
+      ref: stable 
+
+  tswiri_database:
+    git:
+      url: https://github.com/TswiriSoftware/tswiri_database.git
+      ref: stable 
+      
 dev_dependencies:
   flutter_test:
     sdk: flutter
