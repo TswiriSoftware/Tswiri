@@ -57,17 +57,6 @@ class _PdfViewState extends State<PdfView> {
           }
         },
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () async {
-      //     if (path != null) {
-      //       await Printing.layoutPdf(
-      //           format: PdfPageFormat.a4,
-      //           onLayout: (_) => path!.buffer.asUint8List(),
-      //           name: 'barcodes_${widget.start}_to_${widget.end}.pdf');
-      //     }
-      //   },
-      //   child: const Icon(Icons.print),
-      // ),
     );
   }
 

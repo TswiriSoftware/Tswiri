@@ -1,3 +1,4 @@
+import 'package:tswiri/views/utilities/app_info/app_info_view.dart';
 import 'package:tswiri/views/utilities/barcode_generator/generator_view.dart';
 import 'package:tswiri/views/utilities/barcodes/barcodes_view.dart';
 import 'package:tswiri/views/utilities/camera_calibration/calibration_view.dart';
@@ -35,6 +36,7 @@ class _UtilitiesViewState extends State<UtilitiesView> {
         style: Theme.of(context).textTheme.titleMedium,
       ),
       centerTitle: true,
+      actions: [],
     );
   }
 
@@ -75,6 +77,11 @@ class _UtilitiesViewState extends State<UtilitiesView> {
             icon: Icons.grid_4x4_sharp,
             viewPage: GridsView(),
           ),
+          NavigationCard(
+            label: 'Info',
+            icon: Icons.info,
+            viewPage: AppInfoView(),
+          )
         ],
       ),
     );
