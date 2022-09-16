@@ -1,10 +1,8 @@
 // ignore_for_file: library_private_types_in_public_api, depend_on_referenced_packages
 
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'package:pdf/pdf.dart';
+import 'package:pdf/pdf.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:tswiri_database/functions/barcodes/barcode_pdf_generator.dart';
 
@@ -45,26 +43,31 @@ class _PdfViewState extends State<PdfView> {
         future: future,
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data != null) {
-            return PDFView(
-              pdfData: snapshot.data,
-              fitPolicy: FitPolicy.BOTH,
+            return PdfPreview(
+              build: ((format) => snapshot.data!),
+              pageFormats: const {'A4': pw.PdfPageFormat.a4},
+              canChangeOrientation: false,
+              canChangePageFormat: false,
+              initialPageFormat: pw.PdfPageFormat.a4,
+              canDebug: false,
+              pdfFileName: 'barcode_${widget.start}_to_${widget.end}.pdf',
             );
           } else {
             return const Center(child: CircularProgressIndicator());
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          if (path != null) {
-            await Printing.layoutPdf(
-                format: PdfPageFormat.a4,
-                onLayout: (_) => path!.buffer.asUint8List(),
-                name: 'barcodes_${widget.start}_to_${widget.end}.pdf');
-          }
-        },
-        child: const Icon(Icons.print),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () async {
+      //     if (path != null) {
+      //       await Printing.layoutPdf(
+      //           format: PdfPageFormat.a4,
+      //           onLayout: (_) => path!.buffer.asUint8List(),
+      //           name: 'barcodes_${widget.start}_to_${widget.end}.pdf');
+      //     }
+      //   },
+      //   child: const Icon(Icons.print),
+      // ),
     );
   }
 

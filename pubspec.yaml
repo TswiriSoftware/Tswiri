@@ -56,7 +56,6 @@ dependencies:
   share_plus: ^4.1.0
   file_picker: ^3.0.4
   printing: ^5.9.3
-  flutter_pdfview: ^1.2.3
   flutter_launcher_icons: ^0.10.0
 
   tswiri_widgets:

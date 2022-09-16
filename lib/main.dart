@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tswiri/views/containers/containers_view.dart';
@@ -10,6 +8,7 @@ import 'package:tswiri/views/settings/settings_view.dart';
 import 'package:tswiri/views/utilities/utilities_view.dart';
 import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/functions/isar/create_functions.dart';
+import 'package:tswiri_database/functions/other/clear_temp_directory.dart';
 import 'package:tswiri_database/mobile_database.dart';
 import 'package:tswiri_database/models/search/shopping_cart.dart';
 import 'package:tswiri_database/models/settings/app_settings.dart';
@@ -35,12 +34,9 @@ Future<void> main() async {
   createBasicContainerTypes();
 
   //Clear temp directory whenever the app is opened.
-  Directory tempDir = await getTemporaryDirectory();
-  tempDir.deleteSync(recursive: true);
-  tempDir.create();
+  clearTemporaryDirectory();
 
   //Populate the database for testing.
-
   // populateDatabase();
 
   //Run app with shoppingcart provider.
