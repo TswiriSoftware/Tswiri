@@ -28,7 +28,7 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
   Future<drive.File?>? latestFile;
 
   bool _isBusy = false;
-  String process = '';
+  String currentEvent = '';
 
   @override
   void initState() {
@@ -62,12 +62,12 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
         ),
       ),
       actions: [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.info,
-          ),
-        ),
+        // IconButton(
+        //   onPressed: () {},
+        //   icon: const Icon(
+        //     Icons.info,
+        //   ),
+        // ),
       ],
       centerTitle: true,
     );
@@ -87,7 +87,7 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(process),
+                          Text(currentEvent),
                           const SizedBox(
                             height: 25,
                           ),
@@ -182,27 +182,35 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
         'Last Backup',
         style: Theme.of(context).textTheme.bodyMedium,
       ),
-      subtitle: Text(createdDate),
+      subtitle: Text(
+          '$createdDate (${(int.parse(snapshot.size!) * 0.000001).toStringAsFixed(2)} MB)'),
       trailing: IconButton(
         onPressed: () async {
           setState(() {
             _isBusy = true;
           });
 
-          setProcess('Creating new backup');
+          setEvent('Creating new backup');
           // log('Creating new backup');
           File? file = await createBackupFile(
             progressCallback: (event) {
-              setProcess(event);
+              setEvent(event);
             },
             fileName: generateBackupFileName(),
           );
 
           if (file != null) {
-            setProcess('Uploading');
-            _backup!.uploadFile(file);
+            setEvent('Uploading');
+            await _backup!.uploadFile(
+              file,
+              (event) {
+                log(event.toString());
+                setEvent(event);
+              },
+            );
+            setEvent('Confirming Upload');
             await Future.delayed(const Duration(milliseconds: 2500));
-            setProcess('done');
+            setEvent('done');
             latestFile = _backup!.getLatestBackup();
           } else {
             //TODO: error
@@ -224,20 +232,26 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
           _isBusy = true;
         });
 
-        setProcess('Creating new backup');
+        setEvent('Creating new backup');
 
         File? file = await createBackupFile(
           progressCallback: (event) {
-            ///TODO: implement this.
+            setEvent(event);
           },
           fileName: generateBackupFileName(),
         );
 
         if (file != null) {
-          setProcess('Uploading');
+          setEvent('Uploading');
           // log('Uploading');
-          bool uploaded = await _backup!.uploadFile(file);
-          setProcess('done');
+          bool uploaded = await _backup!.uploadFile(
+            file,
+            (event) {
+              // setEvent(event);
+              log('message');
+            },
+          );
+          setEvent('done');
           // log('done');
           await Future.delayed(const Duration(milliseconds: 200));
           latestFile = _backup!.getLatestBackup();
@@ -292,14 +306,17 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
               _isBusy = true;
             });
 
-            setProcess('Downloading');
-            File? downloadedFile = await _backup!.downloadFile(snapshot);
+            setEvent('Downloading');
+            File? downloadedFile =
+                await _backup!.downloadFile(snapshot, (event) {
+              setEvent(event);
+            });
 
             if (downloadedFile != null) {
-              setProcess('Restoring');
+              setEvent('Restoring');
               await restoreBackupFile(
                   progressCallback: (event) {
-                    setProcess(event);
+                    setEvent(event);
                   },
                   backupFile: File(downloadedFile.path));
             }
@@ -438,9 +455,9 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
     }
   }
 
-  void setProcess(String value) {
+  void setEvent(String value) {
     setState(() {
-      process = value;
+      currentEvent = value;
     });
   }
 }

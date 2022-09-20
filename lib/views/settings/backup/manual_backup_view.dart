@@ -47,12 +47,12 @@ class _BackupViewState extends State<BackupView> {
       ),
       centerTitle: true,
       actions: [
-        IconButton(
-          onPressed: () {
-            //TODO: Inform user that restoring large files can take a long time.
-          },
-          icon: const Icon(Icons.info),
-        )
+        // IconButton(
+        //   onPressed: () {
+        //     //TODO: Inform user that restoring large files can take a long time.
+        //   },
+        //   icon: const Icon(Icons.info),
+        // )
       ],
     );
   }

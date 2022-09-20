@@ -943,7 +943,7 @@ packages:
     description:
       path: "."
       ref: stable
-      resolved-ref: "066c7c87be9386ea7909301a6aa9a0ca3f3d7c7e"
+      resolved-ref: ccb46b8808e37e4257cf7822b6169f8a9c8aa1c2
       url: "https://github.com/TswiriSoftware/tswiri_database.git"
     source: git
     version: "0.0.1"
