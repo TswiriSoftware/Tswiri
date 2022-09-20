@@ -943,7 +943,7 @@ packages:
     description:
       path: "."
       ref: stable
-      resolved-ref: ccb46b8808e37e4257cf7822b6169f8a9c8aa1c2
+      resolved-ref: ce27ff04ec2c31749cbd8b1a6189c5bfd2b31624
       url: "https://github.com/TswiriSoftware/tswiri_database.git"
     source: git
     version: "0.0.1"
@@ -952,7 +952,7 @@ packages:
     description:
       path: "."
       ref: stable
-      resolved-ref: "6f258533dbf88d764662c11708118a931a746ef2"
+      resolved-ref: "81265528e405aa3531971c56f00b038eec3debd6"
       url: "https://github.com/TswiriSoftware/tswiri_widgets.git"
     source: git
     version: "0.0.1"

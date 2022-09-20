@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:tswiri_widgets/colors/colors.dart';
 
@@ -94,14 +96,27 @@ class NavigatorPainter extends CustomPainter {
       averageOffsetToBarcode = offsetToBarcode;
       lastActivity = DateTime.now().millisecondsSinceEpoch;
       drawArrow(
-          screenCenter, finderCircleRadius, offsetToBarcode, size, canvas);
+        screenCenter,
+        finderCircleRadius,
+        offsetToBarcode,
+        size,
+        canvas,
+      );
     } else {
-      if (lastActivity != null) {
-        if (averageOffsetToBarcode != null &&
-            (lastActivity! < (DateTime.now().millisecondsSinceEpoch - 2000))) {
-          drawArrow(screenCenter, finderCircleRadius, averageOffsetToBarcode!,
-              size, canvas);
-        }
+      if (averageOffsetToBarcode != null) {
+        drawArrow(
+          screenCenter,
+          finderCircleRadius,
+          averageOffsetToBarcode!,
+          size,
+          canvas,
+        );
+      }
+
+      ///Reset average offset to barcode.
+      if (lastActivity != null &&
+          lastActivity! + 2000 < DateTime.now().millisecondsSinceEpoch) {
+        averageOffsetToBarcode = null;
       }
     }
   }

@@ -57,7 +57,7 @@ class _UtilitiesViewState extends State<UtilitiesView> {
             viewPage: GeneratorView(),
           ),
           NavigationCard(
-            label: 'Camera Calibration',
+            label: 'Camera Calibration (WIP)',
             icon: Icons.camera_sharp,
             viewPage: CalibrationView(),
           ),

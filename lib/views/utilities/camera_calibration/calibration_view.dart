@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tswiri/views/ml_kit/camera_calibration/camera_calibration_view.dart';
 import 'package:flutter/material.dart';
 import 'package:tswiri_database/export.dart';
@@ -5,6 +8,7 @@ import 'package:tswiri_database/models/camera/camera_calibration.dart';
 import 'package:tswiri_database/models/camera/camera_calibration_painter.dart';
 import 'package:tswiri_database/models/settings/app_settings.dart';
 import 'package:tswiri_widgets/colors/colors.dart';
+import 'package:tswiri_widgets/widgets/general/custom_text_field.dart';
 
 class CalibrationView extends StatefulWidget {
   const CalibrationView({Key? key}) : super(key: key);
@@ -18,7 +22,8 @@ class _CalibrationViewState extends State<CalibrationView> {
 
   @override
   void initState() {
-    if (isar!.cameraCalibrationEntrys.where().findAllSync().isEmpty) {
+    if (isar!.cameraCalibrationEntrys.where().findAllSync().isEmpty &&
+        focalLength == 1) {
       isCalibrated = false;
     }
     super.initState();
@@ -58,7 +63,7 @@ class _CalibrationViewState extends State<CalibrationView> {
   }
 
   Widget _body() {
-    return isCalibrated ? _calibrated() : _unCalibrated();
+    return isCalibrated ? _calibrated() : _unCalibratedV2();
   }
 
   Widget _calibrated() {
@@ -71,7 +76,7 @@ class _CalibrationViewState extends State<CalibrationView> {
             child: Column(
               children: [
                 Text(
-                  focalLength.toString(),
+                  (focalLength / 1000).toStringAsFixed(2),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 SizedBox(
@@ -111,28 +116,67 @@ class _CalibrationViewState extends State<CalibrationView> {
     );
   }
 
-  Widget _unCalibrated() {
-    return Center(
-      child: ElevatedButton(
-        onPressed: () async {
-          CameraCalibration? cameraCalibration = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const CameraCalibrationView(),
-            ),
-          );
+  Widget _unCalibratedV2() {
+    return Column(
+      children: [
+        Card(
+          child: ExpansionTile(
+            title: const Text('Manual Calibration'),
+            children: [
+              CustomTextField(
+                backgroundColor: background,
+                borderColor: tswiriOrange,
+                onSubmitted: (value) async {
+                  if (value.isNotEmpty) {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
 
-          if (cameraCalibration != null) {
-            //Calibrate the camera.
-            await cameraCalibration.calibrateCamera();
-            _updatePage();
-          }
-        },
-        child: Text(
-          'Calibrate Camera',
-          style: Theme.of(context).textTheme.bodyMedium,
+                    double apeture = (double.tryParse(value) ?? 1.79) * 1000;
+
+                    prefs.setDouble(focalLengthPref, apeture);
+
+                    focalLength = apeture;
+
+                    setState(() {
+                      isCalibrated = true;
+                    });
+                  }
+                },
+                label: 'Apeture f/',
+                textInputType: TextInputType.number,
+                initialValue: (focalLength / 1000).toStringAsFixed(2),
+              ),
+            ],
+          ),
         ),
-      ),
+        Card(
+          child: ExpansionTile(
+            title: const Text('Auto Calibration'),
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  CameraCalibration? cameraCalibration = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CameraCalibrationView(),
+                    ),
+                  );
+
+                  if (cameraCalibration != null) {
+                    //Calibrate the camera.
+                    await cameraCalibration.calibrateCamera();
+                    _updatePage();
+                  }
+                },
+                child: Text(
+                  'Calibrate Camera',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
