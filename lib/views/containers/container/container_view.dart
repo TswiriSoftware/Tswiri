@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:tswiri/views/containers/new_container/new_container_view.dart';
-import 'package:tswiri/views/containers/parent_card.dart';
 import 'package:tswiri/views/ml_kit/barcode_scanner/single_scanner_view.dart';
 import 'package:tswiri/views/ml_kit/navigator/navigator_view.dart';
 import 'package:tswiri/views/ml_kit/photo_labeling/ml_photo_labeling_camera_view.dart';
@@ -279,62 +278,105 @@ class _ContainerViewState extends State<ContainerView> {
   }
 
   Widget _parentCard() {
-    return ParentCardTile(
-      containerRelationship: _containerRelationship,
-      initiallyExpanded: parentExpanded,
-      onChange: () async {
-        //TODO: implement parent change screen.
+    return Card(
+      child: ExpansionTile(
+        initiallyExpanded: parentExpanded,
+        title: Text(
+          'Parent',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        onExpansionChanged: (value) => setState(() {
+          parentExpanded = value;
+        }),
+        children: [
+          _containerRelationship != null
+              ? Card(
+                  color: background[300],
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _containerRelationship!.parentUID!,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            //TODO: implement parent change screen.
 
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => ChangeParentView(
-        //       containerRelationship: containerRelationship!,
-        //     ),
-        //   ),
-        // );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => ChangeParentView(
+                            //       containerRelationship: containerRelationship!,
+                            //     ),
+                            //   ),
+                            // );
 
-        String? barcodeUID = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const SingleBarcodeScannerView(),
-          ),
-        );
+                            String? barcodeUID = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const SingleBarcodeScannerView(),
+                              ),
+                            );
 
-        if (barcodeUID != null) {
-          CatalogedContainer? catalogedContainer = isar!.catalogedContainers
-              .filter()
-              .barcodeUIDMatches(barcodeUID)
-              .findFirstSync();
+                            if (barcodeUID != null) {
+                              CatalogedContainer? catalogedContainer = isar!
+                                  .catalogedContainers
+                                  .filter()
+                                  .barcodeUIDMatches(barcodeUID)
+                                  .findFirstSync();
 
-          if (catalogedContainer != null &&
-              barcodeUID != _catalogedContainer.barcodeUID) {
-            bool hasChangedParent = changeParent(
-              currentContainer: _catalogedContainer,
-              parentContainer: catalogedContainer,
-            );
+                              if (catalogedContainer != null &&
+                                  barcodeUID !=
+                                      _catalogedContainer.barcodeUID) {
+                                bool hasChangedParent = changeParent(
+                                  currentContainer: _catalogedContainer,
+                                  parentContainer: catalogedContainer,
+                                );
 
-            if (hasChangedParent == true) {
-              setState(() {
-                _containerRelationship = isar!.containerRelationships
-                    .filter()
-                    .containerUIDMatches(_catalogedContainer.containerUID)
-                    .findFirstSync();
-              });
-            } else {
-              //TODO: throw error.
-            }
-          }
-        }
-      },
-      onExpansionChanged: (value) async {
-        setState(() {
-          parentExpanded = value ?? false;
-        });
-      },
-      onNewParent: () {
-        //TODO: New Parent.
-      },
+                                if (hasChangedParent == true) {
+                                  setState(() {
+                                    _containerRelationship = isar!
+                                        .containerRelationships
+                                        .filter()
+                                        .containerUIDMatches(
+                                            _catalogedContainer.containerUID)
+                                        .findFirstSync();
+                                  });
+                                } else {
+                                  //TODO: throw error.
+                                }
+                              }
+                            }
+                          },
+                          child: Text(
+                            'Change',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        //TODO: on new parent.
+                      },
+                      child: Text(
+                        'Scan Parent',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
+        ],
+      ),
     );
   }
 

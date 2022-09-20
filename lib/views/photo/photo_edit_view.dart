@@ -42,11 +42,8 @@ class PhotoEditViewState extends State<PhotoEditView> {
 
   int? currentObjectID;
 
-  Size? imageSize;
-
   @override
   Widget build(BuildContext context) {
-    SchedulerBinding.instance.addPostFrameCallback(postFrameCallback);
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -62,16 +59,6 @@ class PhotoEditViewState extends State<PhotoEditView> {
         ],
       ),
     );
-  }
-
-  final GlobalKey _imageKey = GlobalKey();
-
-  void postFrameCallback(_) {
-    var context = _imageKey.currentContext;
-    if (context == null) return;
-    setState(() {
-      imageSize = _imageKey.currentContext!.size!;
-    });
   }
 
   Widget _photoCard() {

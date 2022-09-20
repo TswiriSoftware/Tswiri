@@ -36,9 +36,6 @@ Future<void> main() async {
   //Clear temp directory whenever the app is opened.
   clearTemporaryDirectory();
 
-  //Populate the database for testing.
-  // populateDatabase();
-
   //Run app with shoppingcart provider.
   runApp(
     ChangeNotifierProvider(
@@ -54,7 +51,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tswiri Example',
+      title: 'Tswiri App',
       theme: tswiriTheme,
       home: const MyHomePage(),
       debugShowCheckedModeBanner: false,
@@ -82,7 +79,6 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   void initState() {
     super.initState();
-
     //Show the beta warning for the app.
     if (hasShownBetaWarning == false) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -129,6 +125,7 @@ class _MyHomePageState extends State<MyHomePage>
         Tooltip(
           message: "Containers",
           child: Tab(
+            key: Key('containers_tab'),
             icon: Icon(
               Icons.account_tree_sharp,
             ),
@@ -137,6 +134,7 @@ class _MyHomePageState extends State<MyHomePage>
         Tooltip(
           message: "Search",
           child: Tab(
+            key: Key('search_tab'),
             icon: Icon(
               Icons.search_sharp,
             ),
@@ -145,12 +143,14 @@ class _MyHomePageState extends State<MyHomePage>
         Tooltip(
           message: "Utilities",
           child: Tab(
+            key: Key('utilities_tab'),
             icon: Icon(Icons.build_sharp),
           ),
         ),
         Tooltip(
           message: "Settings",
           child: Tab(
+            key: Key('settings_tab'),
             icon: Icon(
               Icons.settings_sharp,
             ),

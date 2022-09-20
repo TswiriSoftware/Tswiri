@@ -45,7 +45,7 @@ class _SingleBarcodeCameraViewState extends State<SingleBarcodeCameraView> {
       }
     }
     _startLiveFeed();
-    log(flashOnBarcodes.toString());
+    // log(flashOnBarcodes.toString());
   }
 
   @override

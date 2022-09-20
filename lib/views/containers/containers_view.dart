@@ -1,14 +1,14 @@
 import 'package:tswiri/views/containers/container/container_view.dart';
-import 'package:tswiri/views/containers/container_card.dart';
 import 'package:tswiri/views/containers/new_container/new_container_view.dart';
-import 'package:tswiri/views/containers/new_container_card.dart';
 import 'package:tswiri/views/ml_kit/barcode_scanner/single_scanner_view.dart';
 import 'package:flutter/material.dart';
 import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/functions/isar/delete_functions.dart';
 import 'package:tswiri_database/models/containers/container_search_controller.dart';
 import 'package:tswiri_database/models/settings/global_settings.dart';
+import 'package:tswiri_database/widgets/containers/container_card.dart';
 import 'package:tswiri_widgets/colors/colors.dart';
+import 'package:tswiri_widgets/widgets/containers/new_container_card.dart';
 import 'package:tswiri_widgets/widgets/general/search_text_field.dart';
 
 class ContainersView extends StatefulWidget {
@@ -287,6 +287,7 @@ class _ContainersViewState extends State<ContainersView> {
               });
               widget.isSearching(isEditing);
             },
+            borderColor: tswiriOrange,
           );
         } else {
           return const SizedBox.shrink();

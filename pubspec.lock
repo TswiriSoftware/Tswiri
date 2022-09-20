@@ -764,7 +764,7 @@ packages:
       name: share_plus
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.1.0"
+    version: "4.2.0"
   share_plus_linux:
     dependency: transitive
     description:
@@ -943,7 +943,7 @@ packages:
     description:
       path: "."
       ref: stable
-      resolved-ref: b073305c894c9ceefe816c39fdb960ac0e7f53df
+      resolved-ref: "066c7c87be9386ea7909301a6aa9a0ca3f3d7c7e"
       url: "https://github.com/TswiriSoftware/tswiri_database.git"
     source: git
     version: "0.0.1"
@@ -952,7 +952,7 @@ packages:
     description:
       path: "."
       ref: stable
-      resolved-ref: "6a8b1471acf3111892507d4a6e86e09177bbe630"
+      resolved-ref: "6f258533dbf88d764662c11708118a931a746ef2"
       url: "https://github.com/TswiriSoftware/tswiri_widgets.git"
     source: git
     version: "0.0.1"

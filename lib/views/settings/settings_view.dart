@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:tswiri/views/settings/app_info/app_info_view.dart';
 import 'package:tswiri/views/settings/backup/backup_options_view.dart';
 import 'package:tswiri/views/settings/spaces/spaces_view.dart';
 import 'package:flutter/material.dart';
@@ -66,6 +67,7 @@ class _SettingsViewState extends State<SettingsView> {
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
+          _appInfo(),
           _manageBackup(),
           _vibration(),
           _colorMode(),
@@ -82,7 +84,7 @@ class _SettingsViewState extends State<SettingsView> {
       child: ExpansionTile(
         title: Text(
           'Advanced',
-          style: Theme.of(context).textTheme.titleMedium,
+          style: Theme.of(context).textTheme.bodyLarge,
         ),
         children: [
           _spaces(),
@@ -99,7 +101,7 @@ class _SettingsViewState extends State<SettingsView> {
       child: ExpansionTile(
         title: Text(
           'Flash Settings',
-          style: Theme.of(context).textTheme.titleMedium,
+          style: Theme.of(context).textTheme.bodyLarge,
         ),
         children: [
           _photoFlash(),
@@ -267,7 +269,7 @@ class _SettingsViewState extends State<SettingsView> {
           children: [
             Text(
               'QRCode Size:',
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
             Flexible(
               child: TextField(
@@ -315,7 +317,7 @@ class _SettingsViewState extends State<SettingsView> {
       child: ListTile(
         title: Text(
           'Vibration',
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: Theme.of(context).textTheme.bodyLarge,
         ),
         trailing: Checkbox(
           value: vibrate,
@@ -335,7 +337,7 @@ class _SettingsViewState extends State<SettingsView> {
       child: ListTile(
         title: Text(
           'Color Mode',
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: Theme.of(context).textTheme.bodyLarge,
         ),
         trailing: Checkbox(
           value: colorModeEnabled,
@@ -501,10 +503,35 @@ class _SettingsViewState extends State<SettingsView> {
         child: ListTile(
           title: Text(
             'Manage Backup',
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
           trailing: const Icon(
             Icons.backup,
+            color: tswiriOrange,
+            size: 30,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _appInfo() {
+    return Card(
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const AppInfoView(),
+            ),
+          );
+        },
+        child: ListTile(
+          title: Text(
+            'App info',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          trailing: const Icon(
+            Icons.info,
             color: tswiriOrange,
             size: 30,
           ),
