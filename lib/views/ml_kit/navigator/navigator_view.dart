@@ -277,7 +277,9 @@ class _NavigatorViewState extends State<NavigatorView> {
       _isHandelingError = true;
     });
 
-    switch (message[2]) {
+    log(message.toString());
+
+    switch (message[1]) {
       case 'wrong_grid':
 
         //Show popup.
@@ -327,23 +329,32 @@ class _NavigatorViewState extends State<NavigatorView> {
           }
         }
 
+        int targetGridID = message[2];
+        CatalogedGrid targetGrid = isar!.catalogedGrids.getSync(targetGridID)!;
+        CatalogedContainer targetShelf = isar!.catalogedContainers
+            .filter()
+            .barcodeUIDMatches(targetGrid.barcodeUID)
+            .findFirstSync()!;
         return AlertDialog(
           title: const Text('Wrong Grid'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 const Text('This is a WIP dialog.'),
-                const Text('Please go to any of these Containers'),
-                for (CatalogedContainer catalogedContainer
-                    in catalogedContainers)
-                  Text(catalogedContainer.name ??
-                      catalogedContainer.containerUID),
+                Text(
+                    'Go to this container: ${targetShelf.name ?? targetShelf.containerUID}'),
+                // const Divider(),
+                // const Text('OR Please go to any of these Containers'),
+                // for (CatalogedContainer catalogedContainer
+                //     in catalogedContainers)
+                //   Text(catalogedContainer.name ??
+                //       catalogedContainer.containerUID),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('done'),
+              child: const Text('Ok'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
