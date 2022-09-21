@@ -74,6 +74,7 @@ class _MyHomePageState extends State<MyHomePage>
     length: 4,
     initialIndex: 1,
   );
+
   bool isSearching = false;
 
   @override
@@ -118,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage>
 
   Widget _bottomSheet() {
     return TabBar(
-      // isScrollable: !isSearching,
+      key: const Key('tab_bar'),
       controller: _tabController,
       labelPadding: const EdgeInsets.all(2.5),
       tabs: const [

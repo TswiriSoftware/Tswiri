@@ -42,11 +42,13 @@ class _BackupOptionsViewState extends State<BackupOptionsView> {
         crossAxisCount: 2,
         children: const [
           NavigationCard(
+            key: Key('manual_backup'),
             label: 'Manual Backup',
             icon: Icons.backup,
             viewPage: BackupView(),
           ),
           NavigationCard(
+            key: Key('google_drive_backup'),
             label: 'Google Drive Backup',
             icon: Icons.drive_folder_upload,
             viewPage: GoogleDriveView(),

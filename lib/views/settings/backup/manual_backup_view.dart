@@ -149,6 +149,7 @@ class _BackupViewState extends State<BackupView> {
                   )
                 : Text(selectedFile!.path.split('/').last),
             trailing: ElevatedButton(
+              key: const Key('restore_backup'),
               onPressed: () async {
                 await selectBackupFile();
               },
