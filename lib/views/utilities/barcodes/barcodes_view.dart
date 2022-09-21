@@ -1,8 +1,9 @@
+import 'package:tswiri/views/utilities/barcode_generator/generator_view.dart';
 import 'package:flutter/material.dart';
-import 'package:sunbird/globals/globals_export.dart';
-import 'package:sunbird/isar/isar_database.dart';
-import 'package:sunbird/views/utilities/generator/generator_view.dart';
-import 'package:tswiri_base/widgets/general/sunbird_search_bar.dart';
+import 'package:tswiri_database/export.dart';
+import 'package:tswiri_database/models/settings/global_settings.dart';
+import 'package:tswiri_widgets/colors/colors.dart';
+import 'package:tswiri_widgets/widgets/general/sunbird_search_bar.dart';
 
 class BarcodesView extends StatefulWidget {
   const BarcodesView({Key? key}) : super(key: key);
@@ -77,6 +78,8 @@ class _BarcodesViewState extends State<BarcodesView> {
           _search(enteredKeyword: value);
         },
         onSubmitted: (value) {},
+        defaultFilterColor: tswiriOrange,
+        filterChipColorMap: null,
       ),
     );
   }
@@ -151,7 +154,7 @@ class _BarcodesViewState extends State<BarcodesView> {
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 Text(
-                  '${barcodeProperty.size} x ${barcodeProperty.size} mm',
+                  '${barcodeProperty.width} x ${barcodeProperty.height} mm',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ],

@@ -1,22 +1,20 @@
-// ignore_for_file: unused_import
-
-import 'dart:developer';
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sunbird/views/search/search_view.dart';
-import 'package:sunbird/views/search/shopping_cart/shopping_cart.dart';
-import 'package:tswiri_base/theme/theme.dart';
-import 'globals/globals_export.dart';
-import 'isar/isar_database.dart';
-import 'views/containers/containers_view/containers_view.dart';
-import 'views/settings/settings_view.dart';
-import 'views/utilities/utilities_view.dart';
+import 'package:tswiri/views/containers/containers_view.dart';
+import 'package:tswiri/views/search/search_view.dart';
+import 'package:tswiri/views/settings/settings_view.dart';
+import 'package:tswiri/views/utilities/utilities_view.dart';
+import 'package:tswiri_database/export.dart';
+import 'package:tswiri_database/functions/isar/create_functions.dart';
+import 'package:tswiri_database/functions/other/clear_temp_directory.dart';
+import 'package:tswiri_database/mobile_database.dart';
+import 'package:tswiri_database/models/search/shopping_cart.dart';
+import 'package:tswiri_database/models/settings/app_settings.dart';
+import 'package:tswiri_widgets/theme/theme.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   //Force portraitUp.
@@ -24,106 +22,77 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  //Get Camera descriptions.
-  cameras = await availableCameras();
-
-  //Load App Settigns.
+  //Load app settings.
   await loadAppSettings();
-  await initiateIsarDirectory(currentSpacePath);
-  await initiatePhotoStorage(currentSpacePath);
 
-  //Initiate Isar
-  isar = initiateIsar(inspector: false);
+  //Initiate Isar Storage Directories.
+  await initiateIsarDirectory();
+  await initiatePhotoStorage();
+
+  //Initiate Isar.
+  isar = initiateMobileIsar();
   createBasicContainerTypes();
 
-  await SentryFlutter.init(
-    (options) {
-      options.dsn =
-          'https://71d4f2ab67d54ec59fd8eb2a42d00fc8@o1364118.ingest.sentry.io/6657903';
+  //Clear temp directory whenever the app is opened.
+  clearTemporaryDirectory();
 
-      // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-      // We recommend adjusting this value in production.
-      options.tracesSampleRate = 1.0;
-      options.enableAutoPerformanceTracking = true;
-    },
-    appRunner: () => runApp(
-      DefaultAssetBundle(
-        bundle: SentryAssetBundle(),
-        child: ChangeNotifierProvider(
-          child: const MyApp(),
-          create: (context) => ShoppingCart(),
-        ),
-      ),
+  //Run app with shoppingcart provider.
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ShoppingCart(),
+      child: const MyApp(),
     ),
   );
-
-  //Run app without Sentry.
-  // runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Tswiri App',
       theme: tswiriTheme,
-      home: const HomePage(),
+      home: const MyHomePage(),
       debugShowCheckedModeBanner: false,
-      navigatorObservers: [
-        SentryNavigatorObserver(),
-      ],
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _HomePageState extends State<HomePage>
+class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+  //Tab controller.
+  late final TabController _tabController = TabController(
+    vsync: this,
+    length: 4,
+    initialIndex: 1,
+  );
+
   bool isSearching = false;
 
   @override
   void initState() {
-    _tabController = TabController(
-      vsync: this,
-      length: 4,
-      initialIndex: 1,
-    );
     super.initState();
+    //Show the beta warning for the app.
+    if (hasShownBetaWarning == false) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        showBetaWarning();
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (hasShownBetaDialog == false) {
-      return // set up the AlertDialog
-          AlertDialog(
-        title: const Text("Beta"),
-        content: const Text(
-          "The app is in beta please don't use it unless it is for experimental reasons",
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () async {
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              prefs.setBool(hasShownBetaDialogPref, true);
-              setState(() {
-                hasShownBetaDialog = true;
-              });
-            },
-            child: const Text('Agree'),
-          ),
-        ],
-      );
-    }
     return Scaffold(
       body: _tabBarView(),
-      bottomSheet: isSearching ? const SizedBox.shrink() : _bottomSheet(),
+      bottomSheet: _bottomSheet(),
     );
   }
 
@@ -150,13 +119,14 @@ class _HomePageState extends State<HomePage>
 
   Widget _bottomSheet() {
     return TabBar(
-      // isScrollable: !isSearching,
+      key: const Key('tab_bar'),
       controller: _tabController,
       labelPadding: const EdgeInsets.all(2.5),
       tabs: const [
         Tooltip(
           message: "Containers",
           child: Tab(
+            key: Key('containers_tab'),
             icon: Icon(
               Icons.account_tree_sharp,
             ),
@@ -165,6 +135,7 @@ class _HomePageState extends State<HomePage>
         Tooltip(
           message: "Search",
           child: Tab(
+            key: Key('search_tab'),
             icon: Icon(
               Icons.search_sharp,
             ),
@@ -173,18 +144,59 @@ class _HomePageState extends State<HomePage>
         Tooltip(
           message: "Utilities",
           child: Tab(
+            key: Key('utilities_tab'),
             icon: Icon(Icons.build_sharp),
           ),
         ),
         Tooltip(
           message: "Settings",
           child: Tab(
+            key: Key('settings_tab'),
             icon: Icon(
               Icons.settings_sharp,
             ),
           ),
         ),
       ],
+    );
+  }
+
+  void showBetaWarning() async {
+    await showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) => Center(
+        child: AlertDialog(
+          title: const Text('Beta Warning'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: [
+                Text(
+                  'Use only for testing or experimenting.',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Text(
+                  'You could lose all your data at some point.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Noted'),
+              onPressed: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                prefs.setBool(hasShownBetaWarningPref, true);
+                hasShownBetaWarning = true;
+                if (mounted) {
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

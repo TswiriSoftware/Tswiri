@@ -1,10 +1,11 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:sunbird/globals/globals_export.dart';
-import 'package:sunbird/isar/isar_database.dart';
-import 'package:tswiri_base/colors/colors.dart';
+
+import 'package:tswiri_database/export.dart';
+import 'package:tswiri_widgets/colors/colors.dart';
 
 class SpacesView extends StatefulWidget {
   const SpacesView({Key? key}) : super(key: key);
@@ -19,6 +20,8 @@ class _SpacesViewState extends State<SpacesView> {
   @override
   void initState() {
     _listofFiles();
+    log(isarDirectory!.path.toString());
+    log(photoDirectory!.path.toString());
     super.initState();
   }
 
@@ -54,14 +57,14 @@ class _SpacesViewState extends State<SpacesView> {
   Widget _space(Directory directory) {
     return Card(
       child: ListTile(
-        leading: directory.path == currentSpacePath
+        leading: directory.path == isarDirectory!.path
             ? const Icon(
                 Icons.square,
                 color: tswiriOrange,
               )
             : const Icon(Icons.square),
         title: Text(directory.path.split('/').last),
-        trailing: directory.path == currentSpacePath
+        trailing: directory.path == isarDirectory!.path
             ? const Text('Current Space')
             : ElevatedButton(
                 onPressed: () async {
@@ -169,7 +172,9 @@ class _SpacesViewState extends State<SpacesView> {
     setState(() {
       spaceDirectories.clear();
       for (var element in directory.listSync()) {
-        if (element is Directory) spaceDirectories.add(element);
+        if (element is Directory && element.path.split('_').last == 'space') {
+          spaceDirectories.add(element);
+        }
       }
     });
   }

@@ -1,52 +1,27 @@
+import 'package:tswiri/views/containers/container/container_view.dart';
+import 'package:tswiri/views/search/shopping_cart_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sunbird/isar/isar_database.dart';
-import 'package:sunbird/views/containers/container_view/container_view.dart';
-import 'package:sunbird/views/search/search_controller/search_controller.dart';
-import 'package:sunbird/views/search/search_controller/search_results.dart';
-import 'package:sunbird/views/search/search_widgets/search_widgets.dart';
-import 'package:sunbird/views/search/shopping_cart/shopping_cart.dart';
-import 'package:sunbird/views/search/shopping_cart/shopping_cart_view.dart';
-import 'package:tswiri_base/widgets/general/sunbird_search_bar.dart';
+import 'package:tswiri_database/export.dart';
+import 'package:tswiri_database/models/search/search_controller.dart';
+import 'package:tswiri_database/models/search/search_result_models.dart';
+import 'package:tswiri_database/models/search/shopping_cart.dart';
+import 'package:tswiri_database/models/settings/global_settings.dart';
+import 'package:tswiri_database/widgets/search/search_widgets.dart';
+import 'package:tswiri_widgets/colors/colors.dart';
+import 'package:tswiri_widgets/widgets/general/sunbird_search_bar.dart';
 
 class SearchView extends StatefulWidget {
-  const SearchView({
-    Key? key,
-    required this.isSearching,
-  }) : super(key: key);
+  const SearchView({Key? key, required this.isSearching}) : super(key: key);
   final void Function(bool) isSearching;
-
   @override
   State<SearchView> createState() => _SearchViewState();
 }
 
-///Search Filters.
-List<String> searchFilters = [
-  'Tags',
-  'ML Labels',
-  'Photo Labels',
-  'Object Labels',
-  'Name',
-  'Description',
-  'ML Text',
-];
-
 class _SearchViewState extends State<SearchView> {
   final SearchController _searchController =
       SearchController(filters: searchFilters);
-
-  Map<String, String> filterTypes = {
-    'Tags': 'Search by container tags',
-    'ML Labels': 'Search by photo labels',
-    'Photo Labels': 'Search by User Photo Labels',
-    'Object Labels': 'Search by User Object Labels',
-    'Name': 'Search by container Name',
-    'Description': 'Search by container Description',
-    'ML Text': 'Search by detected text',
-  };
-
   bool isSearching = false;
-  // bool shoppingCartEmpty = shoppingList.isEmpty;
 
   @override
   void initState() {
@@ -102,31 +77,31 @@ class _SearchViewState extends State<SearchView> {
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight + 50),
       child: SearchBar(
-        filters: searchFilters,
-        filterTypes: filterTypes.entries.map((e) => e.key).toList(),
-        onFilterChange: (enteredKeyWord) {
-          setState(() {
-            _searchController.search(enteredKeyword: enteredKeyWord);
-          });
-        },
-        onCancel: () {
-          setState(() {
-            isSearching = false;
-            widget.isSearching(isSearching);
-            // _searchController.search();
-          });
-        },
-        onChanged: (value) {
-          setState(() {
-            _searchController.search(enteredKeyword: value);
-          });
-        },
-        onSubmitted: (value) {
-          setState(() {
-            _searchController.search(enteredKeyword: value);
-          });
-        },
-      ),
+          filters: searchFilters,
+          filterTypes: filterTypes.entries.map((e) => e.key).toList(),
+          onFilterChange: (enteredKeyWord) {
+            setState(() {
+              _searchController.search(enteredKeyword: enteredKeyWord);
+            });
+          },
+          onCancel: () {
+            setState(() {
+              isSearching = false;
+              widget.isSearching(isSearching);
+            });
+          },
+          onChanged: (value) {
+            setState(() {
+              _searchController.search(enteredKeyword: value);
+            });
+          },
+          onSubmitted: (value) {
+            setState(() {
+              _searchController.search(enteredKeyword: value);
+            });
+          },
+          defaultFilterColor: tswiriOrange,
+          filterChipColorMap: null),
     );
   }
 
@@ -166,34 +141,65 @@ class _SearchViewState extends State<SearchView> {
       child: Builder(builder: (context) {
         switch (result.runtimeType) {
           case NameResult: //Name Result.
-            return NameResultCard(nameResult: result as NameResult);
+            return NameResultCard(
+              nameResult: result as NameResult,
+              backgroundColor: background[300]!,
+              chipColor: colorModeEnabled
+                  ? isar!.containerTypes
+                      .getSync(result.containerTypeID)!
+                      .containerColor
+                  : tswiriOrange,
+            );
 
           case DescriptionResult: //Description Result.
             return DescriptionResultCard(
-                descriptionResult: result as DescriptionResult);
+              descriptionResult: result as DescriptionResult,
+              backgroundColor: background[300]!,
+              chipColor: tswiriOrange,
+            );
 
           case ContainerTagResult: //ContainerTag Result.
 
             return ContainerTagResultCard(
-                containerTagResult: result as ContainerTagResult);
+              containerTagResult: result as ContainerTagResult,
+              backgroundColor: background[300]!,
+              chipColor: tswiriOrange,
+            );
 
           case PhotoLabelResult:
             return PhotoLabelResultCard(
-                photoLabelResult: result as PhotoLabelResult);
+              photoLabelResult: result as PhotoLabelResult,
+              backgroundColor: background[300]!,
+              chipColor: tswiriOrange,
+            );
 
           case ObjectLabelResult:
-            return ObjectLabelResultCard(result: result as ObjectLabelResult);
+            return ObjectLabelResultCard(
+              result: result as ObjectLabelResult,
+              backgroundColor: background[300]!,
+              chipColor: tswiriOrange,
+            );
 
           case MLPhotoLabelResult:
             return MLPhotoLabelResultCard(
-                mlphotoLabelResult: result as MLPhotoLabelResult);
+              mlphotoLabelResult: result as MLPhotoLabelResult,
+              backgroundColor: background[300]!,
+              chipColor: tswiriOrange,
+            );
 
           case MLObjectLabelResult:
             return MLObjectLabelResultCard(
-                result: result as MLObjectLabelResult);
+              result: result as MLObjectLabelResult,
+              backgroundColor: background[300]!,
+              chipColor: tswiriOrange,
+            );
 
           case MLTextResult:
-            return MLTextElementResultCard(result: result as MLTextResult);
+            return MLTextElementResultCard(
+              result: result as MLTextResult,
+              backgroundColor: background[300]!,
+              chipColor: tswiriOrange,
+            );
 
           default:
             return const SizedBox.shrink();

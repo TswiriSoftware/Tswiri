@@ -27,7 +27,6 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
-
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
@@ -50,9 +49,12 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.scholtz.sunbird"
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId "com.nanoedge.tswiri"
+        // You can update the following values to match your application needs.
+        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
         minSdkVersion 21
-        targetSdkVersion 32
+        targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -66,12 +68,11 @@ android {
        }
     }
 
-   buildTypes {
-       release {
-           signingConfig signingConfigs.release
-       }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
     }
-
 }
 
 flutter {

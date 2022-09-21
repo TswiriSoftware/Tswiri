@@ -1,7 +1,7 @@
+import 'package:tswiri/views/settings/backup/google_drive_manager_view.dart';
+import 'package:tswiri/views/settings/backup/manual_backup_view.dart';
 import 'package:flutter/material.dart';
-import 'package:sunbird/views/settings/backup/google_drive_manager_view.dart';
-import 'package:sunbird/views/settings/backup/manual_backup_view.dart';
-import 'package:sunbird/views/utilities/navigator_card.dart';
+import 'package:tswiri_widgets/widgets/general/navigation_card.dart';
 
 class BackupOptionsView extends StatefulWidget {
   const BackupOptionsView({Key? key}) : super(key: key);
@@ -41,12 +41,14 @@ class _BackupOptionsViewState extends State<BackupOptionsView> {
             const EdgeInsets.only(top: 8.0, bottom: 100, left: 8, right: 8),
         crossAxisCount: 2,
         children: const [
-          NavigatorCard(
+          NavigationCard(
+            key: Key('manual_backup'),
             label: 'Manual Backup',
             icon: Icons.backup,
             viewPage: BackupView(),
           ),
-          NavigatorCard(
+          NavigationCard(
+            key: Key('google_drive_backup'),
             label: 'Google Drive Backup',
             icon: Icons.drive_folder_upload,
             viewPage: GoogleDriveView(),

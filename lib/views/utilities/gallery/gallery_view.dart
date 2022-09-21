@@ -1,8 +1,8 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:tswiri/views/photo/photo_edit_view.dart';
 import 'package:flutter/material.dart';
-import 'package:sunbird/isar/isar_database.dart';
-import 'package:sunbird/widgets/photo/photo_edit_view.dart';
+import 'package:tswiri_database/export.dart';
 
 class GalleryView extends StatefulWidget {
   const GalleryView({Key? key}) : super(key: key);
@@ -105,7 +105,7 @@ class _GalleryViewState extends State<GalleryView> {
           }
         });
         _updatePhoto();
-        log('left');
+        // log('left');
       },
       onRight: () {
         setState(() {

@@ -6,11 +6,10 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:sunbird/globals/globals_export.dart';
-import 'package:sunbird/isar/isar_database.dart';
-import 'package:sunbird/functions/backup_restore_functions.dart';
-import 'package:tswiri_base/colors/colors.dart';
+import 'package:tswiri_database/functions/backup/backup_restore_functions.dart';
+import 'package:tswiri_widgets/colors/colors.dart';
 
 class BackupView extends StatefulWidget {
   const BackupView({Key? key}) : super(key: key);
@@ -23,8 +22,9 @@ class _BackupViewState extends State<BackupView> {
   //Shows if the app is busy with a process.
   bool _isBusy = false;
   final TextEditingController _textFieldController = TextEditingController();
-  double progress = 0.0;
   File? selectedFile;
+
+  String? currentEvent;
 
   @override
   void initState() {
@@ -46,6 +46,14 @@ class _BackupViewState extends State<BackupView> {
         style: Theme.of(context).textTheme.titleMedium,
       ),
       centerTitle: true,
+      actions: [
+        // IconButton(
+        //   onPressed: () {
+        //     //TODO: Inform user that restoring large files can take a long time.
+        //   },
+        //   icon: const Icon(Icons.info),
+        // )
+      ],
     );
   }
 
@@ -57,7 +65,14 @@ class _BackupViewState extends State<BackupView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const CircularProgressIndicator(),
-            Text("${progress.toStringAsFixed(2)}%")
+            Card(
+                child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                currentEvent ?? 'busy',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            )),
           ],
         ),
       );
@@ -89,12 +104,12 @@ class _BackupViewState extends State<BackupView> {
 
             if (fileName != null) {
               File? file = await createBackupFile(
-                fileName: fileName,
-                progress: (value) {
+                progressCallback: (event) {
                   setState(() {
-                    progress = value;
+                    currentEvent = event;
                   });
                 },
+                fileName: fileName,
               );
 
               if (file != null) {
@@ -110,7 +125,6 @@ class _BackupViewState extends State<BackupView> {
               }
             }
 
-            progress = 0.0;
             setIsBusy();
           },
           child: Text('Create Backup',
@@ -135,6 +149,7 @@ class _BackupViewState extends State<BackupView> {
                   )
                 : Text(selectedFile!.path.split('/').last),
             trailing: ElevatedButton(
+              key: const Key('restore_backup'),
               onPressed: () async {
                 await selectBackupFile();
               },
@@ -151,12 +166,17 @@ class _BackupViewState extends State<BackupView> {
                     setIsBusy();
                     if (selectedFile != null) {
                       bool? restored = await restoreBackupFile(
-                          backupFile: selectedFile!,
-                          progress: (value) {
-                            setState(() {
-                              progress = value;
-                            });
+                        backupFile: selectedFile!,
+                        progressCallback: (event) {
+                          setState(() {
+                            currentEvent = event;
                           });
+                        },
+                      );
+
+                      setState(() {
+                        currentEvent = null;
+                      });
 
                       if (mounted) {
                         switch (restored) {
@@ -268,6 +288,8 @@ class _BackupViewState extends State<BackupView> {
   Future<void> selectBackupFile() async {
     setState(() {
       selectedFile = null;
+      _isBusy = true;
+      currentEvent = 'loading';
     });
 
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -279,6 +301,9 @@ class _BackupViewState extends State<BackupView> {
       selectedFile = File(result.files.single.path!);
     }
 
-    setState(() {});
+    setState(() {
+      _isBusy = false;
+      currentEvent = null;
+    });
   }
 }
