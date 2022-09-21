@@ -265,13 +265,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_archive:
-    dependency: transitive
-    description:
-      name: flutter_archive
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "5.0.0"
   flutter_driver:
     dependency: transitive
     description: flutter
@@ -964,8 +957,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: stable
-      resolved-ref: ce27ff04ec2c31749cbd8b1a6189c5bfd2b31624
+      ref: master
+      resolved-ref: baa08cacba20de1386182b04dcf1dcc8c923a475
       url: "https://github.com/TswiriSoftware/tswiri_database.git"
     source: git
     version: "0.0.1"
@@ -973,7 +966,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: stable
+      ref: master
       resolved-ref: "81265528e405aa3531971c56f00b038eec3debd6"
       url: "https://github.com/TswiriSoftware/tswiri_widgets.git"
     source: git
