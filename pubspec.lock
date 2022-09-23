@@ -265,6 +265,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_archive:
+    dependency: transitive
+    description:
+      name: flutter_archive
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.0.0"
   flutter_driver:
     dependency: transitive
     description: flutter
@@ -499,7 +506,7 @@ packages:
       name: json_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.7.0"
+    version: "4.6.0"
   lints:
     dependency: transitive
     description:
@@ -639,7 +646,7 @@ packages:
       name: permission_handler
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "10.0.1"
+    version: "10.0.0"
   permission_handler_android:
     dependency: transitive
     description:
@@ -660,7 +667,7 @@ packages:
       name: permission_handler_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.7.1"
+    version: "3.7.0"
   permission_handler_windows:
     dependency: transitive
     description:
@@ -772,7 +779,7 @@ packages:
       name: share_plus
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.4.0"
+    version: "4.2.0"
   share_plus_linux:
     dependency: transitive
     description:
@@ -870,7 +877,7 @@ packages:
       name: shelf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.4.0"
+    version: "1.3.2"
   shelf_web_socket:
     dependency: transitive
     description:
@@ -957,8 +964,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: "48017b4ded0e6a2ef6114505a48d8079b20bc927"
+      ref: stable
+      resolved-ref: ce27ff04ec2c31749cbd8b1a6189c5bfd2b31624
       url: "https://github.com/TswiriSoftware/tswiri_database.git"
     source: git
     version: "0.0.1"
@@ -966,7 +973,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
+      ref: stable
       resolved-ref: "81265528e405aa3531971c56f00b038eec3debd6"
       url: "https://github.com/TswiriSoftware/tswiri_widgets.git"
     source: git
