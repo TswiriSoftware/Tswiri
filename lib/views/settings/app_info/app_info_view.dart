@@ -1,11 +1,9 @@
-import 'dart:developer';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:tswiri_database/functions/other/clear_temp_directory.dart';
+import 'package:tswiri_database/functions/general/clear_temp_directory.dart';
 import 'package:tswiri_widgets/colors/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:tswiri_database/functions/general/calculate_directory_size.dart';
 
 class AppInfoView extends StatefulWidget {
   const AppInfoView({Key? key}) : super(key: key);
@@ -170,51 +168,11 @@ class _AppInfoViewState extends State<AppInfoView> {
 }
 
 Future<double> supportDirSize() async {
-  String dirPath = (await getApplicationSupportDirectory()).path;
-
-  // int fileNum = 0;
-  int totalSize = 0;
-  var dir = Directory(dirPath);
-  try {
-    if (dir.existsSync()) {
-      dir
-          .listSync(recursive: true, followLinks: false)
-          .forEach((FileSystemEntity entity) {
-        if (entity is File) {
-          // fileNum++;
-          totalSize += entity.lengthSync();
-        }
-      });
-    }
-  } catch (e) {
-    print(e.toString());
-  }
-
-  return totalSize * 0.000000001;
+  return calculateDirectorySize(await getApplicationSupportDirectory());
 }
 
 Future<double> tempDirSize() async {
-  String dirPath = (await getTemporaryDirectory()).path;
-
-  // int fileNum = 0;
-  int totalSize = 0;
-  var dir = Directory(dirPath);
-  try {
-    if (dir.existsSync()) {
-      dir
-          .listSync(recursive: true, followLinks: false)
-          .forEach((FileSystemEntity entity) {
-        if (entity is File) {
-          // fileNum++;
-          totalSize += entity.lengthSync();
-        }
-      });
-    }
-  } catch (e) {
-    print(e.toString());
-  }
-
-  return totalSize * 0.000000001;
+  return calculateDirectorySize(await getTemporaryDirectory());
 }
 
 

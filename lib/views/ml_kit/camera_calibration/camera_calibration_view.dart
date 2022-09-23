@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:sensors_plus/sensors_plus.dart';
-import 'package:tswiri_database/functions/other/check_camera_feed.dart';
+import 'package:tswiri_database/functions/general/check_camera_feed.dart';
 import 'package:tswiri_database/models/camera/camera_calibration.dart';
 import 'package:tswiri_widgets/colors/colors.dart';
 

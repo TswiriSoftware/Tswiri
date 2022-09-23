@@ -7,7 +7,7 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 
 import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/functions/isar/get_functions.dart';
-import 'package:tswiri_database/functions/other/get_model.dart';
+import 'package:tswiri_database/functions/general/get_model.dart';
 import 'package:tswiri_database/models/image_data/image_data.dart';
 import 'package:tswiri_database/models/settings/app_settings.dart';
 import 'package:tswiri_database/widgets/ml_label_paint/ml_label_paint.dart';

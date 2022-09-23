@@ -7,7 +7,7 @@ import 'package:google_mlkit_object_detection/google_mlkit_object_detection.dart
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
 import 'package:tswiri_database/export.dart';
-import 'package:tswiri_database/functions/other/coordinate_translator.dart';
+import 'package:tswiri_database/functions/general/coordinate_translator.dart';
 import 'package:tswiri_database/models/image_data/image_data.dart';
 import 'package:tswiri_database/models/settings/app_settings.dart';
 

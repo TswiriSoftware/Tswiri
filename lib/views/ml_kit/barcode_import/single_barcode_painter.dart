@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
-import 'package:tswiri_database/functions/other/coordinate_translator.dart';
+import 'package:tswiri_database/functions/general/coordinate_translator.dart';
 
 class BarcodeImportPainter extends CustomPainter {
   BarcodeImportPainter({

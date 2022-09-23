@@ -6,7 +6,7 @@ import 'package:flutter/painting.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/functions/data/data_processing.dart';
-import 'package:tswiri_database/functions/other/coordinate_translator.dart';
+import 'package:tswiri_database/functions/general/coordinate_translator.dart';
 import 'package:tswiri_database/mobile_database.dart';
 import 'package:tswiri_database/models/acclerometer/acceleromter_data.dart';
 import 'package:tswiri_database/models/inter_barcode/on_image_barcode_data.dart';

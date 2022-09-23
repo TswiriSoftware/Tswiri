@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'dart:math' as math;
 
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
-import 'package:tswiri_database/functions/other/coordinate_translator.dart';
+import 'package:tswiri_database/functions/general/coordinate_translator.dart';
 
 void gridScanningImageProcessor(SendPort sendPort) {
   ReceivePort receivePort = ReceivePort();

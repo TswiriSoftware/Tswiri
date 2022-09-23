@@ -82,7 +82,7 @@ class _NavigatorViewState extends State<NavigatorView> {
       [
         1, //[0] ID
         _uiPort1.sendPort, //[1] SendPort
-        isarDirectory!.path, //[2] Isar Directory.
+        spaceDirectory!.path, //[2] Isar Directory.
         focalLength, //[3] focalLength
         _catalogedContainer.barcodeUID, //[4] selectedContainer BarcodeUID
         defaultBarcodeSize, //[5]  Default Barcode Size.
@@ -95,7 +95,7 @@ class _NavigatorViewState extends State<NavigatorView> {
       [
         2, //[0] ID
         _uiPort2.sendPort, //[1] SendPort
-        isarDirectory!.path, //[2] Isar Directory
+        spaceDirectory!.path, //[2] Isar Directory
         focalLength, //[3] focalLength
         _catalogedContainer.barcodeUID, //[4] selectedContainer BarcodeUID
         defaultBarcodeSize, //[5]  Default Barcode Size.
@@ -108,7 +108,7 @@ class _NavigatorViewState extends State<NavigatorView> {
       gridProcessor,
       [
         _uiPort3.sendPort,
-        isarDirectory!.path,
+        spaceDirectory!.path,
         focalLength,
         defaultBarcodeSize,
       ],

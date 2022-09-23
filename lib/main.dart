@@ -8,7 +8,7 @@ import 'package:tswiri/views/settings/settings_view.dart';
 import 'package:tswiri/views/utilities/utilities_view.dart';
 import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/functions/isar/create_functions.dart';
-import 'package:tswiri_database/functions/other/clear_temp_directory.dart';
+import 'package:tswiri_database/functions/general/clear_temp_directory.dart';
 import 'package:tswiri_database/mobile_database.dart';
 import 'package:tswiri_database/models/search/shopping_cart.dart';
 import 'package:tswiri_database/models/settings/app_settings.dart';
@@ -26,8 +26,9 @@ Future<void> main() async {
   await loadAppSettings();
 
   //Initiate Isar Storage Directories.
-  await initiateIsarDirectory();
+  await initiateSpaceDirectory();
   await initiatePhotoStorage();
+  await initiateThumnailStorage();
 
   //Initiate Isar.
   isar = initiateMobileIsar();
@@ -184,6 +185,7 @@ class _MyHomePageState extends State<MyHomePage>
           ),
           actions: <Widget>[
             TextButton(
+              key: const Key('noted'),
               child: const Text('Noted'),
               onPressed: () async {
                 SharedPreferences prefs = await SharedPreferences.getInstance();

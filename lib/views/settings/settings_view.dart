@@ -493,7 +493,7 @@ class _SettingsViewState extends State<SettingsView> {
   Widget _manageBackup() {
     return Card(
       child: InkWell(
-        key: const Key('manage_backup'),
+        key: const Key('manage_backup_view'),
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -519,6 +519,7 @@ class _SettingsViewState extends State<SettingsView> {
   Widget _appInfo() {
     return Card(
       child: InkWell(
+        key: const Key('app_info_view'),
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(

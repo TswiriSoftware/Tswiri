@@ -6,9 +6,14 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/functions/backup/backup_restore_functions.dart';
+import 'package:tswiri_database/functions/backup/restore_backup.dart';
+import 'package:tswiri_database/mobile_database.dart';
+import 'package:tswiri_database/test_functions/get_file_from_assets.dart';
 import 'package:tswiri_widgets/colors/colors.dart';
 
 class BackupView extends StatefulWidget {
@@ -53,6 +58,7 @@ class _BackupViewState extends State<BackupView> {
         //   },
         //   icon: const Icon(Icons.info),
         // )
+        _importAssetDatabase(),
       ],
     );
   }
@@ -64,7 +70,9 @@ class _BackupViewState extends State<BackupView> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircularProgressIndicator(),
+            const CircularProgressIndicator(
+              key: Key('progress_indicator'),
+            ),
             Card(
                 child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -305,5 +313,31 @@ class _BackupViewState extends State<BackupView> {
       _isBusy = false;
       currentEvent = null;
     });
+  }
+
+  Widget _importAssetDatabase() {
+    return SizedBox(
+      width: 0.1,
+      height: 0.1,
+      child: InkWell(
+        key: const Key('import_from_asset'),
+        onTap: () async {
+          File restoreFile =
+              await getFileFromAssets('testing/main_space_9999_99_99_v1.zip');
+
+          await isar!.close();
+
+          await restoreBackupZipFile(
+            spacePath: spaceDirectory!.path,
+            temporaryDirectoryPath: (await getTemporaryDirectory()).path,
+            selectedFilePath: restoreFile.path,
+            isarVersion: '1',
+            eventCallback: (event) => log(event.toString()),
+          );
+
+          isar = initiateMobileIsar();
+        },
+      ),
+    );
   }
 }

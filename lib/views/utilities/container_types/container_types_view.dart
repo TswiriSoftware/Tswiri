@@ -1,7 +1,7 @@
 import 'package:tswiri/views/utilities/container_types/container_type_editor_view.dart';
 import 'package:flutter/material.dart';
 import 'package:tswiri_database/export.dart';
-import 'package:tswiri_database/functions/other/capitalize_first_character.dart';
+import 'package:tswiri_database/functions/general/capitalize_first_character.dart';
 import 'package:tswiri_database/models/settings/global_settings.dart';
 
 class ContainerTypesView extends StatefulWidget {
