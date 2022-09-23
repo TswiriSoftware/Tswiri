@@ -70,6 +70,7 @@ android {
 
     buildTypes {
         release {
+            ndk.abiFilters 'x86', 'x86_64'
             signingConfig signingConfigs.release
         }
     }
