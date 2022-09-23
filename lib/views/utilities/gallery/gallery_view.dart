@@ -76,6 +76,7 @@ class _GalleryViewState extends State<GalleryView> {
 
   Widget _gridCard(Photo photo, int index) {
     return GestureDetector(
+      key: Key('photo_$index'),
       onTap: () => _selectPhoto(index),
       child: Card(
         child: Padding(

@@ -47,31 +47,37 @@ class _UtilitiesViewState extends State<UtilitiesView> {
         crossAxisCount: 2,
         children: const [
           NavigationCard(
+            key: Key('barcodes'),
             label: 'Barcodes',
             icon: Icons.qr_code,
             viewPage: BarcodesView(),
           ),
           NavigationCard(
+            key: Key('barcode_generator'),
             label: 'Barcode Generator',
             icon: Icons.scanner_sharp,
             viewPage: GeneratorView(),
           ),
           NavigationCard(
+            key: Key('camera_calibration'),
             label: 'Camera Calibration (WIP)',
             icon: Icons.camera_sharp,
             viewPage: CalibrationView(),
           ),
           NavigationCard(
+            key: Key('gallery'),
             label: 'Gallery',
             icon: Icons.photo_sharp,
             viewPage: GalleryView(),
           ),
           NavigationCard(
+            key: Key('container_types'),
             label: 'Container Types',
             icon: Icons.code_sharp,
             viewPage: ContainerTypesView(),
           ),
           NavigationCard(
+            key: Key('grids'),
             label: 'Grids',
             icon: Icons.grid_4x4_sharp,
             viewPage: GridsView(),

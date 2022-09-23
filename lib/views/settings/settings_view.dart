@@ -51,6 +51,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _body() {
     return SingleChildScrollView(
+      key: const Key('scroll_view'),
       padding: const EdgeInsets.only(bottom: 150),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -81,7 +82,9 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _advancedSettings() {
     return Card(
+      key: const Key('advanced_settings'),
       child: ExpansionTile(
+        key: const Key('advanced_settings_tile'),
         title: Text(
           'Advanced',
           style: Theme.of(context).textTheme.bodyLarge,
@@ -98,7 +101,9 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _flashSettings() {
     return Card(
+      key: const Key('flash_settings'),
       child: ExpansionTile(
+        key: const Key('flash_settings_tile'),
         title: Text(
           'Flash Settings',
           style: Theme.of(context).textTheme.bodyLarge,
@@ -115,6 +120,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _photoFlash() {
     return Card(
+      key: const Key('photo_flash'),
       color: background[300],
       child: ListTile(
         title: Text(
@@ -152,6 +158,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _gridFlash() {
     return Card(
+      key: const Key('photo_flash'),
       color: background[300],
       child: ListTile(
         title: Text(
@@ -189,6 +196,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _barcodeFlash() {
     return Card(
+      key: const Key('photo_flash'),
       color: background[300],
       child: ListTile(
         title: Text(
@@ -226,6 +234,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _navigationFlash() {
     return Card(
+      key: const Key('photo_flash'),
       color: background[300],
       child: ListTile(
         title: Text(
@@ -263,6 +272,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _defaultQRCodeSize() {
     return Card(
+      key: const Key('default_size'),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         child: Row(
@@ -314,6 +324,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _vibration() {
     return Card(
+      key: const Key('vibration'),
       child: ListTile(
         title: Text(
           'Vibration',
@@ -334,6 +345,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _colorMode() {
     return Card(
+      key: const Key('color_mode'),
       child: ListTile(
         title: Text(
           'Color Mode',
