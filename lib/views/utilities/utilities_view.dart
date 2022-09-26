@@ -79,7 +79,7 @@ class _UtilitiesViewState extends State<UtilitiesView> {
           NavigationCard(
             key: Key('grids'),
             label: 'Grids',
-            icon: Icons.grid_4x4_sharp,
+            icon: Icons.border_clear,
             viewPage: GridsView(),
           ),
         ],
