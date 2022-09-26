@@ -158,7 +158,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _gridFlash() {
     return Card(
-      key: const Key('photo_flash'),
+      key: const Key('grid_flash'),
       color: background[300],
       child: ListTile(
         title: Text(
@@ -196,7 +196,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _barcodeFlash() {
     return Card(
-      key: const Key('photo_flash'),
+      key: const Key('barcode_flash'),
       color: background[300],
       child: ListTile(
         title: Text(
@@ -234,7 +234,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _navigationFlash() {
     return Card(
-      key: const Key('photo_flash'),
+      key: const Key('navigation_flash'),
       color: background[300],
       child: ListTile(
         title: Text(
@@ -367,6 +367,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _imageLabeling() {
     return Card(
+      key: const Key('image_labeling'),
       color: background[300],
       child: Column(
         children: [
@@ -425,6 +426,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _objectDetection() {
     return Card(
+      key: const Key('object_detection'),
       color: background[300],
       child: Column(
         children: [
@@ -483,6 +485,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _textDetection() {
     return Card(
+      key: const Key('text_detection'),
       color: background[300],
       child: ListTile(
         title: Text(
@@ -556,6 +559,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _spaces() {
     return Card(
+      key: const Key('spaces'),
       color: background[300],
       child: InkWell(
         onTap: () {

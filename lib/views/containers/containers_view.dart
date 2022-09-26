@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:tswiri/views/containers/container/container_view.dart';
 import 'package:tswiri/views/containers/new_container/new_container_view.dart';
 import 'package:tswiri/views/ml_kit/barcode_scanner/single_scanner_view.dart';
@@ -272,7 +274,9 @@ class _ContainersViewState extends State<ContainersView> {
         } else if (index > 0) {
           CatalogedContainer catalogedContainer =
               _containerSearch.searchResults[index - 1];
+
           return ContainerCard(
+            key: Key('container_$index'),
             catalogedContainer: catalogedContainer,
             isSelected: selectedContainers.contains(catalogedContainer),
             onTap: () {

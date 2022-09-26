@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:patrol/patrol.dart';
 import 'package:tswiri/main.dart' as app;
 
 import 'test_import_function.dart';
@@ -13,24 +14,37 @@ void main() {
     testWidgets('verify-import-function', (tester) async {
       app.main();
 
+      await tester.pumpAndSettle(const Duration(seconds: 1));
+      bool foundBetaPopup = tester.any(find.byKey(const Key('noted')));
+
+      if (foundBetaPopup) {
+        await tester.tap(find.byKey(const Key('noted')));
+        await tester.pumpAndSettle();
+      }
+
       //Test the manualImport functionality.
       await testImportFunction(tester);
       await tester.pumpAndSettle(const Duration(seconds: 1));
 
-      //Test the utilities view.
-      await testUtilitiesView(tester);
+      // //Test the utilities view.
+      // await testUtilitiesView(tester);
+      // await tester.pumpAndSettle(const Duration(seconds: 1));
+
+      // //Test the app info screen.
+      // await testAppInfoScreen(tester);
+      // await tester.pumpAndSettle(const Duration(seconds: 1));
+
+      // //Test the gallery view.
+      // await testGalleryView(tester);
+      // await tester.pumpAndSettle(const Duration(seconds: 1));
+
+      // //TODO: Fix
+      // await testSettignsView(tester);
+      // await tester.pumpAndSettle(const Duration(seconds: 1));
+
+      await testContainersView(tester);
       await tester.pumpAndSettle(const Duration(seconds: 1));
 
-      //Test the app info screen.
-      await testAppInfoScreen(tester);
-      await tester.pumpAndSettle(const Duration(seconds: 1));
-
-      //Test the gallery view.
-      await testGalleryView(tester);
-      await tester.pumpAndSettle(const Duration(seconds: 1));
-
-      await testSettignsView(tester);
-      await tester.pumpAndSettle(const Duration(seconds: 1));
       //TODO: add more tests.
     });
   });
@@ -40,17 +54,31 @@ void main() {
 Future<void> testContainersView(WidgetTester tester) async {
   //Navigate to the utilities tab.
   await tester.tap(find.byKey(
-    const Key('settings_tab'),
+    const Key('containers_tab'),
   ));
   await tester.pumpAndSettle();
 
-  // //Check if all imported photos are displayed.
-  // expect(find.byKey(const Key('barcodes')), findsOneWidget);
-  // expect(find.byKey(const Key('barcode_generator')), findsOneWidget);
-  // expect(find.byKey(const Key('camera_calibration')), findsOneWidget);
-  // expect(find.byKey(const Key('gallery')), findsOneWidget);
-  // expect(find.byKey(const Key('container_types')), findsOneWidget);
-  // expect(find.byKey(const Key('grids')), findsOneWidget);
+  await tester.tap(find.text('Shelf 1'));
+  await tester.pumpAndSettle();
+
+  expect(find.byKey(const Key('name_text_field')), findsOneWidget);
+  expect(find.byKey(const Key('description_text_field')), findsOneWidget);
+  expect(find.byKey(const Key('parent_card')), findsOneWidget);
+  expect(find.byKey(const Key('tags_card')), findsOneWidget);
+  expect(find.byKey(const Key('photos_card')), findsOneWidget);
+  expect(find.byKey(const Key('children_card')), findsOneWidget);
+  expect(find.byKey(const Key('grid_card')), findsOneWidget);
+
+  // await tester.dragUntilVisible(
+  //   find.byKey(const Key('advanced_settings')),
+  //   find.byType(SingleChildScrollView),
+  //   const Offset(0, 500),
+  // );
+  // await tester.pumpAndSettle();
+
+  //Navigate back.
+  await tester.pageBack();
+  await tester.pumpAndSettle();
 
   //Navigate back to the search tab.
   await tester.tap(find.byKey(
@@ -96,26 +124,34 @@ Future<void> testSettignsView(WidgetTester tester) async {
   expect(find.byKey(const Key('vibration')), findsOneWidget);
   expect(find.byKey(const Key('color_mode')), findsOneWidget);
   expect(find.byKey(const Key('default_size')), findsOneWidget);
-
   expect(find.byKey(const Key('flash_settings')), findsOneWidget);
   expect(find.byKey(const Key('advanced_settings')), findsOneWidget);
 
-  await tester.tap(find.byKey(const Key('flash_settings_tile')));
+  await tester.tap(find.text('Flash Settings'));
   await tester.pumpAndSettle();
 
-  await tester.scrollUntilVisible(
-    find.byKey(const Key('photo_flash')),
-    500.0,
-    scrollable: find.byKey(const Key('advanced_settings')),
+  await tester.dragUntilVisible(
+    find.byKey(const Key('advanced_settings')),
+    find.byType(SingleChildScrollView),
+    const Offset(0, 500),
   );
   await tester.pumpAndSettle();
 
   expect(find.text('OFF'), findsNWidgets(4));
 
-  await tester.tap(find.byKey(const Key('flash_settings_tile')));
-  await tester.pumpAndSettle();
   await tester.tap(find.byKey(const Key('advanced_settings')));
   await tester.pumpAndSettle();
+
+  await tester.dragUntilVisible(
+    find.byKey(const Key('text_detection')),
+    find.byType(SingleChildScrollView),
+    const Offset(0, 500),
+  );
+
+  expect(find.byKey(const Key('spaces')), findsOneWidget);
+  expect(find.byKey(const Key('image_labeling')), findsOneWidget);
+  expect(find.byKey(const Key('object_detection')), findsOneWidget);
+  expect(find.byKey(const Key('text_detection')), findsOneWidget);
 
   //Navigate back to the search tab.
   await tester.tap(find.byKey(

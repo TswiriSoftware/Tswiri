@@ -243,6 +243,7 @@ class _ContainerViewState extends State<ContainerView> {
 
   Widget _nameTextField() {
     return CustomTextField(
+      key: const Key('name_text_field'),
       label: 'name',
       initialValue: _catalogedContainer.name,
       onSubmitted: (value) {
@@ -261,6 +262,7 @@ class _ContainerViewState extends State<ContainerView> {
 
   Widget _descriptionTextField() {
     return CustomTextField(
+      key: const Key('description_text_field'),
       label: 'Description',
       initialValue: _catalogedContainer.description,
       onSubmitted: (value) {
@@ -279,6 +281,7 @@ class _ContainerViewState extends State<ContainerView> {
 
   Widget _parentCard() {
     return Card(
+      key: const Key('parent_card'),
       child: ExpansionTile(
         initiallyExpanded: parentExpanded,
         title: Text(
@@ -382,6 +385,7 @@ class _ContainerViewState extends State<ContainerView> {
 
   Widget _tagsCard() {
     return Card(
+      key: const Key('tags_card'),
       child: ExpansionTile(
         initiallyExpanded: tagsExpanded,
         title: Text(
@@ -444,6 +448,7 @@ class _ContainerViewState extends State<ContainerView> {
 
   Widget _photosCard() {
     return Card(
+      key: const Key('photos_card'),
       child: ExpansionTile(
         initiallyExpanded: photosExpaned,
         onExpansionChanged: (value) {
@@ -560,6 +565,7 @@ class _ContainerViewState extends State<ContainerView> {
 
   Widget _containerChildren() {
     return Card(
+      key: const Key('children_card'),
       child: ExpansionTile(
         initiallyExpanded: childrenExpanded,
         onExpansionChanged: (value) {
@@ -666,6 +672,7 @@ class _ContainerViewState extends State<ContainerView> {
 
   Widget _gridCard() {
     return Card(
+      key: const Key('grid_card'),
       child: ExpansionTile(
         title: Text(
           'Grid',

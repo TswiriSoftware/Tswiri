@@ -9,14 +9,6 @@ import 'package:flutter_test/flutter_test.dart';
 ///
 ///5. Check if search screen is populated.
 Future<void> testImportFunction(WidgetTester tester) async {
-  await tester.pumpAndSettle(const Duration(seconds: 1));
-  bool foundBetaPopup = tester.any(find.byKey(const Key('noted')));
-
-  if (foundBetaPopup) {
-    await tester.tap(find.byKey(const Key('noted')));
-    await tester.pumpAndSettle();
-  }
-
   //Check that the tab bar is visible.
   await tester.pumpAndSettle();
   expect(find.byKey(const Key('tab_bar')), findsOneWidget);
