@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:patrol/patrol.dart';
 import 'package:tswiri/main.dart' as app;
 
 import 'test_import_function.dart';
@@ -14,7 +13,7 @@ void main() {
     testWidgets('verify-import-function', (tester) async {
       app.main();
 
-      await tester.pumpAndSettle(const Duration(seconds: 1));
+      await tester.pumpAndSettle(const Duration(milliseconds: 150));
       bool foundBetaPopup = tester.any(find.byKey(const Key('noted')));
 
       if (foundBetaPopup) {
@@ -24,26 +23,27 @@ void main() {
 
       //Test the manualImport functionality.
       await testImportFunction(tester);
-      await tester.pumpAndSettle(const Duration(seconds: 1));
+      await tester.pumpAndSettle(const Duration(milliseconds: 75));
 
-      // //Test the utilities view.
-      // await testUtilitiesView(tester);
-      // await tester.pumpAndSettle(const Duration(seconds: 1));
+      //Test the utilities view.
+      await testUtilitiesView(tester);
+      await tester.pumpAndSettle(const Duration(milliseconds: 75));
 
-      // //Test the app info screen.
-      // await testAppInfoScreen(tester);
-      // await tester.pumpAndSettle(const Duration(seconds: 1));
+      //Test the app info screen.
+      await testAppInfoScreen(tester);
+      await tester.pumpAndSettle(const Duration(milliseconds: 75));
 
-      // //Test the gallery view.
-      // await testGalleryView(tester);
-      // await tester.pumpAndSettle(const Duration(seconds: 1));
+      //Test the gallery view.
+      await testGalleryView(tester);
+      await tester.pumpAndSettle(const Duration(milliseconds: 75));
 
-      // //TODO: Fix
-      // await testSettignsView(tester);
-      // await tester.pumpAndSettle(const Duration(seconds: 1));
+      //Test settings view.
+      await testSettignsView(tester);
+      await tester.pumpAndSettle(const Duration(milliseconds: 75));
 
+      //Test containers view.
       await testContainersView(tester);
-      await tester.pumpAndSettle(const Duration(seconds: 1));
+      await tester.pumpAndSettle(const Duration(milliseconds: 75));
 
       //TODO: add more tests.
     });
@@ -69,12 +69,59 @@ Future<void> testContainersView(WidgetTester tester) async {
   expect(find.byKey(const Key('children_card')), findsOneWidget);
   expect(find.byKey(const Key('grid_card')), findsOneWidget);
 
-  // await tester.dragUntilVisible(
-  //   find.byKey(const Key('advanced_settings')),
-  //   find.byType(SingleChildScrollView),
-  //   const Offset(0, 500),
-  // );
-  // await tester.pumpAndSettle();
+  //Parent Card.
+  await tester.tap(find.byKey(const Key('parent_card')));
+  await tester.pumpAndSettle(const Duration(milliseconds: 75));
+
+  expect(find.text('Scan Parent'), findsOneWidget);
+
+  await tester.tap(find.byKey(const Key('parent_card')));
+  await tester.pumpAndSettle(const Duration(milliseconds: 75));
+
+  //Tags Card
+  await tester.tap(find.byKey(const Key('tags_card')));
+  await tester.pumpAndSettle(const Duration(milliseconds: 75));
+
+  expect(find.text('+'), findsOneWidget);
+
+  await tester.tap(find.byKey(const Key('tags_card')));
+  await tester.pumpAndSettle(const Duration(milliseconds: 75));
+
+  //Photos Card.
+  await tester.tap(find.byKey(const Key('photos_card')));
+  await tester.pumpAndSettle(const Duration(milliseconds: 75));
+
+  // expect(find.text('+'), findsOneWidget);
+
+  await tester.tap(find.text('Photos'));
+  await tester.pumpAndSettle(const Duration(milliseconds: 75));
+
+  //Children Card.
+  await tester.tap(find.byKey(const Key('children_card')));
+  await tester.pumpAndSettle(const Duration(milliseconds: 75));
+
+  // expect(find.text('Box 1'), findsOneWidget);
+  // expect(find.text('Box 2'), findsOneWidget);
+  // expect(find.text('Box 3'), findsOneWidget);
+
+  await tester.tap(find.text('Children'));
+  await tester.pumpAndSettle(const Duration(milliseconds: 75));
+
+  //Grid Card.
+  await tester.tap(find.byKey(const Key('grid_card')));
+  await tester.pumpAndSettle(const Duration(milliseconds: 75));
+
+  expect(find.text('Grid View'), findsOneWidget);
+
+  await tester.tap(find.text('Grid View'));
+  await tester.pumpAndSettle(const Duration(milliseconds: 75));
+  expect(find.text('Grid: 1'), findsOneWidget);
+
+  await tester.pageBack();
+  await tester.pumpAndSettle(const Duration(milliseconds: 75));
+
+  await tester.tap(find.text('Grid'));
+  await tester.pumpAndSettle(const Duration(milliseconds: 75));
 
   //Navigate back.
   await tester.pageBack();

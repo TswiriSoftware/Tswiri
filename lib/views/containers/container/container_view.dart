@@ -403,6 +403,7 @@ class _ContainerViewState extends State<ContainerView> {
             children: [
               for (var e in assignedTags) _containerTagChip(e),
               ActionChip(
+                key: const Key('add_tag'),
                 label: Text(
                   '+',
                   style: Theme.of(context).textTheme.bodyMedium,
@@ -480,6 +481,7 @@ class _ContainerViewState extends State<ContainerView> {
 
   Widget _newPhotoCard() {
     return InkWell(
+      key: const Key('new_photo'),
       onTap: () async {
         //Await ImageData.
         ImageData? imageData = await Navigator.of(context).push(
@@ -680,6 +682,7 @@ class _ContainerViewState extends State<ContainerView> {
         ),
         children: [
           ElevatedButton(
+            key: const Key('grid_view'),
             onPressed: () {
               CatalogedCoordinate? catalogedCoordiante = isar!
                   .catalogedCoordinates
