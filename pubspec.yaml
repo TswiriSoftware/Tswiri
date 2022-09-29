@@ -1,5 +1,6 @@
 name: tswiri
 description: A new Flutter project.
+uses-material-design: true
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -67,7 +68,7 @@ dependencies:
     git:
       url: https://github.com/TswiriSoftware/tswiri_database.git
       ref: master 
-      
+    
   permission_handler: ^10.0.0
   url_launcher: ^6.1.5
   patrol: ^0.6.5
@@ -77,6 +78,7 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
