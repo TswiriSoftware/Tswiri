@@ -37,10 +37,6 @@ class _GeneratorViewState extends State<GeneratorView> {
   late List<BarcodeBatch> barcodeBatches =
       isar!.barcodeBatchs.where().findAllSync();
 
-  final TextEditingController _batchHeightController = TextEditingController();
-  final TextEditingController _batchWidthController = TextEditingController();
-  final FocusNode _batchHeightNode = FocusNode();
-  final FocusNode _batchWidthNode = FocusNode();
   bool isEditingSize = false;
 
   @override
@@ -388,7 +384,12 @@ class _GeneratorViewState extends State<GeneratorView> {
   }
 
   Widget _batch(BarcodeBatch batch) {
+    final TextEditingController batchHeightController = TextEditingController();
+    final TextEditingController batchWidthController = TextEditingController();
+    final FocusNode batchHeightNode = FocusNode();
+    final FocusNode batchWidthNode = FocusNode();
     return Card(
+      key: UniqueKey(),
       color: background[300],
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -443,14 +444,14 @@ class _GeneratorViewState extends State<GeneratorView> {
                 ),
                 Builder(builder: (context) {
                   if (isEditingSize == true) {
-                    _batchHeightController.text = batch.height.toString();
+                    batchHeightController.text = batch.height.toString();
                     return Row(
                       children: [
                         SizedBox(
                           width: 100,
                           child: TextField(
-                            controller: _batchHeightController,
-                            focusNode: _batchHeightNode,
+                            controller: batchHeightController,
+                            focusNode: batchHeightNode,
                             keyboardType: TextInputType.number,
                             onSubmitted: (value) {
                               double newSize =
@@ -497,7 +498,7 @@ class _GeneratorViewState extends State<GeneratorView> {
                     onTap: () {
                       setState(() {
                         isEditingSize = true;
-                        _batchHeightNode.requestFocus();
+                        batchHeightNode.requestFocus();
                       });
                     },
                     child: Column(
@@ -528,14 +529,14 @@ class _GeneratorViewState extends State<GeneratorView> {
                 ),
                 Builder(builder: (context) {
                   if (isEditingSize == true) {
-                    _batchWidthController.text = batch.width.toString();
+                    batchWidthController.text = batch.width.toString();
                     return Row(
                       children: [
                         SizedBox(
                           width: 100,
                           child: TextField(
-                            controller: _batchWidthController,
-                            focusNode: _batchWidthNode,
+                            controller: batchWidthController,
+                            focusNode: batchWidthNode,
                             keyboardType: TextInputType.number,
                             onSubmitted: (value) {
                               double newSize =
@@ -582,7 +583,7 @@ class _GeneratorViewState extends State<GeneratorView> {
                     onTap: () {
                       setState(() {
                         isEditingSize = true;
-                        _batchWidthNode.requestFocus();
+                        batchWidthNode.requestFocus();
                       });
                     },
                     child: Column(
