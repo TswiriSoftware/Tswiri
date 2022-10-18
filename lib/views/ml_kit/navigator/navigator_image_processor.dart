@@ -15,6 +15,7 @@ import 'dart:math' as math;
 
 import 'package:vector_math/vector_math_64.dart' as vm;
 
+@pragma('vm:entry-point')
 void navigationImageProcessor(List init) {
   //1. InitalMessage.
   int id = init[0]; //[0] ID.

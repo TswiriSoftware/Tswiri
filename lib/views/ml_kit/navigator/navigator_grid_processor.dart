@@ -10,6 +10,7 @@ import 'package:tswiri_database/models/inter_barcode/inter_barcode_vector.dart';
 import 'package:vector_math/vector_math_64.dart' as vm;
 
 ///This is a isolate that updates positions (improve this over time.)
+@pragma('vm:entry-point')
 void gridProcessor(List init) {
   //1. InitalMessage.
   SendPort sendPort = init[0]; //[0] SendPort.
