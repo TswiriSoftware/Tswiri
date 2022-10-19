@@ -73,6 +73,7 @@ class _MyHomePageState extends State<MyHomePage>
     vsync: this,
     length: 4,
     initialIndex: 1,
+    animationDuration: const Duration(milliseconds: 500),
   );
 
   bool isSearching = false;
