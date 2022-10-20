@@ -30,13 +30,13 @@ class _UtilitiesViewState extends State<UtilitiesView> {
 
   AppBar _appBar() {
     return AppBar(
-      title: Text(
-        'Utilities',
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
-      centerTitle: true,
-      actions: [],
-    );
+        // title: Text(
+        //   'Utilities',
+        //   style: Theme.of(context).textTheme.titleLarge,
+        // ),
+        // centerTitle: true,
+        // actions: [],
+        );
   }
 
   Widget _body() {

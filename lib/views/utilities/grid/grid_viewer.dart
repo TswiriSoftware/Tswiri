@@ -115,7 +115,7 @@ class _GirdViewerState extends State<GirdViewer> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Card(
-              color: background[300],
+              color: backgroundM2[300],
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height / 2,
@@ -246,7 +246,7 @@ class _GirdViewerState extends State<GirdViewer> {
         }
       },
       child: Card(
-        color: background[300],
+        color: backgroundM2[300],
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
@@ -273,7 +273,7 @@ class _GirdViewerState extends State<GirdViewer> {
 
   Widget _markerCard(Marker marker) {
     return Card(
-      color: background[300],
+      color: backgroundM2[300],
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -343,7 +343,7 @@ class _GirdViewerState extends State<GirdViewer> {
 
   Widget _originBarcode() {
     return Card(
-      color: background[300],
+      color: backgroundM2[300],
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -438,7 +438,7 @@ class _GirdViewerState extends State<GirdViewer> {
 
   Widget _parentBarcode() {
     return Card(
-      color: background[300],
+      color: backgroundM2[300],
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(

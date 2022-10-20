@@ -70,7 +70,7 @@ packages:
       name: build_config
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.1"
   build_daemon:
     dependency: transitive
     description:
@@ -91,14 +91,14 @@ packages:
       name: build_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.3.0"
+    version: "2.3.2"
   build_runner_core:
     dependency: transitive
     description:
       name: build_runner_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.2.4"
+    version: "7.2.6"
   built_collection:
     dependency: transitive
     description:
@@ -321,7 +321,7 @@ packages:
       name: frontend_server_client
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.3"
+    version: "3.0.0"
   fuchsia_remote_debug_protocol:
     dependency: transitive
     description: flutter
@@ -646,7 +646,7 @@ packages:
       name: permission_handler
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "10.1.0"
+    version: "10.2.0"
   permission_handler_android:
     dependency: transitive
     description:
@@ -963,20 +963,16 @@ packages:
   tswiri_database:
     dependency: "direct main"
     description:
-      path: "."
-      ref: stable
-      resolved-ref: f5f291c07484c6fc608d2b8095b1614dedb9696d
-      url: "https://github.com/TswiriSoftware/tswiri_database.git"
-    source: git
+      path: "packages/tswiri_database"
+      relative: true
+    source: path
     version: "0.0.1"
   tswiri_widgets:
     dependency: "direct main"
     description:
-      path: "."
-      ref: stable
-      resolved-ref: "81265528e405aa3531971c56f00b038eec3debd6"
-      url: "https://github.com/TswiriSoftware/tswiri_widgets.git"
-    source: git
+      path: "packages/tswiri_widgets"
+      relative: true
+    source: path
     version: "0.0.1"
   typed_data:
     dependency: transitive

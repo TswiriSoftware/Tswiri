@@ -43,7 +43,7 @@ class _GalleryViewState extends State<GalleryView> {
     return AppBar(
       title: Text(
         'Gallery',
-        style: Theme.of(context).textTheme.titleMedium,
+        style: Theme.of(context).textTheme.titleLarge,
       ),
       centerTitle: true,
       actions: [

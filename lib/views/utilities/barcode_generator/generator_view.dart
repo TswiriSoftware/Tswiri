@@ -57,7 +57,7 @@ class _GeneratorViewState extends State<GeneratorView> {
     return AppBar(
       title: Text(
         'Barcode Generator',
-        style: Theme.of(context).textTheme.titleMedium,
+        style: Theme.of(context).textTheme.titleLarge,
       ),
       centerTitle: true,
       actions: [
@@ -162,7 +162,7 @@ class _GeneratorViewState extends State<GeneratorView> {
 
   Widget _numberInput() {
     return Card(
-      color: background[300],
+      color: backgroundM2[300],
       child: SizedBox(
         width: 150,
         height: 150,
@@ -189,7 +189,7 @@ class _GeneratorViewState extends State<GeneratorView> {
 
   Widget _numberPicker() {
     return Card(
-      color: background[300],
+      color: backgroundM2[300],
       child: InkWell(
         onTap: () {
           setState(() {
@@ -227,10 +227,10 @@ class _GeneratorViewState extends State<GeneratorView> {
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               Card(
-                color: background[300],
+                color: backgroundM2[300],
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                      const EdgeInsets.symmetric(horizontal: 18, vertical: 2),
                   child: DropdownButton<String>(
                     value: selectedBarcodeSize,
                     items: menuItems,
@@ -262,7 +262,7 @@ class _GeneratorViewState extends State<GeneratorView> {
     return Visibility(
       visible: selectedBarcodeSize == 'Custom',
       child: Card(
-        color: background[300],
+        color: backgroundM2[300],
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           child: Row(
@@ -316,7 +316,7 @@ class _GeneratorViewState extends State<GeneratorView> {
       margin: const EdgeInsets.all(8),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: background[400],
+        color: backgroundM2[400],
         borderRadius: const BorderRadius.all(
           Radius.circular(5),
         ),
@@ -390,7 +390,7 @@ class _GeneratorViewState extends State<GeneratorView> {
     final FocusNode batchWidthNode = FocusNode();
     return Card(
       key: UniqueKey(),
-      color: background[300],
+      color: backgroundM2[300],
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(

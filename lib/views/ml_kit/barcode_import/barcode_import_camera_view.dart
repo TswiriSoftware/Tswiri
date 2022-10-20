@@ -61,7 +61,7 @@ class _BarcodeImportCameraViewState extends State<BarcodeImportCameraView> {
           style: Theme.of(context).textTheme.titleMedium,
         ),
         centerTitle: true,
-        backgroundColor: background,
+        backgroundColor: backgroundM2,
       ),
       body: _body(),
       floatingActionButton: _floatingActionButton(),

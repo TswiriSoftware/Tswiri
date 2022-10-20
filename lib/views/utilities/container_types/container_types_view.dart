@@ -32,7 +32,7 @@ class _ContainerTypesViewState extends State<ContainerTypesView> {
     return AppBar(
       title: Text(
         'Container Types',
-        style: Theme.of(context).textTheme.titleMedium,
+        style: Theme.of(context).textTheme.titleLarge,
       ),
       centerTitle: true,
     );
@@ -48,24 +48,24 @@ class _ContainerTypesViewState extends State<ContainerTypesView> {
   }
 
   Widget _containerTypeCard(ContainerType containerType) {
-    return InkWell(
-      onTap: () async {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ContainerTypeEditorView(
-              containerType: containerType,
+    return Card(
+      child: GestureDetector(
+        onTap: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ContainerTypeEditorView(
+                containerType: containerType,
+              ),
             ),
-          ),
-        );
+          );
 
-        setState(() {
-          containerTypes = isar!.containerTypes.where().findAllSync();
-        });
-      },
-      child: Card(
+          setState(() {
+            containerTypes = isar!.containerTypes.where().findAllSync();
+          });
+        },
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(18.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

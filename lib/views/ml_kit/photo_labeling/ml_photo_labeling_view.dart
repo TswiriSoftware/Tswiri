@@ -14,6 +14,7 @@ import 'package:tswiri_database/widgets/ml_label_paint/ml_label_paint.dart';
 import 'package:tswiri_database/widgets/photo/photo_display.dart';
 import 'package:tswiri_database/widgets/tag_texts_search/tag_texts_search.dart';
 import 'package:tswiri_widgets/colors/colors.dart';
+import 'package:tswiri_widgets/colors/colors_m3.dart';
 
 class MlPhotoLabelingView extends StatefulWidget {
   const MlPhotoLabelingView({
@@ -85,7 +86,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
     return AppBar(
       title: Text(
         'ML Labeling',
-        style: Theme.of(context).textTheme.titleMedium,
+        style: Theme.of(context).textTheme.titleLarge,
       ),
       centerTitle: true,
       leading: _cancelButton(),
@@ -214,7 +215,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
                 FilterChip(
                   label: Text(
                     'Objects',
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
                   onSelected: (value) {
                     setState(() {
@@ -226,7 +227,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
                 FilterChip(
                   label: Text(
                     'Text',
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
                   onSelected: (value) {
                     setState(() {
@@ -269,7 +270,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
                           '+',
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
-                        // backgroundColor: sunbirdOrange,
+                        backgroundColor: secondary,
                         onPressed: () {
                           setState(() {
                             isAddingPhotoLabel = true;
@@ -295,7 +296,10 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
     return Builder(builder: (context) {
       if (imageLabel.userFeedback == null) {
         return FilterChip(
-          label: Text(getMLDetectedLabelText(imageLabel.detectedLabelTextID)),
+          label: Text(
+            getMLDetectedLabelText(imageLabel.detectedLabelTextID),
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
           onSelected: (value) {
             setState(() {
               imageLabel.userFeedback = true;
@@ -307,7 +311,10 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
         );
       } else if (imageLabel.userFeedback == true) {
         return FilterChip(
-          label: Text(getMLDetectedLabelText(imageLabel.detectedLabelTextID)),
+          label: Text(
+            getMLDetectedLabelText(imageLabel.detectedLabelTextID),
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
           onSelected: (value) {
             setState(() {
               imageLabel.userFeedback = false;
@@ -323,8 +330,10 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
           label: Text(
             getMLDetectedLabelText(imageLabel.detectedLabelTextID),
             style: const TextStyle(
-                decoration: TextDecoration.lineThrough,
-                fontWeight: FontWeight.w300),
+              decoration: TextDecoration.lineThrough,
+              fontWeight: FontWeight.w300,
+              fontSize: 12,
+            ),
           ),
           onSelected: (value) {
             setState(() {
@@ -332,8 +341,8 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
             });
           },
           avatar: const Icon(Icons.close_sharp),
-          backgroundColor: background[300],
-          selectedColor: background[300],
+          backgroundColor: backgroundM2[300],
+          selectedColor: backgroundM2[300],
           showCheckmark: false,
           selected: false,
         );
@@ -348,7 +357,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
         style: Theme.of(context).textTheme.bodyMedium,
       ),
       avatar: const Icon(Icons.verified_user),
-      backgroundColor: background[200],
+      backgroundColor: backgroundM2[200],
       deleteIcon: const Icon(
         Icons.close_sharp,
         size: 20,
@@ -391,7 +400,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
   Widget _mlObjectCard(MLObject mlObject) {
     return Card(
       key: UniqueKey(),
-      color: background[300],
+      color: backgroundM2[300],
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -423,7 +432,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
                       '+',
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    // backgroundColor: sunbirdOrange,
+                    backgroundColor: secondary,
                     onPressed: () {
                       setState(() {
                         isAddingObjectLabel = true;
@@ -453,8 +462,10 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
     return Builder(builder: (context) {
       if (mlObjectLabel.userFeedback == null) {
         return FilterChip(
-          label:
-              Text(getMLDetectedLabelText(mlObjectLabel.detectedLabelTextID)),
+          label: Text(
+            getMLDetectedLabelText(mlObjectLabel.detectedLabelTextID),
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
           onSelected: (value) {
             setState(() {
               mlObjectLabel.userFeedback = true;
@@ -465,8 +476,10 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
         );
       } else if (mlObjectLabel.userFeedback == true) {
         return FilterChip(
-          label:
-              Text(getMLDetectedLabelText(mlObjectLabel.detectedLabelTextID)),
+          label: Text(
+            getMLDetectedLabelText(mlObjectLabel.detectedLabelTextID),
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
           onSelected: (value) {
             setState(() {
               mlObjectLabel.userFeedback = false;
@@ -482,15 +495,17 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
           label: Text(
             getMLDetectedLabelText(mlObjectLabel.detectedLabelTextID),
             style: const TextStyle(
-                decoration: TextDecoration.lineThrough,
-                fontWeight: FontWeight.w300),
+              decoration: TextDecoration.lineThrough,
+              fontWeight: FontWeight.w300,
+              fontSize: 12,
+            ),
           ),
           onSelected: (value) {
             setState(() {
               mlObjectLabel.userFeedback = null;
             });
           },
-          backgroundColor: background[300],
+          backgroundColor: backgroundM2[300],
           showCheckmark: false,
           selected: false,
         );
@@ -505,7 +520,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
         style: Theme.of(context).textTheme.bodyMedium,
       ),
       avatar: const Icon(Icons.verified_user),
-      backgroundColor: background[200],
+      backgroundColor: backgroundM2[200],
       deleteIcon: const Icon(
         Icons.close_sharp,
         size: 20,
@@ -531,7 +546,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
             ExpansionTile(
               title: Text(
                 'Recognized Text',
-                style: Theme.of(context).textTheme.titleMedium,
+                style: Theme.of(context).textTheme.titleSmall,
               ),
               children: [
                 SizedBox(
@@ -562,7 +577,9 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       if (mlTextElement.userFeedback == null) {
         return FilterChip(
           label: Text(
-              getMLDetectedElementText(mlTextElement.detectedElementTextID)),
+            getMLDetectedElementText(mlTextElement.detectedElementTextID),
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
           onSelected: (value) {
             setState(() {
               mlTextElement.userFeedback = true;
@@ -598,7 +615,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
               mlTextElement.userFeedback = null;
             });
           },
-          backgroundColor: background[300],
+          backgroundColor: backgroundM2[300],
           showCheckmark: false,
           selected: false,
         );

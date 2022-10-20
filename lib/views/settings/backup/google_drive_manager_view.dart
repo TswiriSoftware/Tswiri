@@ -49,7 +49,7 @@ class _GoogleDriveViewState extends State<GoogleDriveView> {
     return AppBar(
       title: Text(
         'Google Drive',
-        style: Theme.of(context).textTheme.titleMedium,
+        style: Theme.of(context).textTheme.titleLarge,
       ),
       leading: IconButton(
         onPressed: () {

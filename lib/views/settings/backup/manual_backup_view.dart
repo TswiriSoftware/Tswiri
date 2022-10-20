@@ -247,7 +247,7 @@ class _BackupViewState extends State<BackupView> {
               child: TextFormField(
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: background[500],
+                  fillColor: backgroundM2[500],
                   contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                   labelText: 'name',
                   labelStyle:

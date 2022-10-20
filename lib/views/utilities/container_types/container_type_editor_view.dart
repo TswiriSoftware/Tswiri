@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tswiri_database/export.dart';
 import 'package:tswiri_widgets/colors/colors.dart';
+import 'package:tswiri_widgets/colors/colors_m3.dart';
 import 'package:tswiri_widgets/widgets/general/custom_text_field.dart';
 
 class ContainerTypeEditorView extends StatefulWidget {
@@ -64,7 +65,7 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
 
   Widget _nameTextField() {
     return CustomTextField(
-      label: 'name',
+      label: 'Name',
       initialValue: _containerType.containerTypeName,
       onSubmitted: (value) {
         setState(() {
@@ -73,14 +74,14 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
 
         _updateIsar();
       },
-      backgroundColor: background[300]!,
+      backgroundColor: background[400]!,
       borderColor: tswiriOrange,
     );
   }
 
   Widget _descriptionTextField() {
     return CustomTextField(
-      label: 'description',
+      label: 'Description',
       initialValue: _containerType.containerDescription,
       maxLines: 5,
       onSubmitted: (value) {
@@ -90,7 +91,7 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
 
         _updateIsar();
       },
-      backgroundColor: background[300]!,
+      backgroundColor: background[400]!,
       borderColor: tswiriOrange,
     );
   }
@@ -146,45 +147,42 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
               'Can Contain',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
-            Card(
-              color: background[300],
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    for (ContainerType containerType in _containerTypes)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            containerType.containerTypeName,
-                          ),
-                          Checkbox(
-                            value: _containerType.canContain
-                                .contains(containerType.id),
-                            onChanged: (value) {
-                              List<int> canContain =
-                                  List.from(_containerType.canContain);
-                              if (_containerType.canContain
-                                  .contains(containerType.id)) {
-                                setState(() {
-                                  canContain.remove(containerType.id);
-                                  _containerType.canContain = canContain;
-                                });
-                              } else {
-                                setState(() {
-                                  canContain.add(containerType.id);
-                                  _containerType.canContain = canContain;
-                                });
-                              }
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  for (ContainerType containerType in _containerTypes)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          containerType.containerTypeName,
+                        ),
+                        Checkbox(
+                          value: _containerType.canContain
+                              .contains(containerType.id),
+                          onChanged: (value) {
+                            List<int> canContain =
+                                List.from(_containerType.canContain);
+                            if (_containerType.canContain
+                                .contains(containerType.id)) {
+                              setState(() {
+                                canContain.remove(containerType.id);
+                                _containerType.canContain = canContain;
+                              });
+                            } else {
+                              setState(() {
+                                canContain.add(containerType.id);
+                                _containerType.canContain = canContain;
+                              });
+                            }
 
-                              _updateIsar();
-                            },
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
+                            _updateIsar();
+                          },
+                        ),
+                      ],
+                    ),
+                ],
               ),
             ),
             const Divider(),
@@ -192,36 +190,33 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
               'Preferred Child',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
-            Card(
-              color: background[300],
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    for (ContainerType containerType in _containerTypes)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            containerType.containerTypeName,
-                          ),
-                          Checkbox(
-                            value: _containerType.preferredChildContainer ==
-                                containerType.id,
-                            onChanged: (value) {
-                              if (value == true) {
-                                setState(() {
-                                  _containerType.preferredChildContainer =
-                                      containerType.id;
-                                });
-                              }
-                              _updateIsar();
-                            },
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  for (ContainerType containerType in _containerTypes)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          containerType.containerTypeName,
+                        ),
+                        Checkbox(
+                          value: _containerType.preferredChildContainer ==
+                              containerType.id,
+                          onChanged: (value) {
+                            if (value == true) {
+                              setState(() {
+                                _containerType.preferredChildContainer =
+                                    containerType.id;
+                              });
+                            }
+                            _updateIsar();
+                          },
+                        ),
+                      ],
+                    ),
+                ],
               ),
             ),
             const Divider(),
@@ -231,48 +226,51 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
             ),
             Card(
               color: Color.fromRGBO(red, green, blue, 1.0),
-              child: Column(
-                children: [
-                  CustomTextField(
-                    label: 'Red',
-                    initialValue: red.toString(),
-                    textInputType: TextInputType.number,
-                    onSubmitted: (value) {
-                      setState(() {
-                        red = int.tryParse(value) ?? red;
-                      });
-                      _updateColor();
-                    },
-                    backgroundColor: background[300]!,
-                    borderColor: tswiriOrange,
-                  ),
-                  CustomTextField(
-                    label: 'Green',
-                    initialValue: blue.toString(),
-                    textInputType: TextInputType.number,
-                    onSubmitted: (value) {
-                      setState(() {
-                        green = int.tryParse(value) ?? green;
-                      });
-                      _updateColor();
-                    },
-                    backgroundColor: background[300]!,
-                    borderColor: tswiriOrange,
-                  ),
-                  CustomTextField(
-                    label: 'Blue',
-                    initialValue: green.toString(),
-                    textInputType: TextInputType.number,
-                    onSubmitted: (value) {
-                      setState(() {
-                        blue = int.tryParse(value) ?? blue;
-                      });
-                      _updateColor();
-                    },
-                    backgroundColor: background[300]!,
-                    borderColor: tswiriOrange,
-                  ),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    CustomTextField(
+                      label: 'Red',
+                      initialValue: red.toString(),
+                      textInputType: TextInputType.number,
+                      onSubmitted: (value) {
+                        setState(() {
+                          red = int.tryParse(value) ?? red;
+                        });
+                        _updateColor();
+                      },
+                      backgroundColor: backgroundM2[300]!,
+                      borderColor: tswiriOrange,
+                    ),
+                    CustomTextField(
+                      label: 'Green',
+                      initialValue: blue.toString(),
+                      textInputType: TextInputType.number,
+                      onSubmitted: (value) {
+                        setState(() {
+                          green = int.tryParse(value) ?? green;
+                        });
+                        _updateColor();
+                      },
+                      backgroundColor: backgroundM2[300]!,
+                      borderColor: tswiriOrange,
+                    ),
+                    CustomTextField(
+                      label: 'Blue',
+                      initialValue: green.toString(),
+                      textInputType: TextInputType.number,
+                      onSubmitted: (value) {
+                        setState(() {
+                          blue = int.tryParse(value) ?? blue;
+                        });
+                        _updateColor();
+                      },
+                      backgroundColor: backgroundM2[300]!,
+                      borderColor: tswiriOrange,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

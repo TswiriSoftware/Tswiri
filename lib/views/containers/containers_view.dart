@@ -8,7 +8,7 @@ import 'package:tswiri_database/models/containers/container_search_controller.da
 import 'package:tswiri_database/models/settings/global_settings.dart';
 import 'package:tswiri_database/widgets/containers/container_card.dart';
 import 'package:tswiri_widgets/colors/colors.dart';
-import 'package:tswiri_widgets/widgets/containers/new_container_card.dart';
+import 'package:tswiri_widgets/colors/colors_m3.dart';
 import 'package:tswiri_widgets/widgets/general/search_text_field.dart';
 
 class ContainersView extends StatefulWidget {
@@ -41,22 +41,50 @@ class _ContainersViewState extends State<ContainersView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: isSearching
-          ? _searchBar()
-          : isEditing
-              ? _editBar()
-              : _titleBar(),
-      body: _body(),
+    return SizedBox(
+      height: MediaQuery.of(context).size.height - 75,
+      child: Scaffold(
+        appBar: isSearching
+            ? _searchBar()
+            : isEditing
+                ? _editBar()
+                : _titleBar(),
+        body: _body(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: newContainer(),
+      ),
+    );
+  }
+
+  FloatingActionButton newContainer() {
+    return FloatingActionButton(
+      backgroundColor: secondary,
+      onPressed: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const NewContainerView(),
+          ),
+        );
+        setState(() {
+          _containerSearch.filterContainerEntries(
+            enteredKeyWord: null,
+            containerFilters: containerFilters,
+          );
+        });
+      },
+      child: Icon(
+        Icons.add,
+      ),
     );
   }
 
   AppBar _titleBar() {
     return AppBar(
-      title: Text(
-        'Containers',
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
+      // title: Text(
+      //   'Containers',
+      //   style: Theme.of(context).textTheme.titleLarge,
+      // ),
       centerTitle: true,
       actions: [
         IconButton(
@@ -239,7 +267,7 @@ class _ContainersViewState extends State<ContainersView> {
             });
           }
         },
-        backgroundColor: background,
+        backgroundColor: background[400]!,
         defaultFilterColor: tswiriOrange,
         filterChipColorMap: null,
       ),
@@ -249,49 +277,49 @@ class _ContainersViewState extends State<ContainersView> {
   Widget _body() {
     return ListView.builder(
       padding: const EdgeInsets.only(bottom: 150),
-      itemCount: _containerSearch.searchResults.length + 1,
+      itemCount: _containerSearch.searchResults.length,
       itemBuilder: (context, index) {
-        if (index == 0 && !isSearching && !isEditing) {
-          // return _newContainerCard();
-          return NewContainerCard(
-            onTap: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const NewContainerView(),
-                ),
-              );
-              setState(() {
-                _containerSearch.filterContainerEntries(
-                  enteredKeyWord: null,
-                  containerFilters: containerFilters,
-                );
-              });
-            },
-          );
-        } else if (index > 0) {
-          CatalogedContainer catalogedContainer =
-              _containerSearch.searchResults[index - 1];
-          return ContainerCard(
-            catalogedContainer: catalogedContainer,
-            isSelected: selectedContainers.contains(catalogedContainer),
-            onTap: () {
-              onContainerSelect(catalogedContainer);
-            },
-            onLongPress: () {
-              setState(() {
-                isEditing = true;
-                if (!selectedContainers.contains(catalogedContainer)) {
-                  selectedContainers.add(catalogedContainer);
-                }
-              });
-              widget.isSearching(isEditing);
-            },
-            borderColor: tswiriOrange,
-          );
-        } else {
-          return const SizedBox.shrink();
-        }
+        // if (index == 0 && !isSearching && !isEditing) {
+        //   // return _newContainerCard();
+        //   return NewContainerCard(
+        //     onTap: () async {
+        //   await Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => const NewContainerView(),
+        //     ),
+        //   );
+        //   setState(() {
+        //     _containerSearch.filterContainerEntries(
+        //       enteredKeyWord: null,
+        //       containerFilters: containerFilters,
+        //     );
+        //   });
+        // },
+        //   );
+        // } else if (index > 0) {
+        CatalogedContainer catalogedContainer =
+            _containerSearch.searchResults[index];
+        return ContainerCard(
+          catalogedContainer: catalogedContainer,
+          isSelected: selectedContainers.contains(catalogedContainer),
+          onTap: () {
+            onContainerSelect(catalogedContainer);
+          },
+          onLongPress: () {
+            setState(() {
+              isEditing = true;
+              if (!selectedContainers.contains(catalogedContainer)) {
+                selectedContainers.add(catalogedContainer);
+              }
+            });
+            widget.isSearching(isEditing);
+          },
+          borderColor: tertiary,
+        );
+        // } else {
+        //   return const SizedBox.shrink();
+        // }
       },
     );
   }

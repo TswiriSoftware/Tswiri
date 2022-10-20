@@ -42,7 +42,7 @@ class _BarcodesViewState extends State<BarcodesView> {
     return AppBar(
       title: Text(
         'Barcodes',
-        style: Theme.of(context).textTheme.titleMedium,
+        style: Theme.of(context).textTheme.titleLarge,
       ),
       centerTitle: true,
       actions: [
@@ -125,7 +125,7 @@ class _BarcodesViewState extends State<BarcodesView> {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(10.0),
         child: Column(
           children: [
             Row(

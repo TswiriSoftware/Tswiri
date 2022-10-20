@@ -70,7 +70,7 @@ class _CalibrationViewState extends State<CalibrationView> {
     return Column(
       children: [
         Card(
-          color: background[400],
+          color: backgroundM2[400],
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -124,7 +124,7 @@ class _CalibrationViewState extends State<CalibrationView> {
             title: const Text('Manual Calibration'),
             children: [
               CustomTextField(
-                backgroundColor: background,
+                backgroundColor: backgroundM2,
                 borderColor: tswiriOrange,
                 onSubmitted: (value) async {
                   if (value.isNotEmpty) {

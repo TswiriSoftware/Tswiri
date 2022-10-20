@@ -6,6 +6,7 @@ import 'package:tswiri_database/functions/isar/create_functions.dart';
 import 'package:tswiri_database/functions/other/capitalize_first_character.dart';
 import 'package:tswiri_database/models/settings/global_settings.dart';
 import 'package:tswiri_widgets/colors/colors.dart';
+import 'package:tswiri_widgets/colors/colors_m3.dart';
 
 class NewContainerView extends StatefulWidget {
   ///This view is used to create new containers.
@@ -101,6 +102,7 @@ class _NewContainerViewState extends State<NewContainerView> {
                     avatar: Icon(
                       e.iconData,
                       size: 15,
+                      color: onprimary,
                     ),
                     selectedColor:
                         colorModeEnabled ? selectedContainerColor : null,
@@ -390,7 +392,7 @@ class _NewContainerViewState extends State<NewContainerView> {
       labelStyle: Theme.of(context).textTheme.titleMedium,
       labelPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
       backgroundColor: barcodeUID == null
-          ? background[400]
+          ? backgroundM2[400]
           : colorModeEnabled
               ? selectedContainerColor
               : null,

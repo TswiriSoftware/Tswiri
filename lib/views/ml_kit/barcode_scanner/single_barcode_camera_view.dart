@@ -63,7 +63,7 @@ class _SingleBarcodeCameraViewState extends State<SingleBarcodeCameraView> {
           style: Theme.of(context).textTheme.titleMedium,
         ),
         centerTitle: true,
-        backgroundColor: background,
+        backgroundColor: backgroundM2,
       ),
       body: _body(),
       floatingActionButton: _floatingActionButton(),

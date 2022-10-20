@@ -78,6 +78,8 @@ class _MyHomePageState extends State<MyHomePage>
 
   bool isSearching = false;
 
+  int currentPageIndex = 0;
+
   @override
   void initState() {
     super.initState();
@@ -92,8 +94,8 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _tabBarView(),
-      bottomSheet: _bottomSheet(),
+      body: _body(),
+      bottomSheet: !isSearching ? _navigationBar() : null,
     );
   }
 
@@ -118,6 +120,59 @@ class _MyHomePageState extends State<MyHomePage>
     );
   }
 
+  Widget _body() {
+    switch (currentPageIndex) {
+      case 0:
+        return ContainersView(
+          isSearching: (value) => setState(() {
+            isSearching = value;
+          }),
+        );
+      case 1:
+        return SearchView(
+          isSearching: (value) => setState(() {
+            isSearching = value;
+          }),
+        );
+      case 2:
+        return const UtilitiesView();
+      case 3:
+        return const SettingsView();
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _navigationBar() {
+    return NavigationBar(
+      onDestinationSelected: (value) {
+        setState(() {
+          currentPageIndex = value;
+        });
+      },
+      destinations: const [
+        NavigationDestination(
+          icon: Icon(Icons.account_tree_sharp),
+          label: 'Containers',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.search_sharp),
+          label: 'Search',
+        ),
+        NavigationDestination(
+          selectedIcon: Icon(Icons.bookmark),
+          icon: Icon(Icons.build_sharp),
+          label: 'Utilities',
+        ),
+        NavigationDestination(
+          selectedIcon: Icon(Icons.bookmark),
+          icon: Icon(Icons.settings_sharp),
+          label: 'Settings',
+        ),
+      ],
+      selectedIndex: currentPageIndex,
+    );
+  }
+
   Widget _bottomSheet() {
     return TabBar(
       key: const Key('tab_bar'),
@@ -131,6 +186,7 @@ class _MyHomePageState extends State<MyHomePage>
             icon: Icon(
               Icons.account_tree_sharp,
             ),
+            // text: 'Containers',
           ),
         ),
         Tooltip(

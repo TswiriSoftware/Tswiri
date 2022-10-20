@@ -34,7 +34,7 @@ class NavigatorPainter extends CustomPainter {
 
   final Paint textBackground = Paint()
     ..style = PaintingStyle.fill
-    ..color = background;
+    ..color = backgroundM2;
 
   @override
   void paint(Canvas canvas, Size size) {

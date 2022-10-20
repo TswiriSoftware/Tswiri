@@ -39,10 +39,6 @@ class _SearchViewState extends State<SearchView> {
 
   AppBar _appBar() {
     return AppBar(
-      title: Text(
-        'Search',
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
       centerTitle: true,
       leading: IconButton(
         onPressed: () {
@@ -54,8 +50,8 @@ class _SearchViewState extends State<SearchView> {
           );
         },
         icon: Provider.of<ShoppingCart>(context).itemList.isNotEmpty
-            ? const Icon(Icons.shopping_cart_checkout_sharp)
-            : const Icon(Icons.shopping_cart),
+            ? const Icon(Icons.navigation)
+            : const Icon(Icons.list),
       ),
       actions: [
         IconButton(
@@ -143,7 +139,7 @@ class _SearchViewState extends State<SearchView> {
           case NameResult: //Name Result.
             return NameResultCard(
               nameResult: result as NameResult,
-              backgroundColor: background[300]!,
+              backgroundColor: backgroundM2[300]!,
               chipColor: colorModeEnabled
                   ? isar!.containerTypes
                       .getSync(result.containerTypeID)!
@@ -154,7 +150,7 @@ class _SearchViewState extends State<SearchView> {
           case DescriptionResult: //Description Result.
             return DescriptionResultCard(
               descriptionResult: result as DescriptionResult,
-              backgroundColor: background[300]!,
+              backgroundColor: backgroundM2[300]!,
               chipColor: tswiriOrange,
             );
 
@@ -162,42 +158,42 @@ class _SearchViewState extends State<SearchView> {
 
             return ContainerTagResultCard(
               containerTagResult: result as ContainerTagResult,
-              backgroundColor: background[300]!,
+              backgroundColor: backgroundM2[300]!,
               chipColor: tswiriOrange,
             );
 
           case PhotoLabelResult:
             return PhotoLabelResultCard(
               photoLabelResult: result as PhotoLabelResult,
-              backgroundColor: background[300]!,
+              backgroundColor: backgroundM2[300]!,
               chipColor: tswiriOrange,
             );
 
           case ObjectLabelResult:
             return ObjectLabelResultCard(
               result: result as ObjectLabelResult,
-              backgroundColor: background[300]!,
+              backgroundColor: backgroundM2[300]!,
               chipColor: tswiriOrange,
             );
 
           case MLPhotoLabelResult:
             return MLPhotoLabelResultCard(
               mlphotoLabelResult: result as MLPhotoLabelResult,
-              backgroundColor: background[300]!,
+              backgroundColor: backgroundM2[300]!,
               chipColor: tswiriOrange,
             );
 
           case MLObjectLabelResult:
             return MLObjectLabelResultCard(
               result: result as MLObjectLabelResult,
-              backgroundColor: background[300]!,
+              backgroundColor: backgroundM2[300]!,
               chipColor: tswiriOrange,
             );
 
           case MLTextResult:
             return MLTextElementResultCard(
               result: result as MLTextResult,
-              backgroundColor: background[300]!,
+              backgroundColor: backgroundM2[300]!,
               chipColor: tswiriOrange,
             );
 

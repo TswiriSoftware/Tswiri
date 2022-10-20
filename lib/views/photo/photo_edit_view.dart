@@ -9,6 +9,7 @@ import 'package:tswiri_database/widgets/ml_label_paint/ml_label_paint.dart';
 import 'package:tswiri_database/widgets/photo/photo_display.dart';
 import 'package:tswiri_database/widgets/tag_texts_search/tag_texts_search.dart';
 import 'package:tswiri_widgets/colors/colors.dart';
+import 'package:tswiri_widgets/colors/colors_m3.dart';
 
 class PhotoEditView extends StatefulWidget {
   const PhotoEditView({
@@ -144,7 +145,7 @@ class PhotoEditViewState extends State<PhotoEditView> {
         FilterChip(
           label: Text(
             'Objects',
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme.of(context).textTheme.titleSmall,
           ),
           onSelected: (value) {
             setState(() {
@@ -156,7 +157,7 @@ class PhotoEditViewState extends State<PhotoEditView> {
         FilterChip(
           label: Text(
             'Text',
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme.of(context).textTheme.titleSmall,
           ),
           onSelected: (value) {
             setState(() {
@@ -193,9 +194,10 @@ class PhotoEditViewState extends State<PhotoEditView> {
                       Visibility(
                         visible: !isAddingPhotoLabel,
                         child: ActionChip(
+                          backgroundColor: secondary,
                           label: Text(
                             '+',
-                            style: Theme.of(context).textTheme.bodyLarge,
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
                           onPressed: () {
                             setState(() {
@@ -223,7 +225,10 @@ class PhotoEditViewState extends State<PhotoEditView> {
     return Builder(builder: (context) {
       if (photoLabel.userFeedback == null) {
         return FilterChip(
-          label: Text(getMLDetectedLabelText(photoLabel.detectedLabelTextID)),
+          label: Text(
+            getMLDetectedLabelText(photoLabel.detectedLabelTextID),
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
           onSelected: (value) {
             setState(() {
               photoLabel.userFeedback = true;
@@ -236,11 +241,17 @@ class PhotoEditViewState extends State<PhotoEditView> {
             });
           },
           selected: false,
-          avatar: const Icon(Icons.smart_toy),
+          avatar: const Icon(
+            Icons.smart_toy,
+            color: onbackground,
+          ),
         );
       } else if (photoLabel.userFeedback == true) {
         return FilterChip(
-          label: Text(getMLDetectedLabelText(photoLabel.detectedLabelTextID)),
+          label: Text(
+            getMLDetectedLabelText(photoLabel.detectedLabelTextID),
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
           onSelected: (value) {
             setState(() {
               photoLabel.userFeedback = false;
@@ -260,10 +271,14 @@ class PhotoEditViewState extends State<PhotoEditView> {
       } else {
         return FilterChip(
           label: Text(
-            getMLDetectedLabelText(photoLabel.detectedLabelTextID),
+            getMLDetectedLabelText(
+              photoLabel.detectedLabelTextID,
+            ),
             style: const TextStyle(
-                decoration: TextDecoration.lineThrough,
-                fontWeight: FontWeight.w300),
+              decoration: TextDecoration.lineThrough,
+              fontWeight: FontWeight.w300,
+              fontSize: 12,
+            ),
           ),
           onSelected: (value) {
             setState(() {
@@ -277,8 +292,8 @@ class PhotoEditViewState extends State<PhotoEditView> {
             });
           },
           avatar: const Icon(Icons.close_sharp),
-          backgroundColor: background[300],
-          selectedColor: background[300],
+          backgroundColor: backgroundM2[300],
+          selectedColor: backgroundM2[300],
           showCheckmark: false,
           selected: false,
         );
@@ -293,7 +308,7 @@ class PhotoEditViewState extends State<PhotoEditView> {
         style: Theme.of(context).textTheme.bodyMedium,
       ),
       avatar: const Icon(Icons.verified_user),
-      backgroundColor: background[200],
+      backgroundColor: background[300],
       deleteIcon: const Icon(
         Icons.close_sharp,
         size: 20,
@@ -343,7 +358,7 @@ class PhotoEditViewState extends State<PhotoEditView> {
   Widget _mlObjectCard(MLObject mlObject) {
     return Card(
       key: UniqueKey(),
-      color: background[300],
+      color: backgroundM2[300],
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -372,9 +387,9 @@ class PhotoEditViewState extends State<PhotoEditView> {
                   child: ActionChip(
                     label: Text(
                       '+',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                    // backgroundColor: sunbirdOrange,
+                    backgroundColor: secondary,
                     onPressed: () {
                       setState(() {
                         isAddingObjectLabel = true;
@@ -404,8 +419,10 @@ class PhotoEditViewState extends State<PhotoEditView> {
     return Builder(builder: (context) {
       if (mlObjectLabel.userFeedback == null) {
         return FilterChip(
-          label:
-              Text(getMLDetectedLabelText(mlObjectLabel.detectedLabelTextID)),
+          label: Text(
+            getMLDetectedLabelText(mlObjectLabel.detectedLabelTextID),
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
           onSelected: (value) {
             setState(() {
               mlObjectLabel.userFeedback = true;
@@ -416,8 +433,10 @@ class PhotoEditViewState extends State<PhotoEditView> {
         );
       } else if (mlObjectLabel.userFeedback == true) {
         return FilterChip(
-          label:
-              Text(getMLDetectedLabelText(mlObjectLabel.detectedLabelTextID)),
+          label: Text(
+            getMLDetectedLabelText(mlObjectLabel.detectedLabelTextID),
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
           onSelected: (value) {
             setState(() {
               mlObjectLabel.userFeedback = false;
@@ -433,15 +452,17 @@ class PhotoEditViewState extends State<PhotoEditView> {
           label: Text(
             getMLDetectedLabelText(mlObjectLabel.detectedLabelTextID),
             style: const TextStyle(
-                decoration: TextDecoration.lineThrough,
-                fontWeight: FontWeight.w300),
+              decoration: TextDecoration.lineThrough,
+              fontWeight: FontWeight.w300,
+              fontSize: 11,
+            ),
           ),
           onSelected: (value) {
             setState(() {
               mlObjectLabel.userFeedback = null;
             });
           },
-          backgroundColor: background[300],
+          backgroundColor: backgroundM2[300],
           showCheckmark: false,
           selected: false,
         );
@@ -456,7 +477,7 @@ class PhotoEditViewState extends State<PhotoEditView> {
         style: Theme.of(context).textTheme.bodyMedium,
       ),
       avatar: const Icon(Icons.verified_user),
-      backgroundColor: background[200],
+      backgroundColor: backgroundM2[200],
       deleteIcon: const Icon(
         Icons.close_sharp,
         size: 20,
@@ -484,7 +505,7 @@ class PhotoEditViewState extends State<PhotoEditView> {
               ExpansionTile(
                 title: Text(
                   'Recognized Text',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
                 children: [
                   _imageData.mlTextElements.isEmpty
@@ -557,7 +578,7 @@ class PhotoEditViewState extends State<PhotoEditView> {
               mlTextElement.userFeedback = null;
             });
           },
-          backgroundColor: background[300],
+          backgroundColor: backgroundM2[300],
           showCheckmark: false,
           selected: false,
         );
@@ -575,7 +596,7 @@ class PhotoEditViewState extends State<PhotoEditView> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Card(
-                  color: background[300]!.withAlpha(150),
+                  color: backgroundM2[300]!.withAlpha(150),
                   child: IconButton(
                     iconSize: 45,
                     onPressed: () {
@@ -588,7 +609,7 @@ class PhotoEditViewState extends State<PhotoEditView> {
                   ),
                 ),
                 Card(
-                  color: background[300]!.withAlpha(150),
+                  color: backgroundM2[300]!.withAlpha(150),
                   child: IconButton(
                     iconSize: 45,
                     onPressed: () {

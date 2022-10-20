@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tswiri_database/models/settings/app_settings.dart';
 import 'package:tswiri_database/models/settings/global_settings.dart';
 import 'package:tswiri_widgets/colors/colors.dart';
+import 'package:tswiri_widgets/transitions/left_to_right_transitions.dart';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({Key? key}) : super(key: key);
@@ -115,7 +116,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _photoFlash() {
     return Card(
-      color: background[300],
+      color: backgroundM2[300],
       child: ListTile(
         title: Text(
           'Photo Flash',
@@ -133,8 +134,9 @@ class _SettingsViewState extends State<SettingsView> {
                     flashOnPhotos = false;
                   });
                 },
-                child: const Text(
+                child: Text(
                   'ON',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
               )
             : TextButton(
@@ -144,7 +146,9 @@ class _SettingsViewState extends State<SettingsView> {
                     flashOnPhotos = true;
                   });
                 },
-                child: const Text('OFF'),
+                child: const Text(
+                  'OFF',
+                ),
               ),
       ),
     );
@@ -152,7 +156,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _gridFlash() {
     return Card(
-      color: background[300],
+      color: backgroundM2[300],
       child: ListTile(
         title: Text(
           'Grid Flash',
@@ -170,8 +174,9 @@ class _SettingsViewState extends State<SettingsView> {
                     flashOnGrids = false;
                   });
                 },
-                child: const Text(
+                child: Text(
                   'ON',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
               )
             : TextButton(
@@ -189,7 +194,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _barcodeFlash() {
     return Card(
-      color: background[300],
+      color: backgroundM2[300],
       child: ListTile(
         title: Text(
           'Barcode Flash',
@@ -207,8 +212,9 @@ class _SettingsViewState extends State<SettingsView> {
                     flashOnBarcodes = false;
                   });
                 },
-                child: const Text(
+                child: Text(
                   'ON',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
               )
             : TextButton(
@@ -226,7 +232,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _navigationFlash() {
     return Card(
-      color: background[300],
+      color: backgroundM2[300],
       child: ListTile(
         title: Text(
           'Navigation Flash',
@@ -244,8 +250,9 @@ class _SettingsViewState extends State<SettingsView> {
                     flashOnNavigation = false;
                   });
                 },
-                child: const Text(
+                child: Text(
                   'ON',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
               )
             : TextButton(
@@ -355,7 +362,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _imageLabeling() {
     return Card(
-      color: background[300],
+      color: backgroundM2[300],
       child: Column(
         children: [
           ListTile(
@@ -413,7 +420,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _objectDetection() {
     return Card(
-      color: background[300],
+      color: backgroundM2[300],
       child: Column(
         children: [
           ListTile(
@@ -471,7 +478,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _textDetection() {
     return Card(
-      color: background[300],
+      color: backgroundM2[300],
       child: ListTile(
         title: Text(
           'Text Detection',
@@ -495,11 +502,8 @@ class _SettingsViewState extends State<SettingsView> {
       child: InkWell(
         key: const Key('manage_backup'),
         onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const BackupOptionsView(),
-            ),
-          );
+          Navigator.of(context)
+              .push(leftToRightTransition(const BackupOptionsView()));
         },
         child: ListTile(
           title: Text(
@@ -521,9 +525,7 @@ class _SettingsViewState extends State<SettingsView> {
       child: InkWell(
         onTap: () {
           Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const AppInfoView(),
-            ),
+            leftToRightTransition(const AppInfoView()),
           );
         },
         child: ListTile(
@@ -543,14 +545,10 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _spaces() {
     return Card(
-      color: background[300],
+      color: backgroundM2[300],
       child: InkWell(
         onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const SpacesView(),
-            ),
-          );
+          Navigator.of(context).push(leftToRightTransition(const SpacesView()));
         },
         child: ListTile(
           title: Text(

@@ -14,6 +14,7 @@ import 'package:tswiri_database/models/image_data/image_data.dart';
 import 'package:tswiri_database/models/settings/global_settings.dart';
 import 'package:tswiri_database/widgets/tag_texts_search/tag_texts_search.dart';
 import 'package:tswiri_widgets/colors/colors.dart';
+import 'package:tswiri_widgets/colors/colors_m3.dart';
 import 'package:tswiri_widgets/widgets/general/custom_text_field.dart';
 
 class ContainerView extends StatefulWidget {
@@ -254,7 +255,7 @@ class _ContainerViewState extends State<ContainerView> {
           },
         );
       },
-      backgroundColor: background,
+      backgroundColor: backgroundM2,
       borderColor: tswiriOrange,
     );
   }
@@ -272,7 +273,7 @@ class _ContainerViewState extends State<ContainerView> {
           },
         );
       },
-      backgroundColor: background,
+      backgroundColor: backgroundM2,
       borderColor: tswiriOrange,
     );
   }
@@ -291,7 +292,7 @@ class _ContainerViewState extends State<ContainerView> {
         children: [
           _containerRelationship != null
               ? Card(
-                  color: background[300],
+                  color: backgroundM2[300],
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
@@ -424,6 +425,7 @@ class _ContainerViewState extends State<ContainerView> {
         isar!.tagTexts.getSync(containerTag.tagTextID)?.text ?? 'err',
         style: Theme.of(context).textTheme.bodyMedium,
       ),
+      backgroundColor: secondary,
       deleteIcon: const Icon(
         Icons.close_sharp,
         size: 20,
@@ -497,7 +499,7 @@ class _ContainerViewState extends State<ContainerView> {
           ),
           borderRadius: BorderRadius.circular(10),
         ),
-        color: background[300],
+        color: backgroundM2[300],
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: SizedBox(
@@ -541,7 +543,7 @@ class _ContainerViewState extends State<ContainerView> {
                 fit: BoxFit.cover,
               ),
               Card(
-                color: background[300]!.withAlpha(150),
+                color: backgroundM2[300]!.withAlpha(150),
                 child: IconButton(
                   onPressed: () {
                     deletePhoto(photo);
@@ -603,7 +605,7 @@ class _ContainerViewState extends State<ContainerView> {
           ),
           borderRadius: BorderRadius.circular(10),
         ),
-        color: background[300],
+        color: backgroundM2[300],
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
@@ -636,7 +638,7 @@ class _ContainerViewState extends State<ContainerView> {
         .findFirstSync()!;
 
     return Card(
-      color: background[300],
+      color: backgroundM2[300],
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(

@@ -60,7 +60,7 @@ class _GridScannerCameraViewState extends State<GridScannerCameraView> {
           style: Theme.of(context).textTheme.titleMedium,
         ),
         centerTitle: true,
-        backgroundColor: background,
+        backgroundColor: backgroundM2,
       ),
       body: _body(),
       floatingActionButton: _floatingActionButton(),
