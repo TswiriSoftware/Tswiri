@@ -77,16 +77,24 @@ class _GalleryViewState extends State<GalleryView> {
   Widget _gridCard(Photo photo, int index) {
     return GestureDetector(
       onTap: () => _selectPhoto(index),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.file(
-              File(photo.getPhotoThumbnailPath()),
-              fit: BoxFit.cover,
-            ),
-          ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.file(
+          File(photo.getPhotoThumbnailPath()),
+          fit: BoxFit.cover,
+          frameBuilder: (BuildContext context, Widget child, int? frame,
+              bool wasSynchronouslyLoaded) {
+            if (wasSynchronouslyLoaded) {
+              return child;
+            } else {
+              return AnimatedOpacity(
+                opacity: frame == null ? 0 : 1,
+                duration: const Duration(seconds: 1),
+                curve: Curves.easeOut,
+                child: child,
+              );
+            }
+          },
         ),
       ),
     );

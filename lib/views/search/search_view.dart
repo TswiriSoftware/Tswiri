@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:tswiri/views/containers/container/container_view.dart';
 import 'package:tswiri/views/search/shopping_cart_view.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,7 @@ class _SearchViewState extends State<SearchView> {
 
   AppBar _appBar() {
     return AppBar(
+      title: const Text('Find'),
       centerTitle: true,
       leading: IconButton(
         onPressed: () {
@@ -119,88 +121,83 @@ class _SearchViewState extends State<SearchView> {
         .containerUIDMatches(result.containerUID)
         .findFirstSync()!;
 
-    return InkWell(
-      onTap: () async {
-        await Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ContainerView(
-              catalogedContainer: catalogedContainer,
-              tagsExpanded: true,
-              photosExpaned: true,
-            ),
-          ),
-        );
-        // setState(() {
-        //   shoppingCartEmpty = shoppingList.isEmpty;
-        // });
+    return OpenContainer(
+      openColor: Colors.transparent,
+      closedColor: Colors.transparent,
+      closedBuilder: (context, action) {
+        return Builder(builder: (context) {
+          switch (result.runtimeType) {
+            case NameResult: //Name Result.
+              return NameResultCard(
+                nameResult: result as NameResult,
+                backgroundColor: backgroundM2[300]!,
+                chipColor: colorModeEnabled
+                    ? isar!.containerTypes
+                        .getSync(result.containerTypeID)!
+                        .containerColor
+                    : tswiriOrange,
+              );
+
+            case DescriptionResult: //Description Result.
+              return DescriptionResultCard(
+                descriptionResult: result as DescriptionResult,
+                backgroundColor: backgroundM2[300]!,
+                chipColor: tswiriOrange,
+              );
+
+            case ContainerTagResult: //ContainerTag Result.
+
+              return ContainerTagResultCard(
+                containerTagResult: result as ContainerTagResult,
+                backgroundColor: backgroundM2[300]!,
+                chipColor: tswiriOrange,
+              );
+
+            case PhotoLabelResult:
+              return PhotoLabelResultCard(
+                photoLabelResult: result as PhotoLabelResult,
+                backgroundColor: backgroundM2[300]!,
+                chipColor: tswiriOrange,
+              );
+
+            case ObjectLabelResult:
+              return ObjectLabelResultCard(
+                result: result as ObjectLabelResult,
+                backgroundColor: backgroundM2[300]!,
+                chipColor: tswiriOrange,
+              );
+
+            case MLPhotoLabelResult:
+              return MLPhotoLabelResultCard(
+                mlphotoLabelResult: result as MLPhotoLabelResult,
+                backgroundColor: backgroundM2[300]!,
+                chipColor: tswiriOrange,
+              );
+
+            case MLObjectLabelResult:
+              return MLObjectLabelResultCard(
+                result: result as MLObjectLabelResult,
+                backgroundColor: backgroundM2[300]!,
+                chipColor: tswiriOrange,
+              );
+
+            case MLTextResult:
+              return MLTextElementResultCard(
+                result: result as MLTextResult,
+                backgroundColor: backgroundM2[300]!,
+                chipColor: tswiriOrange,
+              );
+
+            default:
+              return const SizedBox.shrink();
+          }
+        });
       },
-      child: Builder(builder: (context) {
-        switch (result.runtimeType) {
-          case NameResult: //Name Result.
-            return NameResultCard(
-              nameResult: result as NameResult,
-              backgroundColor: backgroundM2[300]!,
-              chipColor: colorModeEnabled
-                  ? isar!.containerTypes
-                      .getSync(result.containerTypeID)!
-                      .containerColor
-                  : tswiriOrange,
-            );
-
-          case DescriptionResult: //Description Result.
-            return DescriptionResultCard(
-              descriptionResult: result as DescriptionResult,
-              backgroundColor: backgroundM2[300]!,
-              chipColor: tswiriOrange,
-            );
-
-          case ContainerTagResult: //ContainerTag Result.
-
-            return ContainerTagResultCard(
-              containerTagResult: result as ContainerTagResult,
-              backgroundColor: backgroundM2[300]!,
-              chipColor: tswiriOrange,
-            );
-
-          case PhotoLabelResult:
-            return PhotoLabelResultCard(
-              photoLabelResult: result as PhotoLabelResult,
-              backgroundColor: backgroundM2[300]!,
-              chipColor: tswiriOrange,
-            );
-
-          case ObjectLabelResult:
-            return ObjectLabelResultCard(
-              result: result as ObjectLabelResult,
-              backgroundColor: backgroundM2[300]!,
-              chipColor: tswiriOrange,
-            );
-
-          case MLPhotoLabelResult:
-            return MLPhotoLabelResultCard(
-              mlphotoLabelResult: result as MLPhotoLabelResult,
-              backgroundColor: backgroundM2[300]!,
-              chipColor: tswiriOrange,
-            );
-
-          case MLObjectLabelResult:
-            return MLObjectLabelResultCard(
-              result: result as MLObjectLabelResult,
-              backgroundColor: backgroundM2[300]!,
-              chipColor: tswiriOrange,
-            );
-
-          case MLTextResult:
-            return MLTextElementResultCard(
-              result: result as MLTextResult,
-              backgroundColor: backgroundM2[300]!,
-              chipColor: tswiriOrange,
-            );
-
-          default:
-            return const SizedBox.shrink();
-        }
-      }),
+      openBuilder: (context, _) => ContainerView(
+        catalogedContainer: catalogedContainer,
+        // tagsExpanded: true,
+        // photosExpaned: true,
+      ),
     );
   }
 }

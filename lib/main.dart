@@ -12,6 +12,7 @@ import 'package:tswiri_database/functions/other/clear_temp_directory.dart';
 import 'package:tswiri_database/mobile_database.dart';
 import 'package:tswiri_database/models/search/shopping_cart.dart';
 import 'package:tswiri_database/models/settings/app_settings.dart';
+import 'package:tswiri_widgets/colors/colors_m3.dart';
 import 'package:tswiri_widgets/theme/theme.dart';
 
 Future<void> main() async {
@@ -144,6 +145,7 @@ class _MyHomePageState extends State<MyHomePage>
 
   Widget _navigationBar() {
     return NavigationBar(
+      backgroundColor: background,
       onDestinationSelected: (value) {
         setState(() {
           currentPageIndex = value;
@@ -152,19 +154,21 @@ class _MyHomePageState extends State<MyHomePage>
       destinations: const [
         NavigationDestination(
           icon: Icon(Icons.account_tree_sharp),
+          selectedIcon: Icon(Icons.account_tree_sharp),
           label: 'Containers',
         ),
         NavigationDestination(
           icon: Icon(Icons.search_sharp),
-          label: 'Search',
+          selectedIcon: Icon(Icons.search_sharp),
+          label: 'Find',
         ),
         NavigationDestination(
-          selectedIcon: Icon(Icons.bookmark),
+          selectedIcon: Icon(Icons.build_sharp),
           icon: Icon(Icons.build_sharp),
           label: 'Utilities',
         ),
         NavigationDestination(
-          selectedIcon: Icon(Icons.bookmark),
+          selectedIcon: Icon(Icons.settings_sharp),
           icon: Icon(Icons.settings_sharp),
           label: 'Settings',
         ),

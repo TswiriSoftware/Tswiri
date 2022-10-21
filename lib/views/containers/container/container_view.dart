@@ -539,7 +539,7 @@ class _ContainerViewState extends State<ContainerView> {
               Image.file(
                 width: 150,
                 height: 250,
-                File(photo.getPhotoPath()),
+                File(photo.getPhotoThumbnailPath()),
                 fit: BoxFit.cover,
               ),
               Card(

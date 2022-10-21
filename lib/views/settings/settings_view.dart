@@ -44,7 +44,6 @@ class _SettingsViewState extends State<SettingsView> {
     return AppBar(
       title: Text(
         'Settings',
-        style: Theme.of(context).textTheme.titleMedium,
       ),
       centerTitle: true,
     );
