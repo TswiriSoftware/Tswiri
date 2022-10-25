@@ -41,7 +41,7 @@ void navigationImageProcessor(List init) {
   //5. Spawn BarcodeScanner.
   BarcodeScanner barcodeScanner = BarcodeScanner(
     formats: [
-      BarcodeFormat.qrCode,
+      BarcodeFormat.all,
     ],
   );
 

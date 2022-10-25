@@ -11,13 +11,13 @@ import 'package:tswiri_widgets/colors/colors.dart';
 enum ScreenMode { liveFeed, gallery }
 
 class BarcodeImportCameraView extends StatefulWidget {
-  const BarcodeImportCameraView(
-      {Key? key,
-      required this.title,
-      required this.customPaint,
-      required this.onImage,
-      this.initialDirection = CameraLensDirection.back})
-      : super(key: key);
+  const BarcodeImportCameraView({
+    Key? key,
+    required this.title,
+    required this.customPaint,
+    required this.onImage,
+    this.initialDirection = CameraLensDirection.back,
+  }) : super(key: key);
 
   final String title;
   final CustomPaint? customPaint;

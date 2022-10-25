@@ -18,7 +18,7 @@ class _SingleBarcodeScannerViewState extends State<SingleBarcodeScannerView> {
   //Initialize barcode scanner
   final _barcodeScanner = BarcodeScanner(
     formats: [
-      BarcodeFormat.qrCode,
+      BarcodeFormat.all,
     ],
   );
 

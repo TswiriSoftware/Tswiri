@@ -15,7 +15,7 @@ void gridScanningImageProcessor(SendPort sendPort) {
 
   BarcodeScanner barcodeScanner = BarcodeScanner(
     formats: [
-      BarcodeFormat.qrCode,
+      BarcodeFormat.all,
     ],
   );
 

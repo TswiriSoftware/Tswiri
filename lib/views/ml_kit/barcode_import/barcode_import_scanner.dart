@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 
 import 'barcode_import_camera_view.dart';
-import 'single_barcode_painter.dart';
+import 'barcode_import_painter.dart';
 
 ///Returns a single barcodeUID.
 class BarcodeImportScannerView extends StatefulWidget {
@@ -20,7 +20,7 @@ class _BarcodeImportScannerViewState extends State<BarcodeImportScannerView> {
   //Initialize barcode scanner
   final _barcodeScanner = BarcodeScanner(
     formats: [
-      BarcodeFormat.qrCode,
+      BarcodeFormat.all,
     ],
   );
 

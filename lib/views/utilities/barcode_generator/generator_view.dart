@@ -388,6 +388,7 @@ class _GeneratorViewState extends State<GeneratorView> {
     final TextEditingController batchWidthController = TextEditingController();
     final FocusNode batchHeightNode = FocusNode();
     final FocusNode batchWidthNode = FocusNode();
+    
     return Card(
       key: UniqueKey(),
       color: backgroundM2[300],
@@ -745,18 +746,18 @@ class _GeneratorViewState extends State<GeneratorView> {
     //Time of creation
     int timestamp = DateTime.now().millisecondsSinceEpoch;
 
-    List<int> scannedBarcodeIDs =
-        scannedBarcodes.map((e) => int.parse(e.split('_').first)).toList();
+    // List<int> scannedBarcodeIDs =
+    //     scannedBarcodes.map((e) => int.parse(e.split('_').first)).toList();
 
-    scannedBarcodeIDs.sort();
+    // scannedBarcodeIDs.sort();
 
     BarcodeBatch newBarcodeBatch = BarcodeBatch()
       ..width = barcodeSize
       ..height = barcodeSize
       ..timestamp = timestamp
       ..imported = true
-      ..rangeStart = scannedBarcodeIDs.first
-      ..rangeEnd = scannedBarcodeIDs.last;
+      ..rangeStart = 0
+      ..rangeEnd = scannedBarcodes.length;
 
     //Write to database.
     isar!.writeTxnSync((isar) {
