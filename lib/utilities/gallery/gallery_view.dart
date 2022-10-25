@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:animations/animations.dart';
@@ -219,6 +218,7 @@ class _PhotoViewState extends State<PhotoView> {
                 _photoLabels(),
                 const Divider(),
                 _mlObjectsCard(),
+                const Divider(),
                 _mlTextElements(),
               ],
             ),
@@ -229,55 +229,62 @@ class _PhotoViewState extends State<PhotoView> {
   }
 
   Widget _photoLabels() {
-    return Card(
-      elevation: 15,
-      child: ExpansionTile(
-        title: const Text('Photo Labels'),
-        children: [
-          Wrap(
-            spacing: 4,
-            children: [
-              for (MLPhotoLabel e in _imageData.mlPhotoLabels)
-                FilterChip(
-                  avatar: const Icon(Icons.smart_toy_rounded),
-                  selected: e.userFeedback ?? true,
-                  label: e.userFeedback ?? true
-                      ? Text(
-                          getMLDetectedLabelText(e.detectedLabelTextID),
-                        )
-                      : Text(
-                          getMLDetectedLabelText(e.detectedLabelTextID),
-                          style: const TextStyle(
-                              decoration: TextDecoration.lineThrough),
-                        ),
-                  onSelected: (value) {
-                    setState(() {
-                      e.userFeedback = value;
-                    });
-                  },
+    return Column(
+      children: [
+        const ListTile(
+          title: Text('Photo Labels'),
+        ),
+        Wrap(
+          spacing: 4,
+          children: [
+            for (MLPhotoLabel e in _imageData.mlPhotoLabels)
+              FilterChip(
+                avatar: const Icon(Icons.smart_toy_rounded),
+                selected: e.userFeedback ?? true,
+                label: e.userFeedback ?? true
+                    ? Text(
+                        getMLDetectedLabelText(e.detectedLabelTextID),
+                      )
+                    : Text(
+                        getMLDetectedLabelText(e.detectedLabelTextID),
+                        style: const TextStyle(
+                            decoration: TextDecoration.lineThrough),
+                      ),
+                onSelected: (value) {
+                  setState(() {
+                    e.userFeedback = value;
+                  });
+                },
+              ),
+            for (PhotoLabel e in _imageData.photoLabels)
+              Chip(
+                avatar: const Icon(Icons.account_circle_rounded),
+                label: Text(
+                  isar!.tagTexts.getSync(e.tagTextID)?.text ?? '-',
                 ),
-              for (PhotoLabel e in _imageData.photoLabels)
-                Chip(
-                  avatar: const Icon(Icons.account_circle_rounded),
-                  label: Text(
-                    isar!.tagTexts.getSync(e.tagTextID)?.text ?? '-',
-                  ),
-                ),
-            ],
-          ),
-        ],
-      ),
+              ),
+          ],
+        ),
+      ],
     );
   }
 
   Widget _mlObjectsCard() {
-    return Wrap(
-        spacing: 4,
-        children: [for (var e in _imageData.mlObjects) _mlObjectCard(e)]);
+    return Column(
+      children: [
+        const ListTile(
+          title: Text('Objects'),
+        ),
+        Wrap(
+            spacing: 4,
+            children: [for (var e in _imageData.mlObjects) _mlObjectCard(e)]),
+      ],
+    );
   }
 
   Widget _mlObjectCard(MLObject mlObject) {
     return Card(
+      elevation: 10,
       key: UniqueKey(),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -297,10 +304,23 @@ class _PhotoViewState extends State<PhotoView> {
               children: [
                 for (MLObjectLabel e in _imageData.mlObjectLabels
                     .where((element) => element.objectID == mlObject.id))
-                  Chip(label: Text(e.detectedLabelTextID.toString())),
-                // for (ObjectLabel e in _imageData.objectLabels
-                //     .where((element) => element.objectID == mlObject.id))
-                //   _objectLabelChip(e),
+                  Chip(
+                      label: Text(isar!.mLDetectedElementTexts
+                          .filter()
+                          .idEqualTo(e.detectedLabelTextID)
+                          .findFirstSync()!
+                          .detectedText)),
+                for (ObjectLabel e in _imageData.objectLabels
+                    .where((element) => element.objectID == mlObject.id))
+                  Chip(
+                    label: Text(
+                      isar!.tagTexts
+                          .filter()
+                          .idEqualTo(e.tagTextID)
+                          .findFirstSync()!
+                          .text,
+                    ),
+                  ),
                 // Visibility(
                 //   key: UniqueKey(),
                 //   visible: !isAddingObjectLabel,
@@ -336,12 +356,14 @@ class _PhotoViewState extends State<PhotoView> {
   }
 
   Widget _mlTextElements() {
-    return ExpansionTile(
-      title: Text(
-        'Recognized Text',
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
+    return Column(
       children: [
+        ListTile(
+          title: Text(
+            'Recognized Text',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ),
         _imageData.mlTextElements.isEmpty
             ? Text(
                 'No Text Detected',
