@@ -1,4 +1,8 @@
+import 'dart:developer';
+
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:tswiri/find/filter_view.dart';
 import 'package:tswiri_theme/widgets/cards/filled_card.dart';
 import 'package:tswiri_theme/widgets/cards/text_field_card.dart';
 
@@ -18,10 +22,14 @@ class _FindViewState extends State<FindView> {
   @override
   void initState() {
     super.initState();
+    focusNode.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
   void dispose() {
+    focusNode.dispose();
     super.dispose();
   }
 
@@ -37,32 +45,39 @@ class _FindViewState extends State<FindView> {
 
   SliverAppBar _sliverAppBar() {
     return SliverAppBar(
-      floating: false,
+      floating: true,
       pinned: true,
-      flexibleSpace: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          TextFieldCard(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 30),
-              child: Row(
-                children: [
-                  Flexible(
-                    child: TextField(
-                      focusNode: focusNode,
-                      onTap: () {},
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Search',
-                      ),
-                    ),
-                  ),
-                ],
+      title: TextFieldCard(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 4),
+          child: Row(
+            children: [
+              OpenContainer(
+                openColor: Colors.transparent,
+                closedColor: Colors.transparent,
+                closedBuilder: (context, action) {
+                  return IconButton(
+                    onPressed: action,
+                    icon: const Icon(Icons.menu),
+                  );
+                },
+                openBuilder: (context, action) {
+                  return const FilterView();
+                },
               ),
-            ),
+              Flexible(
+                child: TextField(
+                  focusNode: focusNode,
+                  onTap: () {},
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Search',
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -81,13 +96,3 @@ class _FindViewState extends State<FindView> {
     );
   }
 }
-
-// GridView.count(
-//     crossAxisCount: 2,
-//     children: [
-// for (var i = 0; i < 25; i++)
-//   FilledCard(
-//     child: Text('data'),
-//   ),
-//     ],
-//   );

@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:tswiri_database/functions/general/coordinate_translator.dart';
 
-class SinglePainter extends CustomPainter {
-  SinglePainter({
+class BarcodeScannerPainter extends CustomPainter {
+  BarcodeScannerPainter({
     required this.barcodes,
     required this.absoluteImageSize,
     required this.rotation,
@@ -119,7 +119,7 @@ class SinglePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(SinglePainter oldDelegate) {
+  bool shouldRepaint(BarcodeScannerPainter oldDelegate) {
     return oldDelegate.absoluteImageSize != absoluteImageSize ||
         oldDelegate.barcodes != barcodes;
   }

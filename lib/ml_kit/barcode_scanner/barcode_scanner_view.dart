@@ -2,19 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:tswiri_database/models/settings/app_settings.dart';
-import 'single_barcode_camera_view.dart';
-import 'single_barcode_painter.dart';
+import 'barcode_scanner_camera_view.dart';
+import 'barcode_scanner_painter.dart';
 
 ///Returns a single barcodeUID.
-class SingleBarcodeScannerView extends StatefulWidget {
-  const SingleBarcodeScannerView({Key? key}) : super(key: key);
+class BarcodeScannerView extends StatefulWidget {
+  const BarcodeScannerView({Key? key}) : super(key: key);
 
   @override
-  State<SingleBarcodeScannerView> createState() =>
-      _SingleBarcodeScannerViewState();
+  State<BarcodeScannerView> createState() => _BarcodeScannerViewState();
 }
 
-class _SingleBarcodeScannerViewState extends State<SingleBarcodeScannerView> {
+class _BarcodeScannerViewState extends State<BarcodeScannerView> {
   //Initialize barcode scanner
   final _barcodeScanner = BarcodeScanner(
     formats: [
@@ -52,7 +51,7 @@ class _SingleBarcodeScannerViewState extends State<SingleBarcodeScannerView> {
   }
 
   Widget _body() {
-    return SingleBarcodeCameraView(
+    return BarcodeScannerCameraView(
         title: 'Barcode Scanner',
         customPaint: _customPaint,
         onImage: (inputImage) {
@@ -80,7 +79,7 @@ class _SingleBarcodeScannerViewState extends State<SingleBarcodeScannerView> {
     final barcodes = await _barcodeScanner.processImage(inputImage);
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
-      final painter = SinglePainter(
+      final painter = BarcodeScannerPainter(
           mounted: mounted,
           barcodes: barcodes,
           absoluteImageSize: inputImage.inputImageData!.size,
