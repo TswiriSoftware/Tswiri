@@ -104,6 +104,8 @@ Future<double?> confidenceThresholdDialog(
                     controller: controller,
                     textAlign: TextAlign.center,
                     keyboardType: TextInputType.number,
+                    decoration:
+                        const InputDecoration(contentPadding: EdgeInsets.zero),
                   ),
                 ),
               ],

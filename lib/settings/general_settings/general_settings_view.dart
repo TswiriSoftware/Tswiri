@@ -173,6 +173,8 @@ class _GeneralSettingsViewState extends State<GeneralSettingsView> {
                       controller: _controller,
                       textAlign: TextAlign.center,
                       keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.zero),
                     ),
                   ),
                   const Text('x'),
@@ -181,6 +183,8 @@ class _GeneralSettingsViewState extends State<GeneralSettingsView> {
                       controller: _controller,
                       textAlign: TextAlign.center,
                       keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.zero),
                     ),
                   ),
                   const Text('mm'),
@@ -190,19 +194,13 @@ class _GeneralSettingsViewState extends State<GeneralSettingsView> {
           ),
           actionsAlignment: MainAxisAlignment.spaceBetween,
           actions: <Widget>[
-            TextButton(
-              // style: TextButton.styleFrom(
-              //   textStyle: Theme.of(context).textTheme.labelLarge,
-              // ),
+            OutlinedButton(
               child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            TextButton(
-              // style: TextButton.styleFrom(
-              //   textStyle: Theme.of(context).textTheme.labelLarge,
-              // ),
+            OutlinedButton(
               child: const Text('Okay'),
               onPressed: () {
                 Navigator.of(context).pop(

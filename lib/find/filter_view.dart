@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tswiri_database/models/find/find.dart';
 
 class FilterView extends StatefulWidget {
   const FilterView({Key? key}) : super(key: key);
@@ -8,6 +10,8 @@ class FilterView extends StatefulWidget {
 }
 
 class FilterViewState extends State<FilterView> {
+  // late Map<String, String> filters = Provider.of<Find>(context).findFilters;
+
   @override
   void initState() {
     super.initState();
@@ -24,14 +28,24 @@ class FilterViewState extends State<FilterView> {
   AppBar _appBar() {
     return AppBar(
       elevation: 10,
-      title: Text('Filters'),
+      title: const Text('Filters'),
     );
   }
 
   Widget _body() {
     return SingleChildScrollView(
       child: Column(
-        children: [],
+        children: [
+          for (var e in Provider.of<Find>(context).findFilters.keys)
+            SwitchListTile(
+              value: Provider.of<Find>(context).isFilterActive(e),
+              onChanged: (value) =>
+                  Provider.of<Find>(context, listen: false).toggleFilter(e),
+              title: Text(e),
+              subtitle:
+                  Text(Provider.of<Find>(context).findFilters[e].toString()),
+            )
+        ],
       ),
     );
   }

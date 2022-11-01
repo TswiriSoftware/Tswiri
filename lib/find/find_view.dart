@@ -47,36 +47,27 @@ class _FindViewState extends State<FindView> {
     return SliverAppBar(
       floating: true,
       pinned: true,
-      title: TextFieldCard(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 4),
-          child: Row(
-            children: [
-              OpenContainer(
-                openColor: Colors.transparent,
-                closedColor: Colors.transparent,
-                closedBuilder: (context, action) {
-                  return IconButton(
-                    onPressed: action,
-                    icon: const Icon(Icons.menu),
-                  );
-                },
-                openBuilder: (context, action) {
-                  return const FilterView();
-                },
-              ),
-              Flexible(
-                child: TextField(
-                  focusNode: focusNode,
-                  onTap: () {},
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Search',
-                  ),
-                ),
-              ),
-            ],
+      title: TextField(
+        focusNode: focusNode,
+        onTap: () {},
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.zero,
+          fillColor: Colors.transparent,
+          suffixIcon: const Icon(Icons.search_rounded),
+          prefixIcon: OpenContainer(
+            openColor: Colors.transparent,
+            closedColor: Colors.transparent,
+            closedBuilder: (context, action) {
+              return IconButton(
+                onPressed: action,
+                icon: const Icon(Icons.menu_rounded),
+              );
+            },
+            openBuilder: (context, action) {
+              return const FilterView();
+            },
           ),
+          hintText: 'Search',
         ),
       ),
     );

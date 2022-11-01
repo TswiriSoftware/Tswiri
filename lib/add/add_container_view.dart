@@ -3,8 +3,6 @@ import 'dart:developer';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:tswiri/ml_kit/barcode_scanner/barcode_scanner_view.dart';
-import 'package:tswiri/utilities/barcodes/barcode_import_view.dart';
-import 'package:tswiri/utilities/barcodes/barcode_batches_view.dart';
 import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/models/settings/global_settings.dart';
 
@@ -148,7 +146,12 @@ class AddContainerViewState extends State<AddContainerView> {
                 ? const Icon(Icons.question_mark_rounded)
                 : const Icon(Icons.qr_code_2_rounded),
             title: const Text('Barcode'),
-            trailing: const Icon(Icons.add_rounded),
+            subtitle: selectedBarcode == null
+                ? null
+                : Text(selectedBarcode!.barcodeUID.toString()),
+            trailing: selectedBarcode == null
+                ? const Icon(Icons.add_rounded)
+                : const Icon(Icons.change_circle_rounded),
             onTap: action,
           ),
         );
@@ -171,7 +174,7 @@ class AddContainerViewState extends State<AddContainerView> {
         } else {
           //Set selected barcode.
           setState(() {
-            selectedBarcode = selectedBarcode;
+            selectedBarcode = catalogedBarcode;
           });
         }
       },

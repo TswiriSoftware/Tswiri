@@ -26,6 +26,8 @@ class AddViewState extends State<AddView> {
   AppBar _appBar() {
     return AppBar(
       elevation: 10,
+      title: const Text('Add'),
+      centerTitle: true,
     );
   }
 

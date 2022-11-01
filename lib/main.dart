@@ -5,6 +5,7 @@ import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/functions/general/clear_temp_directory.dart';
 import 'package:tswiri_database/functions/isar/create_functions.dart';
 import 'package:tswiri_database/mobile_database.dart';
+import 'package:tswiri_database/models/find/find.dart';
 import 'package:tswiri_database/models/settings/app_settings.dart';
 import 'package:tswiri/add/add_view.dart';
 import 'package:tswiri/find/find_view.dart';
@@ -35,16 +36,16 @@ Future<void> main() async {
   //Clear temp directory whenever the app is opened.
   clearTemporaryDirectory();
 
-  runApp(const MyApp());
+  // runApp(const MyApp());
 
-  // runApp(
-  //   MultiProvider(
-  //     providers: [
-  //       //TODO: add providers
-  //     ],
-  //     child: const MyApp(),
-  //   ),
-  // );
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<Find>(create: (_) => Find()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

@@ -78,19 +78,16 @@ class BarcodeBatchesViewState extends State<BarcodeBatchesView> {
       onSelected: (value) async {
         switch (value) {
           case 0:
-            Set<String>? scannedBarcodes = await Navigator.push(
+            await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => const BarcodeImportView(),
               ),
             );
 
-            if (scannedBarcodes != null && scannedBarcodes.isNotEmpty) {
-              //TODO: import barcodes.
-
-              // _importBarcodes(scannedBarcodes);
-              // log(scannedBarcodes.toString());
-            }
+            setState(() {
+              barcodeBatches = isar!.barcodeBatchs.where().findAllSync();
+            });
             break;
           default:
         }
@@ -134,6 +131,11 @@ class BarcodeBatchesViewState extends State<BarcodeBatchesView> {
       openBuilder: (context, _) => BarcodeBatchView(
         barcodeBatch: batch,
       ),
+      onClosed: (value) {
+        setState(() {
+          barcodeBatches = isar!.barcodeBatchs.where().findAllSync();
+        });
+      },
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tswiri/utilities/barcodes/barcode_batch_inspector_view.dart';
+import 'package:tswiri/utilities/barcodes/pdf_view.dart';
 import 'package:tswiri_database/export.dart';
 
 class BarcodeBatchView extends StatefulWidget {
@@ -40,6 +41,62 @@ class BarcodeBatchViewState extends State<BarcodeBatchView> {
     return AppBar(
       elevation: 10,
       title: Text('Batch: ${_batch.id}'),
+      actions: [
+        _deleteBatch(),
+      ],
+    );
+  }
+
+  IconButton _deleteBatch() {
+    return IconButton(
+      onPressed: () async {
+        bool? delete = await _delete(context);
+        if (delete == null) return;
+        if (delete == false) return;
+
+        bool canDelete = true;
+        isar!.catalogedBarcodes
+            .filter()
+            .batchIDEqualTo(_batch.id)
+            .findAllSync()
+            .forEach((element) {
+          CatalogedContainer? catalogedContainer = isar!.catalogedContainers
+              .filter()
+              .barcodeUIDMatches(element.barcodeUID)
+              .findFirstSync();
+          if (catalogedContainer != null) {
+            canDelete = false;
+          }
+        });
+
+        if (canDelete == false) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Text(
+                      'A barcode from this batch is in use.',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        } else {
+          isar!.writeTxnSync(() {
+            isar!.barcodeBatchs.deleteSync(_batch.id);
+            isar!.catalogedBarcodes
+                .filter()
+                .batchIDEqualTo(_batch.id)
+                .deleteAllSync();
+          });
+          if (mounted) Navigator.of(context).pop();
+        }
+      },
+      icon: const Icon(Icons.delete_rounded),
     );
   }
 
@@ -74,13 +131,33 @@ class BarcodeBatchViewState extends State<BarcodeBatchView> {
     );
   }
 
-  ListTile _print() {
-    return ListTile(
-      title: Text('Print'),
-      trailing: const Icon(Icons.print_rounded),
-      onTap: () {
-        //TODO: reprint batch
-      },
+  Widget _print() {
+    return Visibility(
+      visible: !_batch.imported,
+      child: ListTile(
+        title: const Text('Print'),
+        trailing: const Icon(Icons.print_rounded),
+        onTap: () {
+          List<String> barcodeUIDs = isar!.catalogedBarcodes
+              .filter()
+              .batchIDEqualTo(_batch.id)
+              .findAllSync()
+              .map((e) => e.barcodeUID)
+              .toList();
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PdfView(
+                barcodeUIDs: barcodeUIDs,
+                size: _batch.width,
+                start: _batch.rangeStart,
+                end: _batch.rangeEnd,
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -227,6 +304,34 @@ class BarcodeBatchViewState extends State<BarcodeBatchView> {
                 Navigator.of(context).pop(
                   double.tryParse(controller.text),
                 );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool?> _delete(
+    BuildContext context,
+  ) {
+    return showDialog<bool?>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete this Batch?'),
+          actionsAlignment: MainAxisAlignment.spaceBetween,
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            TextButton(
+              child: const Text('Delete'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
               },
             ),
           ],
