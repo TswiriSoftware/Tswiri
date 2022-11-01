@@ -51,7 +51,7 @@ class _AppInfoViewState extends State<AppInfoView> {
       },
       child: const ListTile(
         leading: ImageIcon(
-          AssetImage("assets/icons/tswiri_icon_192.png"),
+          AssetImage("assets/icons/tswiri_icon.png"),
           size: 30,
           color: tswiriOrange,
         ),

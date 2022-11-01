@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"name": "tswiri_database",
+			"path": "../packages/tswiri_database"
+		},
+		{
+			"name": "tswiri_theme",
+			"path": "../packages/tswiri_theme"
+		}
+	],
+	"settings": {}
+}

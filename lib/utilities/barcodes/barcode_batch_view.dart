@@ -1,7 +1,9 @@
 import 'dart:math';
 
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tswiri/utilities/barcodes/barcode_batch_inspector_view.dart';
 import 'package:tswiri_database/export.dart';
 
 class BarcodeBatchView extends StatefulWidget {
@@ -62,10 +64,23 @@ class BarcodeBatchViewState extends State<BarcodeBatchView> {
             _dateTime(),
             _height(),
             _width(),
+            const Divider(),
             _barcodes(),
+            const Divider(),
+            _print(),
           ],
         ),
       ),
+    );
+  }
+
+  ListTile _print() {
+    return ListTile(
+      title: Text('Print'),
+      trailing: const Icon(Icons.print_rounded),
+      onTap: () {
+        //TODO: reprint batch
+      },
     );
   }
 
@@ -156,20 +171,27 @@ class BarcodeBatchViewState extends State<BarcodeBatchView> {
     );
   }
 
-  ListTile _barcodes() {
-    return ListTile(
-      leading: const Icon(Icons.qr_code_2_rounded),
-      title: const Text('Barcodes'),
-      subtitle: Text(isar!.catalogedBarcodes
-          .filter()
-          .batchIDEqualTo(_batch.id)
-          .findAllSync()
-          .length
-          .toString()),
-      trailing: IconButton(
-        onPressed: () {},
-        icon: const Icon(Icons.view_carousel_rounded),
-      ),
+  Widget _barcodes() {
+    return OpenContainer(
+      closedColor: Colors.transparent,
+      openColor: Colors.transparent,
+      closedBuilder: (context, action) {
+        return ListTile(
+          leading: const Icon(Icons.qr_code_2_rounded),
+          title: const Text('Barcodes'),
+          subtitle: Text(isar!.catalogedBarcodes
+              .filter()
+              .batchIDEqualTo(_batch.id)
+              .findAllSync()
+              .length
+              .toString()),
+          trailing: const Icon(Icons.view_carousel_rounded),
+          onTap: action,
+        );
+      },
+      openBuilder: (context, action) {
+        return BarcodeBatchInspectorView(barcodeBatch: _batch);
+      },
     );
   }
 

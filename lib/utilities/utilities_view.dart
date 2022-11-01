@@ -1,9 +1,13 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:tswiri/utilities/barcodes/barcodes_view.dart';
+import 'package:provider/provider.dart';
+import 'package:tswiri/navigation_widgets/open_navigation_tile.dart';
+import 'package:tswiri/utilities/barcodes/barcode_batches_view.dart';
 import 'package:tswiri/utilities/container_types/container_types_view.dart';
+import 'package:tswiri/utilities/containers/containers_view.dart';
 import 'package:tswiri/utilities/gallery/gallery_view.dart';
 import 'package:tswiri/utilities/storage/storage_view.dart';
+import 'package:tswiri_database/models/container_manager/container_manager.dart';
 
 class ManageView extends StatefulWidget {
   const ManageView({super.key});
@@ -47,25 +51,34 @@ class _ManageViewState extends State<ManageView> {
       sliver: SliverGrid.count(
         crossAxisCount: 2,
         children: [
-          CustomOpenContainer(
+          OpenNavigationTile(
+            title: 'Containers',
+            iconData: Icons.clear_all_rounded,
+            destination: ChangeNotifierProvider(
+              create: (context) => ContainerManager(),
+              child: const ContainersView(),
+            ),
+            animationDuration: animationDuration,
+          ),
+          OpenNavigationTile(
             title: 'Storage',
             iconData: Icons.storage_rounded,
             destination: const StorageView(),
             animationDuration: animationDuration,
           ),
-          CustomOpenContainer(
+          OpenNavigationTile(
             title: 'Gallery',
             iconData: Icons.photo_album_rounded,
             destination: const GalleryView(),
             animationDuration: animationDuration,
           ),
-          CustomOpenContainer(
+          OpenNavigationTile(
             title: 'QR Codes',
             iconData: Icons.qr_code_2_rounded,
-            destination: const BarcodesView(),
+            destination: const BarcodeBatchesView(),
             animationDuration: animationDuration,
           ),
-          CustomOpenContainer(
+          OpenNavigationTile(
             title: 'Container Types',
             iconData: Icons.code_rounded,
             destination: const ContainerTypesView(),
@@ -73,63 +86,6 @@ class _ManageViewState extends State<ManageView> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class CustomOpenContainer extends StatefulWidget {
-  const CustomOpenContainer(
-      {super.key,
-      required this.title,
-      required this.iconData,
-      required this.destination,
-      this.animationDuration});
-  final String title;
-  final IconData iconData;
-  final Widget destination;
-  final Duration? animationDuration;
-  @override
-  State<CustomOpenContainer> createState() => _CustomOpenContainerState();
-}
-
-class _CustomOpenContainerState extends State<CustomOpenContainer> {
-  @override
-  Widget build(BuildContext context) {
-    return OpenContainer(
-      openColor: Colors.transparent,
-      closedColor: Colors.transparent,
-      transitionType: ContainerTransitionType.fade,
-      transitionDuration:
-          widget.animationDuration ?? const Duration(milliseconds: 300),
-      closedBuilder: (context, action) {
-        return Card(
-          elevation: 5,
-          child: TextButton(
-            onPressed: action,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  LayoutBuilder(
-                    builder: (context, constraint) {
-                      return Icon(
-                        widget.iconData,
-                        size: constraint.maxWidth / 3,
-                        color: Theme.of(context).colorScheme.onBackground,
-                      );
-                    },
-                  ),
-                  Text(
-                    widget.title,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-      openBuilder: (context, _) => widget.destination,
     );
   }
 }

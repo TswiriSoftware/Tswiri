@@ -63,45 +63,42 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
 
   Widget _nameTextField() {
     return Card(
+      elevation: 5,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: TextFormField(
           initialValue: _containerType.containerTypeName,
+          onFieldSubmitted: (value) {
+            setState(() {
+              _containerType.containerTypeName = value;
+            });
+            _updateIsar();
+          },
         ),
       ),
     );
-
-    // CustomTextField(
-    //   label: 'Name',
-    //   initialValue: _containerType.containerTypeName,
-    //   onSubmitted: (value) {
-    //     setState(() {
-    //       _containerType.containerTypeName = value;
-    //     });
-
-    //     _updateIsar();
-    //   },
-    //   backgroundColor: background[400]!,
-    //   borderColor: tswiriOrange,
-    // );
   }
 
   Widget _descriptionTextField() {
-    return const TextField();
-    // CustomTextField(
-    //   label: 'Description',
-    //   initialValue: _containerType.containerDescription,
-    //   maxLines: 5,
-    //   onSubmitted: (value) {
-    //     setState(() {
-    //       _containerType.containerDescription = value;
-    //     });
+    return Card(
+      elevation: 5,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: TextFormField(
+          initialValue: _containerType.containerDescription,
+          keyboardType: TextInputType.multiline,
+          textInputAction: TextInputAction.done,
+          onFieldSubmitted: (value) {
+            setState(() {
+              _containerType.containerDescription = value;
+            });
 
-    //     _updateIsar();
-    //   },
-    //   backgroundColor: background[400]!,
-    //   borderColor: tswiriOrange,
-    // );
+            _updateIsar();
+          },
+          maxLines: null,
+        ),
+      ),
+    );
   }
 
   Widget _booleanOptions() {
@@ -237,50 +234,57 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
-                  children: const [
-                    TextField(),
-                    TextField(),
-                    TextField(),
-
-                    // CustomTextField(
-                    //   label: 'Red',
-                    //   initialValue: red.toString(),
-                    //   textInputType: TextInputType.number,
-                    //   onSubmitted: (value) {
-                    //     setState(() {
-                    //       red = int.tryParse(value) ?? red;
-                    //     });
-                    //     _updateColor();
-                    //   },
-                    //   backgroundColor: backgroundM2[300]!,
-                    //   borderColor: tswiriOrange,
-                    // ),
-                    // CustomTextField(
-                    //   label: 'Green',
-                    //   initialValue: blue.toString(),
-                    //   textInputType: TextInputType.number,
-                    //   onSubmitted: (value) {
-                    //     setState(() {
-                    //       green = int.tryParse(value) ?? green;
-                    //     });
-                    //     _updateColor();
-                    //   },
-                    //   backgroundColor: backgroundM2[300]!,
-                    //   borderColor: tswiriOrange,
-                    // ),
-                    // CustomTextField(
-                    //   label: 'Blue',
-                    //   initialValue: green.toString(),
-                    //   textInputType: TextInputType.number,
-                    //   onSubmitted: (value) {
-                    //     setState(() {
-                    //       blue = int.tryParse(value) ?? blue;
-                    //     });
-                    //     _updateColor();
-                    //   },
-                    //   backgroundColor: backgroundM2[300]!,
-                    //   borderColor: tswiriOrange,
-                    // ),
+                  children: [
+                    Card(
+                      elevation: 10,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          initialValue: red.toString(),
+                          decoration: const InputDecoration(label: Text('Red')),
+                          onFieldSubmitted: (value) {
+                            setState(() {
+                              red = int.tryParse(value) ?? red;
+                            });
+                            _updateColor();
+                          },
+                        ),
+                      ),
+                    ),
+                    Card(
+                      elevation: 10,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          initialValue: green.toString(),
+                          decoration:
+                              const InputDecoration(label: Text('Green')),
+                          onFieldSubmitted: (value) {
+                            setState(() {
+                              green = int.tryParse(value) ?? green;
+                            });
+                            _updateColor();
+                          },
+                        ),
+                      ),
+                    ),
+                    Card(
+                      elevation: 10,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          initialValue: blue.toString(),
+                          decoration:
+                              const InputDecoration(label: Text('Blue')),
+                          onFieldSubmitted: (value) {
+                            setState(() {
+                              blue = int.tryParse(value) ?? blue;
+                            });
+                            _updateColor();
+                          },
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

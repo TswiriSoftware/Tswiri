@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/functions/general/clear_temp_directory.dart';
 import 'package:tswiri_database/functions/isar/create_functions.dart';
@@ -35,6 +36,15 @@ Future<void> main() async {
   clearTemporaryDirectory();
 
   runApp(const MyApp());
+
+  // runApp(
+  //   MultiProvider(
+  //     providers: [
+  //       //TODO: add providers
+  //     ],
+  //     child: const MyApp(),
+  //   ),
+  // );
 }
 
 class MyApp extends StatelessWidget {
@@ -64,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Widget> views = [
     const FindView(),
-    const ContainerView(),
+    const AddView(),
     const ManageView(),
     const SettingsView(),
   ];

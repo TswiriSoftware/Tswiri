@@ -5,14 +5,14 @@ import 'package:tswiri_database/export.dart';
 import 'package:tswiri/utilities/barcodes/barcode_batch_view.dart';
 import 'package:tswiri/utilities/barcodes/barcode_import_view.dart';
 
-class BarcodesView extends StatefulWidget {
-  const BarcodesView({Key? key}) : super(key: key);
+class BarcodeBatchesView extends StatefulWidget {
+  const BarcodeBatchesView({Key? key}) : super(key: key);
 
   @override
-  State<BarcodesView> createState() => BarcodesViewState();
+  State<BarcodeBatchesView> createState() => BarcodeBatchesViewState();
 }
 
-class BarcodesViewState extends State<BarcodesView> {
+class BarcodeBatchesViewState extends State<BarcodeBatchesView> {
   late List<BarcodeBatch> barcodeBatches =
       isar!.barcodeBatchs.where().findAllSync();
 
@@ -41,7 +41,7 @@ class BarcodesViewState extends State<BarcodesView> {
       expandedHeight: 0,
       flexibleSpace: AppBar(
         title: const Text(
-          'QR Codes',
+          'Barcode Batches',
         ),
         centerTitle: true,
         elevation: 5,
@@ -70,12 +70,6 @@ class BarcodesViewState extends State<BarcodesView> {
           const PopupMenuItem<int>(
             value: 0,
             child: Text(
-              "Find",
-            ),
-          ),
-          const PopupMenuItem<int>(
-            value: 0,
-            child: Text(
               "Import Barcodes",
             ),
           ),
@@ -97,9 +91,6 @@ class BarcodesViewState extends State<BarcodesView> {
               // _importBarcodes(scannedBarcodes);
               // log(scannedBarcodes.toString());
             }
-            break;
-          case 1:
-            //TODO: Implent find barcode.
             break;
           default:
         }

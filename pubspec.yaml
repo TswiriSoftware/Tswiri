@@ -66,6 +66,9 @@ dependencies:
   printing: ^5.9.3
   flutter_launcher_icons: ^0.10.0
   animations: ^2.0.7
+  flex_color_scheme: ^6.0.1 
+  barcode_widget: ^2.0.3
+
       
 dev_dependencies:
   integration_test:

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tswiri/settings/advanced_settings/advanced_settings_view.dart';
 import 'package:tswiri/settings/app_info/app_info_view.dart';
 import 'package:tswiri/settings/general_settings/general_settings_view.dart';
-import 'package:tswiri/transitions/left_to_right_transition.dart';
+import 'package:tswiri_theme/transitions/left_to_right_transition.dart';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({super.key});
