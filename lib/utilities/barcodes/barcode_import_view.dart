@@ -18,13 +18,11 @@ class BarcodeImportViewState extends State<BarcodeImportView> {
   final TextEditingController _heightController = TextEditingController();
   final TextEditingController _widthController = TextEditingController();
 
-  BarcodeBatch _batch = BarcodeBatch()
+  final BarcodeBatch _batch = BarcodeBatch()
     ..width = defaultBarcodeSize
     ..height = defaultBarcodeSize
     ..timestamp = DateTime.now().millisecondsSinceEpoch
-    ..imported = true
-    ..rangeStart = 0
-    ..rangeEnd = 0;
+    ..imported = true;
 
   @override
   void initState() {
@@ -102,7 +100,6 @@ class BarcodeImportViewState extends State<BarcodeImportView> {
             OutlinedButton(
               onPressed: () async {
                 //TODO: ignore existing barcodes.
-                _batch.rangeEnd = scannedBarcodes.length;
 
                 isar!.writeTxnSync(() {
                   int batchID = isar!.barcodeBatchs.putSync(_batch);

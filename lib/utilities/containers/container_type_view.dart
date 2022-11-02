@@ -1,4 +1,6 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:tswiri/utilities/containers/container_view.dart';
 import 'package:tswiri_database/export.dart';
 
 class ContainerTypeView extends StatefulWidget {
@@ -51,32 +53,43 @@ class ContainerTypeViewState extends State<ContainerTypeView> {
             .parentUIDMatches(container.containerUID)
             .findAllSync();
 
-        return Card(
-          elevation: 5,
-          child: ListTile(
-            title: Text(container.name ?? container.containerUID),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  container.description ?? '-',
+        return OpenContainer(
+          openColor: Colors.transparent,
+          closedColor: Colors.transparent,
+          closedBuilder: (context, action) {
+            return Card(
+              elevation: 5,
+              child: ListTile(
+                title: Text(container.name ?? container.containerUID),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      container.description ?? '-',
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            leading: Icon(_containerType.iconData.iconData),
-            trailing: Text(children.length.toString()),
-          ),
+                leading: Icon(_containerType.iconData.iconData),
+                trailing: Text(children.length.toString()),
+              ),
+            );
+          },
+          openBuilder: (context, action) {
+            return ContainerView(catalogedContainer: container);
+          },
         );
       },
     );
   }
 
   void updateContainers() {
-    setState(() {
-      _containers = isar!.catalogedContainers
-          .filter()
-          .containerTypeIDEqualTo(_containerType.id)
-          .findAllSync();
-    });
+    setState(
+      () {
+        _containers = isar!.catalogedContainers
+            .filter()
+            .containerTypeIDEqualTo(_containerType.id)
+            .findAllSync();
+      },
+    );
   }
 }

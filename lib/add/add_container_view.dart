@@ -3,7 +3,10 @@ import 'dart:developer';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:tswiri/ml_kit/barcode_scanner/barcode_scanner_view.dart';
+import 'package:tswiri/utilities/containers/container_view.dart';
 import 'package:tswiri_database/export.dart';
+import 'package:tswiri_database/functions/general/capitalize_first_character.dart';
+import 'package:tswiri_database/functions/isar/create_functions.dart';
 import 'package:tswiri_database/models/settings/global_settings.dart';
 
 class AddContainerView extends StatefulWidget {
@@ -35,10 +38,13 @@ class AddContainerViewState extends State<AddContainerView> {
   final FocusNode _descriptionNode = FocusNode();
 
   //Selected/Scanned barcode.
-  CatalogedBarcode? selectedBarcode;
+  CatalogedBarcode? _selectedBarcode;
 
   //New Barcode size
   TextEditingController _newBarcodeSizeController = TextEditingController();
+
+  //Parent
+  CatalogedContainer? _parentContainer;
 
   @override
   void initState() {
@@ -64,16 +70,24 @@ class AddContainerViewState extends State<AddContainerView> {
 
   Widget _body() {
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          _containerType(),
-          // const Divider(),
-          _name(),
-          // const Divider(),
-          _description(),
-          // const Divider(),
-          _barcode(),
-        ],
+      child: Card(
+        elevation: 5,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _containerType(),
+            const Divider(),
+            _name(),
+            // const Divider(),
+            _description(),
+            const Divider(),
+            _barcode(),
+            const Divider(),
+            _parent(),
+            const Divider(),
+            _create(),
+          ],
+        ),
       ),
     );
   }
@@ -139,21 +153,18 @@ class AddContainerViewState extends State<AddContainerView> {
       openColor: Colors.transparent,
       closedColor: Colors.transparent,
       closedBuilder: (context, action) {
-        return Card(
-          elevation: 10,
-          child: ListTile(
-            leading: selectedBarcode == null
-                ? const Icon(Icons.question_mark_rounded)
-                : const Icon(Icons.qr_code_2_rounded),
-            title: const Text('Barcode'),
-            subtitle: selectedBarcode == null
-                ? null
-                : Text(selectedBarcode!.barcodeUID.toString()),
-            trailing: selectedBarcode == null
-                ? const Icon(Icons.add_rounded)
-                : const Icon(Icons.change_circle_rounded),
-            onTap: action,
-          ),
+        return ListTile(
+          leading: _selectedBarcode == null
+              ? const Icon(Icons.question_mark_rounded)
+              : const Icon(Icons.qr_code_2_rounded),
+          title: const Text('Barcode'),
+          subtitle: _selectedBarcode == null
+              ? null
+              : Text(_selectedBarcode!.barcodeUID.toString()),
+          trailing: _selectedBarcode == null
+              ? const Icon(Icons.add_rounded)
+              : const Icon(Icons.change_circle_rounded),
+          onTap: action,
         );
       },
       openBuilder: (context, aciton) {
@@ -174,7 +185,60 @@ class AddContainerViewState extends State<AddContainerView> {
         } else {
           //Set selected barcode.
           setState(() {
-            selectedBarcode = catalogedBarcode;
+            _selectedBarcode = catalogedBarcode;
+          });
+        }
+      },
+    );
+  }
+
+  Widget _parent() {
+    return OpenContainer<String>(
+      openColor: Colors.transparent,
+      closedColor: Colors.transparent,
+      closedBuilder: (context, action) {
+        return ListTile(
+          title: const Text('Parent'),
+          leading: _parentContainer == null
+              ? const Icon(Icons.question_mark_rounded)
+              : const Icon(Icons.qr_code_2_rounded),
+          subtitle: _parentContainer == null
+              ? null
+              : Text(_parentContainer!.name.toString()),
+          trailing: _parentContainer == null
+              ? const Icon(Icons.add_rounded)
+              : const Icon(Icons.change_circle_rounded),
+          onTap: action,
+        );
+      },
+      openBuilder: (context, action) {
+        return const BarcodeScannerView();
+      },
+      onClosed: (barcodeUID) async {
+        if (barcodeUID == null) return;
+
+        CatalogedContainer? parentContainer = isar!.catalogedContainers
+            .filter()
+            .barcodeUIDMatches(barcodeUID)
+            .findFirstSync();
+
+        if (parentContainer == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text(
+                    'Barcode not linked',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            ),
+          );
+        } else {
+          setState(() {
+            _parentContainer = parentContainer;
           });
         }
       },
@@ -214,6 +278,88 @@ class AddContainerViewState extends State<AddContainerView> {
           ],
         );
       },
+    );
+  }
+
+  OutlinedButton _create() {
+    return OutlinedButton(
+      onPressed: () {
+        if (_selectedBarcode == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text(
+                    'Please scan a Barcode',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            ),
+          );
+        } else {
+          _createContainer(_selectedBarcode!);
+        }
+      },
+      child: const Text('Create'),
+    );
+  }
+
+  void _createContainer(CatalogedBarcode barcode) {
+    //Container UID.
+    String containerUID =
+        '${selectedContainerType.containerTypeName}_${DateTime.now().millisecondsSinceEpoch}';
+
+    //Container Name.
+    String name = _nameController.text;
+    if (name.isEmpty) {
+      List<CatalogedContainer> containers = isar!.catalogedContainers
+          .filter()
+          .containerTypeIDEqualTo(selectedContainerType.id)
+          .findAllSync();
+
+      name =
+          '${selectedContainerType.containerTypeName.capitalizeFirstCharacter()} ${containers.length + 1}';
+    }
+
+    //Container Description.
+    String? description = _descriptionController.text.isNotEmpty
+        ? _descriptionController.text
+        : null;
+
+    CatalogedContainer newCatalogedContainer = createNewCatalogedContainer(
+      containerUID: containerUID,
+      barcodeUID: barcode.barcodeUID,
+      containerTypeID: selectedContainerType.id,
+      name: name,
+      description: description,
+    );
+
+    //Create container Relationship
+    if (_parentContainer != null && _parentContainer != null) {
+      createContainerRelationship(
+        parentContainerUID: _parentContainer!.containerUID,
+        containerUID: containerUID,
+      );
+    }
+
+    //Create Marker
+    if (selectedContainerType.enclosing == false &&
+        selectedContainerType.moveable == false) {
+      Marker marker = Marker()
+        ..barcodeUID = barcode.barcodeUID
+        ..containerUID = containerUID;
+
+      isar!.writeTxnSync(() => isar!.markers.putSync(marker));
+    }
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => ContainerView(
+          catalogedContainer: newCatalogedContainer,
+        ),
+      ),
     );
   }
 }

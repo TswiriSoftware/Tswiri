@@ -1,6 +1,8 @@
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:tswiri/utilities/barcodes/pdf_view.dart';
 import 'package:tswiri_database/collections/cataloged_barcode/cataloged_barcode.dart';
+import 'package:tswiri_database/export.dart';
 
 class BarcodeView extends StatefulWidget {
   const BarcodeView({
@@ -62,6 +64,19 @@ class BarcodeViewState extends State<BarcodeView> {
               trailing: const Icon(Icons.print_rounded),
               onTap: () {
                 //TODO: reprint barcode
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PdfView(
+                      barcodeUIDs: [_catalogedBarcode.barcodeUID],
+                      size: isar!.barcodeBatchs
+                          .filter()
+                          .idEqualTo(_catalogedBarcode.batchID)
+                          .findFirstSync()!
+                          .width,
+                    ),
+                  ),
+                );
               },
             ),
           )

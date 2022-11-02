@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tswiri/utilities/barcodes/barcode_batch_inspector_view.dart';
+import 'package:tswiri/utilities/barcodes/barcode_batch_manager_view.dart';
 import 'package:tswiri/utilities/barcodes/pdf_view.dart';
 import 'package:tswiri_database/export.dart';
 
@@ -132,32 +132,27 @@ class BarcodeBatchViewState extends State<BarcodeBatchView> {
   }
 
   Widget _print() {
-    return Visibility(
-      visible: !_batch.imported,
-      child: ListTile(
-        title: const Text('Print'),
-        trailing: const Icon(Icons.print_rounded),
-        onTap: () {
-          List<String> barcodeUIDs = isar!.catalogedBarcodes
-              .filter()
-              .batchIDEqualTo(_batch.id)
-              .findAllSync()
-              .map((e) => e.barcodeUID)
-              .toList();
+    return ListTile(
+      title: const Text('Print'),
+      trailing: const Icon(Icons.print_rounded),
+      onTap: () {
+        List<String> barcodeUIDs = isar!.catalogedBarcodes
+            .filter()
+            .batchIDEqualTo(_batch.id)
+            .findAllSync()
+            .map((e) => e.barcodeUID)
+            .toList();
 
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PdfView(
-                barcodeUIDs: barcodeUIDs,
-                size: _batch.width,
-                start: _batch.rangeStart,
-                end: _batch.rangeEnd,
-              ),
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PdfView(
+              barcodeUIDs: barcodeUIDs,
+              size: _batch.width,
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 

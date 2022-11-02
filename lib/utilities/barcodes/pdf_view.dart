@@ -7,18 +7,14 @@ import 'package:printing/printing.dart';
 import 'package:tswiri_database/functions/barcodes/barcode_pdf_generator.dart';
 
 class PdfView extends StatefulWidget {
-  const PdfView(
-      {Key? key,
-      required this.barcodeUIDs,
-      required this.size,
-      required this.start,
-      required this.end})
-      : super(key: key);
+  const PdfView({
+    Key? key,
+    required this.barcodeUIDs,
+    required this.size,
+  }) : super(key: key);
 
   final List<String> barcodeUIDs;
   final double size;
-  final int start;
-  final int end;
 
   @override
   _PdfViewState createState() => _PdfViewState();
@@ -33,7 +29,7 @@ class _PdfViewState extends State<PdfView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Range: ${widget.start} to ${widget.end}',
+          'Number : ${widget.barcodeUIDs.length}',
           style: Theme.of(context).textTheme.titleMedium,
         ),
         centerTitle: true,
@@ -50,7 +46,7 @@ class _PdfViewState extends State<PdfView> {
               canChangePageFormat: false,
               initialPageFormat: pw.PdfPageFormat.a4,
               canDebug: false,
-              pdfFileName: 'barcode_${widget.start}_to_${widget.end}.pdf',
+              pdfFileName: 'barcodes_${widget.barcodeUIDs.length}.pdf',
             );
           } else {
             return const Center(child: CircularProgressIndicator());

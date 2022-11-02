@@ -2,7 +2,9 @@ import 'dart:developer';
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tswiri/find/filter_view.dart';
+import 'package:tswiri_database/models/find/find.dart';
 import 'package:tswiri_theme/widgets/cards/filled_card.dart';
 import 'package:tswiri_theme/widgets/cards/text_field_card.dart';
 
@@ -18,6 +20,7 @@ class FindView extends StatefulWidget {
 class _FindViewState extends State<FindView> {
   bool isSearching = false;
   FocusNode focusNode = FocusNode();
+  TextEditingController _findController = TextEditingController();
 
   @override
   void initState() {
@@ -49,11 +52,24 @@ class _FindViewState extends State<FindView> {
       pinned: true,
       title: TextField(
         focusNode: focusNode,
-        onTap: () {},
+        controller: _findController,
+        onChanged: (value) {
+          Provider.of<Find>(context, listen: false)
+              .search(enteredKeyword: value);
+        },
+        onSubmitted: (value) {
+          Provider.of<Find>(context, listen: false)
+              .search(enteredKeyword: value);
+        },
         decoration: InputDecoration(
           contentPadding: EdgeInsets.zero,
           fillColor: Colors.transparent,
-          suffixIcon: const Icon(Icons.search_rounded),
+          suffixIcon: _findController.text.isEmpty
+              ? const Icon(Icons.search_rounded)
+              : IconButton(
+                  onPressed: _findController.clear,
+                  icon: const Icon(Icons.close_rounded),
+                ),
           prefixIcon: OpenContainer(
             openColor: Colors.transparent,
             closedColor: Colors.transparent,

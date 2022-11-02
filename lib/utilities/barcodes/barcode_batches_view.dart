@@ -117,7 +117,7 @@ class BarcodeBatchesViewState extends State<BarcodeBatchesView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                        'Number of Barcodes: ${batch.rangeEnd - batch.rangeStart}'),
+                        'Number of Barcodes: ${isar!.catalogedBarcodes.filter().batchIDEqualTo(batch.id).findAllSync().length}'),
                     Text('Height: ${batch.height}'),
                     Text('Width: ${batch.width}'),
                   ],
