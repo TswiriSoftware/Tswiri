@@ -6,6 +6,7 @@ import 'package:tswiri/utilities/barcodes/barcode_batches_view.dart';
 import 'package:tswiri/utilities/container_types/container_types_view.dart';
 import 'package:tswiri/utilities/containers/containers_view.dart';
 import 'package:tswiri/utilities/gallery/gallery_view.dart';
+import 'package:tswiri/utilities/grid/grids_view.dart';
 import 'package:tswiri/utilities/storage/storage_view.dart';
 import 'package:tswiri_database_interface/models/container_manager/container_manager.dart';
 
@@ -82,6 +83,12 @@ class _ManageViewState extends State<ManageView> {
             title: 'Container Types',
             iconData: Icons.code_rounded,
             destination: const ContainerTypesView(),
+            animationDuration: animationDuration,
+          ),
+          OpenNavigationTile(
+            title: 'Grids',
+            iconData: Icons.grid_4x4_rounded,
+            destination: const GridsView(),
             animationDuration: animationDuration,
           ),
         ],

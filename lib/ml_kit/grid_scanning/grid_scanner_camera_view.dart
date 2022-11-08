@@ -73,6 +73,7 @@ class _GridScannerCameraViewState extends State<GridScannerCameraView> {
       children: [
         FloatingActionButton(
           heroTag: 'flash',
+          backgroundColor: Theme.of(context).colorScheme.secondary,
           child: Icon(
             Platform.isIOS
                 ? Icons.flip_camera_ios_outlined

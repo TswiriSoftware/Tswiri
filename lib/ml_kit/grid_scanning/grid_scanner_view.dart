@@ -154,6 +154,7 @@ class _GridScannerViewState extends State<GridScannerView> {
       onPressed: () {
         Navigator.pop(context, barcodeDataBatches);
       },
+      backgroundColor: Theme.of(context).colorScheme.secondary,
       child: const Icon(Icons.check_circle_outline_rounded),
     );
   }

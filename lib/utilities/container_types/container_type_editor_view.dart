@@ -301,7 +301,7 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
   void _updateColor() {
     Color color = Color.fromRGBO(red, green, blue, 1.0);
     setState(() {
-      _containerType.containerColor = EmbeddedColor.fromColor(color);
+      _containerType.containerColor = EmbeddedColor.fromColor(fromColor(color));
     });
     _updateIsar();
   }
