@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tswiri/utilities/containers/container_type_view.dart';
 import 'package:tswiri_database/export.dart';
-import 'package:tswiri_database/models/container_manager/container_manager.dart';
+import 'package:tswiri_database/tswiri_database.dart';
+import 'package:tswiri_database_interface/models/container_manager/container_manager.dart';
 import 'package:tswiri_theme/transitions/left_to_right_transition.dart';
 
 class ContainersView extends StatefulWidget {

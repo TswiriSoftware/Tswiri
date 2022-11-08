@@ -660,7 +660,7 @@ packages:
       name: pdf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.8.3"
+    version: "3.8.4"
   petitparser:
     dependency: transitive
     description:
@@ -922,6 +922,13 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/tswiri_database"
+      relative: true
+    source: path
+    version: "0.0.1"
+  tswiri_database_interface:
+    dependency: "direct main"
+    description:
+      path: "packages/tswiri_database_interface"
       relative: true
     source: path
     version: "0.0.1"

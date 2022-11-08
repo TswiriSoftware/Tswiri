@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:googleapis/youtubereporting/v1.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tswiri_database/models/settings/app_settings.dart';
-import 'package:tswiri_database/models/settings/global_settings.dart';
+import 'package:tswiri_database_interface/models/settings/app_settings.dart';
+import 'package:tswiri_database_interface/models/settings/global_settings.dart';
 import 'package:tswiri_theme/widgets/list_tiles/custom_switch_list_tile.dart';
 
 class GeneralSettingsView extends StatefulWidget {
@@ -166,9 +167,12 @@ class _GeneralSettingsViewState extends State<GeneralSettingsView> {
               const Text(
                 'This is the default value used by Tswiri for unkown QR Codes.',
               ),
+              const Divider(),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Flexible(
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width / 4,
                     child: TextField(
                       controller: _controller,
                       textAlign: TextAlign.center,
@@ -178,7 +182,8 @@ class _GeneralSettingsViewState extends State<GeneralSettingsView> {
                     ),
                   ),
                   const Text('x'),
-                  Flexible(
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width / 4,
                     child: TextField(
                       controller: _controller,
                       textAlign: TextAlign.center,

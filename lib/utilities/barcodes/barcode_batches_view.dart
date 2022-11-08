@@ -1,9 +1,11 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tswiri/utilities/barcodes/barcode_generator_view.dart';
 import 'package:tswiri_database/export.dart';
-import 'package:tswiri/utilities/barcodes/barcode_batch_view.dart';
-import 'package:tswiri/utilities/barcodes/barcode_import_view.dart';
+import 'package:tswiri/utilities/barcodes/batch/barcode_batch_view.dart';
+import 'package:tswiri/utilities/barcodes/import/barcode_import_view.dart';
+import 'package:tswiri_database/tswiri_database.dart';
 
 class BarcodeBatchesView extends StatefulWidget {
   const BarcodeBatchesView({Key? key}) : super(key: key);
@@ -23,14 +25,15 @@ class BarcodeBatchesViewState extends State<BarcodeBatchesView> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).colorScheme.background,
-      child: CustomScrollView(
+    return Scaffold(
+      body: CustomScrollView(
         slivers: [
           _sliverAppBar(),
           _sliverList(),
         ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: _fab(),
     );
   }
 
@@ -91,6 +94,28 @@ class BarcodeBatchesViewState extends State<BarcodeBatchesView> {
             break;
           default:
         }
+      },
+    );
+  }
+
+  Widget _fab() {
+    return OpenContainer(
+      openColor: Colors.transparent,
+      closedColor: Colors.transparent,
+      closedBuilder: (context, action) {
+        return FloatingActionButton(
+          onPressed: action,
+          child: const Icon(Icons.add_rounded),
+        );
+      },
+      openBuilder: (context, action) {
+        return const BarcodeGeneratorView();
+      },
+      onClosed: (data) {
+        //Update barcodeBatches on closed.
+        setState(() {
+          barcodeBatches = isar!.barcodeBatchs.where().findAllSync();
+        });
       },
     );
   }

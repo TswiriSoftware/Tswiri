@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tswiri_database/models/settings/app_settings.dart';
+import 'package:tswiri_database_interface/models/settings/app_settings.dart';
 import 'package:tswiri_theme/widgets/list_tiles/custom_switch_list_tile.dart';
 
 class ImageLabelingSettingsView extends StatefulWidget {
@@ -97,9 +97,12 @@ Future<double?> confidenceThresholdDialog(
             const Text(
               "The minimum likelihood that the output of a Machine Learning model is correct and will satisfy a user's request.",
             ),
+            const Divider(),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Flexible(
+                SizedBox(
+                  width: MediaQuery.of(context).size.width / 3,
                   child: TextField(
                     controller: controller,
                     textAlign: TextAlign.center,

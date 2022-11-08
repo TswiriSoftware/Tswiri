@@ -3,9 +3,10 @@ import 'dart:math';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tswiri/utilities/barcodes/barcode_batch_manager_view.dart';
-import 'package:tswiri/utilities/barcodes/pdf_view.dart';
+import 'package:tswiri/utilities/barcodes/batch/barcode_batch_manager_view.dart';
+import 'package:tswiri/utilities/barcodes/pdf/pdf_view.dart';
 import 'package:tswiri_database/export.dart';
+import 'package:tswiri_database/tswiri_database.dart';
 
 class BarcodeBatchView extends StatefulWidget {
   const BarcodeBatchView({

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tswiri_database/embedded/embedded_color/embedded_color.dart';
 import 'package:tswiri_database/export.dart';
+import 'package:tswiri_database/tswiri_database.dart';
 
 class ContainerTypeEditorView extends StatefulWidget {
   const ContainerTypeEditorView({

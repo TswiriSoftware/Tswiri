@@ -7,7 +7,7 @@ import 'package:tswiri/utilities/container_types/container_types_view.dart';
 import 'package:tswiri/utilities/containers/containers_view.dart';
 import 'package:tswiri/utilities/gallery/gallery_view.dart';
 import 'package:tswiri/utilities/storage/storage_view.dart';
-import 'package:tswiri_database/models/container_manager/container_manager.dart';
+import 'package:tswiri_database_interface/models/container_manager/container_manager.dart';
 
 class ManageView extends StatefulWidget {
   const ManageView({super.key});

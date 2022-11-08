@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
-import 'package:tswiri_database/models/settings/app_settings.dart';
+import 'package:tswiri_database_interface/models/settings/app_settings.dart';
 import 'barcode_scanner_camera_view.dart';
 import 'barcode_scanner_painter.dart';
 
@@ -64,6 +64,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
       onPressed: () {
         Navigator.pop(context, currentBarcode);
       },
+      backgroundColor: Theme.of(context).colorScheme.secondary,
       child: const Icon(
         Icons.check_sharp,
       ),

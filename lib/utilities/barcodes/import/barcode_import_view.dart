@@ -3,7 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:tswiri/ml_kit/barcode_import/barcode_import_scanner.dart';
 import 'package:tswiri_database/export.dart';
-import 'package:tswiri_database/models/settings/global_settings.dart';
+import 'package:tswiri_database/tswiri_database.dart';
+import 'package:tswiri_database_interface/models/settings/global_settings.dart';
 
 class BarcodeImportView extends StatefulWidget {
   const BarcodeImportView({Key? key}) : super(key: key);

@@ -3,7 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
-import 'package:tswiri_database/models/settings/app_settings.dart';
+import 'package:tswiri_database_interface/models/settings/app_settings.dart';
 
 enum ScreenMode { liveFeed, gallery }
 
@@ -72,11 +72,6 @@ class BarcodeScannerCameraViewState extends State<BarcodeScannerCameraView> {
       children: [
         FloatingActionButton(
           heroTag: 'flash',
-          child: Icon(
-            Platform.isIOS
-                ? Icons.flip_camera_ios_outlined
-                : Icons.flash_on_rounded,
-          ),
           onPressed: () {
             if (flash == true) {
               _controller!.setFlashMode(FlashMode.off);
@@ -86,6 +81,12 @@ class BarcodeScannerCameraViewState extends State<BarcodeScannerCameraView> {
               _controller!.setFlashMode(FlashMode.torch);
             }
           },
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          child: Icon(
+            Platform.isIOS
+                ? Icons.flip_camera_ios_outlined
+                : Icons.flash_on_rounded,
+          ),
         ),
       ],
     );

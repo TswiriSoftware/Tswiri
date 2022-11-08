@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tswiri_database/models/settings/app_settings.dart';
+import 'package:tswiri_database_interface/models/settings/app_settings.dart';
 import 'package:tswiri_theme/widgets/list_tiles/custom_switch_list_tile.dart';
 
 class TextDetectionSettingsView extends StatefulWidget {

@@ -1,8 +1,8 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:tswiri_database/functions/general/clear_temp_directory.dart';
-import 'package:tswiri_database/functions/general/get_directory_size.dart';
+import 'package:tswiri_database_interface/functions/general/clear_temp_directory.dart';
+import 'package:tswiri_database_interface/functions/general/get_directory_size.dart';
 import 'google_drive_backup_view.dart';
 import 'import_export_view.dart';
 

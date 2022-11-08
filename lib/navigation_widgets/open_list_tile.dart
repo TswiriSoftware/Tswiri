@@ -6,11 +6,13 @@ class OpenListTile extends StatefulWidget {
     super.key,
     required this.title,
     required this.trailingIconData,
+    this.leadingIconData,
     required this.destination,
     this.animationDuration,
   });
   final String title;
   final IconData trailingIconData;
+  final IconData? leadingIconData;
   final Widget destination;
   final Duration? animationDuration;
 
@@ -34,6 +36,9 @@ class _OpenListTileState extends State<OpenListTile> {
           child: ListTile(
             title: Text(widget.title),
             trailing: Icon(widget.trailingIconData),
+            leading: widget.leadingIconData == null
+                ? null
+                : Icon(widget.leadingIconData),
           ),
         ),
       ),

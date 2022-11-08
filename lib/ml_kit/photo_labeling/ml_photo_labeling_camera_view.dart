@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 
 import 'package:flutter/material.dart';
-import 'package:tswiri_database/models/settings/app_settings.dart';
+import 'package:tswiri_database_interface/models/settings/app_settings.dart';
 
 import 'ml_photo_labeling_view.dart';
 
@@ -106,6 +106,7 @@ class _MLPhotoLabelingCameraViewState extends State<MLPhotoLabelingCameraView> {
   Widget _takePhoto() {
     return FloatingActionButton(
       heroTag: 'photo',
+      backgroundColor: Theme.of(context).colorScheme.secondary,
       onPressed: () async {
         try {
           // Ensure that the camera is initialized.
@@ -140,6 +141,7 @@ class _MLPhotoLabelingCameraViewState extends State<MLPhotoLabelingCameraView> {
   Widget _flash() {
     return FloatingActionButton(
       heroTag: 'flash',
+      backgroundColor: Theme.of(context).colorScheme.secondary,
       child: Icon(
         Platform.isIOS
             ? Icons.flip_camera_ios_outlined

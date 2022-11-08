@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:tswiri/ml_kit/barcode_scanner/barcode_scanner_view.dart';
 import 'package:tswiri/utilities/containers/container_view.dart';
 import 'package:tswiri_database/export.dart';
-import 'package:tswiri_database/functions/general/capitalize_first_character.dart';
-import 'package:tswiri_database/functions/isar/create_functions.dart';
-import 'package:tswiri_database/models/settings/global_settings.dart';
+import 'package:tswiri_database/tswiri_database.dart';
+import 'package:tswiri_database_interface/functions/general/capitalize_first_character.dart';
+import 'package:tswiri_database_interface/functions/isar/create_functions.dart';
+import 'package:tswiri_database_interface/models/settings/global_settings.dart';
 
 class AddContainerView extends StatefulWidget {
   const AddContainerView({
@@ -162,9 +163,9 @@ class AddContainerViewState extends State<AddContainerView> {
               ? null
               : Text(_selectedBarcode!.barcodeUID.toString()),
           trailing: _selectedBarcode == null
-              ? const Icon(Icons.add_rounded)
-              : const Icon(Icons.change_circle_rounded),
-          onTap: action,
+              ? OutlinedButton(onPressed: action, child: const Text('Scan'))
+              : OutlinedButton(onPressed: action, child: const Text('Change')),
+          // onTap: action,
         );
       },
       openBuilder: (context, aciton) {
@@ -206,9 +207,8 @@ class AddContainerViewState extends State<AddContainerView> {
               ? null
               : Text(_parentContainer!.name.toString()),
           trailing: _parentContainer == null
-              ? const Icon(Icons.add_rounded)
-              : const Icon(Icons.change_circle_rounded),
-          onTap: action,
+              ? OutlinedButton(onPressed: action, child: const Text('Scan'))
+              : OutlinedButton(onPressed: action, child: const Text('Change')),
         );
       },
       openBuilder: (context, action) {

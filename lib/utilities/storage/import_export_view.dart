@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:tswiri_database/functions/backup/backup_restore_functions.dart';
+import 'package:tswiri_database_interface/functions/backup/backup_restore_functions.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -44,7 +44,9 @@ class _ImportExportViewState extends State<ImportExportView> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircularProgressIndicator(),
+            CircularProgressIndicator(
+              color: Theme.of(context).colorScheme.secondary,
+            ),
             Card(
               elevation: 10,
               child: Padding(

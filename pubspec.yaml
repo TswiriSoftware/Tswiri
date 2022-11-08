@@ -42,6 +42,9 @@ dependencies:
   tswiri_database:
     path: packages/tswiri_database
 
+  tswiri_database_interface:
+    path: packages/tswiri_database_interface
+
   cupertino_icons: ^1.0.2
   url_launcher: ^6.1.6
   provider: ^6.0.3

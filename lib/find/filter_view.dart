@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tswiri_database/models/find/find.dart';
+import 'package:tswiri_database_interface/models/find/find.dart';
 
 class FilterView extends StatefulWidget {
   const FilterView({Key? key}) : super(key: key);

@@ -3,9 +3,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:tswiri_database/export.dart';
-import 'package:tswiri_database/functions/isar/delete_functions.dart';
-import 'package:tswiri_database/models/image_data/image_data.dart';
-import 'package:tswiri_database/widgets/tag_texts_search/tag_texts_search.dart';
+import 'package:tswiri_database/tswiri_database.dart';
+import 'package:tswiri_database_interface/functions/isar/delete_functions.dart';
+import 'package:tswiri_database_interface/models/image_data/image_data.dart';
+import 'package:tswiri_database_interface/widgets/tag_texts_search/tag_texts_search.dart';
 
 import '../../ml_kit/photo_labeling/ml_photo_labeling_camera_view.dart';
 
@@ -55,7 +56,6 @@ class ContainerViewState extends State<ContainerView> {
       appBar: _appBar(),
       body: _body(),
       bottomSheet: isAddingTag ? _tagTextSearch() : const SizedBox.shrink(),
-      // resizeToAvoidBottomInset: true,
     );
   }
 
@@ -64,6 +64,7 @@ class ContainerViewState extends State<ContainerView> {
       elevation: 10,
       title: Text(_container.name ?? _container.containerUID),
       centerTitle: true,
+      actions: [_delete()],
     );
   }
 
@@ -84,6 +85,15 @@ class ContainerViewState extends State<ContainerView> {
           ],
         ),
       ),
+    );
+  }
+
+  IconButton _delete() {
+    return IconButton(
+      onPressed: () {
+        //TODO: Implement delete container.
+      },
+      icon: const Icon(Icons.delete_rounded),
     );
   }
 
@@ -294,7 +304,7 @@ class ContainerViewState extends State<ContainerView> {
                     Card(
                       child: ClipRRect(
                         child: Stack(
-                          alignment: AlignmentDirectional.bottomCenter,
+                          alignment: AlignmentDirectional.topStart,
                           children: [
                             Image.file(
                               width: 150,
@@ -302,13 +312,16 @@ class ContainerViewState extends State<ContainerView> {
                               File(photo.getPhotoThumbnailPath()),
                               fit: BoxFit.cover,
                             ),
-                            ElevatedButton(
-                              onPressed: () {
-                                deletePhoto(photo);
-                                _updatePhotosDisplay();
-                              },
-                              child: Text('delete'),
-                            ),
+                            Card(
+                              color: Colors.black45,
+                              child: IconButton(
+                                onPressed: () {
+                                  deletePhoto(photo);
+                                  _updatePhotosDisplay();
+                                },
+                                icon: const Icon(Icons.delete),
+                              ),
+                            )
                           ],
                         ),
                       ),

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:tswiri_database/export.dart';
-import 'package:tswiri_database/functions/general/clear_temp_directory.dart';
-import 'package:tswiri_database/functions/isar/create_functions.dart';
-import 'package:tswiri_database/mobile_database.dart';
-import 'package:tswiri_database/models/find/find.dart';
-import 'package:tswiri_database/models/settings/app_settings.dart';
+import 'package:tswiri_database/tswiri_database.dart';
+import 'package:tswiri_database_interface/functions/general/clear_temp_directory.dart';
+import 'package:tswiri_database_interface/functions/isar/create_functions.dart';
+import 'package:tswiri_database_interface/functions/isar/isar_functions.dart';
+import 'package:tswiri_database_interface/mobile_database.dart';
+import 'package:tswiri_database_interface/models/find/find.dart';
+import 'package:tswiri_database_interface/models/find/shopping_cart.dart';
+import 'package:tswiri_database_interface/models/settings/app_settings.dart';
 import 'package:tswiri/add/add_view.dart';
 import 'package:tswiri/find/find_view.dart';
 import 'package:tswiri/settings/settings_view.dart';
@@ -42,6 +44,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider<Find>(create: (_) => Find()),
+        ChangeNotifierProvider<ShoppingCart>(create: (_) => ShoppingCart()),
       ],
       child: const MyApp(),
     ),

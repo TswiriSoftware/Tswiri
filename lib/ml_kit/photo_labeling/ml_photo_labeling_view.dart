@@ -7,14 +7,15 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'package:tswiri_database/embedded/corner_points/corner_points.dart';
 
 import 'package:tswiri_database/export.dart';
-import 'package:tswiri_database/functions/general/get_model.dart';
-import 'package:tswiri_database/functions/isar/get_functions.dart';
+import 'package:tswiri_database/tswiri_database.dart';
+import 'package:tswiri_database_interface/functions/general/get_model.dart';
+import 'package:tswiri_database_interface/functions/isar/get_functions.dart';
 
-import 'package:tswiri_database/models/image_data/image_data.dart';
-import 'package:tswiri_database/models/settings/app_settings.dart';
-import 'package:tswiri_database/widgets/ml_label_paint/ml_label_paint.dart';
-import 'package:tswiri_database/widgets/photo/photo_display.dart';
-import 'package:tswiri_database/widgets/tag_texts_search/tag_texts_search.dart';
+import 'package:tswiri_database_interface/models/image_data/image_data.dart';
+import 'package:tswiri_database_interface/models/settings/app_settings.dart';
+import 'package:tswiri_database_interface/widgets/ml_label_paint/ml_label_paint.dart';
+import 'package:tswiri_database_interface/widgets/photo/photo_display.dart';
+import 'package:tswiri_database_interface/widgets/tag_texts_search/tag_texts_search.dart';
 
 class MlPhotoLabelingView extends StatefulWidget {
   const MlPhotoLabelingView({

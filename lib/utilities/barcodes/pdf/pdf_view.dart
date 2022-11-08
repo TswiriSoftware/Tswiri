@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart' as pw;
 import 'package:printing/printing.dart';
-import 'package:tswiri_database/functions/barcodes/barcode_pdf_generator.dart';
+import 'package:tswiri_database_interface/functions/barcodes/barcode_pdf_generator.dart';
 
 class PdfView extends StatefulWidget {
   const PdfView({

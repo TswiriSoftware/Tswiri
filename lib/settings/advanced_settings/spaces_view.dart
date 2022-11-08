@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:tswiri_database/functions/isar/isar_functions.dart';
+import 'package:tswiri_database_interface/functions/isar/isar_functions.dart';
 import 'package:tswiri_database/tswiri_database.dart';
 import 'package:tswiri_theme/widgets/cards/outlined_card.dart';
-import 'package:tswiri_database/functions/general/get_directory_name.dart';
+import 'package:tswiri_database_interface/functions/general/get_directory_name.dart';
 
 class SpacesView extends StatefulWidget {
   const SpacesView({super.key});

@@ -68,6 +68,7 @@ class _BarcodeImportScannerViewState extends State<BarcodeImportScannerView> {
           scannedBarcodes,
         );
       },
+      backgroundColor: Theme.of(context).colorScheme.secondary,
       child: const Icon(
         Icons.check_sharp,
       ),

@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
-import 'package:tswiri_database/functions/general/coordinate_translator.dart';
+import 'package:tswiri_database_interface/functions/general/coordinate_translator.dart';
 
 class BarcodeScannerPainter extends CustomPainter {
   BarcodeScannerPainter({
@@ -26,12 +26,12 @@ class BarcodeScannerPainter extends CustomPainter {
     final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.0
-      ..color = Colors.lightGreenAccent;
+      ..color = Colors.lightGreenAccent.withOpacity(0.6);
 
     final Paint barcodeColor = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.0
-      ..color = Colors.blue;
+      ..color = Colors.blue.withOpacity(0.5);
 
     final Paint centerBarcodeColor = Paint()
       ..style = PaintingStyle.fill

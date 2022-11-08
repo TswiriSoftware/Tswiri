@@ -9,14 +9,14 @@ import 'package:tswiri_database_interface/models/settings/app_settings.dart';
 
 enum ScreenMode { liveFeed, gallery }
 
-class BarcodeImportCameraView extends StatefulWidget {
-  const BarcodeImportCameraView({
-    Key? key,
-    required this.title,
-    required this.customPaint,
-    required this.onImage,
-    this.initialDirection = CameraLensDirection.back,
-  }) : super(key: key);
+class GridScannerCameraView extends StatefulWidget {
+  const GridScannerCameraView(
+      {Key? key,
+      required this.title,
+      required this.customPaint,
+      required this.onImage,
+      this.initialDirection = CameraLensDirection.back})
+      : super(key: key);
 
   final String title;
   final CustomPaint? customPaint;
@@ -24,11 +24,10 @@ class BarcodeImportCameraView extends StatefulWidget {
   final CameraLensDirection initialDirection;
 
   @override
-  _BarcodeImportCameraViewState createState() =>
-      _BarcodeImportCameraViewState();
+  _GridScannerCameraViewState createState() => _GridScannerCameraViewState();
 }
 
-class _BarcodeImportCameraViewState extends State<BarcodeImportCameraView> {
+class _GridScannerCameraViewState extends State<GridScannerCameraView> {
   CameraController? _controller;
   int _cameraIndex = 0;
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
@@ -57,6 +56,7 @@ class _BarcodeImportCameraViewState extends State<BarcodeImportCameraView> {
       appBar: AppBar(
         title: Text(
           widget.title,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         centerTitle: true,
       ),
@@ -73,7 +73,6 @@ class _BarcodeImportCameraViewState extends State<BarcodeImportCameraView> {
       children: [
         FloatingActionButton(
           heroTag: 'flash',
-          backgroundColor: Theme.of(context).colorScheme.secondary,
           child: Icon(
             Platform.isIOS
                 ? Icons.flip_camera_ios_outlined
@@ -136,6 +135,9 @@ class _BarcodeImportCameraViewState extends State<BarcodeImportCameraView> {
         maxZoomLevel = value;
       });
       _controller?.startImageStream(_processCameraImage);
+      if (flashOnGrids) {
+        _controller?.setFlashMode(FlashMode.torch);
+      }
       setState(() {});
     });
   }
