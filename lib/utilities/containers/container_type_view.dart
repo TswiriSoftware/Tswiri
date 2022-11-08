@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tswiri/utilities/containers/container_view.dart';
 import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/tswiri_database.dart';
+import 'package:tswiri_database_interface/functions/embedded/get_icondata.dart';
 
 class ContainerTypeView extends StatefulWidget {
   const ContainerTypeView({
@@ -70,7 +71,7 @@ class ContainerTypeViewState extends State<ContainerTypeView> {
                     ),
                   ],
                 ),
-                leading: Icon(_containerType.iconData.iconData),
+                leading: Icon(getIconData(_containerType.iconData.data!)),
                 trailing: Text(children.length.toString()),
               ),
             );

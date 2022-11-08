@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tswiri_database/embedded/embedded_color/embedded_color.dart';
 import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/tswiri_database.dart';
+import 'package:tswiri_database_interface/functions/embedded/get_color.dart';
 
 class ContainerTypeEditorView extends StatefulWidget {
   const ContainerTypeEditorView({
@@ -21,9 +22,9 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
   late final List<ContainerType> _containerTypes =
       isar!.containerTypes.where().findAllSync();
 
-  late int red = _containerType.containerColor.color.red;
-  late int blue = _containerType.containerColor.color.blue;
-  late int green = _containerType.containerColor.color.green;
+  late int red = getColor(_containerType.containerColor.data!).red;
+  late int blue = getColor(_containerType.containerColor.data!).blue;
+  late int green = getColor(_containerType.containerColor.data!).green;
 
   @override
   void initState() {

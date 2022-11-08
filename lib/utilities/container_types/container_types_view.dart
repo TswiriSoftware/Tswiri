@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/tswiri_database.dart';
+import 'package:tswiri_database_interface/functions/embedded/get_icondata.dart';
 import 'package:tswiri_database_interface/functions/general/capitalize_first_character.dart';
 
 import 'container_type_editor_view.dart';
@@ -76,7 +77,7 @@ class ContainerTypesViewState extends State<ContainerTypesView> {
               title: Text(
                 containerType.containerTypeName.capitalizeFirstCharacter(),
               ),
-              trailing: Icon(containerType.iconData.iconData),
+              trailing: Icon(getIconData(containerType.iconData.data!)),
               onTap: action,
             ),
           ),

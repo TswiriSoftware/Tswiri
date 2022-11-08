@@ -9,6 +9,7 @@ import 'package:tswiri_database/tswiri_database.dart';
 import 'package:tswiri_database_interface/functions/general/capitalize_first_character.dart';
 import 'package:tswiri_database_interface/functions/isar/create_functions.dart';
 import 'package:tswiri_database_interface/models/settings/global_settings.dart';
+import 'package:tswiri_database_interface/functions/embedded/get_icondata.dart';
 
 class AddContainerView extends StatefulWidget {
   const AddContainerView({
@@ -134,7 +135,7 @@ class AddContainerViewState extends State<AddContainerView> {
           for (var e in _containerTypes)
             FilterChip(
               avatar: Icon(
-                e.iconData.iconData,
+                getIconData(e.iconData.data!),
                 color: Theme.of(context).colorScheme.onBackground,
               ),
               label: Text(e.containerTypeName),
