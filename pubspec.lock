@@ -133,7 +133,7 @@ packages:
       name: camera
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.10.0+1"
+    version: "0.10.0+4"
   camera_android:
     dependency: transitive
     description:
@@ -921,21 +921,21 @@ packages:
   tswiri_database:
     dependency: "direct main"
     description:
-      path: "packages/tswiri_database"
+      path: "../../_packages/tswiri_database"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "1.0.0"
   tswiri_database_interface:
     dependency: "direct main"
     description:
-      path: "packages/tswiri_database_interface"
+      path: "../../_packages/tswiri_database_interface"
       relative: true
     source: path
     version: "0.0.1"
   tswiri_theme:
     dependency: "direct main"
     description:
-      path: "packages/tswiri_theme"
+      path: "../../_packages/tswiri_theme"
       relative: true
     source: path
     version: "0.0.1"
@@ -1073,5 +1073,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.18.2 <3.0.0"
+  dart: ">=2.18.4 <3.0.0"
   flutter: ">=3.3.0"

@@ -37,13 +37,13 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   tswiri_theme:
-    path: packages/tswiri_theme
+    path: ../../_packages/tswiri_theme
 
   tswiri_database:
-    path: packages/tswiri_database
+    path: ../../_packages/tswiri_database
 
   tswiri_database_interface:
-    path: packages/tswiri_database_interface
+    path: ../../_packages/tswiri_database_interface
 
   cupertino_icons: ^1.0.2
   url_launcher: ^6.1.6
