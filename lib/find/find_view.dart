@@ -172,11 +172,13 @@ class _FindViewState extends State<FindView> {
       },
       openBuilder: (context, action) {
         return ContainerView(
-          catalogedContainer: isar!.catalogedContainers
-              .filter()
-              .containerUIDMatches(result.containerUID)
-              .findFirstSync()!,
-        );
+            catalogedContainer:
+                getCatalogedContainer(containerUID: result.containerUID)!
+            // isar!.catalogedContainers
+            //     .filter()
+            //     .containerUIDMatches(result.containerUID)
+            //     .findFirstSync()!,
+            );
       },
     );
   }

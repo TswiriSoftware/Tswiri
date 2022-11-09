@@ -351,7 +351,8 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
   Widget _photoLabelChip(PhotoLabel photoLabel) {
     return Chip(
       label: Text(
-        isar!.tagTexts.getSync(photoLabel.tagTextID)?.text ?? 'err',
+        getTagText(id: photoLabel.tagTextID)?.text ?? 'err',
+// isar!.tagTexts.getSync(photoLabel.tagTextID)?.text
         style: Theme.of(context).textTheme.bodyMedium,
       ),
       avatar: const Icon(Icons.verified_user),
@@ -511,7 +512,8 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
   Widget _objectLabelChip(ObjectLabel objectLabel) {
     return Chip(
       label: Text(
-        isar!.tagTexts.getSync(objectLabel.tagTextID)?.text ?? 'err',
+        getTagText(id: objectLabel.tagTextID)?.text ?? 'err',
+        // isar!.tagTexts.getSync(objectLabel.tagTextID)?.text
         style: Theme.of(context).textTheme.bodyMedium,
       ),
       avatar: const Icon(Icons.verified_user),

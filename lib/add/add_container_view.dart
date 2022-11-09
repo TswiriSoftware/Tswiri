@@ -6,6 +6,7 @@ import 'package:tswiri/ml_kit/barcode_scanner/barcode_scanner_view.dart';
 import 'package:tswiri/utilities/containers/container_view.dart';
 import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/tswiri_database.dart';
+
 import 'package:tswiri_database_interface/functions/embedded/get_icon_data.dart';
 import 'package:tswiri_database_interface/functions/general/capitalize_first_character.dart';
 import 'package:tswiri_database_interface/functions/isar/create_functions.dart';
@@ -24,8 +25,7 @@ class AddContainerView extends StatefulWidget {
 
 class AddContainerViewState extends State<AddContainerView> {
   //Container Types
-  final List<ContainerType> _containerTypes =
-      isar!.containerTypes.where().findAllSync();
+  final List<ContainerType> _containerTypes = getContainerTypesSync();
 
   //Selected Container Type.
   late ContainerType selectedContainerType =
@@ -176,10 +176,13 @@ class AddContainerViewState extends State<AddContainerView> {
         if (barcodeUID == null) return;
 
         //1. Check if this barcode exists.
-        CatalogedBarcode? catalogedBarcode = isar!.catalogedBarcodes
-            .filter()
-            .barcodeUIDMatches(barcodeUID)
-            .findFirstSync();
+        CatalogedBarcode? catalogedBarcode =
+            getCatalogedBarcodeSync(barcodeUID: barcodeUID);
+
+        // isar!.catalogedBarcodes
+        //     .filter()
+        //     .barcodeUIDMatches(barcodeUID)
+        //     .findFirstSync();
 
         if (catalogedBarcode == null) {
           //Request that the user add this barcode.
@@ -218,10 +221,12 @@ class AddContainerViewState extends State<AddContainerView> {
       onClosed: (barcodeUID) async {
         if (barcodeUID == null) return;
 
-        CatalogedContainer? parentContainer = isar!.catalogedContainers
-            .filter()
-            .barcodeUIDMatches(barcodeUID)
-            .findFirstSync();
+        CatalogedContainer? parentContainer =
+            getCatalogedContainer(barcodeUID: barcodeUID);
+        // isar!.catalogedContainers
+        //     .filter()
+        //     .barcodeUIDMatches(barcodeUID)
+        //     .findFirstSync();
 
         if (parentContainer == null) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -315,10 +320,12 @@ class AddContainerViewState extends State<AddContainerView> {
     //Container Name.
     String name = _nameController.text;
     if (name.isEmpty) {
-      List<CatalogedContainer> containers = isar!.catalogedContainers
-          .filter()
-          .containerTypeIDEqualTo(selectedContainerType.id)
-          .findAllSync();
+      List<CatalogedContainer> containers =
+          getCatalogedContainers(containerTypeID: selectedContainerType.id);
+      // isar!.catalogedContainers
+      //     .filter()
+      //     .containerTypeIDEqualTo(selectedContainerType.id)
+      //     .findAllSync();
 
       name =
           '${selectedContainerType.containerTypeName.capitalizeFirstCharacter()} ${containers.length + 1}';
@@ -352,7 +359,8 @@ class AddContainerViewState extends State<AddContainerView> {
         ..barcodeUID = barcode.barcodeUID
         ..containerUID = containerUID;
 
-      isar!.writeTxnSync(() => isar!.markers.putSync(marker));
+      putMarker(marker);
+      // isar!.writeTxnSync(() => isar!.markers.putSync(marker));
     }
 
     Navigator.of(context).pushReplacement(

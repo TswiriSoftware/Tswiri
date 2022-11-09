@@ -4,7 +4,7 @@ import 'dart:isolate';
 import 'package:flutter/painting.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:tswiri_database/export.dart';
-import 'package:tswiri_database/mobile_database.dart';
+import 'package:tswiri_database/initializers/mobile_database.dart';
 import 'package:tswiri_database_interface/functions/data/data_processing.dart';
 import 'package:tswiri_database_interface/functions/general/coordinate_translator.dart';
 

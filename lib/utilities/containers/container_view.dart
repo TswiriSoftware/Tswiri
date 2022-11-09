@@ -110,7 +110,7 @@ class ContainerViewState extends State<ContainerView> {
                 () {
                   isar!.catalogedContainers.putSync(_container);
                   //TODO: add to changes table.
-                  //extract to function.  
+                  //extract to function.
                 },
               );
             } catch (e) {
@@ -316,9 +316,9 @@ class ContainerViewState extends State<ContainerView> {
                           alignment: AlignmentDirectional.topStart,
                           children: [
                             Image.file(
+                              File(photo.getPhotoThumbnailPath()),
                               width: 150,
                               height: 250,
-                              File(photo.getPhotoThumbnailPath()),
                               fit: BoxFit.cover,
                             ),
                             Card(

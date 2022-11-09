@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:tswiri_database/mobile_database.dart';
+import 'package:tswiri_database/initializers/mobile_database.dart';
 import 'package:tswiri_database/tswiri_database.dart';
 import 'package:tswiri_database_interface/functions/general/clear_temp_directory.dart';
-import 'package:tswiri_database_interface/functions/isar/create_functions.dart';
 import 'package:tswiri_database_interface/functions/isar/isar_functions.dart';
 import 'package:tswiri_database_interface/models/find/find.dart';
 import 'package:tswiri_database_interface/models/find/shopping_cart.dart';
@@ -13,6 +12,7 @@ import 'package:tswiri/add/add_view.dart';
 import 'package:tswiri/find/find_view.dart';
 import 'package:tswiri/settings/settings_view.dart';
 import 'package:tswiri/utilities/utilities_view.dart';
+import 'package:tswiri_network_interface/client/client.dart';
 import 'package:tswiri_theme/tswiri_theme.dart';
 
 Future<void> main() async {
@@ -32,8 +32,8 @@ Future<void> main() async {
   await initiateThumnailStorage();
 
   //Initiate Isar.
-  isar = initiateMobileIsar();
-  createBasicContainerTypes();
+  initiateMobileIsar();
+  createDefaultContainerTypes();
 
   //Clear temp directory whenever the app is opened.
   clearTemporaryDirectory();
@@ -45,6 +45,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider<Find>(create: (_) => Find()),
         ChangeNotifierProvider<ShoppingCart>(create: (_) => ShoppingCart()),
+        ChangeNotifierProvider<Client>(create: (_) => Client()),
       ],
       child: const MyApp(),
     ),
@@ -82,6 +83,12 @@ class _MyHomePageState extends State<MyHomePage> {
     const ManageView(),
     const SettingsView(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<Client>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {

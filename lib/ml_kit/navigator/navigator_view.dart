@@ -317,12 +317,15 @@ class _NavigatorViewState extends State<NavigatorView> {
         List<int> gridIDs = message[3];
 
         for (int gridID in gridIDs) {
-          CatalogedGrid? catalogedGrid = isar!.catalogedGrids.getSync(gridID);
+          CatalogedGrid? catalogedGrid = getCatalogedGridSync(id: gridID);
+          // isar!.catalogedGrids.getSync(gridID);
           if (catalogedGrid != null) {
-            CatalogedContainer? catalogedContainer = isar!.catalogedContainers
-                .filter()
-                .barcodeUIDMatches(catalogedGrid.barcodeUID)
-                .findFirstSync();
+            CatalogedContainer? catalogedContainer =
+                getCatalogedContainer(barcodeUID: catalogedGrid.barcodeUID);
+            //  isar!.catalogedContainers
+            //     .filter()
+            //     .barcodeUIDMatches(catalogedGrid.barcodeUID)
+            //     .findFirstSync();
 
             if (catalogedContainer != null) {
               catalogedContainers.add(catalogedContainer);
@@ -331,11 +334,14 @@ class _NavigatorViewState extends State<NavigatorView> {
         }
 
         int targetGridID = message[2];
-        CatalogedGrid targetGrid = isar!.catalogedGrids.getSync(targetGridID)!;
-        CatalogedContainer targetShelf = isar!.catalogedContainers
-            .filter()
-            .barcodeUIDMatches(targetGrid.barcodeUID)
-            .findFirstSync()!;
+        CatalogedGrid targetGrid = getCatalogedGridSync(id: targetGridID)!;
+        // isar!.catalogedGrids.getSync(targetGridID)!;
+        CatalogedContainer targetShelf =
+            getCatalogedContainer(barcodeUID: targetGrid.barcodeUID)!;
+        //  isar!.catalogedContainers
+        //     .filter()
+        //     .barcodeUIDMatches(targetGrid.barcodeUID)
+        //     .findFirstSync()!;
         return AlertDialog(
           title: const Text('Wrong Grid'),
           content: SingleChildScrollView(
