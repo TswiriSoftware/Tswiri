@@ -64,7 +64,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
       onPressed: () {
         Navigator.pop(context, currentBarcode);
       },
-      backgroundColor: Theme.of(context).colorScheme.secondary,
+      // backgroundColor: Theme.of(context).colorScheme.secondary,
       child: const Icon(
         Icons.check_sharp,
       ),

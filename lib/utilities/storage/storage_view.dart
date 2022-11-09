@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tswiri/utilities/storage/spaces_view.dart';
 import 'package:tswiri_database_interface/functions/general/clear_temp_directory.dart';
 import 'package:tswiri_database_interface/functions/general/get_directory_size.dart';
 import 'google_drive_backup_view.dart';
@@ -37,6 +38,7 @@ class StorageViewState extends State<StorageView> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Column(
         children: [
+          _spaces(),
           _googleDriveBackup(),
           _importExport(),
           _appStorage(),
@@ -57,7 +59,7 @@ class StorageViewState extends State<StorageView> {
               children: [
                 const ListTile(
                   title: Text('App Storage'),
-                  leading: Icon(Icons.storage_rounded),
+                  leading: Icon(Icons.sd_storage_rounded),
                 ),
                 ListTile(
                   title: const Text('App Data'),
@@ -149,6 +151,30 @@ class StorageViewState extends State<StorageView> {
         });
       },
       openBuilder: (context, _) => const ImportExportView(),
+    );
+  }
+
+  OpenContainer _spaces() {
+    return OpenContainer(
+      openColor: Colors.transparent,
+      closedColor: Colors.transparent,
+      transitionType: ContainerTransitionType.fade,
+      closedBuilder: (context, action) {
+        return Card(
+          elevation: 5,
+          child: ListTile(
+            title: const Text('Spaces'),
+            leading: const Icon(Icons.storage_rounded),
+            onTap: action,
+          ),
+        );
+      },
+      onClosed: (_) {
+        setState(() {
+          directorySizes = getDirectoriesSize();
+        });
+      },
+      openBuilder: (context, _) => const SpacesView(),
     );
   }
 

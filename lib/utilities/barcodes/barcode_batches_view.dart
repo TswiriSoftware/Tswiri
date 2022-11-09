@@ -105,7 +105,6 @@ class BarcodeBatchesViewState extends State<BarcodeBatchesView> {
       closedBuilder: (context, action) {
         return FloatingActionButton(
           onPressed: action,
-          backgroundColor: Theme.of(context).colorScheme.secondary,
           child: const Icon(Icons.add_rounded),
         );
       },

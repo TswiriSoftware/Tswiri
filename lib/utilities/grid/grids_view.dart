@@ -80,7 +80,6 @@ class GridsViewState extends State<GridsView> {
           onPressed: action,
           label: const Text('Grid'),
           icon: const Icon(Icons.add_rounded),
-          backgroundColor: Theme.of(context).colorScheme.secondary,
         );
       },
       openBuilder: (context, action) {

@@ -106,7 +106,7 @@ class _MLPhotoLabelingCameraViewState extends State<MLPhotoLabelingCameraView> {
   Widget _takePhoto() {
     return FloatingActionButton(
       heroTag: 'photo',
-      backgroundColor: Theme.of(context).colorScheme.secondary,
+      // backgroundColor: Theme.of(context).colorScheme.secondary,
       onPressed: () async {
         try {
           // Ensure that the camera is initialized.
@@ -141,7 +141,7 @@ class _MLPhotoLabelingCameraViewState extends State<MLPhotoLabelingCameraView> {
   Widget _flash() {
     return FloatingActionButton(
       heroTag: 'flash',
-      backgroundColor: Theme.of(context).colorScheme.secondary,
+      // backgroundColor: Theme.of(context).colorScheme.secondary,
       child: Icon(
         Platform.isIOS
             ? Icons.flip_camera_ios_outlined
