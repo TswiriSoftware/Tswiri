@@ -105,12 +105,21 @@ class ContainerViewState extends State<ContainerView> {
         child: TextFormField(
           initialValue: _container.name,
           onFieldSubmitted: (value) {
+            try {
+              isar!.writeTxnSync(
+                () {
+                  isar!.catalogedContainers.putSync(_container);
+                  //TODO: add to changes table.
+                  //extract to function.  
+                },
+              );
+            } catch (e) {
+              return;
+            }
+
             setState(() {
               _container.name = value;
             });
-
-            isar!.writeTxnSync(
-                () => isar!.catalogedContainers.putSync(_container));
           },
           decoration: const InputDecoration(
             contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
