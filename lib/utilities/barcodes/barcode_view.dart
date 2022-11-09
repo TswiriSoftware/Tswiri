@@ -1,7 +1,6 @@
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:tswiri/utilities/barcodes/pdf/pdf_view.dart';
-import 'package:tswiri_database/collections/cataloged_barcode/cataloged_barcode.dart';
 import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/tswiri_database.dart';
 

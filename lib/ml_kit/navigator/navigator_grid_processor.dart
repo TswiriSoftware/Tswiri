@@ -1,6 +1,5 @@
 // ignore_for_file: depend_on_referenced_packages
 
-import 'dart:developer';
 import 'dart:isolate';
 
 import 'package:tswiri_database/embedded/embedded_vector_3/embedded_vector_3.dart';
