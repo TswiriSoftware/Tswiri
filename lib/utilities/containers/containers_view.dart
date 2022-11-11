@@ -48,7 +48,8 @@ class ContainersViewState extends State<ContainersView> {
           child: ListTile(
             title: Text(containerType.containerTypeName),
             subtitle: Text(
-              'Number: ${isar!.catalogedContainers.filter().containerTypeIDEqualTo(containerType.id).findAllSync().length}',
+              'Number: ${getCatalogedContainersSync(containerTypeID: containerType.id).length}',
+              //isar!.catalogedContainers.filter().containerTypeIDEqualTo(containerType.id).findAllSync().length
             ),
             trailing: Icon(getIconData(containerType.iconData.data!)),
             onTap: () {

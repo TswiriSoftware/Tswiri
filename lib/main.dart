@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:tswiri_database/initializers/mobile_database.dart';
 import 'package:tswiri_database/tswiri_database.dart';
 import 'package:tswiri_database_interface/functions/general/clear_temp_directory.dart';
 import 'package:tswiri_database_interface/functions/isar/isar_functions.dart';

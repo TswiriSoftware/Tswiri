@@ -15,8 +15,8 @@ class BarcodeBatchesView extends StatefulWidget {
 }
 
 class BarcodeBatchesViewState extends State<BarcodeBatchesView> {
-  late List<BarcodeBatch> barcodeBatches =
-      isar!.barcodeBatchs.where().findAllSync();
+  late List<BarcodeBatch> barcodeBatches = getBarcodeBatchsSync();
+  // isar!.barcodeBatchs.where().findAllSync();
 
   @override
   void initState() {
@@ -89,7 +89,8 @@ class BarcodeBatchesViewState extends State<BarcodeBatchesView> {
             );
 
             setState(() {
-              barcodeBatches = isar!.barcodeBatchs.where().findAllSync();
+              barcodeBatches = getBarcodeBatchsSync();
+              // isar!.barcodeBatchs.where().findAllSync();
             });
             break;
           default:
@@ -114,7 +115,8 @@ class BarcodeBatchesViewState extends State<BarcodeBatchesView> {
       onClosed: (data) {
         //Update barcodeBatches on closed.
         setState(() {
-          barcodeBatches = isar!.barcodeBatchs.where().findAllSync();
+          barcodeBatches = getBarcodeBatchsSync();
+          // isar!.barcodeBatchs.where().findAllSync();
         });
       },
     );
@@ -142,7 +144,7 @@ class BarcodeBatchesViewState extends State<BarcodeBatchesView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                        'Number of Barcodes: ${isar!.catalogedBarcodes.filter().batchIDEqualTo(batch.id).findAllSync().length}'),
+                        'Number of Barcodes: ${getCatalogedBarcodesSync(batchID: batch.id).length}'), //${isar!.catalogedBarcodes.filter().batchIDEqualTo(batch.id).findAllSync().length}
                     Text('Height: ${batch.height}'),
                     Text('Width: ${batch.width}'),
                   ],
@@ -158,7 +160,8 @@ class BarcodeBatchesViewState extends State<BarcodeBatchesView> {
       ),
       onClosed: (value) {
         setState(() {
-          barcodeBatches = isar!.barcodeBatchs.where().findAllSync();
+          barcodeBatches = getBarcodeBatchsSync();
+          // isar!.barcodeBatchs.where().findAllSync();
         });
       },
     );

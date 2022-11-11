@@ -173,7 +173,7 @@ class _FindViewState extends State<FindView> {
       openBuilder: (context, action) {
         return ContainerView(
             catalogedContainer:
-                getCatalogedContainer(containerUID: result.containerUID)!
+                getCatalogedContainerSync(containerUID: result.containerUID)!
             // isar!.catalogedContainers
             //     .filter()
             //     .containerUIDMatches(result.containerUID)

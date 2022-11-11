@@ -10,7 +10,8 @@ class NewGridView extends StatefulWidget {
 }
 
 class NewGridViewState extends State<NewGridView> {
-  late int numOfGrids = isar!.catalogedGrids.where().findAllSync().length;
+  late int numOfGrids = getCatalogedGridsSync().length;
+  //  isar!.catalogedGrids.where().findAllSync().length;
   late String? originBarcodeUID = widget.originBarcodeUID;
   String? parentBarcodeUID;
 

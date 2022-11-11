@@ -19,8 +19,8 @@ class ContainerTypeEditorView extends StatefulWidget {
 
 class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
   late final ContainerType _containerType = widget.containerType;
-  late final List<ContainerType> _containerTypes =
-      isar!.containerTypes.where().findAllSync();
+  late final List<ContainerType> _containerTypes = getContainerTypesSync();
+  // isar!.containerTypes.where().findAllSync();
 
   late int red = getColor(_containerType.containerColor.data!).red;
   late int blue = getColor(_containerType.containerColor.data!).blue;
@@ -74,7 +74,8 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
             setState(() {
               _containerType.containerTypeName = value;
             });
-            _updateIsar();
+            // _updateIsar();
+            putContainerType(containerType: _containerType);
           },
         ),
       ),
@@ -95,7 +96,8 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
               _containerType.containerDescription = value;
             });
 
-            _updateIsar();
+            // _updateIsar();
+            putContainerType(containerType: _containerType);
           },
           maxLines: null,
         ),
@@ -124,7 +126,8 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
                       _containerType.moveable = value!;
                     });
 
-                    _updateIsar();
+                    // _updateIsar();
+                    putContainerType(containerType: _containerType);
                   },
                 ),
               ],
@@ -144,7 +147,8 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
                       _containerType.enclosing = value!;
                     });
 
-                    _updateIsar();
+                    // _updateIsar();
+                    putContainerType(containerType: _containerType);
                   },
                 ),
               ],
@@ -184,7 +188,8 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
                               });
                             }
 
-                            _updateIsar();
+                            // _updateIsar();
+                            putContainerType(containerType: _containerType);
                           },
                         ),
                       ],
@@ -218,7 +223,8 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
                                     containerType.id;
                               });
                             }
-                            _updateIsar();
+                            // _updateIsar();
+                            putContainerType(containerType: _containerType);
                           },
                         ),
                       ],
@@ -303,14 +309,15 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
     setState(() {
       _containerType.containerColor = EmbeddedColor.fromColor(fromColor(color));
     });
-    _updateIsar();
+    putContainerType(containerType: _containerType);
+    // _updateIsar();
   }
 
-  void _updateIsar() {
-    isar!.writeTxnSync(() {
-      isar!.containerTypes.putSync(
-        _containerType,
-      );
-    });
-  }
+  // void _updateIsar() {
+  //   isar!.writeTxnSync(() {
+  //     isar!.containerTypes.putSync(
+  //       _containerType,
+  //     );
+  //   });
+  // }
 }

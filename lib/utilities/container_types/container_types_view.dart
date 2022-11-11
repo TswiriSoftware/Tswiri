@@ -15,8 +15,8 @@ class ContainerTypesView extends StatefulWidget {
 }
 
 class ContainerTypesViewState extends State<ContainerTypesView> {
-  late List<ContainerType> _containerTypes =
-      isar!.containerTypes.where().findAllSync();
+  late List<ContainerType> _containerTypes = getContainerTypesSync();
+  // isar!.containerTypes.where().findAllSync();
   @override
   void initState() {
     super.initState();
@@ -90,7 +90,8 @@ class ContainerTypesViewState extends State<ContainerTypesView> {
       },
       onClosed: (_) {
         setState(() {
-          _containerTypes = isar!.containerTypes.where().findAllSync();
+          _containerTypes = getContainerTypesSync();
+          // isar!.containerTypes.where().findAllSync();
         });
       },
     );

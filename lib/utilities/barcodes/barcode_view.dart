@@ -68,13 +68,16 @@ class BarcodeViewState extends State<BarcodeView> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => PdfView(
-                      barcodeUIDs: [_catalogedBarcode.barcodeUID],
-                      size: isar!.barcodeBatchs
-                          .filter()
-                          .idEqualTo(_catalogedBarcode.batchID)
-                          .findFirstSync()!
-                          .width,
-                    ),
+                        barcodeUIDs: [_catalogedBarcode.barcodeUID],
+                        size: getBarcodeBatchSync(
+                                batchID: _catalogedBarcode.batchID)!
+                            .width
+                        // isar!.barcodeBatchs
+                        //     .filter()
+                        //     .idEqualTo(_catalogedBarcode.batchID)
+                        //     .findFirstSync()!
+                        //     .width,
+                        ),
                   ),
                 );
               },

@@ -16,10 +16,12 @@ class BarcodeBatchInspectorView extends StatefulWidget {
 }
 
 class BarcodeBatchInspectorViewState extends State<BarcodeBatchInspectorView> {
-  late final List<CatalogedBarcode> _catalogedBarcodes = isar!.catalogedBarcodes
-      .filter()
-      .batchIDEqualTo(widget.barcodeBatch.id)
-      .findAllSync();
+  late final List<CatalogedBarcode> _catalogedBarcodes =
+      getCatalogedBarcodesSync(batchID: widget.barcodeBatch.id);
+  // isar!.catalogedBarcodes
+  //     .filter()
+  //     .batchIDEqualTo(widget.barcodeBatch.id)
+  //     .findAllSync();
 
   @override
   void initState() {

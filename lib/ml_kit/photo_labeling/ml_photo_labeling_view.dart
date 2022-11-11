@@ -297,7 +297,9 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       if (imageLabel.userFeedback == null) {
         return FilterChip(
           label: Text(
-            getMLDetectedLabelText(imageLabel.detectedLabelTextID),
+            getMlDetectedLabelText(id: imageLabel.detectedLabelTextID)
+                    ?.detectedLabelText ??
+                'err',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           onSelected: (value) {
@@ -312,7 +314,9 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       } else if (imageLabel.userFeedback == true) {
         return FilterChip(
           label: Text(
-            getMLDetectedLabelText(imageLabel.detectedLabelTextID),
+            getMlDetectedLabelText(id: imageLabel.detectedLabelTextID)
+                    ?.detectedLabelText ??
+                'err',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           onSelected: (value) {
@@ -328,7 +332,9 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       } else {
         return FilterChip(
           label: Text(
-            getMLDetectedLabelText(imageLabel.detectedLabelTextID),
+            getMlDetectedLabelText(id: imageLabel.detectedLabelTextID)
+                    ?.detectedLabelText ??
+                'err',
             style: const TextStyle(
               decoration: TextDecoration.lineThrough,
               fontWeight: FontWeight.w300,
@@ -351,7 +357,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
   Widget _photoLabelChip(PhotoLabel photoLabel) {
     return Chip(
       label: Text(
-        getTagText(id: photoLabel.tagTextID)?.text ?? 'err',
+        getTagTextSync(id: photoLabel.tagTextID)?.text ?? 'err',
 // isar!.tagTexts.getSync(photoLabel.tagTextID)?.text
         style: Theme.of(context).textTheme.bodyMedium,
       ),
@@ -460,7 +466,9 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       if (mlObjectLabel.userFeedback == null) {
         return FilterChip(
           label: Text(
-            getMLDetectedLabelText(mlObjectLabel.detectedLabelTextID),
+            getMlDetectedLabelText(id: mlObjectLabel.detectedLabelTextID)
+                    ?.detectedLabelText ??
+                'err',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           onSelected: (value) {
@@ -474,7 +482,9 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       } else if (mlObjectLabel.userFeedback == true) {
         return FilterChip(
           label: Text(
-            getMLDetectedLabelText(mlObjectLabel.detectedLabelTextID),
+            getMlDetectedLabelText(id: mlObjectLabel.detectedLabelTextID)
+                    ?.detectedLabelText ??
+                'err',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           onSelected: (value) {
@@ -490,7 +500,9 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       } else {
         return FilterChip(
           label: Text(
-            getMLDetectedLabelText(mlObjectLabel.detectedLabelTextID),
+            getMlDetectedLabelText(id: mlObjectLabel.detectedLabelTextID)
+                    ?.detectedLabelText ??
+                'err',
             style: const TextStyle(
               decoration: TextDecoration.lineThrough,
               fontWeight: FontWeight.w300,
@@ -512,7 +524,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
   Widget _objectLabelChip(ObjectLabel objectLabel) {
     return Chip(
       label: Text(
-        getTagText(id: objectLabel.tagTextID)?.text ?? 'err',
+        getTagTextSync(id: objectLabel.tagTextID)?.text ?? 'err',
         // isar!.tagTexts.getSync(objectLabel.tagTextID)?.text
         style: Theme.of(context).textTheme.bodyMedium,
       ),
@@ -574,7 +586,10 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       if (mlTextElement.userFeedback == null) {
         return FilterChip(
           label: Text(
-            getMLDetectedElementText(mlTextElement.detectedElementTextID),
+            getMlDetectedElementTextSync(
+                        id: mlTextElement.detectedElementTextID)
+                    ?.detectedText ??
+                'err',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           onSelected: (value) {
@@ -588,7 +603,11 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       } else if (mlTextElement.userFeedback == true) {
         return FilterChip(
           label: Text(
-              getMLDetectedElementText(mlTextElement.detectedElementTextID)),
+            getMlDetectedElementTextSync(
+                        id: mlTextElement.detectedElementTextID)
+                    ?.detectedText ??
+                'err',
+          ),
           onSelected: (value) {
             setState(() {
               mlTextElement.userFeedback = false;
@@ -602,7 +621,10 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       } else {
         return FilterChip(
           label: Text(
-            getMLDetectedElementText(mlTextElement.detectedElementTextID),
+            getMlDetectedElementTextSync(
+                        id: mlTextElement.detectedElementTextID)
+                    ?.detectedText ??
+                'err',
             style: const TextStyle(
                 decoration: TextDecoration.lineThrough,
                 fontWeight: FontWeight.w300),

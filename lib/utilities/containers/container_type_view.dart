@@ -18,10 +18,12 @@ class ContainerTypeView extends StatefulWidget {
 
 class ContainerTypeViewState extends State<ContainerTypeView> {
   late final ContainerType _containerType = widget.containerType;
-  late List<CatalogedContainer> _containers = isar!.catalogedContainers
-      .filter()
-      .containerTypeIDEqualTo(_containerType.id)
-      .findAllSync();
+  late List<CatalogedContainer> _containers =
+      getCatalogedContainersSync(containerTypeID: _containerType.id);
+  // isar!.catalogedContainers
+  //     .filter()
+  //     .containerTypeIDEqualTo(_containerType.id)
+  //     .findAllSync();
 
   @override
   void initState() {
@@ -50,10 +52,12 @@ class ContainerTypeViewState extends State<ContainerTypeView> {
       itemCount: _containers.length,
       itemBuilder: (context, index) {
         CatalogedContainer container = _containers[index];
-        List<ContainerRelationship> children = isar!.containerRelationships
-            .filter()
-            .parentUIDMatches(container.containerUID)
-            .findAllSync();
+        List<ContainerRelationship> children =
+            getContainerRelationshipsSync(parentUID: container.containerUID);
+        // isar!.containerRelationships
+        //     .filter()
+        //     .parentUIDMatches(container.containerUID)
+        //     .findAllSync();
 
         return OpenContainer(
           openColor: Colors.transparent,
@@ -87,10 +91,12 @@ class ContainerTypeViewState extends State<ContainerTypeView> {
   void updateContainers() {
     setState(
       () {
-        _containers = isar!.catalogedContainers
-            .filter()
-            .containerTypeIDEqualTo(_containerType.id)
-            .findAllSync();
+        _containers =
+            getCatalogedContainersSync(containerTypeID: _containerType.id);
+        // isar!.catalogedContainers
+        //     .filter()
+        //     .containerTypeIDEqualTo(_containerType.id)
+        //     .findAllSync();
       },
     );
   }

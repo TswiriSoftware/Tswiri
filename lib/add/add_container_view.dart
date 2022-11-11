@@ -222,7 +222,7 @@ class AddContainerViewState extends State<AddContainerView> {
         if (barcodeUID == null) return;
 
         CatalogedContainer? parentContainer =
-            getCatalogedContainer(barcodeUID: barcodeUID);
+            getCatalogedContainerSync(barcodeUID: barcodeUID);
         // isar!.catalogedContainers
         //     .filter()
         //     .barcodeUIDMatches(barcodeUID)
@@ -321,7 +321,7 @@ class AddContainerViewState extends State<AddContainerView> {
     String name = _nameController.text;
     if (name.isEmpty) {
       List<CatalogedContainer> containers =
-          getCatalogedContainers(containerTypeID: selectedContainerType.id);
+          getCatalogedContainersSync(containerTypeID: selectedContainerType.id);
       // isar!.catalogedContainers
       //     .filter()
       //     .containerTypeIDEqualTo(selectedContainerType.id)

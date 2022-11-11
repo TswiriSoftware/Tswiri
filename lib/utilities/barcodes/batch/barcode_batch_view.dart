@@ -56,19 +56,30 @@ class BarcodeBatchViewState extends State<BarcodeBatchView> {
         if (delete == false) return;
 
         bool canDelete = true;
-        isar!.catalogedBarcodes
-            .filter()
-            .batchIDEqualTo(_batch.id)
-            .findAllSync()
-            .forEach((element) {
-          CatalogedContainer? catalogedContainer = isar!.catalogedContainers
-              .filter()
-              .barcodeUIDMatches(element.barcodeUID)
-              .findFirstSync();
+        getCatalogedBarcodesSync(batchID: _batch.id).forEach((element) {
+          CatalogedContainer? catalogedContainer =
+              getCatalogedContainerSync(barcodeUID: element.barcodeUID);
+          // isar!.catalogedContainers
+          //     .filter()
+          //     .barcodeUIDMatches(element.barcodeUID)
+          //     .findFirstSync();
           if (catalogedContainer != null) {
             canDelete = false;
           }
         });
+        // isar!.catalogedBarcodes
+        //     .filter()
+        //     .batchIDEqualTo(_batch.id)
+        //     .findAllSync()
+        //     .forEach((element) {
+        //   CatalogedContainer? catalogedContainer = isar!.catalogedContainers
+        //       .filter()
+        //       .barcodeUIDMatches(element.barcodeUID)
+        //       .findFirstSync();
+        //   if (catalogedContainer != null) {
+        //     canDelete = false;
+        //   }
+        // });
 
         if (canDelete == false) {
           if (mounted) {
@@ -87,13 +98,8 @@ class BarcodeBatchViewState extends State<BarcodeBatchView> {
             );
           }
         } else {
-          isar!.writeTxnSync(() {
-            isar!.barcodeBatchs.deleteSync(_batch.id);
-            isar!.catalogedBarcodes
-                .filter()
-                .batchIDEqualTo(_batch.id)
-                .deleteAllSync();
-          });
+          deleteBarcodeBatch(id: _batch.id);
+
           if (mounted) Navigator.of(context).pop();
         }
       },
@@ -137,12 +143,15 @@ class BarcodeBatchViewState extends State<BarcodeBatchView> {
       title: const Text('Print'),
       trailing: const Icon(Icons.print_rounded),
       onTap: () {
-        List<String> barcodeUIDs = isar!.catalogedBarcodes
-            .filter()
-            .batchIDEqualTo(_batch.id)
-            .findAllSync()
+        List<String> barcodeUIDs = getCatalogedBarcodesSync(batchID: _batch.id)
             .map((e) => e.barcodeUID)
             .toList();
+        // isar!.catalogedBarcodes
+        //     .filter()
+        //     .batchIDEqualTo(_batch.id)
+        //     .findAllSync()
+        //     .map((e) => e.barcodeUID)
+        //     .toList();
 
         Navigator.push(
           context,
@@ -171,21 +180,27 @@ class BarcodeBatchViewState extends State<BarcodeBatchView> {
           if (width != null) {
             _batch.width = width;
 
-            isar!.writeTxnSync(
-              () => isar!.barcodeBatchs.putSync(_batch),
+            putBarcodeBatch(
+              batch: _batch,
+              width: width,
+              height: _batch.height,
             );
 
-            List<CatalogedBarcode> relatedBarcodes = isar!.catalogedBarcodes
-                .filter()
-                .batchIDEqualTo(_batch.id)
-                .findAllSync();
+            // isar!.writeTxnSync(
+            //   () => isar!.barcodeBatchs.putSync(_batch),
+            // );
 
-            isar!.writeTxnSync(() {
-              for (CatalogedBarcode barcode in relatedBarcodes) {
-                barcode.width = width;
-                isar!.catalogedBarcodes.putSync(barcode);
-              }
-            });
+            // List<CatalogedBarcode> relatedBarcodes = isar!.catalogedBarcodes
+            //     .filter()
+            //     .batchIDEqualTo(_batch.id)
+            //     .findAllSync();
+
+            // isar!.writeTxnSync(() {
+            //   for (CatalogedBarcode barcode in relatedBarcodes) {
+            //     barcode.width = width;
+            //     isar!.catalogedBarcodes.putSync(barcode);
+            //   }
+            // });
 
             setState(() {});
           }
@@ -206,22 +221,26 @@ class BarcodeBatchViewState extends State<BarcodeBatchView> {
 
           if (height != null) {
             _batch.height = height;
-
-            isar!.writeTxnSync(
-              () => isar!.barcodeBatchs.putSync(_batch),
+            putBarcodeBatch(
+              batch: _batch,
+              width: _batch.width,
+              height: height,
             );
+            // isar!.writeTxnSync(
+            //   () => isar!.barcodeBatchs.putSync(_batch),
+            // );
 
-            List<CatalogedBarcode> relatedBarcodes = isar!.catalogedBarcodes
-                .filter()
-                .batchIDEqualTo(_batch.id)
-                .findAllSync();
+            // List<CatalogedBarcode> relatedBarcodes = isar!.catalogedBarcodes
+            //     .filter()
+            //     .batchIDEqualTo(_batch.id)
+            //     .findAllSync();
 
-            isar!.writeTxnSync(() {
-              for (CatalogedBarcode barcode in relatedBarcodes) {
-                barcode.height = height;
-                isar!.catalogedBarcodes.putSync(barcode);
-              }
-            });
+            // isar!.writeTxnSync(() {
+            //   for (CatalogedBarcode barcode in relatedBarcodes) {
+            //     barcode.height = height;
+            //     isar!.catalogedBarcodes.putSync(barcode);
+            //   }
+            // });
 
             setState(() {});
           }
@@ -252,12 +271,15 @@ class BarcodeBatchViewState extends State<BarcodeBatchView> {
         return ListTile(
           leading: const Icon(Icons.qr_code_2_rounded),
           title: const Text('Barcodes'),
-          subtitle: Text(isar!.catalogedBarcodes
-              .filter()
-              .batchIDEqualTo(_batch.id)
-              .findAllSync()
-              .length
-              .toString()),
+          subtitle: Text(
+              getCatalogedBarcodesSync(batchID: _batch.id).length.toString()
+              // isar!.catalogedBarcodes
+              //   .filter()
+              //   .batchIDEqualTo(_batch.id)
+              //   .findAllSync()
+              //   .length
+              //   .toString()
+              ),
           trailing: const Icon(Icons.view_carousel_rounded),
           onTap: action,
         );

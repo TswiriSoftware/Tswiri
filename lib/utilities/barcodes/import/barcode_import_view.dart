@@ -102,19 +102,27 @@ class BarcodeImportViewState extends State<BarcodeImportView> {
               onPressed: () async {
                 //TODO: ignore existing barcodes.
 
-                isar!.writeTxnSync(() {
-                  int batchID = isar!.barcodeBatchs.putSync(_batch);
+                putNewBarcodeBatch(
+                  newBarcodeBatch: _batch,
+                  numberOfBarcodes: scannedBarcodes.length,
+                  timestamp: _batch.timestamp,
+                  barcodeHeight: _batch.height,
+                  barcodeWidth: _batch.width,
+                );
 
-                  for (var scannedBarcode in scannedBarcodes) {
-                    isar!.catalogedBarcodes.putSync(
-                      CatalogedBarcode()
-                        ..barcodeUID = scannedBarcode
-                        ..width = defaultBarcodeSize
-                        ..height = defaultBarcodeSize
-                        ..batchID = batchID,
-                    );
-                  }
-                });
+                // isar!.writeTxnSync(() {
+                //   int batchID = isar!.barcodeBatchs.putSync(_batch);
+
+                //   for (var scannedBarcode in scannedBarcodes) {
+                //     isar!.catalogedBarcodes.putSync(
+                //       CatalogedBarcode()
+                //         ..barcodeUID = scannedBarcode
+                //         ..width = defaultBarcodeSize
+                //         ..height = defaultBarcodeSize
+                //         ..batchID = batchID,
+                //     );
+                //   }
+                // });
 
                 Navigator.of(context).pop();
               },
@@ -168,21 +176,21 @@ class BarcodeImportViewState extends State<BarcodeImportView> {
           if (width != null) {
             _batch.width = width;
 
-            isar!.writeTxnSync(
-              () => isar!.barcodeBatchs.putSync(_batch),
-            );
+            // isar!.writeTxnSync(
+            //   () => isar!.barcodeBatchs.putSync(_batch),
+            // );
 
-            List<CatalogedBarcode> relatedBarcodes = isar!.catalogedBarcodes
-                .filter()
-                .batchIDEqualTo(_batch.id)
-                .findAllSync();
+            // List<CatalogedBarcode> relatedBarcodes = isar!.catalogedBarcodes
+            //     .filter()
+            //     .batchIDEqualTo(_batch.id)
+            //     .findAllSync();
 
-            isar!.writeTxnSync(() {
-              for (CatalogedBarcode barcode in relatedBarcodes) {
-                barcode.width = width;
-                isar!.catalogedBarcodes.putSync(barcode);
-              }
-            });
+            // isar!.writeTxnSync(() {
+            //   for (CatalogedBarcode barcode in relatedBarcodes) {
+            //     barcode.width = width;
+            //     isar!.catalogedBarcodes.putSync(barcode);
+            //   }
+            // });
 
             setState(() {});
           }
@@ -204,21 +212,21 @@ class BarcodeImportViewState extends State<BarcodeImportView> {
           if (height != null) {
             _batch.height = height;
 
-            isar!.writeTxnSync(
-              () => isar!.barcodeBatchs.putSync(_batch),
-            );
+            // isar!.writeTxnSync(
+            //   () => isar!.barcodeBatchs.putSync(_batch),
+            // );
 
-            List<CatalogedBarcode> relatedBarcodes = isar!.catalogedBarcodes
-                .filter()
-                .batchIDEqualTo(_batch.id)
-                .findAllSync();
+            // List<CatalogedBarcode> relatedBarcodes = isar!.catalogedBarcodes
+            //     .filter()
+            //     .batchIDEqualTo(_batch.id)
+            //     .findAllSync();
 
-            isar!.writeTxnSync(() {
-              for (CatalogedBarcode barcode in relatedBarcodes) {
-                barcode.height = height;
-                isar!.catalogedBarcodes.putSync(barcode);
-              }
-            });
+            // isar!.writeTxnSync(() {
+            //   for (CatalogedBarcode barcode in relatedBarcodes) {
+            //     barcode.height = height;
+            //     isar!.catalogedBarcodes.putSync(barcode);
+            //   }
+            // });
 
             setState(() {});
           }

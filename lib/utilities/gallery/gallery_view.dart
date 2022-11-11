@@ -19,7 +19,8 @@ class GalleryView extends StatefulWidget {
 }
 
 class GalleryViewState extends State<GalleryView> {
-  late List<Photo> photos = isar!.photos.where().findAllSync();
+  late List<Photo> photos = getPhotosSync();
+  // isar!.photos.where().findAllSync();
 
   @override
   void initState() {
@@ -244,10 +245,14 @@ class _PhotoViewState extends State<PhotoView> {
                 selected: e.userFeedback ?? true,
                 label: e.userFeedback ?? true
                     ? Text(
-                        getMLDetectedLabelText(e.detectedLabelTextID),
+                        getMlDetectedLabelText(id: e.detectedLabelTextID)
+                                ?.detectedLabelText ??
+                            'err',
                       )
                     : Text(
-                        getMLDetectedLabelText(e.detectedLabelTextID),
+                        getMlDetectedLabelText(id: e.detectedLabelTextID)
+                                ?.detectedLabelText ??
+                            'err',
                         style: const TextStyle(
                             decoration: TextDecoration.lineThrough),
                       ),
@@ -260,9 +265,9 @@ class _PhotoViewState extends State<PhotoView> {
             for (PhotoLabel e in _imageData.photoLabels)
               Chip(
                 avatar: const Icon(Icons.account_circle_rounded),
-                label: Text(
-                  isar!.tagTexts.getSync(e.tagTextID)?.text ?? '-',
-                ),
+                label: Text(getTagTextSync(id: e.tagTextID)?.text ?? '-'
+                    // isar!.tagTexts.getSync(e.tagTextID)?.text ?? '-',
+                    ),
               ),
           ],
         ),
@@ -306,20 +311,25 @@ class _PhotoViewState extends State<PhotoView> {
                 for (MLObjectLabel e in _imageData.mlObjectLabels
                     .where((element) => element.objectID == mlObject.id))
                   Chip(
-                      label: Text(isar!.mLDetectedElementTexts
-                          .filter()
-                          .idEqualTo(e.detectedLabelTextID)
-                          .findFirstSync()!
-                          .detectedText)),
+                      label: Text(getMlDetectedElementTextSync(
+                                  id: e.detectedLabelTextID)!
+                              .detectedText
+                          // isar!.mLDetectedElementTexts
+                          //   .filter()
+                          //   .idEqualTo(e.detectedLabelTextID)
+                          //   .findFirstSync()!
+                          //   .detectedText
+                          )),
                 for (ObjectLabel e in _imageData.objectLabels
                     .where((element) => element.objectID == mlObject.id))
                   Chip(
                     label: Text(
-                      isar!.tagTexts
-                          .filter()
-                          .idEqualTo(e.tagTextID)
-                          .findFirstSync()!
-                          .text,
+                      getTagTextSync(id: e.tagTextID)!.text,
+                      // isar!.tagTexts
+                      //     .filter()
+                      //     .idEqualTo(e.tagTextID)
+                      //     .findFirstSync()!
+                      //     .text,
                     ),
                   ),
                 // Visibility(
@@ -377,7 +387,9 @@ class _PhotoViewState extends State<PhotoView> {
               .map(
                 (e) => Chip(
                   label: Text(
-                    getMLDetectedElementText(e.detectedElementTextID),
+                    getMlDetectedElementTextSync(id: e.detectedElementTextID)
+                            ?.detectedText ??
+                        'err',
                   ),
                 ),
               )

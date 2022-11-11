@@ -113,18 +113,13 @@ class GridViewerState extends State<GridViewer> {
     setState(
       () {
         markers.clear();
-        List<String> gridBarcodes = isar!.catalogedCoordinates
-            .filter()
-            .gridUIDEqualTo(_gridController.gridUID)
-            .findAllSync()
-            .map((e) => e.barcodeUID)
-            .toList();
+        List<String> gridBarcodes =
+            getCatalogedCoordinatesSync(gridUID: _gridController.gridUID)
+                .map((e) => e.barcodeUID)
+                .toList();
 
-        markers = isar!.markers
-            .filter()
-            .anyOf(gridBarcodes,
-                (q, String element) => q.barcodeUIDMatches(element))
-            .findAllSync();
+        markers =
+            getMarkersFromGridBarcodeUIDsSync(gridBarcodeUIDs: gridBarcodes);
       },
     );
   }

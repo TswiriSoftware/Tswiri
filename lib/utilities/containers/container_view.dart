@@ -25,21 +25,27 @@ class ContainerViewState extends State<ContainerView> {
 
   late final CatalogedContainer _container = widget.catalogedContainer;
 
-  late final ContainerRelationship? _containerRelationship = isar!
-      .containerRelationships
-      .filter()
-      .containerUIDMatches(_container.containerUID)
-      .findFirstSync();
+  late final ContainerRelationship? _containerRelationship =
+      getContainerRelationshipSync(containerUID: _container.containerUID);
+  // isar!
+  //     .containerRelationships
+  //     .filter()
+  //     .containerUIDMatches(_container.containerUID)
+  //     .findFirstSync();
 
-  late List<ContainerTag> assignedTags = isar!.containerTags
-      .filter()
-      .containerUIDMatches(_container.containerUID)
-      .findAllSync();
+  late List<ContainerTag> assignedTags =
+      getContainerTagsSync(containerUID: _container.containerUID);
+  // isar!.containerTags
+  //     .filter()
+  //     .containerUIDMatches(_container.containerUID)
+  //     .findAllSync();
 
-  late List<Photo> _containerPhotos = isar!.photos
-      .filter()
-      .containerUIDMatches(_container.containerUID)
-      .findAllSync();
+  late List<Photo> _containerPhotos =
+      getPhotosSync(containerUID: _container.containerUID);
+  // isar!.photos
+  //     .filter()
+  //     .containerUIDMatches(_container.containerUID)
+  //     .findAllSync();
 
   TextEditingController _editController = TextEditingController();
 
@@ -106,13 +112,15 @@ class ContainerViewState extends State<ContainerView> {
           initialValue: _container.name,
           onFieldSubmitted: (value) {
             try {
-              isar!.writeTxnSync(
-                () {
-                  isar!.catalogedContainers.putSync(_container);
-                  //TODO: add to changes table.
-                  //extract to function.
-                },
-              );
+              // isar!.writeTxnSync(
+              //   () {
+              //     isar!.catalogedContainers.putSync(_container);
+              //     //TODO: add to changes table.
+              //     //extract to function.
+              //   },
+              // );
+
+              putCatalogedContainer(container: _container);
             } catch (e) {
               return;
             }
@@ -141,9 +149,10 @@ class ContainerViewState extends State<ContainerView> {
             setState(() {
               _container.description = value;
             });
+            putCatalogedContainer(container: _container);
 
-            isar!.writeTxnSync(
-                () => isar!.catalogedContainers.putSync(_container));
+            // isar!.writeTxnSync(
+            //     () => isar!.catalogedContainers.putSync(_container));
           },
           decoration: const InputDecoration(
             contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
@@ -197,15 +206,12 @@ class ContainerViewState extends State<ContainerView> {
               for (var e in assignedTags)
                 InputChip(
                   label: Text(
-                    isar!.tagTexts
-                        .filter()
-                        .idEqualTo(e.tagTextID)
-                        .findFirstSync()!
-                        .text,
+                    getTagTextSync(id: e.tagTextID)!.text,
                   ),
                   onDeleted: () {
-                    isar!.writeTxnSync(
-                        () => isar!.containerTags.deleteSync(e.id));
+                    deleteContainerTag(id: e.id);
+                    // isar!.writeTxnSync(
+                    //     () => isar!.containerTags.deleteSync(e.id));
 
                     _updateAssignedTags();
 
@@ -246,7 +252,9 @@ class ContainerViewState extends State<ContainerView> {
           ..tagTextID = tagTextID;
 
         //Write to isar.
-        isar!.writeTxnSync(() => isar!.containerTags.putSync(newContainerTag));
+        putContainerTag(containerTag: newContainerTag);
+
+        // isar!.writeTxnSync(() => isar!.containerTags.putSync(newContainerTag));
 
         _updateAssignedTags();
       },
@@ -256,10 +264,12 @@ class ContainerViewState extends State<ContainerView> {
   ///Update the list of tags displayed.
   void _updateAssignedTags() {
     setState(() {
-      assignedTags = isar!.containerTags
-          .filter()
-          .containerUIDMatches(_container.containerUID)
-          .findAllSync();
+      assignedTags =
+          getContainerTagsSync(containerUID: _container.containerUID);
+      // isar!.containerTags
+      //     .filter()
+      //     .containerUIDMatches(_container.containerUID)
+      //     .findAllSync();
     });
   }
 
@@ -347,10 +357,11 @@ class ContainerViewState extends State<ContainerView> {
   ///Updates the photos.
   void _updatePhotosDisplay() {
     setState(() {
-      _containerPhotos = isar!.photos
-          .filter()
-          .containerUIDMatches(_container.containerUID)
-          .findAllSync();
+      _containerPhotos = getPhotosSync(containerUID: _container.containerUID);
+      // isar!.photos
+      //     .filter()
+      //     .containerUIDMatches(_container.containerUID)
+      //     .findAllSync();
 
       log(_containerPhotos.length.toString());
       for (var photo in _containerPhotos) {

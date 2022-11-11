@@ -317,11 +317,11 @@ class _NavigatorViewState extends State<NavigatorView> {
         List<int> gridIDs = message[3];
 
         for (int gridID in gridIDs) {
-          CatalogedGrid? catalogedGrid = getCatalogedGridSync(id: gridID);
+          CatalogedGrid? catalogedGrid = getCatalogedGridSync(gridUID: gridID);
           // isar!.catalogedGrids.getSync(gridID);
           if (catalogedGrid != null) {
             CatalogedContainer? catalogedContainer =
-                getCatalogedContainer(barcodeUID: catalogedGrid.barcodeUID);
+                getCatalogedContainerSync(barcodeUID: catalogedGrid.barcodeUID);
             //  isar!.catalogedContainers
             //     .filter()
             //     .barcodeUIDMatches(catalogedGrid.barcodeUID)
@@ -334,10 +334,10 @@ class _NavigatorViewState extends State<NavigatorView> {
         }
 
         int targetGridID = message[2];
-        CatalogedGrid targetGrid = getCatalogedGridSync(id: targetGridID)!;
+        CatalogedGrid targetGrid = getCatalogedGridSync(gridUID: targetGridID)!;
         // isar!.catalogedGrids.getSync(targetGridID)!;
         CatalogedContainer targetShelf =
-            getCatalogedContainer(barcodeUID: targetGrid.barcodeUID)!;
+            getCatalogedContainerSync(barcodeUID: targetGrid.barcodeUID)!;
         //  isar!.catalogedContainers
         //     .filter()
         //     .barcodeUIDMatches(targetGrid.barcodeUID)
