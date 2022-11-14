@@ -73,7 +73,7 @@ class _FindViewState extends State<FindView> {
               .search(enteredKeyword: value);
         },
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.zero,
+          contentPadding: const EdgeInsets.symmetric(vertical: 10),
           fillColor: Colors.transparent,
           suffixIcon: _findController.text.isEmpty
               ? const Icon(Icons.search_rounded)
