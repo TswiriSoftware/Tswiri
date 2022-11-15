@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -113,6 +114,7 @@ class _SpacesViewState extends State<SpacesView> {
         trailing: OutlinedButton(
           onPressed: () async {
             await swapSpace(directory);
+            createDefaultContainerTypes();
             setState(() {
               spaceDirectories = getSpacesDirectories();
             });

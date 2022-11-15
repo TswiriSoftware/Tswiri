@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:tswiri/utilities/barcodes/pdf/pdf_view.dart';
@@ -59,28 +61,43 @@ class BarcodeViewState extends State<BarcodeView> {
           ),
           Card(
             elevation: 5,
-            child: ListTile(
-              title: Text('Print'),
-              trailing: const Icon(Icons.print_rounded),
-              onTap: () {
-                //TODO: reprint barcode
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PdfView(
-                        barcodeUIDs: [_catalogedBarcode.barcodeUID],
-                        size: getBarcodeBatchSync(
-                                batchID: _catalogedBarcode.batchID)!
-                            .width
-                        // isar!.barcodeBatchs
-                        //     .filter()
-                        //     .idEqualTo(_catalogedBarcode.batchID)
-                        //     .findFirstSync()!
-                        //     .width,
-                        ),
+            child: Column(
+              children: [
+                ListTile(
+                  title: Text('Height: ${_catalogedBarcode.height}'),
+                  leading: const Icon(Icons.height_rounded),
+                ),
+                ListTile(
+                  title: Text('Width: ${_catalogedBarcode.width}'),
+                  leading: Transform.rotate(
+                    angle: pi / 2,
+                    child: const Icon(Icons.height),
                   ),
-                );
-              },
+                ),
+                ListTile(
+                  title: Text('Print'),
+                  trailing: const Icon(Icons.print_rounded),
+                  onTap: () {
+                    //TODO: reprint barcode
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PdfView(
+                            barcodeUIDs: [_catalogedBarcode.barcodeUID],
+                            size: getBarcodeBatchSync(
+                                    batchID: _catalogedBarcode.batchID)!
+                                .width
+                            // isar!.barcodeBatchs
+                            //     .filter()
+                            //     .idEqualTo(_catalogedBarcode.batchID)
+                            //     .findFirstSync()!
+                            //     .width,
+                            ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           )
         ],

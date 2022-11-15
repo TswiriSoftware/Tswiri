@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tswiri/ml_kit/barcode_scanner/barcode_scanner_view.dart';
 import 'package:tswiri/utilities/containers/container_view.dart';
 import 'package:tswiri_database/export.dart';
@@ -9,7 +8,7 @@ import 'package:tswiri_database/tswiri_database.dart';
 
 import 'package:tswiri_database_interface/functions/embedded/get_icon_data.dart';
 import 'package:tswiri_database_interface/functions/general/capitalize_first_character.dart';
-import 'package:tswiri_database_interface/functions/isar/create_functions.dart';
+import 'package:tswiri_database_interface/models/find/find.dart';
 import 'package:tswiri_database_interface/models/settings/global_settings.dart';
 
 class AddContainerView extends StatefulWidget {
@@ -27,7 +26,7 @@ class AddContainerViewState extends State<AddContainerView> {
   //Container Types
   final List<ContainerType> _containerTypes = getContainerTypesSync();
 
-  //Selected Container Type.
+  //Selected Container Type.`
   late ContainerType selectedContainerType =
       widget.containerType ?? _containerTypes.first;
 
@@ -65,7 +64,7 @@ class AddContainerViewState extends State<AddContainerView> {
   AppBar _appBar() {
     return AppBar(
       elevation: 10,
-      title: Text('New ${selectedContainerType.containerTypeName}'),
+      title: Text('New ${selectedContainerType.name}'),
       centerTitle: true,
     );
   }
@@ -135,15 +134,15 @@ class AddContainerViewState extends State<AddContainerView> {
           for (var e in _containerTypes)
             FilterChip(
               avatar: Icon(
-                getIconData(e.iconData.data!),
+                getIconData(e.iconData),
                 color: Theme.of(context).colorScheme.onBackground,
               ),
-              label: Text(e.containerTypeName),
+              label: Text(e.name),
               onSelected: (value) => setState(() {
                 selectedContainerType = e;
               }),
               selected: selectedContainerType == e,
-              tooltip: e.containerDescription,
+              tooltip: e.description,
             ),
         ],
       ),
@@ -175,14 +174,27 @@ class AddContainerViewState extends State<AddContainerView> {
       onClosed: (barcodeUID) async {
         if (barcodeUID == null) return;
 
+        if (getCatalogedContainerSync(barcodeUID: barcodeUID) != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text(
+                    'Barcode is in use',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            ),
+          );
+
+          return;
+        }
+
         //1. Check if this barcode exists.
         CatalogedBarcode? catalogedBarcode =
             getCatalogedBarcodeSync(barcodeUID: barcodeUID);
-
-        // isar!.catalogedBarcodes
-        //     .filter()
-        //     .barcodeUIDMatches(barcodeUID)
-        //     .findFirstSync();
 
         if (catalogedBarcode == null) {
           //Request that the user add this barcode.
@@ -223,10 +235,6 @@ class AddContainerViewState extends State<AddContainerView> {
 
         CatalogedContainer? parentContainer =
             getCatalogedContainerSync(barcodeUID: barcodeUID);
-        // isar!.catalogedContainers
-        //     .filter()
-        //     .barcodeUIDMatches(barcodeUID)
-        //     .findFirstSync();
 
         if (parentContainer == null) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -315,20 +323,15 @@ class AddContainerViewState extends State<AddContainerView> {
   void _createContainer(CatalogedBarcode barcode) {
     //Container UID.
     String containerUID =
-        '${selectedContainerType.containerTypeName}_${DateTime.now().millisecondsSinceEpoch}';
+        '${selectedContainerType.name}_${DateTime.now().millisecondsSinceEpoch}';
 
     //Container Name.
     String name = _nameController.text;
     if (name.isEmpty) {
       List<CatalogedContainer> containers =
           getCatalogedContainersSync(containerTypeID: selectedContainerType.id);
-      // isar!.catalogedContainers
-      //     .filter()
-      //     .containerTypeIDEqualTo(selectedContainerType.id)
-      //     .findAllSync();
-
       name =
-          '${selectedContainerType.containerTypeName.capitalizeFirstCharacter()} ${containers.length + 1}';
+          '${selectedContainerType.name.capitalizeFirstCharacter()} ${containers.length + 1}';
     }
 
     //Container Description.
@@ -336,37 +339,40 @@ class AddContainerViewState extends State<AddContainerView> {
         ? _descriptionController.text
         : null;
 
-    CatalogedContainer newCatalogedContainer = createNewCatalogedContainer(
-      containerUID: containerUID,
-      barcodeUID: barcode.barcodeUID,
-      containerTypeID: selectedContainerType.id,
-      name: name,
-      description: description,
-    );
+    CatalogedContainer newCatalogedContainer = CatalogedContainer()
+      ..barcodeUID = barcode.barcodeUID
+      ..containerTypeID = selectedContainerType.id
+      ..containerUID = containerUID
+      ..description = description
+      ..name = name;
 
-    //Create container Relationship
-    if (_parentContainer != null && _parentContainer != null) {
-      createContainerRelationship(
-        parentContainerUID: _parentContainer!.containerUID,
-        containerUID: containerUID,
-      );
+    ContainerRelationship? containerRelationship;
+    if (_parentContainer != null) {
+      containerRelationship = ContainerRelationship()
+        ..parentUID = _parentContainer!.containerUID
+        ..containerUID = newCatalogedContainer.containerUID;
     }
-
-    //Create Marker
+    Marker? marker;
     if (selectedContainerType.enclosing == false &&
         selectedContainerType.moveable == false) {
-      Marker marker = Marker()
+      marker = Marker()
         ..barcodeUID = barcode.barcodeUID
         ..containerUID = containerUID;
-
-      putMarker(marker);
-      // isar!.writeTxnSync(() => isar!.markers.putSync(marker));
     }
+
+    //New Cataloged Container.
+    CatalogedContainer catalogedContainer = createCatalogedContainer(
+      catalogedContainer: newCatalogedContainer,
+      containerRelationship: containerRelationship,
+      marker: marker,
+    );
+
+    Provider.of<Find>(context, listen: false).search();
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (context) => ContainerView(
-          catalogedContainer: newCatalogedContainer,
+          catalogedContainer: catalogedContainer,
         ),
       ),
     );

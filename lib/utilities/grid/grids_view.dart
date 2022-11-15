@@ -14,7 +14,6 @@ class GridsView extends StatefulWidget {
 
 class GridsViewState extends State<GridsView> {
   late List<CatalogedGrid> grids = getCatalogedGridsSync();
-  // isar!.catalogedGrids.where().findAllSync();
 
   @override
   void initState() {
@@ -59,8 +58,7 @@ class GridsViewState extends State<GridsView> {
             trailing: Text(grid.id.toString()),
             title: const Text('Grid'),
             subtitle: Text(
-              'Children: ${getCatalogedCoordinatesSync(gridUID: grid.id).length}', //isar!.catalogedCoordinates.filter().gridUIDEqualTo(grid.id).findAllSync().length
-            ),
+                'Children: ${getCatalogedCoordinatesSync(gridUID: grid.id).length}'),
           ),
         );
       },
@@ -68,6 +66,11 @@ class GridsViewState extends State<GridsView> {
         return GridViewer(
           grid: grid,
         );
+      },
+      onClosed: (data) {
+        setState(() {
+          grids = getCatalogedGridsSync();
+        });
       },
     );
   }
@@ -85,6 +88,11 @@ class GridsViewState extends State<GridsView> {
       },
       openBuilder: (context, action) {
         return const NewGridView();
+      },
+      onClosed: (data) {
+        setState(() {
+          grids = getCatalogedGridsSync();
+        });
       },
     );
   }

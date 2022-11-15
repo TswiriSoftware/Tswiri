@@ -276,39 +276,19 @@ class BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
     BarcodeBatch newBarcodeBatch = BarcodeBatch()
       ..width = barcodeSize
       ..height = barcodeSize
-      ..timestamp = timestamp
-      ..imported = false;
+      ..timestamp = timestamp;
 
-    List<String> barcodeUIDs = putNewBarcodeBatch(
-      newBarcodeBatch: newBarcodeBatch,
-      numberOfBarcodes: numberOfBarcodes,
+    List<CatalogedBarcode> newCatalogedBarcodes = createBarcodeBatch(
+      batch: newBarcodeBatch,
+      amount: numberOfBarcodes,
       timestamp: timestamp,
-      barcodeWidth: barcodeSize,
-      barcodeHeight: barcodeSize,
     );
-
-    //Write to database.
-    // isar!.writeTxnSync(() {
-    //   int batchID = isar!.barcodeBatchs.putSync(newBarcodeBatch);
-
-    //   for (var i = 1; i <= numberOfBarcodes; i++) {
-    //     String barcodeUID = '${i}_$timestamp';
-    //     isar!.catalogedBarcodes.putSync(
-    //       CatalogedBarcode()
-    //         ..barcodeUID = barcodeUID
-    //         ..width = barcodeSize
-    //         ..height = barcodeSize
-    //         ..batchID = batchID,
-    //     );
-    //     barcodeUIDs.add(barcodeUID);
-    //   }
-    // });
 
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => PdfView(
-          barcodeUIDs: barcodeUIDs,
+          barcodeUIDs: newCatalogedBarcodes.map((e) => e.barcodeUID).toList(),
           size: barcodeSize,
         ),
       ),

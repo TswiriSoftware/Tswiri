@@ -171,14 +171,13 @@ class _FindViewState extends State<FindView> {
         });
       },
       openBuilder: (context, action) {
-        return ContainerView(
-            catalogedContainer:
-                getCatalogedContainerSync(containerUID: result.containerUID)!
-            // isar!.catalogedContainers
-            //     .filter()
-            //     .containerUIDMatches(result.containerUID)
-            //     .findFirstSync()!,
-            );
+        CatalogedContainer? catalogedContainer =
+            getCatalogedContainerSync(containerUID: result.containerUID);
+        if (catalogedContainer != null) {
+          return ContainerView(catalogedContainer: catalogedContainer);
+        } else {
+          return const SizedBox.shrink();
+        }
       },
     );
   }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tswiri/settings/advanced_settings/image_labeling_settings_view.dart';
 import 'package:tswiri/settings/advanced_settings/object_labeling_settings_view.dart';
-import 'package:tswiri/utilities/storage/spaces_view.dart';
 import 'package:tswiri/settings/advanced_settings/text_detection_settings_view.dart';
 import 'package:tswiri_theme/transitions/left_to_right_transition.dart';
 

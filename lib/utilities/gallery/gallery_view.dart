@@ -9,7 +9,6 @@ import 'package:tswiri_database_interface/models/image_data/image_data.dart';
 import 'package:tswiri_database_interface/widgets/ml_label_paint/ml_label_photo_painter.dart';
 import 'package:tswiri_theme/transitions/left_to_right_transition.dart';
 import 'package:tswiri_theme/transitions/right_to_left_transition.dart';
-import 'package:tswiri_database_interface/functions/isar/get_functions.dart';
 
 class GalleryView extends StatefulWidget {
   const GalleryView({Key? key}) : super(key: key);

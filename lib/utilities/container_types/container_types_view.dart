@@ -75,9 +75,9 @@ class ContainerTypesViewState extends State<ContainerTypesView> {
             padding: const EdgeInsets.all(8.0),
             child: ListTile(
               title: Text(
-                containerType.containerTypeName.capitalizeFirstCharacter(),
+                containerType.name.capitalizeFirstCharacter(),
               ),
-              trailing: Icon(getIconData(containerType.iconData.data!)),
+              trailing: Icon(getIconData(containerType.iconData)),
               onTap: action,
             ),
           ),

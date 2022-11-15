@@ -22,7 +22,7 @@ class GridViewerState extends State<GridViewer> {
   void initState() {
     super.initState();
     _updateMarkers();
-    _gridController.calculateDisplayPoints(Size(10, 10), null);
+    _gridController.findGridMarkers();
   }
 
   @override
@@ -38,6 +38,19 @@ class GridViewerState extends State<GridViewer> {
       elevation: 10,
       title: Text('Grid ${_catalogedGrid.id}'),
       centerTitle: true,
+      actions: [
+        _delete(),
+      ],
+    );
+  }
+
+  IconButton _delete() {
+    return IconButton(
+      onPressed: () {
+        deleteGrid(gridUID: gridUID);
+        Navigator.of(context).pop();
+      },
+      icon: const Icon(Icons.delete_rounded),
     );
   }
 

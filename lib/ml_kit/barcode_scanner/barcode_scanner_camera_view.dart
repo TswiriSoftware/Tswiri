@@ -81,7 +81,7 @@ class BarcodeScannerCameraViewState extends State<BarcodeScannerCameraView> {
               _controller!.setFlashMode(FlashMode.torch);
             }
           },
-          backgroundColor: Theme.of(context).colorScheme.secondary,
+          // backgroundColor: Theme.of(context).colorScheme.secondary,
           child: Icon(
             Platform.isIOS
                 ? Icons.flip_camera_ios_outlined

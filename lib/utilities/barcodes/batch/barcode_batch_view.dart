@@ -100,6 +100,24 @@ class BarcodeBatchViewState extends State<BarcodeBatchView> {
         } else {
           deleteBarcodeBatch(id: _batch.id);
 
+          isarDelete(
+            collection: Collections.BarcodeBatch,
+            id: _batch.id,
+          );
+
+          getCatalogedBarcodesSync(batchID: _batch.id)
+              .map((e) => e.id)
+              .toList();
+
+          ///Delete a barcodeBatch Identified by ID.
+          /// - This deletes not only the Barcode Batch but ALSO all related CatalogedBarcodes.
+          // deleteBarcodeBatch({required int id}) {
+          //   _isar!.writeTxnSync(() {
+          //     _isar!.barcodeBatchs.deleteSync(id);
+          //     _isar!.catalogedBarcodes.filter().batchIDEqualTo(id).deleteAllSync();
+          //   });
+          // }
+
           if (mounted) Navigator.of(context).pop();
         }
       },
@@ -180,27 +198,22 @@ class BarcodeBatchViewState extends State<BarcodeBatchView> {
           if (width != null) {
             _batch.width = width;
 
-            putBarcodeBatch(
-              batch: _batch,
-              width: width,
-              height: _batch.height,
+            ///Update the barcodeBatch.
+            isarPut(
+              collection: Collections.BarcodeBatch,
+              object: _batch,
+            )!;
+
+            List<dynamic> catalogedBarcodes =
+                getCatalogedBarcodesSync(batchID: _batch.id)
+                    .map((e) => e..width = _batch.width)
+                    .toList();
+
+            //Update all catalogedBarcodes.
+            isarPutAll(
+              collection: Collections.CatalogedBarcode,
+              objects: catalogedBarcodes,
             );
-
-            // isar!.writeTxnSync(
-            //   () => isar!.barcodeBatchs.putSync(_batch),
-            // );
-
-            // List<CatalogedBarcode> relatedBarcodes = isar!.catalogedBarcodes
-            //     .filter()
-            //     .batchIDEqualTo(_batch.id)
-            //     .findAllSync();
-
-            // isar!.writeTxnSync(() {
-            //   for (CatalogedBarcode barcode in relatedBarcodes) {
-            //     barcode.width = width;
-            //     isar!.catalogedBarcodes.putSync(barcode);
-            //   }
-            // });
 
             setState(() {});
           }
@@ -221,26 +234,23 @@ class BarcodeBatchViewState extends State<BarcodeBatchView> {
 
           if (height != null) {
             _batch.height = height;
-            putBarcodeBatch(
-              batch: _batch,
-              width: _batch.width,
-              height: height,
+
+            ///Update the barcodeBatch.
+            isarPut(
+              collection: Collections.BarcodeBatch,
+              object: _batch,
+            )!;
+
+            List<dynamic> catalogedBarcodes =
+                getCatalogedBarcodesSync(batchID: _batch.id)
+                    .map((e) => e..height = _batch.height)
+                    .toList();
+
+            //Update all catalogedBarcodes.
+            isarPutAll(
+              collection: Collections.CatalogedBarcode,
+              objects: catalogedBarcodes,
             );
-            // isar!.writeTxnSync(
-            //   () => isar!.barcodeBatchs.putSync(_batch),
-            // );
-
-            // List<CatalogedBarcode> relatedBarcodes = isar!.catalogedBarcodes
-            //     .filter()
-            //     .batchIDEqualTo(_batch.id)
-            //     .findAllSync();
-
-            // isar!.writeTxnSync(() {
-            //   for (CatalogedBarcode barcode in relatedBarcodes) {
-            //     barcode.height = height;
-            //     isar!.catalogedBarcodes.putSync(barcode);
-            //   }
-            // });
 
             setState(() {});
           }

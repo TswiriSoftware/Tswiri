@@ -56,6 +56,19 @@ class AddViewState extends State<AddView> {
           Divider(),
           Text('Find Shortcuts'),
           Divider(),
+          // ElevatedButton(
+          //   onPressed: () {
+          //     isarPut(
+          //       collection: Collections.BarcodeBatch,
+          //       object: BarcodeBatch()
+          //         ..height = 10
+          //         ..imported = false
+          //         ..timestamp = DateTime.now().millisecondsSinceEpoch
+          //         ..width = 10,
+          //     );
+          //   },
+          //   child: Text('data'),
+          // ),
         ],
       ),
     );

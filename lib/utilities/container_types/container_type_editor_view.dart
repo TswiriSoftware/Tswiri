@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tswiri_database/embedded/embedded_color/embedded_color.dart';
 import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/tswiri_database.dart';
 import 'package:tswiri_database_interface/functions/embedded/get_color.dart';
@@ -22,9 +21,9 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
   late final List<ContainerType> _containerTypes = getContainerTypesSync();
   // isar!.containerTypes.where().findAllSync();
 
-  late int red = getColor(_containerType.containerColor.data!).red;
-  late int blue = getColor(_containerType.containerColor.data!).blue;
-  late int green = getColor(_containerType.containerColor.data!).green;
+  late int red = getColor(_containerType.color).red;
+  late int blue = getColor(_containerType.color).blue;
+  late int green = getColor(_containerType.color).green;
 
   @override
   void initState() {
@@ -42,7 +41,7 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
   AppBar _appBar() {
     return AppBar(
       title: Text(
-        _containerType.containerTypeName,
+        _containerType.name,
         style: Theme.of(context).textTheme.titleMedium,
       ),
       centerTitle: true,
@@ -69,13 +68,12 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: TextFormField(
-          initialValue: _containerType.containerTypeName,
+          initialValue: _containerType.name,
           onFieldSubmitted: (value) {
             setState(() {
-              _containerType.containerTypeName = value;
+              _containerType.name = value;
             });
-            // _updateIsar();
-            putContainerType(containerType: _containerType);
+            _updateIsar();
           },
         ),
       ),
@@ -88,16 +86,15 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: TextFormField(
-          initialValue: _containerType.containerDescription,
+          initialValue: _containerType.description,
           keyboardType: TextInputType.multiline,
           textInputAction: TextInputAction.done,
           onFieldSubmitted: (value) {
             setState(() {
-              _containerType.containerDescription = value;
+              _containerType.description = value;
             });
 
-            // _updateIsar();
-            putContainerType(containerType: _containerType);
+            _updateIsar();
           },
           maxLines: null,
         ),
@@ -126,8 +123,7 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
                       _containerType.moveable = value!;
                     });
 
-                    // _updateIsar();
-                    putContainerType(containerType: _containerType);
+                    _updateIsar();
                   },
                 ),
               ],
@@ -147,8 +143,7 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
                       _containerType.enclosing = value!;
                     });
 
-                    // _updateIsar();
-                    putContainerType(containerType: _containerType);
+                    _updateIsar();
                   },
                 ),
               ],
@@ -167,7 +162,7 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          containerType.containerTypeName,
+                          containerType.name,
                         ),
                         Checkbox(
                           value: _containerType.canContain
@@ -188,8 +183,7 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
                               });
                             }
 
-                            // _updateIsar();
-                            putContainerType(containerType: _containerType);
+                            _updateIsar();
                           },
                         ),
                       ],
@@ -211,7 +205,7 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          containerType.containerTypeName,
+                          containerType.name,
                         ),
                         Checkbox(
                           value: _containerType.preferredChildContainer ==
@@ -223,8 +217,8 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
                                     containerType.id;
                               });
                             }
-                            // _updateIsar();
-                            putContainerType(containerType: _containerType);
+                            _updateIsar();
+                            // putContainerType(containerType: _containerType);
                           },
                         ),
                       ],
@@ -307,17 +301,16 @@ class _ContainerTypeEditorViewState extends State<ContainerTypeEditorView> {
   void _updateColor() {
     Color color = Color.fromRGBO(red, green, blue, 1.0);
     setState(() {
-      _containerType.containerColor = EmbeddedColor.fromColor(fromColor(color));
+      _containerType.color = containerColorFromColor(color);
     });
-    putContainerType(containerType: _containerType);
-    // _updateIsar();
+
+    _updateIsar();
   }
 
-  // void _updateIsar() {
-  //   isar!.writeTxnSync(() {
-  //     isar!.containerTypes.putSync(
-  //       _containerType,
-  //     );
-  //   });
-  // }
+  void _updateIsar() {
+    isarPut(
+      collection: Collections.ContainerType,
+      object: _containerType,
+    );
+  }
 }

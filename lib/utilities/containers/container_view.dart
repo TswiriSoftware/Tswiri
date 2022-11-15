@@ -1,10 +1,13 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tswiri/utilities/grid/grid_view.dart';
 import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/tswiri_database.dart';
-import 'package:tswiri_database_interface/functions/isar/delete_functions.dart';
+import 'package:tswiri_database_interface/models/find/find.dart';
 import 'package:tswiri_database_interface/models/image_data/image_data.dart';
 import 'package:tswiri_database_interface/widgets/tag_texts_search/tag_texts_search.dart';
 
@@ -27,25 +30,15 @@ class ContainerViewState extends State<ContainerView> {
 
   late final ContainerRelationship? _containerRelationship =
       getContainerRelationshipSync(containerUID: _container.containerUID);
-  // isar!
-  //     .containerRelationships
-  //     .filter()
-  //     .containerUIDMatches(_container.containerUID)
-  //     .findFirstSync();
 
-  late List<ContainerTag> assignedTags =
+  late List<ContainerTag> _assignedTags =
       getContainerTagsSync(containerUID: _container.containerUID);
-  // isar!.containerTags
-  //     .filter()
-  //     .containerUIDMatches(_container.containerUID)
-  //     .findAllSync();
 
   late List<Photo> _containerPhotos =
       getPhotosSync(containerUID: _container.containerUID);
-  // isar!.photos
-  //     .filter()
-  //     .containerUIDMatches(_container.containerUID)
-  //     .findAllSync();
+
+  late CatalogedCoordinate? _catalogedCoordiante =
+      getCatalogedCoordinate(barcodeUID: _container.barcodeUID);
 
   TextEditingController _editController = TextEditingController();
 
@@ -84,6 +77,7 @@ class ContainerViewState extends State<ContainerView> {
             _description(),
             _barcode(),
             _parent(),
+            _grid(),
             const Divider(),
             _tags(),
             const Divider(),
@@ -98,6 +92,10 @@ class ContainerViewState extends State<ContainerView> {
     return IconButton(
       onPressed: () {
         //TODO: Implement delete container.
+
+        deleteContainer(catalogedContainer: _container);
+        Provider.of<Find>(context, listen: false).search();
+        Navigator.of(context).pop();
       },
       icon: const Icon(Icons.delete_rounded),
     );
@@ -111,19 +109,11 @@ class ContainerViewState extends State<ContainerView> {
         child: TextFormField(
           initialValue: _container.name,
           onFieldSubmitted: (value) {
-            try {
-              // isar!.writeTxnSync(
-              //   () {
-              //     isar!.catalogedContainers.putSync(_container);
-              //     //TODO: add to changes table.
-              //     //extract to function.
-              //   },
-              // );
-
-              putCatalogedContainer(container: _container);
-            } catch (e) {
-              return;
-            }
+            //Update CatalogedContainer.
+            isarPut(
+              collection: Collections.CatalogedContainer,
+              object: _container,
+            );
 
             setState(() {
               _container.name = value;
@@ -149,10 +139,12 @@ class ContainerViewState extends State<ContainerView> {
             setState(() {
               _container.description = value;
             });
-            putCatalogedContainer(container: _container);
 
-            // isar!.writeTxnSync(
-            //     () => isar!.catalogedContainers.putSync(_container));
+            //Update CatalogedContainer.
+            isarPut(
+              collection: Collections.CatalogedContainer,
+              object: _container,
+            );
           },
           decoration: const InputDecoration(
             contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
@@ -191,6 +183,32 @@ class ContainerViewState extends State<ContainerView> {
     );
   }
 
+  Visibility _grid() {
+    return Visibility(
+      visible: !isAddingTag,
+      child: ListTile(
+        title: const Text('Grid:'),
+        subtitle: Text(_catalogedCoordiante?.gridUID.toString() ?? '-'),
+        trailing: OpenContainer(
+          openColor: Colors.transparent,
+          closedColor: Colors.transparent,
+          closedBuilder: (context, action) {
+            return IconButton(
+              onPressed: action,
+              icon: const Icon(Icons.grid_4x4_rounded),
+            );
+          },
+          openBuilder: (context, action) {
+            return GridViewer(
+              grid:
+                  getCatalogedGridSync(gridUID: _catalogedCoordiante!.gridUID)!,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   Padding _tags() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -203,15 +221,13 @@ class ContainerViewState extends State<ContainerView> {
           Wrap(
             spacing: 4,
             children: [
-              for (var e in assignedTags)
+              for (var e in _assignedTags)
                 InputChip(
                   label: Text(
                     getTagTextSync(id: e.tagTextID)!.text,
                   ),
                   onDeleted: () {
-                    deleteContainerTag(id: e.id);
-                    // isar!.writeTxnSync(
-                    //     () => isar!.containerTags.deleteSync(e.id));
+                    isarDelete(collection: Collections.ContainerTag, id: e.id);
 
                     _updateAssignedTags();
 
@@ -241,7 +257,7 @@ class ContainerViewState extends State<ContainerView> {
   Widget _tagTextSearch() {
     return TagTextSearch(
       key: _tagTextPredictorKey,
-      excludedTags: assignedTags.map((e) => e.tagTextID).toList(),
+      excludedTags: _assignedTags.map((e) => e.tagTextID).toList(),
       dismiss: () => setState(() {
         isAddingTag = false;
       }),
@@ -252,9 +268,10 @@ class ContainerViewState extends State<ContainerView> {
           ..tagTextID = tagTextID;
 
         //Write to isar.
-        putContainerTag(containerTag: newContainerTag);
-
-        // isar!.writeTxnSync(() => isar!.containerTags.putSync(newContainerTag));
+        isarPut(
+          collection: Collections.ContainerTag,
+          object: newContainerTag,
+        );
 
         _updateAssignedTags();
       },
@@ -264,12 +281,8 @@ class ContainerViewState extends State<ContainerView> {
   ///Update the list of tags displayed.
   void _updateAssignedTags() {
     setState(() {
-      assignedTags =
+      _assignedTags =
           getContainerTagsSync(containerUID: _container.containerUID);
-      // isar!.containerTags
-      //     .filter()
-      //     .containerUIDMatches(_container.containerUID)
-      //     .findAllSync();
     });
   }
 
@@ -358,15 +371,6 @@ class ContainerViewState extends State<ContainerView> {
   void _updatePhotosDisplay() {
     setState(() {
       _containerPhotos = getPhotosSync(containerUID: _container.containerUID);
-      // isar!.photos
-      //     .filter()
-      //     .containerUIDMatches(_container.containerUID)
-      //     .findAllSync();
-
-      log(_containerPhotos.length.toString());
-      for (var photo in _containerPhotos) {
-        log(photo.getPhotoThumbnailPath());
-      }
     });
   }
 }

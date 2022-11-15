@@ -41,7 +41,7 @@ class ContainerTypeViewState extends State<ContainerTypeView> {
 
   AppBar _appBar() {
     return AppBar(
-      title: Text("${_containerType.containerTypeName}'s"),
+      title: Text("${_containerType.name}'s"),
       centerTitle: true,
       elevation: 10,
     );
@@ -75,7 +75,7 @@ class ContainerTypeViewState extends State<ContainerTypeView> {
                     ),
                   ],
                 ),
-                leading: Icon(getIconData(_containerType.iconData.data!)),
+                leading: Icon(getIconData(_containerType.iconData)),
                 trailing: Text(children.length.toString()),
               ),
             );

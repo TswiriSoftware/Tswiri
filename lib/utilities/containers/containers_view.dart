@@ -46,12 +46,12 @@ class ContainersViewState extends State<ContainersView> {
         return Card(
           elevation: 5,
           child: ListTile(
-            title: Text(containerType.containerTypeName),
+            title: Text(containerType.name),
             subtitle: Text(
               'Number: ${getCatalogedContainersSync(containerTypeID: containerType.id).length}',
               //isar!.catalogedContainers.filter().containerTypeIDEqualTo(containerType.id).findAllSync().length
             ),
-            trailing: Icon(getIconData(containerType.iconData.data!)),
+            trailing: Icon(getIconData(containerType.iconData)),
             onTap: () {
               Navigator.of(context).push(
                 leftToRightTransition(
