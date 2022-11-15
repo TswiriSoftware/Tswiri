@@ -198,21 +198,14 @@ class BarcodeBatchViewState extends State<BarcodeBatchView> {
           if (width != null) {
             _batch.width = width;
 
-            ///Update the barcodeBatch.
-            isarPut(
-              collection: Collections.BarcodeBatch,
-              object: _batch,
-            )!;
-
-            List<dynamic> catalogedBarcodes =
+            List<CatalogedBarcode> updatedBarcodes =
                 getCatalogedBarcodesSync(batchID: _batch.id)
-                    .map((e) => e..width = _batch.width)
+                    .map((e) => e..height = _batch.height)
                     .toList();
 
-            //Update all catalogedBarcodes.
-            isarPutAll(
-              collection: Collections.CatalogedBarcode,
-              objects: catalogedBarcodes,
+            updateBarcodeBatch(
+              barcodeBatch: _batch,
+              barcodes: updatedBarcodes,
             );
 
             setState(() {});
@@ -235,21 +228,14 @@ class BarcodeBatchViewState extends State<BarcodeBatchView> {
           if (height != null) {
             _batch.height = height;
 
-            ///Update the barcodeBatch.
-            isarPut(
-              collection: Collections.BarcodeBatch,
-              object: _batch,
-            )!;
-
-            List<dynamic> catalogedBarcodes =
+            List<CatalogedBarcode> updatedBarcodes =
                 getCatalogedBarcodesSync(batchID: _batch.id)
                     .map((e) => e..height = _batch.height)
                     .toList();
 
-            //Update all catalogedBarcodes.
-            isarPutAll(
-              collection: Collections.CatalogedBarcode,
-              objects: catalogedBarcodes,
+            updateBarcodeBatch(
+              barcodeBatch: _batch,
+              barcodes: updatedBarcodes,
             );
 
             setState(() {});

@@ -278,10 +278,18 @@ class BarcodeGeneratorViewState extends State<BarcodeGeneratorView> {
       ..height = barcodeSize
       ..timestamp = timestamp;
 
+    List<CatalogedBarcode> catalogedBarcodes = [];
+    for (var i = 1; i <= numberOfBarcodes; i++) {
+      String barcodeUID = '${i}_$timestamp';
+      catalogedBarcodes.add(CatalogedBarcode()
+        ..barcodeUID = barcodeUID
+        ..width = newBarcodeBatch.width
+        ..height = newBarcodeBatch.height);
+    }
+
     List<CatalogedBarcode> newCatalogedBarcodes = createBarcodeBatch(
       batch: newBarcodeBatch,
-      amount: numberOfBarcodes,
-      timestamp: timestamp,
+      catalogedBarcodes: catalogedBarcodes,
     );
 
     Navigator.pushReplacement(

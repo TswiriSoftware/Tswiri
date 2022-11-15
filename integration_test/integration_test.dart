@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:tswiri/main.dart' as app;
 
-
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -43,8 +42,6 @@ void main() {
       //Test containers view.
       await testContainersView(tester);
       await tester.pumpAndSettle(const Duration(milliseconds: 75));
-
-      //TODO: add more tests.
     });
   });
 }

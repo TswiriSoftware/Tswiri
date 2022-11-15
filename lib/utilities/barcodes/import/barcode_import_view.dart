@@ -99,9 +99,18 @@ class BarcodeImportViewState extends State<BarcodeImportView> {
             ),
             OutlinedButton(
               onPressed: () async {
-                importBarcodeBatch(
+                List<CatalogedBarcode> catalogedBarcodes = scannedBarcodes
+                    .map(
+                      (e) => CatalogedBarcode()
+                        ..barcodeUID = e
+                        ..height = _batch.height
+                        ..width = _batch.width,
+                    )
+                    .toList();
+
+                createBarcodeBatch(
                   batch: _batch,
-                  barcodeUIDs: scannedBarcodes.toList(),
+                  catalogedBarcodes: catalogedBarcodes,
                 );
 
                 Navigator.of(context).pop();

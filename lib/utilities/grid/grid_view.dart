@@ -47,7 +47,7 @@ class GridViewerState extends State<GridViewer> {
   IconButton _delete() {
     return IconButton(
       onPressed: () {
-        deleteGrid(gridUID: gridUID);
+        deleteGrid(catalogedGrid: _catalogedGrid);
         Navigator.of(context).pop();
       },
       icon: const Icon(Icons.delete_rounded),
