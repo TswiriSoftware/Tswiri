@@ -224,7 +224,7 @@ class ContainerViewState extends State<ContainerView> {
               for (var e in _assignedTags)
                 InputChip(
                   label: Text(
-                    getTagTextSync(id: e.tagTextID)!.text,
+                    getTagTextSync(id: e.tagTextUID)!.text,
                   ),
                   onDeleted: () {
                     isarDelete(collection: Collections.ContainerTag, id: e.id);
@@ -233,7 +233,7 @@ class ContainerViewState extends State<ContainerView> {
 
                     ///Let the TagTextPredictor know this tag has been removed.
                     _tagTextPredictorKey.currentState
-                        ?.updateAssignedTags(e.tagTextID);
+                        ?.updateAssignedTags(e.tagTextUID);
                   },
                 ),
               Visibility(
@@ -257,7 +257,7 @@ class ContainerViewState extends State<ContainerView> {
   Widget _tagTextSearch() {
     return TagTextSearch(
       key: _tagTextPredictorKey,
-      excludedTags: _assignedTags.map((e) => e.tagTextID).toList(),
+      excludedTags: _assignedTags.map((e) => e.tagTextUID).toList(),
       dismiss: () => setState(() {
         isAddingTag = false;
       }),
@@ -265,7 +265,7 @@ class ContainerViewState extends State<ContainerView> {
         //Create New ContainerTag.
         ContainerTag newContainerTag = ContainerTag()
           ..containerUID = _container.containerUID
-          ..tagTextID = tagTextID;
+          ..tagTextUID = tagTextID;
 
         //Write to isar.
         isarPut(

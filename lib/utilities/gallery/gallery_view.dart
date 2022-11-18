@@ -244,12 +244,12 @@ class _PhotoViewState extends State<PhotoView> {
                 selected: e.userFeedback ?? true,
                 label: e.userFeedback ?? true
                     ? Text(
-                        getMlDetectedLabelText(id: e.detectedLabelTextID)
+                        getMlDetectedLabelText(id: e.detectedLabelTextUID)
                                 ?.detectedLabelText ??
                             'err',
                       )
                     : Text(
-                        getMlDetectedLabelText(id: e.detectedLabelTextID)
+                        getMlDetectedLabelText(id: e.detectedLabelTextUID)
                                 ?.detectedLabelText ??
                             'err',
                         style: const TextStyle(
@@ -264,7 +264,7 @@ class _PhotoViewState extends State<PhotoView> {
             for (PhotoLabel e in _imageData.photoLabels)
               Chip(
                 avatar: const Icon(Icons.account_circle_rounded),
-                label: Text(getTagTextSync(id: e.tagTextID)?.text ?? '-'
+                label: Text(getTagTextSync(id: e.tagTextUID)?.text ?? '-'
                     // isar!.tagTexts.getSync(e.tagTextID)?.text ?? '-',
                     ),
               ),
@@ -308,10 +308,10 @@ class _PhotoViewState extends State<PhotoView> {
               spacing: 4,
               children: [
                 for (MLObjectLabel e in _imageData.mlObjectLabels
-                    .where((element) => element.objectID == mlObject.id))
+                    .where((element) => element.objectUID == mlObject.id))
                   Chip(
                       label: Text(getMlDetectedElementTextSync(
-                                  id: e.detectedLabelTextID)!
+                                  id: e.detectedLabelTextUID)!
                               .detectedText
                           // isar!.mLDetectedElementTexts
                           //   .filter()
@@ -320,10 +320,10 @@ class _PhotoViewState extends State<PhotoView> {
                           //   .detectedText
                           )),
                 for (ObjectLabel e in _imageData.objectLabels
-                    .where((element) => element.objectID == mlObject.id))
+                    .where((element) => element.objectUID == mlObject.id))
                   Chip(
                     label: Text(
-                      getTagTextSync(id: e.tagTextID)!.text,
+                      getTagTextSync(id: e.tagTextUID)!.text,
                       // isar!.tagTexts
                       //     .filter()
                       //     .idEqualTo(e.tagTextID)
@@ -386,7 +386,7 @@ class _PhotoViewState extends State<PhotoView> {
               .map(
                 (e) => Chip(
                   label: Text(
-                    getMlDetectedElementTextSync(id: e.detectedElementTextID)
+                    getMlDetectedElementTextSync(id: e.mlDetectedElementTextUID)
                             ?.detectedText ??
                         'err',
                   ),

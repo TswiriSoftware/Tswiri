@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tswiri_database/tswiri_database.dart';
+
 import 'package:tswiri_database_interface/functions/general/clear_temp_directory.dart';
 import 'package:tswiri_database_interface/functions/isar/isar_functions.dart';
 import 'package:tswiri_database_interface/models/find/find.dart';
@@ -14,6 +15,10 @@ import 'package:tswiri/utilities/utilities_view.dart';
 import 'package:tswiri_network_interface/client/client.dart';
 import 'package:tswiri_theme/tswiri_theme.dart';
 
+import 'package:tswiri_database/src/models/database/tswiri_mobile_database.dart';
+
+TswiriMobileDatabase? tswiriDB;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -24,20 +29,10 @@ Future<void> main() async {
   //Load app settings.
   await loadAppSettings();
 
-  //Initiate Isar Storage Directories.
-  await initiateSpaceDirectory();
-  await initiateIsarStorage();
-  await initiatePhotoStorage();
-  await initiateThumnailStorage();
-
-  //Initiate Isar.
-  initiateMobileIsar();
-  createDefaultContainerTypes();
+  tswiriDB = TswiriMobileDatabase(directory: await initiateMobileSpace());
 
   //Clear temp directory whenever the app is opened.
   clearTemporaryDirectory();
-
-  // runApp(const MyApp());
 
   runApp(
     MultiProvider(

@@ -61,13 +61,13 @@ class MLLabelPhotoPainter extends CustomPainter {
 
         for (MLObjectLabel label in imageData.mlObjectLabels
             .where((element) =>
-                element.objectID == object.id && element.userFeedback != false)
+                element.objectUID == object.id && element.userFeedback != false)
             .toList()) {
           // Ensure label falls above objectDetectionConfidence
           if (label.confidence >= objectDetectionConfidence) {
             MLDetectedLabelText mlDetectedLabelText =
                 imageData.mlDetectedLabelTexts.firstWhere(
-                    (element) => element.id == label.detectedLabelTextID);
+                    (element) => element.id == label.detectedLabelTextUID);
             builder.addText(
               '${mlDetectedLabelText.detectedLabelText} (${(label.confidence * 100).toInt()}%) \n',
             );
@@ -117,12 +117,12 @@ class MLLabelPhotoPainter extends CustomPainter {
         );
 
         List<MLTextLine> textLines = imageData.mlTextLines
-            .where((element) => element.blockID == textBlock.id)
+            .where((element) => element.blockUID == textBlock.id)
             .toList();
 
         List<MLTextElement> textElements = imageData.mlTextElements
             .where((element) =>
-                textLines.map((e) => e.id).toList().contains(element.lineID))
+                textLines.map((e) => e.id).toList().contains(element.lineUID))
             .toList();
 
         // log(textElements.toString());
@@ -131,7 +131,8 @@ class MLLabelPhotoPainter extends CustomPainter {
 
         List<String> blockText = textElements
             .map((e) => imageData.mLDetectedElementTexts
-                .firstWhere((element) => element.id == e.detectedElementTextID)
+                .firstWhere(
+                    (element) => element.id == e.mlDetectedElementTextUID)
                 .detectedText)
             .toList();
 

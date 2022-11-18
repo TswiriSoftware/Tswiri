@@ -2,8 +2,6 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tswiri/find/filter_view.dart';
-import 'package:tswiri_database/export.dart';
-import 'package:tswiri_database/tswiri_database.dart';
 
 import 'package:tswiri_database_interface/models/find/find.dart';
 import 'package:tswiri_database_interface/models/find/find_result_models.dart';
@@ -171,13 +169,14 @@ class _FindViewState extends State<FindView> {
         });
       },
       openBuilder: (context, action) {
-        CatalogedContainer? catalogedContainer =
-            getCatalogedContainerSync(containerUID: result.containerUID);
-        if (catalogedContainer != null) {
-          return ContainerView(catalogedContainer: catalogedContainer);
-        } else {
-          return const SizedBox.shrink();
-        }
+        // CatalogedContainer? catalogedContainer =
+        //     getCatalogedContainerSync(containerUID: result.containerUID);
+        // if (catalogedContainer != null) {
+        //   return ContainerView(catalogedContainer: catalogedContainer);
+        // } else {
+        //
+        // }
+        return const SizedBox.shrink();
       },
     );
   }

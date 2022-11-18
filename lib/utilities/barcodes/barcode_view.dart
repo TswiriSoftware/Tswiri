@@ -85,7 +85,7 @@ class BarcodeViewState extends State<BarcodeView> {
                         builder: (context) => PdfView(
                             barcodeUIDs: [_catalogedBarcode.barcodeUID],
                             size: getBarcodeBatchSync(
-                                    batchID: _catalogedBarcode.batchID)!
+                                    batchID: _catalogedBarcode.batchUID)!
                                 .width
                             // isar!.barcodeBatchs
                             //     .filter()

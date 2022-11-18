@@ -1,15 +1,15 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tswiri/main.dart';
 import 'package:tswiri/ml_kit/barcode_scanner/barcode_scanner_view.dart';
 import 'package:tswiri/utilities/containers/container_view.dart';
-import 'package:tswiri_database/export.dart';
-import 'package:tswiri_database/tswiri_database.dart';
-
 import 'package:tswiri_database_interface/functions/embedded/get_icon_data.dart';
 import 'package:tswiri_database_interface/functions/general/capitalize_first_character.dart';
 import 'package:tswiri_database_interface/models/find/find.dart';
 import 'package:tswiri_database_interface/models/settings/global_settings.dart';
+
+import 'package:tswiri_database/src/collections/export.dart';
 
 class AddContainerView extends StatefulWidget {
   const AddContainerView({
@@ -24,7 +24,7 @@ class AddContainerView extends StatefulWidget {
 
 class AddContainerViewState extends State<AddContainerView> {
   //Container Types
-  final List<ContainerType> _containerTypes = getContainerTypesSync();
+  final List<ContainerType> _containerTypes = tswiriDB!.containerTypes;
 
   //Selected Container Type.`
   late ContainerType selectedContainerType =
@@ -174,7 +174,7 @@ class AddContainerViewState extends State<AddContainerView> {
       onClosed: (barcodeUID) async {
         if (barcodeUID == null) return;
 
-        if (getCatalogedContainerSync(barcodeUID: barcodeUID) != null) {
+        if (tswiriDB!.getCatalogedContainer(barcodeUID: barcodeUID) != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Row(
@@ -194,7 +194,7 @@ class AddContainerViewState extends State<AddContainerView> {
 
         //1. Check if this barcode exists.
         CatalogedBarcode? catalogedBarcode =
-            getCatalogedBarcodeSync(barcodeUID: barcodeUID);
+            tswiriDB!.getCatalogedBarcode(barcodeUID: barcodeUID);
 
         if (catalogedBarcode == null) {
           //Request that the user add this barcode.
@@ -234,7 +234,7 @@ class AddContainerViewState extends State<AddContainerView> {
         if (barcodeUID == null) return;
 
         CatalogedContainer? parentContainer =
-            getCatalogedContainerSync(barcodeUID: barcodeUID);
+            tswiriDB!.getCatalogedContainer(barcodeUID: barcodeUID);
 
         if (parentContainer == null) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -328,8 +328,9 @@ class AddContainerViewState extends State<AddContainerView> {
     //Container Name.
     String name = _nameController.text;
     if (name.isEmpty) {
-      List<CatalogedContainer> containers =
-          getCatalogedContainersSync(containerTypeID: selectedContainerType.id);
+      List<CatalogedContainer> containers = tswiriDB!
+          .getCatalogedContainers(containerTypeUID: selectedContainerType.uid);
+
       name =
           '${selectedContainerType.name.capitalizeFirstCharacter()} ${containers.length + 1}';
     }
@@ -341,17 +342,16 @@ class AddContainerViewState extends State<AddContainerView> {
 
     CatalogedContainer newCatalogedContainer = CatalogedContainer()
       ..barcodeUID = barcode.barcodeUID
-      ..containerTypeID = selectedContainerType.id
-      ..containerUID = containerUID
+      ..containerTypeUID = selectedContainerType.uid
       ..description = description
       ..name = name;
 
     ContainerRelationship? containerRelationship;
     if (_parentContainer != null) {
       containerRelationship = ContainerRelationship()
-        ..parentUID = _parentContainer!.containerUID
-        ..containerUID = newCatalogedContainer.containerUID;
+        ..parentUID = _parentContainer!.uid;
     }
+
     Marker? marker;
     if (selectedContainerType.enclosing == false &&
         selectedContainerType.moveable == false) {
@@ -361,11 +361,10 @@ class AddContainerViewState extends State<AddContainerView> {
     }
 
     //New Cataloged Container.
-    CatalogedContainer catalogedContainer = createCatalogedContainer(
-      catalogedContainer: newCatalogedContainer,
-      containerRelationship: containerRelationship,
-      marker: marker,
-    );
+    CatalogedContainer catalogedContainer = tswiriDB!.createCatalogedContainer(
+        catalogedContainer: newCatalogedContainer,
+        containerRelationship: containerRelationship,
+        marker: marker);
 
     Provider.of<Find>(context, listen: false).search();
 

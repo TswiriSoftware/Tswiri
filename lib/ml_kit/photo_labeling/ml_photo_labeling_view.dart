@@ -148,11 +148,11 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       key: _key,
       //Spagetti monster.
       excludedTags: isAddingPhotoLabel
-          ? _imageData!.photoLabels.map((e) => e.tagTextID).toList()
+          ? _imageData!.photoLabels.map((e) => e.tagTextUID).toList()
           : isAddingObjectLabel
               ? _imageData!.objectLabels
-                  .where((element) => element.objectID == objectID)
-                  .map((e) => e.tagTextID)
+                  .where((element) => element.objectUID == objectID)
+                  .map((e) => e.tagTextUID)
                   .toList()
               : [],
       dismiss: () => setState(() {
@@ -164,8 +164,8 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
         if (isAddingPhotoLabel) {
           //Create new Photo Label.
           PhotoLabel newPhotoLabel = PhotoLabel()
-            ..photoID = 0
-            ..tagTextID = tagTextID;
+            ..photoUID = 0
+            ..tagTextUID = tagTextID;
 
           setState(() {
             _imageData!.photoLabels.add(newPhotoLabel);
@@ -173,8 +173,8 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
         } else if (isAddingObjectLabel) {
           //Create new Object Label.
           ObjectLabel newObjectLabel = ObjectLabel()
-            ..objectID = objectID!
-            ..tagTextID = tagTextID;
+            ..objectUID = objectID!
+            ..tagTextUID = tagTextID;
 
           setState(() {
             _imageData!.objectLabels.add(newObjectLabel);
@@ -277,7 +277,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
                           });
                           _key.currentState?.resetExcludedTags(_imageData!
                               .photoLabels
-                              .map((e) => e.tagTextID)
+                              .map((e) => e.tagTextUID)
                               .toList());
                         },
                       ),
@@ -297,7 +297,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       if (imageLabel.userFeedback == null) {
         return FilterChip(
           label: Text(
-            getMlDetectedLabelText(id: imageLabel.detectedLabelTextID)
+            getMlDetectedLabelText(id: imageLabel.detectedLabelTextUID)
                     ?.detectedLabelText ??
                 'err',
             style: Theme.of(context).textTheme.bodyMedium,
@@ -314,7 +314,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       } else if (imageLabel.userFeedback == true) {
         return FilterChip(
           label: Text(
-            getMlDetectedLabelText(id: imageLabel.detectedLabelTextID)
+            getMlDetectedLabelText(id: imageLabel.detectedLabelTextUID)
                     ?.detectedLabelText ??
                 'err',
             style: Theme.of(context).textTheme.bodyMedium,
@@ -332,7 +332,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       } else {
         return FilterChip(
           label: Text(
-            getMlDetectedLabelText(id: imageLabel.detectedLabelTextID)
+            getMlDetectedLabelText(id: imageLabel.detectedLabelTextUID)
                     ?.detectedLabelText ??
                 'err',
             style: const TextStyle(
@@ -357,7 +357,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
   Widget _photoLabelChip(PhotoLabel photoLabel) {
     return Chip(
       label: Text(
-        getTagTextSync(id: photoLabel.tagTextID)?.text ?? 'err',
+        getTagTextSync(id: photoLabel.tagTextUID)?.text ?? 'err',
 // isar!.tagTexts.getSync(photoLabel.tagTextID)?.text
         style: Theme.of(context).textTheme.bodyMedium,
       ),
@@ -373,7 +373,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
         });
 
         ///Let the TagTextPredictor know this tag has been removed.
-        _key.currentState?.updateAssignedTags(photoLabel.tagTextID);
+        _key.currentState?.updateAssignedTags(photoLabel.tagTextUID);
       },
       // backgroundColor: sunbirdOrange,
     );
@@ -422,11 +422,11 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
               spacing: 4,
               children: [
                 for (MLObjectLabel e in _imageData?.mlObjectLabels
-                        .where((element) => element.objectID == mlObject.id) ??
+                        .where((element) => element.objectUID == mlObject.id) ??
                     [])
                   _mlObjectLabelChip(e),
                 for (ObjectLabel e in _imageData!.objectLabels
-                    .where((element) => element.objectID == mlObject.id))
+                    .where((element) => element.objectUID == mlObject.id))
                   _objectLabelChip(e),
                 Visibility(
                   key: UniqueKey(),
@@ -443,8 +443,8 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
                       });
 
                       List<int> excludedLabels = _imageData!.objectLabels
-                          .where((element) => element.objectID == mlObject.id)
-                          .map((e) => e.tagTextID)
+                          .where((element) => element.objectUID == mlObject.id)
+                          .map((e) => e.tagTextUID)
                           .toList();
 
                       setState(() {
@@ -466,7 +466,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       if (mlObjectLabel.userFeedback == null) {
         return FilterChip(
           label: Text(
-            getMlDetectedLabelText(id: mlObjectLabel.detectedLabelTextID)
+            getMlDetectedLabelText(id: mlObjectLabel.detectedLabelTextUID)
                     ?.detectedLabelText ??
                 'err',
             style: Theme.of(context).textTheme.bodyMedium,
@@ -482,7 +482,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       } else if (mlObjectLabel.userFeedback == true) {
         return FilterChip(
           label: Text(
-            getMlDetectedLabelText(id: mlObjectLabel.detectedLabelTextID)
+            getMlDetectedLabelText(id: mlObjectLabel.detectedLabelTextUID)
                     ?.detectedLabelText ??
                 'err',
             style: Theme.of(context).textTheme.bodyMedium,
@@ -500,7 +500,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       } else {
         return FilterChip(
           label: Text(
-            getMlDetectedLabelText(id: mlObjectLabel.detectedLabelTextID)
+            getMlDetectedLabelText(id: mlObjectLabel.detectedLabelTextUID)
                     ?.detectedLabelText ??
                 'err',
             style: const TextStyle(
@@ -524,7 +524,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
   Widget _objectLabelChip(ObjectLabel objectLabel) {
     return Chip(
       label: Text(
-        getTagTextSync(id: objectLabel.tagTextID)?.text ?? 'err',
+        getTagTextSync(id: objectLabel.tagTextUID)?.text ?? 'err',
         // isar!.tagTexts.getSync(objectLabel.tagTextID)?.text
         style: Theme.of(context).textTheme.bodyMedium,
       ),
@@ -540,7 +540,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
         });
 
         ///Let the TagTextPredictor know this tag has been removed.
-        _key.currentState?.updateAssignedTags(objectLabel.tagTextID);
+        _key.currentState?.updateAssignedTags(objectLabel.tagTextUID);
       },
       // backgroundColor: sunbirdOrange,
     );
@@ -587,7 +587,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
         return FilterChip(
           label: Text(
             getMlDetectedElementTextSync(
-                        id: mlTextElement.detectedElementTextID)
+                        id: mlTextElement.mlDetectedElementTextUID)
                     ?.detectedText ??
                 'err',
             style: Theme.of(context).textTheme.bodyMedium,
@@ -604,7 +604,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
         return FilterChip(
           label: Text(
             getMlDetectedElementTextSync(
-                        id: mlTextElement.detectedElementTextID)
+                        id: mlTextElement.mlDetectedElementTextUID)
                     ?.detectedText ??
                 'err',
           ),
@@ -622,7 +622,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
         return FilterChip(
           label: Text(
             getMlDetectedElementTextSync(
-                        id: mlTextElement.detectedElementTextID)
+                        id: mlTextElement.mlDetectedElementTextUID)
                     ?.detectedText ??
                 'err',
             style: const TextStyle(
@@ -659,9 +659,9 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
       mlPhotoLabels = labels
           .map(
             (e) => MLPhotoLabel()
-              ..photoID = null
+              ..photoUID = null
               ..confidence = e.confidence
-              ..detectedLabelTextID = getMLDetectedLabelTextID(e.label)
+              ..detectedLabelTextUID = getMLDetectedLabelTextID(e.label)
               ..userFeedback = null,
           )
           .toList();
@@ -687,7 +687,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
         MLObject mlObject = MLObject()
           ..id = i
           ..boundingBox = boundingBox
-          ..photoID = 0;
+          ..photoUID = 0;
 
         mlObjects.add(mlObject);
 
@@ -695,8 +695,8 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
           if (label.confidence >= objectDetectionConfidence) {
             MLObjectLabel mlObjectLabel = MLObjectLabel()
               ..confidence = label.confidence
-              ..detectedLabelTextID = getMLDetectedLabelTextID(label.text)
-              ..objectID = mlObject.id
+              ..detectedLabelTextUID = getMLDetectedLabelTextID(label.text)
+              ..objectUID = mlObject.id
               ..userFeedback = null;
 
             mlObjectLabels.add(mlObjectLabel);
@@ -727,7 +727,7 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
           TextLine textLine = textBlock.lines[x];
 
           MLTextLine mlTextLine = MLTextLine()
-            ..blockID = i
+            ..blockUID = i
             ..blockIndex = x
             ..cornerPoints =
                 CornerPoints.fromCornerPoints(textBlock.cornerPoints)
@@ -741,11 +741,11 @@ class _MlPhotoLabelingViewState extends State<MlPhotoLabelingView> {
             MLTextElement mlTextElement = MLTextElement()
               ..cornerPoints =
                   CornerPoints.fromCornerPoints(textBlock.cornerPoints)
-              ..detectedElementTextID =
+              ..mlDetectedElementTextUID =
                   getMLDetectedElementTextID(textElement.text)
-              ..lineID = mlTextLine.id
+              ..lineUID = mlTextLine.id
               ..lineIndex = z
-              ..photoID = 0
+              ..photoUID = 0
               ..userFeedback = null;
 
             mlTextElements.add(mlTextElement);
