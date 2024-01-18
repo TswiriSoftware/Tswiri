@@ -1,7 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:tswiri/views/containers/container/container_view.dart';
 import 'package:tswiri/views/search/shopping_cart_view.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide SearchBar, SearchController;
 import 'package:provider/provider.dart';
 import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/models/search/search_controller.dart';
