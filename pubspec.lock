@@ -322,10 +322,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_archive
-      sha256: aec85d1da65e5b33a529db00a86df0b8e92bda78088a7cfaeeba5187701d0d85
+      sha256: "004132780d382df5171589ab793e2efc9c3eef570fe72d78b4ccfbfbe52762ae"
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.0"
+    version: "6.0.0"
   flutter_driver:
     dependency: transitive
     description: flutter
@@ -1095,14 +1095,14 @@ packages:
   tswiri_database:
     dependency: "direct main"
     description:
-      path: "packages/tswiri_database"
+      path: "modules/tswiri_database"
       relative: true
     source: path
     version: "0.0.1"
   tswiri_widgets:
     dependency: "direct main"
     description:
-      path: "packages/tswiri_widgets"
+      path: "modules/tswiri_widgets"
       relative: true
     source: path
     version: "0.0.1"

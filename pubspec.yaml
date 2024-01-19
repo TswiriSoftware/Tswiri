@@ -60,10 +60,10 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
 
   tswiri_widgets:
-    path: packages/tswiri_widgets
+    path: modules/tswiri_widgets
 
   tswiri_database:
-    path: packages/tswiri_database
+    path: modules/tswiri_database
     
       
   permission_handler: ^10.0.0

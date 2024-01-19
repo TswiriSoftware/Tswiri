@@ -1,6 +1,9 @@
 [submodule "modules/tswiri_database"]
 	path = modules/tswiri_database
 	url = https://github.com/TswiriSoftware/tswiri_database.git
+	branch = flutter_upgrade
 [submodule "modules/tswiri_widgets"]
 	path = modules/tswiri_widgets
 	url = https://github.com/TswiriSoftware/tswiri_widgets.git
+	branch = master
+
