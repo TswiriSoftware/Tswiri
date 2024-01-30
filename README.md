@@ -4,13 +4,10 @@ A new Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+1. Init all submodules:
+`git submodule update --init --recursive`
 
-A few resources to get you started if this is your first Flutter project:
+2. Make sure you are using the correct sdk environment:
+`sdk: '>=2.18.0 <3.0.0'`
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+3. Do a `flutter pub get`
