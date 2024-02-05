@@ -16,71 +16,59 @@ part 'container_type.g.dart';
 @Collection()
 @Name("ContainerType")
 class ContainerType {
-  ///containerTypeID.
   Id id = Isar.autoIncrement;
 
-  ///ContainerUID.
-  @Name("containerTypeName")
-  late String containerTypeName;
-
-  ///Container Description.
-  @Name("containerDescription")
-  late String containerDescription;
-
-  ///Can this container be moved.
-  @Name("moveable")
+  @Index(unique: true)
+  late String uuid;
+  late String name;
+  late String description;
   late bool moveable;
 
-  ///Is this container's barcode a marker by defaut.
-  @Name("enclosing")
-  late bool enclosing; //Rename enclosing
+  /// Is this container's barcode a marker by default.
+  late bool enclosing;
 
-  ///List of containers that this container can contain.
-  @Name("canContain")
-  late List<int> canContain;
+  /// List of container uuids that this container can contain.
+  late List<String> canContain;
 
-  ///ID of the preferred child container.
-  @Name("preferredChildContainer")
-  late int preferredChildContainer;
+  /// UUID of the preferred child container.
+  late String preferredChild;
 
-  ///Container color.
-  @Name("containerColor")
-  late IsarColor containerColor;
+  /// Container color.
+  late IsarColor color;
 
-  ///Container Icon.
-  @Name("iconData")
+  /// Container Icon.
   late IsarIcon iconData;
 
   @override
   String toString() {
     return '''-------------------------------------
-containerType: $containerTypeName,
-containerDescription: $containerDescription,
+containerType: $name,
+containerDescription: $description,
 moveable: $moveable, canContain: $canContain
-color: $containerColor
+color: $color
 iconData: ${iconData.codePoint}
 -------------------------------------\n''';
   }
 
   Map toJson() => {
         'id': id,
-        'containerType': containerTypeName,
-        'containerDescription': containerDescription,
+        'containerType': name,
+        'containerDescription': description,
         'moveable': moveable,
         'enclosing': enclosing,
         'canContain': canContain,
-        'containerColor': containerColor,
+        'containerColor': color,
       };
 
   ContainerType fromJson(Map<String, dynamic> json) {
     return ContainerType()
       ..id = json['id']
-      ..containerTypeName = json['containerType']
-      ..containerDescription = json['containerDescription']
+      ..name = json['containerType']
+      ..description = json['containerDescription']
       ..enclosing = json['enclosing']
-      ..canContain = (json['canContain'] as List<dynamic>).cast<int>()
+      ..canContain = (json['canContain'] as List<dynamic>).cast<String>()
       ..moveable = json['moveable']
-      ..containerColor = json['containerColor'];
+      ..color = json['containerColor'];
   }
 }
 

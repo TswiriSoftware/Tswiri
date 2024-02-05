@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:tswiri_database/collections/collections_export.dart';
+import 'package:tswiri_database/defaults/default_container_types.dart';
 
 final schemas = [
   BarcodeBatchSchema,
@@ -30,11 +31,13 @@ final schemas = [
   TagTextSchema,
 ];
 
+/// TODO: Isar migration: https://isar.dev/recipes/data_migration.html
+
 class Space with ChangeNotifier {
   Space();
 
   String? _databasePath;
-  String? get databasePath => _databasePath;
+  String? get spacePath => _databasePath;
   String? get photoPath => '$_databasePath/photos';
 
   Isar? _db;
@@ -44,16 +47,16 @@ class Space with ChangeNotifier {
 
   /// Switch to this space.
   Future<void> loadSpace({
-    required String databasePath,
+    required String spacePath,
     bool inspector = false,
   }) async {
-    log('Loading space: $databasePath', name: 'Space');
+    log('Loading space: $spacePath', name: 'Space');
 
     // Check if databasePath exists.
-    if (!await Directory(databasePath).exists()) {
-      _databasePath = (await Directory(databasePath).create()).path;
+    if (!await Directory(spacePath).exists()) {
+      _databasePath = (await Directory(spacePath).create()).path;
     } else {
-      _databasePath = databasePath;
+      _databasePath = spacePath;
     }
 
     // Check if photo path exists.
@@ -63,10 +66,24 @@ class Space with ChangeNotifier {
 
     _db = await Isar.open(
       schemas,
-      directory: databasePath,
+      directory: spacePath,
       inspector: inspector,
     );
 
+    await _loadDefaults(_db!);
+
     notifyListeners();
+  }
+
+  Future<void> _loadDefaults(Isar isar) async {
+    final types = await isar.containerTypes.where().findAll();
+
+    if (types.isNotEmpty) return;
+
+    final defaultTypes = generateDefaultContainerTypes();
+
+    await isar.writeTxn(() async {
+      isar.containerTypes.putAll(defaultTypes);
+    });
   }
 }

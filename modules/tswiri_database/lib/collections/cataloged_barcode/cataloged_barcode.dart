@@ -8,64 +8,57 @@ part 'cataloged_barcode.g.dart';
 /// - ```barcodeUID``` (num_timestamp).
 /// - ```size``` (mm).
 /// - ```batchID``` The batch this barcode is part of.
+/// - ```diagonalSideLength``` (mm).
 @Collection()
 @Name("CatalogedBarcode")
 class CatalogedBarcode {
   Id id = Isar.autoIncrement;
 
-  ///UID (num_timestamp)
-  @Name("barcodeUID")
-  late String barcodeUID;
-
-  ///Width (mm)
-  @Name("width")
-  late double width;
-
-  ///Height (mm)
-  @Name("height")
-  late double height;
-
-  ///Side length (mm)
-  @Name("batchID")
-  late int batchID;
+  late String barcodeUUID;
+  late String batchUUID;
+  late double width; // (mm)
+  late double height; // (mm)
 
   @override
   bool operator ==(Object other) {
     return other is CatalogedBarcode &&
         id == other.id &&
-        barcodeUID == other.barcodeUID &&
+        barcodeUUID == other.barcodeUUID &&
         height == other.height &&
         width == other.width;
   }
 
   @override
   String toString() {
-    return 'UID: $barcodeUID, h: $height, w: $width mm \n';
+    return 'UID: $barcodeUUID, h: $height, w: $width mm \n';
   }
 
-  ///To json
-  Map toJson() =>
-      {'id': id, 'barcodeUID': barcodeUID, 'height': height, 'width': width};
+  Map toJson() => {
+        'id': id,
+        'barcodeUID': barcodeUUID,
+        'height': height,
+        'width': width,
+        'batchUuid': batchUUID,
+      };
 
-  ///From Json
   CatalogedBarcode fromJson(Map<String, dynamic> json) {
     return CatalogedBarcode()
       ..id = json['id']
-      ..barcodeUID = json['barcodeUID']
+      ..barcodeUUID = json['barcodeUID']
       ..height = json['height'] as double
-      ..width = json['width'] as double;
+      ..width = json['width'] as double
+      ..batchUUID = json['batchUuid'];
   }
 
-  ///To map
-  ///UID : diagonal side length.
-  Map<String, double> toMap() => {
-        barcodeUID: diagonalSideLength(),
-      };
+  /// UID : diagonal side length.
+  Map<String, double> toMap() {
+    return {barcodeUUID: diagonalSideLength};
+  }
 
   @override
-  int get hashCode => barcodeUID.hashCode;
+  int get hashCode => barcodeUUID.hashCode;
 
-  double diagonalSideLength() {
+  double get diagonalSideLength {
     return sqrt((pow(width, 2)) + (pow(height, 2)));
   }
 }

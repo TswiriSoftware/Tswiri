@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tswiri/providers.dart';
 import 'package:tswiri/routes.dart';
-import 'package:tswiri/views/abstract_page.dart';
+import 'package:tswiri/views/abstract_screen.dart';
 import 'package:tswiri/widgets/navigation_card.dart';
 
 class ManageScreen extends ConsumerStatefulWidget {
@@ -20,11 +20,12 @@ class _ManageScreenState extends AbstractScreen<ManageScreen> {
       ),
       body: GridView.count(
         crossAxisCount: 2,
-        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 8.0, right: 8.0),
+        padding:
+            const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 8.0, right: 8.0),
         children: const [
           NavigationCard(
             label: 'QR Codes',
-            target: Routes.qrCodes,
+            target: Routes.qrCodeBatches,
             icon: Icons.qr_code,
           ),
         ],

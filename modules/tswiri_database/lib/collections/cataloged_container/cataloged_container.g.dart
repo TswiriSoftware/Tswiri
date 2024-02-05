@@ -18,29 +18,29 @@ const CatalogedContainerSchema = CollectionSchema(
   name: r'CatalogedContainer',
   id: -1328495142418178125,
   properties: {
-    r'barcodeUID': PropertySchema(
+    r'barcodeUUID': PropertySchema(
       id: 0,
-      name: r'barcodeUID',
+      name: r'barcodeUUID',
       type: IsarType.string,
     ),
-    r'containerTypeID': PropertySchema(
+    r'containerUUID': PropertySchema(
       id: 1,
-      name: r'containerTypeID',
-      type: IsarType.long,
-    ),
-    r'containerUID': PropertySchema(
-      id: 2,
-      name: r'containerUID',
+      name: r'containerUUID',
       type: IsarType.string,
     ),
     r'description': PropertySchema(
-      id: 3,
+      id: 2,
       name: r'description',
       type: IsarType.string,
     ),
     r'name': PropertySchema(
-      id: 4,
+      id: 3,
       name: r'name',
+      type: IsarType.string,
+    ),
+    r'typeUUID': PropertySchema(
+      id: 4,
+      name: r'typeUUID',
       type: IsarType.string,
     )
   },
@@ -50,14 +50,14 @@ const CatalogedContainerSchema = CollectionSchema(
   deserializeProp: _catalogedContainerDeserializeProp,
   idName: r'id',
   indexes: {
-    r'containerUID': IndexSchema(
-      id: 3918990956816157529,
-      name: r'containerUID',
+    r'containerUUID': IndexSchema(
+      id: 7747540438472048801,
+      name: r'containerUUID',
       unique: true,
       replace: false,
       properties: [
         IndexPropertySchema(
-          name: r'containerUID',
+          name: r'containerUUID',
           type: IndexType.hash,
           caseSensitive: true,
         )
@@ -79,12 +79,12 @@ int _catalogedContainerEstimateSize(
 ) {
   var bytesCount = offsets.last;
   {
-    final value = object.barcodeUID;
+    final value = object.barcodeUUID;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
   }
-  bytesCount += 3 + object.containerUID.length * 3;
+  bytesCount += 3 + object.containerUUID.length * 3;
   {
     final value = object.description;
     if (value != null) {
@@ -97,6 +97,7 @@ int _catalogedContainerEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  bytesCount += 3 + object.typeUUID.length * 3;
   return bytesCount;
 }
 
@@ -106,11 +107,11 @@ void _catalogedContainerSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.barcodeUID);
-  writer.writeLong(offsets[1], object.containerTypeID);
-  writer.writeString(offsets[2], object.containerUID);
-  writer.writeString(offsets[3], object.description);
-  writer.writeString(offsets[4], object.name);
+  writer.writeString(offsets[0], object.barcodeUUID);
+  writer.writeString(offsets[1], object.containerUUID);
+  writer.writeString(offsets[2], object.description);
+  writer.writeString(offsets[3], object.name);
+  writer.writeString(offsets[4], object.typeUUID);
 }
 
 CatalogedContainer _catalogedContainerDeserialize(
@@ -120,12 +121,12 @@ CatalogedContainer _catalogedContainerDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = CatalogedContainer();
-  object.barcodeUID = reader.readStringOrNull(offsets[0]);
-  object.containerTypeID = reader.readLong(offsets[1]);
-  object.containerUID = reader.readString(offsets[2]);
-  object.description = reader.readStringOrNull(offsets[3]);
+  object.barcodeUUID = reader.readStringOrNull(offsets[0]);
+  object.containerUUID = reader.readString(offsets[1]);
+  object.description = reader.readStringOrNull(offsets[2]);
   object.id = id;
-  object.name = reader.readStringOrNull(offsets[4]);
+  object.name = reader.readStringOrNull(offsets[3]);
+  object.typeUUID = reader.readString(offsets[4]);
   return object;
 }
 
@@ -139,13 +140,13 @@ P _catalogedContainerDeserializeProp<P>(
     case 0:
       return (reader.readStringOrNull(offset)) as P;
     case 1:
-      return (reader.readLong(offset)) as P;
-    case 2:
       return (reader.readString(offset)) as P;
+    case 2:
+      return (reader.readStringOrNull(offset)) as P;
     case 3:
       return (reader.readStringOrNull(offset)) as P;
     case 4:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -166,59 +167,60 @@ void _catalogedContainerAttach(
 }
 
 extension CatalogedContainerByIndex on IsarCollection<CatalogedContainer> {
-  Future<CatalogedContainer?> getByContainerUID(String containerUID) {
-    return getByIndex(r'containerUID', [containerUID]);
+  Future<CatalogedContainer?> getByContainerUUID(String containerUUID) {
+    return getByIndex(r'containerUUID', [containerUUID]);
   }
 
-  CatalogedContainer? getByContainerUIDSync(String containerUID) {
-    return getByIndexSync(r'containerUID', [containerUID]);
+  CatalogedContainer? getByContainerUUIDSync(String containerUUID) {
+    return getByIndexSync(r'containerUUID', [containerUUID]);
   }
 
-  Future<bool> deleteByContainerUID(String containerUID) {
-    return deleteByIndex(r'containerUID', [containerUID]);
+  Future<bool> deleteByContainerUUID(String containerUUID) {
+    return deleteByIndex(r'containerUUID', [containerUUID]);
   }
 
-  bool deleteByContainerUIDSync(String containerUID) {
-    return deleteByIndexSync(r'containerUID', [containerUID]);
+  bool deleteByContainerUUIDSync(String containerUUID) {
+    return deleteByIndexSync(r'containerUUID', [containerUUID]);
   }
 
-  Future<List<CatalogedContainer?>> getAllByContainerUID(
-      List<String> containerUIDValues) {
-    final values = containerUIDValues.map((e) => [e]).toList();
-    return getAllByIndex(r'containerUID', values);
+  Future<List<CatalogedContainer?>> getAllByContainerUUID(
+      List<String> containerUUIDValues) {
+    final values = containerUUIDValues.map((e) => [e]).toList();
+    return getAllByIndex(r'containerUUID', values);
   }
 
-  List<CatalogedContainer?> getAllByContainerUIDSync(
-      List<String> containerUIDValues) {
-    final values = containerUIDValues.map((e) => [e]).toList();
-    return getAllByIndexSync(r'containerUID', values);
+  List<CatalogedContainer?> getAllByContainerUUIDSync(
+      List<String> containerUUIDValues) {
+    final values = containerUUIDValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'containerUUID', values);
   }
 
-  Future<int> deleteAllByContainerUID(List<String> containerUIDValues) {
-    final values = containerUIDValues.map((e) => [e]).toList();
-    return deleteAllByIndex(r'containerUID', values);
+  Future<int> deleteAllByContainerUUID(List<String> containerUUIDValues) {
+    final values = containerUUIDValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'containerUUID', values);
   }
 
-  int deleteAllByContainerUIDSync(List<String> containerUIDValues) {
-    final values = containerUIDValues.map((e) => [e]).toList();
-    return deleteAllByIndexSync(r'containerUID', values);
+  int deleteAllByContainerUUIDSync(List<String> containerUUIDValues) {
+    final values = containerUUIDValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'containerUUID', values);
   }
 
-  Future<Id> putByContainerUID(CatalogedContainer object) {
-    return putByIndex(r'containerUID', object);
+  Future<Id> putByContainerUUID(CatalogedContainer object) {
+    return putByIndex(r'containerUUID', object);
   }
 
-  Id putByContainerUIDSync(CatalogedContainer object, {bool saveLinks = true}) {
-    return putByIndexSync(r'containerUID', object, saveLinks: saveLinks);
-  }
-
-  Future<List<Id>> putAllByContainerUID(List<CatalogedContainer> objects) {
-    return putAllByIndex(r'containerUID', objects);
-  }
-
-  List<Id> putAllByContainerUIDSync(List<CatalogedContainer> objects,
+  Id putByContainerUUIDSync(CatalogedContainer object,
       {bool saveLinks = true}) {
-    return putAllByIndexSync(r'containerUID', objects, saveLinks: saveLinks);
+    return putByIndexSync(r'containerUUID', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllByContainerUUID(List<CatalogedContainer> objects) {
+    return putAllByIndex(r'containerUUID', objects);
+  }
+
+  List<Id> putAllByContainerUUIDSync(List<CatalogedContainer> objects,
+      {bool saveLinks = true}) {
+    return putAllByIndexSync(r'containerUUID', objects, saveLinks: saveLinks);
   }
 }
 
@@ -302,44 +304,44 @@ extension CatalogedContainerQueryWhere
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterWhereClause>
-      containerUIDEqualTo(String containerUID) {
+      containerUUIDEqualTo(String containerUUID) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'containerUID',
-        value: [containerUID],
+        indexName: r'containerUUID',
+        value: [containerUUID],
       ));
     });
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterWhereClause>
-      containerUIDNotEqualTo(String containerUID) {
+      containerUUIDNotEqualTo(String containerUUID) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'containerUID',
+              indexName: r'containerUUID',
               lower: [],
-              upper: [containerUID],
+              upper: [containerUUID],
               includeUpper: false,
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'containerUID',
-              lower: [containerUID],
+              indexName: r'containerUUID',
+              lower: [containerUUID],
               includeLower: false,
               upper: [],
             ));
       } else {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'containerUID',
-              lower: [containerUID],
+              indexName: r'containerUUID',
+              lower: [containerUUID],
               includeLower: false,
               upper: [],
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'containerUID',
+              indexName: r'containerUUID',
               lower: [],
-              upper: [containerUID],
+              upper: [containerUUID],
               includeUpper: false,
             ));
       }
@@ -350,31 +352,31 @@ extension CatalogedContainerQueryWhere
 extension CatalogedContainerQueryFilter
     on QueryBuilder<CatalogedContainer, CatalogedContainer, QFilterCondition> {
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      barcodeUIDIsNull() {
+      barcodeUUIDIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'barcodeUID',
+        property: r'barcodeUUID',
       ));
     });
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      barcodeUIDIsNotNull() {
+      barcodeUUIDIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'barcodeUID',
+        property: r'barcodeUUID',
       ));
     });
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      barcodeUIDEqualTo(
+      barcodeUUIDEqualTo(
     String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'barcodeUID',
+        property: r'barcodeUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -382,7 +384,7 @@ extension CatalogedContainerQueryFilter
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      barcodeUIDGreaterThan(
+      barcodeUUIDGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -390,7 +392,7 @@ extension CatalogedContainerQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'barcodeUID',
+        property: r'barcodeUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -398,7 +400,7 @@ extension CatalogedContainerQueryFilter
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      barcodeUIDLessThan(
+      barcodeUUIDLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -406,7 +408,7 @@ extension CatalogedContainerQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'barcodeUID',
+        property: r'barcodeUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -414,7 +416,7 @@ extension CatalogedContainerQueryFilter
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      barcodeUIDBetween(
+      barcodeUUIDBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -423,7 +425,7 @@ extension CatalogedContainerQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'barcodeUID',
+        property: r'barcodeUUID',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -434,13 +436,13 @@ extension CatalogedContainerQueryFilter
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      barcodeUIDStartsWith(
+      barcodeUUIDStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'barcodeUID',
+        property: r'barcodeUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -448,13 +450,13 @@ extension CatalogedContainerQueryFilter
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      barcodeUIDEndsWith(
+      barcodeUUIDEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'barcodeUID',
+        property: r'barcodeUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -462,10 +464,10 @@ extension CatalogedContainerQueryFilter
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      barcodeUIDContains(String value, {bool caseSensitive = true}) {
+      barcodeUUIDContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'barcodeUID',
+        property: r'barcodeUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -473,10 +475,10 @@ extension CatalogedContainerQueryFilter
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      barcodeUIDMatches(String pattern, {bool caseSensitive = true}) {
+      barcodeUUIDMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'barcodeUID',
+        property: r'barcodeUUID',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
@@ -484,89 +486,33 @@ extension CatalogedContainerQueryFilter
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      barcodeUIDIsEmpty() {
+      barcodeUUIDIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'barcodeUID',
+        property: r'barcodeUUID',
         value: '',
       ));
     });
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      barcodeUIDIsNotEmpty() {
+      barcodeUUIDIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'barcodeUID',
+        property: r'barcodeUUID',
         value: '',
       ));
     });
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      containerTypeIDEqualTo(int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'containerTypeID',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      containerTypeIDGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'containerTypeID',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      containerTypeIDLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'containerTypeID',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      containerTypeIDBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'containerTypeID',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      containerUIDEqualTo(
+      containerUUIDEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'containerUID',
+        property: r'containerUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -574,7 +520,7 @@ extension CatalogedContainerQueryFilter
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      containerUIDGreaterThan(
+      containerUUIDGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -582,7 +528,7 @@ extension CatalogedContainerQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'containerUID',
+        property: r'containerUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -590,7 +536,7 @@ extension CatalogedContainerQueryFilter
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      containerUIDLessThan(
+      containerUUIDLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -598,7 +544,7 @@ extension CatalogedContainerQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'containerUID',
+        property: r'containerUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -606,7 +552,7 @@ extension CatalogedContainerQueryFilter
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      containerUIDBetween(
+      containerUUIDBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -615,7 +561,7 @@ extension CatalogedContainerQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'containerUID',
+        property: r'containerUUID',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -626,13 +572,13 @@ extension CatalogedContainerQueryFilter
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      containerUIDStartsWith(
+      containerUUIDStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'containerUID',
+        property: r'containerUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -640,13 +586,13 @@ extension CatalogedContainerQueryFilter
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      containerUIDEndsWith(
+      containerUUIDEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'containerUID',
+        property: r'containerUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -654,10 +600,10 @@ extension CatalogedContainerQueryFilter
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      containerUIDContains(String value, {bool caseSensitive = true}) {
+      containerUUIDContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'containerUID',
+        property: r'containerUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -665,10 +611,10 @@ extension CatalogedContainerQueryFilter
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      containerUIDMatches(String pattern, {bool caseSensitive = true}) {
+      containerUUIDMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'containerUID',
+        property: r'containerUUID',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
@@ -676,20 +622,20 @@ extension CatalogedContainerQueryFilter
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      containerUIDIsEmpty() {
+      containerUUIDIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'containerUID',
+        property: r'containerUUID',
         value: '',
       ));
     });
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
-      containerUIDIsNotEmpty() {
+      containerUUIDIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'containerUID',
+        property: r'containerUUID',
         value: '',
       ));
     });
@@ -1058,6 +1004,142 @@ extension CatalogedContainerQueryFilter
       ));
     });
   }
+
+  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
+      typeUUIDEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'typeUUID',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
+      typeUUIDGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'typeUUID',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
+      typeUUIDLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'typeUUID',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
+      typeUUIDBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'typeUUID',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
+      typeUUIDStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'typeUUID',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
+      typeUUIDEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'typeUUID',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
+      typeUUIDContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'typeUUID',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
+      typeUUIDMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'typeUUID',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
+      typeUUIDIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'typeUUID',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterFilterCondition>
+      typeUUIDIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'typeUUID',
+        value: '',
+      ));
+    });
+  }
 }
 
 extension CatalogedContainerQueryObject
@@ -1069,44 +1151,30 @@ extension CatalogedContainerQueryLinks
 extension CatalogedContainerQuerySortBy
     on QueryBuilder<CatalogedContainer, CatalogedContainer, QSortBy> {
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterSortBy>
-      sortByBarcodeUID() {
+      sortByBarcodeUUID() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'barcodeUID', Sort.asc);
+      return query.addSortBy(r'barcodeUUID', Sort.asc);
     });
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterSortBy>
-      sortByBarcodeUIDDesc() {
+      sortByBarcodeUUIDDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'barcodeUID', Sort.desc);
+      return query.addSortBy(r'barcodeUUID', Sort.desc);
     });
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterSortBy>
-      sortByContainerTypeID() {
+      sortByContainerUUID() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'containerTypeID', Sort.asc);
+      return query.addSortBy(r'containerUUID', Sort.asc);
     });
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterSortBy>
-      sortByContainerTypeIDDesc() {
+      sortByContainerUUIDDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'containerTypeID', Sort.desc);
-    });
-  }
-
-  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterSortBy>
-      sortByContainerUID() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'containerUID', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterSortBy>
-      sortByContainerUIDDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'containerUID', Sort.desc);
+      return query.addSortBy(r'containerUUID', Sort.desc);
     });
   }
 
@@ -1137,49 +1205,49 @@ extension CatalogedContainerQuerySortBy
       return query.addSortBy(r'name', Sort.desc);
     });
   }
+
+  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterSortBy>
+      sortByTypeUUID() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'typeUUID', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterSortBy>
+      sortByTypeUUIDDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'typeUUID', Sort.desc);
+    });
+  }
 }
 
 extension CatalogedContainerQuerySortThenBy
     on QueryBuilder<CatalogedContainer, CatalogedContainer, QSortThenBy> {
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterSortBy>
-      thenByBarcodeUID() {
+      thenByBarcodeUUID() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'barcodeUID', Sort.asc);
+      return query.addSortBy(r'barcodeUUID', Sort.asc);
     });
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterSortBy>
-      thenByBarcodeUIDDesc() {
+      thenByBarcodeUUIDDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'barcodeUID', Sort.desc);
+      return query.addSortBy(r'barcodeUUID', Sort.desc);
     });
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterSortBy>
-      thenByContainerTypeID() {
+      thenByContainerUUID() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'containerTypeID', Sort.asc);
+      return query.addSortBy(r'containerUUID', Sort.asc);
     });
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterSortBy>
-      thenByContainerTypeIDDesc() {
+      thenByContainerUUIDDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'containerTypeID', Sort.desc);
-    });
-  }
-
-  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterSortBy>
-      thenByContainerUID() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'containerUID', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterSortBy>
-      thenByContainerUIDDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'containerUID', Sort.desc);
+      return query.addSortBy(r'containerUUID', Sort.desc);
     });
   }
 
@@ -1224,28 +1292,36 @@ extension CatalogedContainerQuerySortThenBy
       return query.addSortBy(r'name', Sort.desc);
     });
   }
+
+  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterSortBy>
+      thenByTypeUUID() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'typeUUID', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CatalogedContainer, CatalogedContainer, QAfterSortBy>
+      thenByTypeUUIDDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'typeUUID', Sort.desc);
+    });
+  }
 }
 
 extension CatalogedContainerQueryWhereDistinct
     on QueryBuilder<CatalogedContainer, CatalogedContainer, QDistinct> {
   QueryBuilder<CatalogedContainer, CatalogedContainer, QDistinct>
-      distinctByBarcodeUID({bool caseSensitive = true}) {
+      distinctByBarcodeUUID({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'barcodeUID', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'barcodeUUID', caseSensitive: caseSensitive);
     });
   }
 
   QueryBuilder<CatalogedContainer, CatalogedContainer, QDistinct>
-      distinctByContainerTypeID() {
+      distinctByContainerUUID({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'containerTypeID');
-    });
-  }
-
-  QueryBuilder<CatalogedContainer, CatalogedContainer, QDistinct>
-      distinctByContainerUID({bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'containerUID', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'containerUUID',
+          caseSensitive: caseSensitive);
     });
   }
 
@@ -1262,6 +1338,13 @@ extension CatalogedContainerQueryWhereDistinct
       return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
     });
   }
+
+  QueryBuilder<CatalogedContainer, CatalogedContainer, QDistinct>
+      distinctByTypeUUID({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'typeUUID', caseSensitive: caseSensitive);
+    });
+  }
 }
 
 extension CatalogedContainerQueryProperty
@@ -1273,23 +1356,16 @@ extension CatalogedContainerQueryProperty
   }
 
   QueryBuilder<CatalogedContainer, String?, QQueryOperations>
-      barcodeUIDProperty() {
+      barcodeUUIDProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'barcodeUID');
-    });
-  }
-
-  QueryBuilder<CatalogedContainer, int, QQueryOperations>
-      containerTypeIDProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'containerTypeID');
+      return query.addPropertyName(r'barcodeUUID');
     });
   }
 
   QueryBuilder<CatalogedContainer, String, QQueryOperations>
-      containerUIDProperty() {
+      containerUUIDProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'containerUID');
+      return query.addPropertyName(r'containerUUID');
     });
   }
 
@@ -1303,6 +1379,13 @@ extension CatalogedContainerQueryProperty
   QueryBuilder<CatalogedContainer, String?, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
+    });
+  }
+
+  QueryBuilder<CatalogedContainer, String, QQueryOperations>
+      typeUUIDProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'typeUUID');
     });
   }
 }

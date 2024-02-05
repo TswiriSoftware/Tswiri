@@ -13,20 +13,22 @@ class Settings with ChangeNotifier {
 
   SharedPreferences prefs;
 
-  static const databasePathPref = 'databasePathPref';
-  late String databasePath;
-  void setDatabaseDirectory(String databasePath) {
-    this.databasePath = databasePath;
-    prefs.setString(databasePathPref, databasePath);
+  static const spacePathPref = 'databasePathPref';
+  late String spacePath;
+  void setSpaceDirectory(String spacePath) {
+    this.spacePath = spacePath;
+    prefs.setString(spacePathPref, spacePath);
     notifyListeners();
   }
 
   Future<void> loadSettings() async {
     log('loading settings', name: 'Settings');
 
-    databasePath = prefs.getString(databasePathPref) ?? '${(await getApplicationSupportDirectory()).path}/main_space';
-    prefs.setString(databasePathPref, databasePath);
+    spacePath = prefs.getString(spacePathPref) ??
+        '${(await getApplicationSupportDirectory()).path}/main_space';
 
-    log('databasePath: $databasePath', name: 'Settings');
+    prefs.setString(spacePathPref, spacePath);
+
+    log('spacePath: $spacePath', name: 'Settings');
   }
 }

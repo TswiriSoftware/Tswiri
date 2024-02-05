@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tswiri/providers.dart';
-import 'package:tswiri/views/abstract_page.dart';
+import 'package:tswiri/views/abstract_screen.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});

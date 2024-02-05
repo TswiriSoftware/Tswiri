@@ -12,28 +12,16 @@ part 'barcode_batch.g.dart';
 class BarcodeBatch {
   Id id = Isar.autoIncrement;
 
-  //Generation Time.
-  @Name("timestamp")
-  late int timestamp;
+  late String uuid;
+  late int amount;
 
-  ///Side length (mm)
-  @Name("width")
-  late double width;
+  // Time of creation.
+  late int? timestamp;
 
-  ///Side length (mm)
-  @Name("height")
-  late double height;
-
-  ///Barcode range start.
-  @Name("rangeStart")
-  late int rangeStart;
-
-  ///Barcode range end.
-  @Name("rangeEnd")
-  late int rangeEnd;
-
-  ///Barcode Size.
-  @Name("imported")
+  /// The width/height of the barcode batch.
+  /// If this is null then the barcodes in this batch does not have the same sizes.
+  late double? width; // (mm)
+  late double? height; // (mm)
   late bool imported;
 
   @override
@@ -42,7 +30,11 @@ class BarcodeBatch {
   }
 
   @ignore
-  DateTime get creationDateTime {
-    return DateTime.fromMillisecondsSinceEpoch(timestamp);
+  DateTime? get creationDateTime {
+    if (timestamp == null) return null;
+    return DateTime.fromMillisecondsSinceEpoch(timestamp!);
   }
+
+  @ignore
+  bool get canPrint => width != null && height != null;
 }

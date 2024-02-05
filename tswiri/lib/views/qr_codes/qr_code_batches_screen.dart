@@ -1,54 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
+import 'package:tswiri/extensions.dart';
 import 'package:tswiri/routes.dart';
-import 'package:tswiri/views/abstract_page.dart';
+import 'package:tswiri/views/abstract_screen.dart';
 import 'package:tswiri_database/collections/collections_export.dart';
 
 class QrCodeBatchesScreen extends ConsumerStatefulWidget {
   const QrCodeBatchesScreen({super.key});
 
   @override
-  AbstractScreen<QrCodeBatchesScreen> createState() => _QrCodeBatchesScreenState();
+  AbstractScreen<QrCodeBatchesScreen> createState() =>
+      _QrCodeBatchesScreenState();
 }
 
 class _QrCodeBatchesScreenState extends AbstractScreen<QrCodeBatchesScreen> {
-  List<BarcodeBatch> barcodeBatches = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Watch for changes in the database and update the UI accordingly.
-    isar!.barcodeBatchs.watchLazy().listen((event) {
-      updateQrCodeBatches();
-    });
-  }
-
-  void updateQrCodeBatches() async {
-    barcodeBatches = await isar!.barcodeBatchs.where().findAll();
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
-    final body = ListView.builder(
-      itemCount: barcodeBatches.length,
-      itemBuilder: (context, index) {
-        final item = barcodeBatches[index];
-        return ListTile(
-          leading: Text(item.id.toString()),
-          title: Text(barcodeBatches[index].creationDateTime.toIso8601String()),
-          onTap: () {},
-        );
-      },
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('QR Code Batches'),
       ),
-      body: body,
+      body: StreamBuilder(
+        stream: isar.barcodeBatchs.watchLazy(),
+        builder: (context, snapshot) {
+          final batches = isar.barcodeBatchs.where().findAllSync();
+
+          if (batches.isEmpty) {
+            return const Center(
+              child: Text('No QR Code Batches found'),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: batches.length,
+            itemBuilder: (context, index) {
+              final batch = batches[index];
+
+              return Card(
+                clipBehavior: Clip.antiAlias,
+                child: ListTile(
+                  leading: Text(
+                    batch.id.toString(),
+                  ),
+                  title: Text(
+                    batch.creationDateTime?.formatted ?? 'Unknown',
+                  ),
+                  subtitle: Text(
+                    "Amount: ${batch.amount}\nHeight: ${batch.height ?? 'Mixed'}\nWidth: ${batch.width ?? 'Mixed'}",
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  ),
+                  onTap: () async {
+                    await Navigator.of(context).pushNamed(
+                      Routes.qrCodeBatch,
+                      arguments: batch,
+                    );
+                  },
+                ),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.of(context).pushNamed(Routes.qrCodeGenerator);

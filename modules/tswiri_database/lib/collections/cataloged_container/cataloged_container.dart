@@ -13,59 +13,35 @@ part 'cataloged_container.g.dart';
 class CatalogedContainer {
   Id id = Isar.autoIncrement;
 
-  ///UID.
-  @Name("containerUID")
   @Index(unique: true)
-  late String containerUID;
-
-  ///Container Type.
-  @Name("containerTypeID")
-  late int containerTypeID;
-
-  ///Container Name.
-  @Name("name")
+  late String containerUUID;
+  late String typeUUID;
   late String? name;
-
-  ///Description.
-  @Name("description")
   late String? description;
-
-  ///Linked BarcodeUID
-  @Name("barcodeUID")
-  late String? barcodeUID;
-
-  // @override
-  // bool operator ==(Object other) {
-  //   return other is CatalogedContainer &&
-  //       id == other.id &&
-  //       containerType == other.containerType &&
-  //       containerUID == other.containerUID &&
-  //       name == other.name &&
-  //       description == other.description &&
-  //       barcodeUID == other.barcodeUID;
-  // }
+  late String? barcodeUUID;
 
   @override
   String toString() {
-    return '\nUID: $containerUID, Type: $containerTypeID, Name: $name, Description: $description, BarcodeUID $barcodeUID';
+    return '\nUID: $containerUUID, Type: $typeUUID, Name: $name, Description: $description, BarcodeUID $barcodeUUID';
   }
 
-  Map toJson() => {
+  @ignore
+  Map get json => {
         'id': id,
-        'containerUID': containerUID,
-        'containerTypeID': containerTypeID,
+        'containerUID': containerUUID,
+        'containerTypeID': typeUUID,
         'name': name,
         'description': description,
-        'barcodeUID': barcodeUID,
+        'barcodeUID': barcodeUUID,
       };
 
   CatalogedContainer fromJson(Map<String, dynamic> json) {
     return CatalogedContainer()
       ..id = json['id']
-      ..containerUID = json['containerUID']
-      ..containerTypeID = json['containerTypeID']
+      ..containerUUID = json['containerUID']
+      ..typeUUID = json['containerTypeID']
       ..name = json['name']
       ..description = json['description']
-      ..barcodeUID = json['barcodeUID'];
+      ..barcodeUUID = json['barcodeUID'];
   }
 }
