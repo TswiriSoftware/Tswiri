@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tswiri/views/ml_kit/barcode_selector_view.dart';
 
 class ScannerFormField<T> extends FormField<T> {
   ScannerFormField({
@@ -39,6 +40,9 @@ class ScannerFormField<T> extends FormField<T> {
                         : const SizedBox(),
                     OutlinedButton.icon(
                       onPressed: () async {
+                        await Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const BarcodeSelectorView()));
+
                         // final scannedBarcode = await scanBarcode();
 
                         // state.didChange(value);

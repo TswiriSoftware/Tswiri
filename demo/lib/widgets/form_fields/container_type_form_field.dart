@@ -36,7 +36,7 @@ class ContainerTypeFormField extends FormField<ContainerType> {
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                       label: Text(type.name),
-                      selected: state.value!.uuid == type.uuid,
+                      selected: state.value?.uuid == type.uuid,
                       onSelected: (selected) {
                         if (selected) {
                           state.didChange(type);
