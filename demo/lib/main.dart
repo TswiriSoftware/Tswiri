@@ -10,6 +10,7 @@ import 'package:tswiri/views/container/container_screen.dart';
 import 'package:tswiri/views/home_screen.dart';
 import 'package:tswiri/views/qr_codes/qr_code_batches_screen.dart';
 import 'package:tswiri/views/qr_codes/qr_code_pdf_view.dart';
+import 'package:tswiri/views/qr_codes/qr_codes_screen.dart';
 import 'package:tswiri_database/collections/collections_export.dart';
 import 'package:tswiri_database/space.dart';
 import 'providers.dart';
@@ -41,47 +42,55 @@ void main() async {
         darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
         debugShowCheckedModeBanner: false,
         initialRoute: Routes.home,
-        onGenerateRoute: (settings) {
-          return MaterialPageRoute(
-            builder: (context) {
-              switch (settings.name) {
-                case Routes.home:
-                  return const HomeScreen();
+        routes: {
+          Routes.home: (context) => const HomeScreen(),
 
-                case Routes.container:
-                  return ContainerScreen(
-                    parent: settings.arguments as CatalogedContainer,
-                  );
+          /// Containers ///
+          Routes.container: (context) {
+            final container = ModalRoute.of(context)!.settings.arguments
+                as CatalogedContainer;
 
-                case Routes.createContainer:
-                  return CreateContainerScreen(
-                    parentContainer: settings.arguments as CatalogedContainer?,
-                  );
+            return ContainerScreen(
+              container: container,
+            );
+          },
+          Routes.createContainer: (context) {
+            final parentContainer = ModalRoute.of(context)!.settings.arguments
+                as CatalogedContainer?;
 
-                case Routes.qrCodeBatches:
-                  return const QrCodeBatchesScreen();
+            return CreateContainerScreen(
+              parentContainer: parentContainer,
+            );
+          },
 
-                case Routes.qrCodeGenerator:
-                  return const QrCodeGeneratorScreen();
+          /// QR Codes ///
+          Routes.qrCodesScreen: (context) {
+            final barcodeBatch =
+                ModalRoute.of(context)!.settings.arguments as BarcodeBatch;
 
-                case Routes.qrCodePDF:
-                  var (size, barcodeUUIDs) =
-                      settings.arguments as (double, List<String>);
-                  return QrCodePDFView(
-                    barcodeUUIDs: barcodeUUIDs,
-                    size: size,
-                  );
+            return QrCodesScreen(
+              barcodeBatch: barcodeBatch,
+            );
+          },
+          Routes.qrCodeBatches: (context) => const QrCodeBatchesScreen(),
+          Routes.qrCodeGenerator: (context) => const QrCodeGeneratorScreen(),
+          Routes.qrCodePDF: (context) {
+            var (size, barcodeUUIDs) = ModalRoute.of(context)!
+                .settings
+                .arguments as (double, List<String>);
+            return QrCodePDFView(
+              barcodeUUIDs: barcodeUUIDs,
+              size: size,
+            );
+          },
+          Routes.qrCodeBatch: (context) {
+            final barcodeBatch =
+                ModalRoute.of(context)!.settings.arguments as BarcodeBatch;
 
-                case Routes.qrCodeBatch:
-                  return QrCodeBatchScreen(
-                    barcodeBatch: settings.arguments as BarcodeBatch,
-                  );
-
-                default:
-                  return const HomeScreen();
-              }
-            },
-          );
+            return QrCodeBatchScreen(
+              barcodeBatch: barcodeBatch,
+            );
+          },
         },
       ),
     ),

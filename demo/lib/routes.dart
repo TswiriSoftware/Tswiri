@@ -7,6 +7,7 @@ import 'package:tswiri/views/qr_codes/qr_code_generator_screen.dart';
 import 'package:tswiri/views/qr_codes/qr_code_batches_screen.dart';
 import 'package:tswiri/views/qr_codes/qr_code_pdf_view.dart';
 import 'package:tswiri/views/qr_codes/qr_code_batch_screen.dart';
+import 'package:tswiri/views/qr_codes/qr_codes_screen.dart';
 
 class Routes {
   /// [HomeScreen]
@@ -22,17 +23,21 @@ class Routes {
   static const String qrCodeGenerator = '/qrCodeGenerator';
 
   /// [QrCodeBatchesScreen]
-  static const String qrCodeBatches = '/qrCodes';
-
-  /// [QrCodePDFView]
-  static const String qrCodePDF = '/qrCodePDF';
+  static const String qrCodeBatches = '/qrCodeBatches';
 
   /// [QrCodeBatchScreen]
   static const String qrCodeBatch = '/qrCodeBatch';
 
+  /// [QrCodePDFView]
+  static const String qrCodePDF = '/qrCodePDF';
+
+  /// [QrCodesScreen]
+  static const qrCodesScreen = '/qrCodes';
+
   static void clearTo(BuildContext context, String route, [Object? arguments]) {
     // Unwind past pages and push given route with arguments
-    Navigator.of(context).pushNamedAndRemoveUntil(route, (Route route) => false, arguments: arguments);
+    Navigator.of(context).pushNamedAndRemoveUntil(route, (Route route) => false,
+        arguments: arguments);
   }
 
   static void clearToHome(BuildContext context, [Object? arguments]) {

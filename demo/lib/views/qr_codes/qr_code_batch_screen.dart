@@ -9,15 +9,19 @@ import 'package:tswiri/views/abstract_screen.dart';
 import 'package:tswiri_database/collections/collections_export.dart';
 
 class QrCodeBatchScreen extends ConsumerStatefulWidget {
-  final BarcodeBatch barcodeBatch;
-  const QrCodeBatchScreen({super.key, required this.barcodeBatch});
+  final BarcodeBatch _barcodeBatch;
+
+  const QrCodeBatchScreen({
+    super.key,
+    required BarcodeBatch barcodeBatch,
+  }) : _barcodeBatch = barcodeBatch;
 
   @override
   AbstractScreen<QrCodeBatchScreen> createState() => _QrCodeBatchScreenState();
 }
 
 class _QrCodeBatchScreenState extends AbstractScreen<QrCodeBatchScreen> {
-  BarcodeBatch get batch => widget.barcodeBatch;
+  BarcodeBatch get batch => widget._barcodeBatch;
 
   @override
   Widget build(BuildContext context) {
@@ -59,10 +63,13 @@ class _QrCodeBatchScreenState extends AbstractScreen<QrCodeBatchScreen> {
                 child: Icon(Icons.qr_code),
               ),
               title: Text('${batch.amount} Barcodes'),
-              trailing: IconButton.filledTonal(
-                onPressed: () {},
-                icon: const Icon(Icons.chevron_right),
-              ),
+              onTap: () {
+                Navigator.of(context).pushNamed(
+                  Routes.qrCodesScreen,
+                  arguments: batch,
+                );
+              },
+              trailing: const Icon(Icons.chevron_right),
             ),
             const Divider(),
             ListTile(

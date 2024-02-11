@@ -81,6 +81,12 @@ class IsarIcon {
     this.codePoint,
     this.fontFamily,
   });
+
+  @ignore
+  IconData get iconData => IconData(
+        codePoint!,
+        fontFamily: fontFamily,
+      );
 }
 
 @embedded

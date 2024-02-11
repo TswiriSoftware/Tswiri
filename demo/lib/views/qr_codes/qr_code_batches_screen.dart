@@ -15,6 +15,10 @@ class QrCodeBatchesScreen extends ConsumerStatefulWidget {
 }
 
 class _QrCodeBatchesScreenState extends AbstractScreen<QrCodeBatchesScreen> {
+  Stream<List<BarcodeBatch>> get barcodeBatchesStream {
+    return isar.barcodeBatchs.where().watch(fireImmediately: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,11 +26,16 @@ class _QrCodeBatchesScreenState extends AbstractScreen<QrCodeBatchesScreen> {
         title: const Text('QR Code Batches'),
       ),
       body: StreamBuilder(
-        stream: isar.barcodeBatchs.watchLazy(),
+        stream: barcodeBatchesStream,
         builder: (context, snapshot) {
-          final batches = isar.barcodeBatchs.where().findAllSync();
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
 
-          if (batches.isEmpty) {
+          final batches = snapshot.data;
+          if (batches == null || batches.isEmpty) {
             return const Center(
               child: Text('No QR Code Batches found'),
             );
