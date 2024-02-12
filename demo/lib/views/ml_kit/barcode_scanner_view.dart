@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
-import 'package:tswiri/views/ml_kit/camera_view.dart';
 import 'package:tswiri/views/ml_kit/detector_view.dart';
 import 'package:tswiri/views/ml_kit/painters/barcode_detector_painter.dart';
 
@@ -37,8 +36,10 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
 
   @override
   Widget build(BuildContext context) {
-    return CameraView(
+    return DetectorView(
+      title: 'Barcode Scanner',
       customPaint: _customPaint,
+      text: _text,
       onImage: _processImage,
       initialCameraLensDirection: _cameraLensDirection,
       onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,

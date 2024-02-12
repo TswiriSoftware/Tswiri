@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
+import 'package:isar/isar.dart';
 import 'package:tswiri/providers.dart';
 import 'package:tswiri/views/abstract_screen.dart';
-import 'package:tswiri/views/ml_kit/detector_view.dart';
+import 'package:tswiri/views/ml_kit/custom_camera_view.dart';
 import 'package:tswiri/views/ml_kit/painters/barcode_detector_painter.dart';
+import 'package:tswiri_database/collections/collections_export.dart';
 
 class BarcodeSelectorView extends ConsumerStatefulWidget {
   final List<BarcodeFormat> formats;
@@ -39,13 +41,16 @@ class _BarcodeSelectorViewState extends AbstractScreen<BarcodeSelectorView> {
 
   @override
   Widget build(BuildContext context) {
-    return DetectorView(
-      title: 'Barcode Scanner',
+    return CustomCameraView(
       customPaint: _customPaint,
-      text: _text,
       onImage: _processImage,
       initialCameraLensDirection: _cameraLensDirection,
       onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        label: const Text('Select'),
+        icon: const Icon(Icons.qr_code_scanner),
+      ),
     );
   }
 
@@ -56,9 +61,34 @@ class _BarcodeSelectorViewState extends AbstractScreen<BarcodeSelectorView> {
     setState(() {
       _text = '';
     });
+
     final barcodes = await _barcodeScanner.processImage(inputImage);
-    if (inputImage.metadata?.size != null &&
-        inputImage.metadata?.rotation != null) {
+    final validImage = inputImage.metadata?.size != null &&
+        inputImage.metadata?.rotation != null;
+
+    if (validImage) {
+      final validatedBarcodes = <(Barcode, bool)>[];
+
+      if (mounted) {
+        for (final barcode in barcodes) {
+          final barcodeUUID = barcode.displayValue;
+
+          if (barcodeUUID == null) continue;
+          final catalogedBarcode = isar.catalogedBarcodes
+              .filter()
+              .barcodeUUIDMatches(barcodeUUID)
+              .findFirstSync();
+
+          print(catalogedBarcode?.toJson());
+        }
+      }
+
+      // final painter2 = CustomBarcodeDetectorPainter(
+      //   validatedBarcodes,
+      //   imageSize,
+      //   rotation,
+      //   cameraLensDirection,
+      // );
       final painter = BarcodeDetectorPainter(
         barcodes,
         inputImage.metadata!.size,

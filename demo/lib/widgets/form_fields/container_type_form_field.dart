@@ -8,6 +8,7 @@ class ContainerTypeFormField extends FormField<ContainerType> {
     super.autovalidateMode,
     super.initialValue,
     super.onSaved,
+    void Function(ContainerType)? onChanged,
     required List<ContainerType> containerTypes,
     InputDecoration decoration = const InputDecoration(),
   })  : assert(containerTypes.isNotEmpty),
@@ -40,6 +41,7 @@ class ContainerTypeFormField extends FormField<ContainerType> {
                       onSelected: (selected) {
                         if (selected) {
                           state.didChange(type);
+                          onChanged?.call(type);
                         }
                       },
                       tooltip: type.description,

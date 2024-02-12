@@ -8,6 +8,7 @@ class ScannerFormField<T> extends FormField<T> {
     super.autovalidateMode,
     super.initialValue,
     super.onSaved,
+    void Function(T)? onChanged,
     FocusNode? focusNode,
     InputDecoration decoration = const InputDecoration(),
   }) : super(

@@ -20,19 +20,23 @@ class CreateContainerScreen extends ConsumerStatefulWidget {
 
 class _CreateContainerScreenState
     extends AbstractScreen<CreateContainerScreen> {
-  late CatalogedContainer? parentContainer = widget._parentContainer;
-
-  late ContainerType containerType;
-  late List<ContainerType> validContainerTypes;
+  late CatalogedContainer? _parentContainer;
+  late ContainerType _containerType;
+  late List<ContainerType> _validContainerTypes;
+  CatalogedBarcode? _barcode = null;
 
   final _formKey = GlobalKey<FormState>();
+  late final Map<String, dynamic> _initialState;
 
-  final FocusNode _nameFocusNode = FocusNode();
-  final FocusNode _descriptionFocusNode = FocusNode();
-  final FocusNode _barcodeFocusNode = FocusNode();
+  final _nameController = TextEditingController();
+  final _descriptionController = TextEditingController();
+
+  final _nameFocusNode = FocusNode();
+  final _descriptionFocusNode = FocusNode();
+  final _barcodeFocusNode = FocusNode();
 
   ContainerType? get parentContainerType {
-    return getContainerType(parentContainer?.typeUUID);
+    return getContainerType(_parentContainer?.typeUUID);
   }
 
   ContainerType get preferredContainerType {
@@ -40,13 +44,30 @@ class _CreateContainerScreenState
         containerTypes.first;
   }
 
+  bool get hasChanged {
+    return _containerType != _initialState['containerType'] ||
+        _nameController.text != _initialState['name'] ||
+        _descriptionController.text != _initialState['description'] ||
+        _barcode != _initialState['barcode'] ||
+        _parentContainer != _initialState['parentContainer'];
+  }
+
   @override
   void initState() {
     super.initState();
-    containerType = preferredContainerType;
-    validContainerTypes = containerTypes.where((type) {
+    _parentContainer = widget._parentContainer;
+    _containerType = preferredContainerType;
+    _validContainerTypes = containerTypes.where((type) {
       return parentContainerType?.canContain.contains(type.uuid) ?? true;
     }).toList();
+
+    _initialState = {
+      'containerType': _containerType,
+      'name': _nameController.text,
+      'description': _descriptionController.text,
+      'barcode': _barcode,
+      'parentContainer': _parentContainer,
+    };
   }
 
   @override
@@ -56,6 +77,16 @@ class _CreateContainerScreenState
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Container'),
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () async {
+            if (hasChanged) {
+              await _showDiscardChangesDialog();
+            } else {
+              Navigator.of(context).pop();
+            }
+          },
+        ),
       ),
       resizeToAvoidBottomInset: true,
       body: Card(
@@ -67,12 +98,17 @@ class _CreateContainerScreenState
               mainAxisSize: MainAxisSize.min,
               children: [
                 ContainerTypeFormField(
-                  containerTypes: validContainerTypes,
-                  initialValue: containerType,
+                  containerTypes: _validContainerTypes,
+                  initialValue: _containerType,
                   onSaved: (newValue) {
                     if (newValue == null) return;
                     setState(() {
-                      containerType = newValue;
+                      _containerType = newValue;
+                    });
+                  },
+                  onChanged: (newValue) {
+                    setState(() {
+                      _containerType = newValue;
                     });
                   },
                   validator: (value) {
@@ -85,6 +121,7 @@ class _CreateContainerScreenState
                 spacer,
                 TextFormField(
                   focusNode: _nameFocusNode,
+                  controller: _nameController,
                   onSaved: (newValue) {},
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -104,6 +141,7 @@ class _CreateContainerScreenState
                 spacer,
                 TextFormField(
                   focusNode: _descriptionFocusNode,
+                  controller: _descriptionController,
                   autocorrect: true,
                   onFieldSubmitted: (value) {
                     _barcodeFocusNode.requestFocus();
@@ -114,7 +152,7 @@ class _CreateContainerScreenState
                   ),
                 ),
                 spacer,
-                ScannerFormField(
+                ScannerFormField<CatalogedBarcode>(
                   focusNode: _barcodeFocusNode,
                   validator: (value) {
                     if (value == null) {
@@ -126,12 +164,15 @@ class _CreateContainerScreenState
                     labelText: 'Barcode',
                     border: OutlineInputBorder(),
                   ),
+                  onSaved: (newValue) {
+                    // TODO: implement this.
+                  },
                 ),
                 spacer,
-                ScannerFormField(
+                ScannerFormField<CatalogedBarcode>(
                   focusNode: _barcodeFocusNode,
                   validator: (value) {
-                    if (value == null && containerType.moveable) {
+                    if (value == null && _containerType.moveable) {
                       return 'Please scan a parent container';
                     }
                     return null;
@@ -140,6 +181,13 @@ class _CreateContainerScreenState
                     labelText: 'Parent',
                     border: OutlineInputBorder(),
                   ),
+                  onSaved: (newValue) {
+                    if (newValue == null) return;
+
+                    // setState(() {
+                    //   parentContainer = newValue;
+                    // });
+                  },
                 ),
               ],
             ),
@@ -159,6 +207,35 @@ class _CreateContainerScreenState
         label: const Text('Create'),
         icon: const Icon(Icons.save),
       ),
+    );
+  }
+
+  Future<void> _showDiscardChangesDialog() async {
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Discard changes?'),
+          content: const Text(
+            'Are you sure you want to discard your changes?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Discard'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
