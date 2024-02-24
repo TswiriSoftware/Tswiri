@@ -28,9 +28,9 @@ const ContainerRelationshipSchema = CollectionSchema(
       name: r'hashCode',
       type: IsarType.long,
     ),
-    r'parentUUID': PropertySchema(
+    r'parentContainerUUID': PropertySchema(
       id: 2,
-      name: r'parentUUID',
+      name: r'parentContainerUUID',
       type: IsarType.string,
     )
   },
@@ -55,12 +55,7 @@ int _containerRelationshipEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.containerUUID.length * 3;
-  {
-    final value = object.parentUUID;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
+  bytesCount += 3 + object.parentContainerUUID.length * 3;
   return bytesCount;
 }
 
@@ -72,7 +67,7 @@ void _containerRelationshipSerialize(
 ) {
   writer.writeString(offsets[0], object.containerUUID);
   writer.writeLong(offsets[1], object.hashCode);
-  writer.writeString(offsets[2], object.parentUUID);
+  writer.writeString(offsets[2], object.parentContainerUUID);
 }
 
 ContainerRelationship _containerRelationshipDeserialize(
@@ -84,7 +79,7 @@ ContainerRelationship _containerRelationshipDeserialize(
   final object = ContainerRelationship();
   object.containerUUID = reader.readString(offsets[0]);
   object.id = id;
-  object.parentUUID = reader.readStringOrNull(offsets[2]);
+  object.parentContainerUUID = reader.readString(offsets[2]);
   return object;
 }
 
@@ -100,7 +95,7 @@ P _containerRelationshipDeserializeProp<P>(
     case 1:
       return (reader.readLong(offset)) as P;
     case 2:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -454,31 +449,13 @@ extension ContainerRelationshipQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<ContainerRelationship, ContainerRelationship,
-      QAfterFilterCondition> parentUUIDIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'parentUUID',
-      ));
-    });
-  }
-
-  QueryBuilder<ContainerRelationship, ContainerRelationship,
-      QAfterFilterCondition> parentUUIDIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'parentUUID',
-      ));
-    });
-  }
-
-  QueryBuilder<ContainerRelationship, ContainerRelationship,
-      QAfterFilterCondition> parentUUIDEqualTo(
-    String? value, {
+      QAfterFilterCondition> parentContainerUUIDEqualTo(
+    String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'parentUUID',
+        property: r'parentContainerUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -486,15 +463,15 @@ extension ContainerRelationshipQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<ContainerRelationship, ContainerRelationship,
-      QAfterFilterCondition> parentUUIDGreaterThan(
-    String? value, {
+      QAfterFilterCondition> parentContainerUUIDGreaterThan(
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'parentUUID',
+        property: r'parentContainerUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -502,15 +479,15 @@ extension ContainerRelationshipQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<ContainerRelationship, ContainerRelationship,
-      QAfterFilterCondition> parentUUIDLessThan(
-    String? value, {
+      QAfterFilterCondition> parentContainerUUIDLessThan(
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'parentUUID',
+        property: r'parentContainerUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -518,16 +495,16 @@ extension ContainerRelationshipQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<ContainerRelationship, ContainerRelationship,
-      QAfterFilterCondition> parentUUIDBetween(
-    String? lower,
-    String? upper, {
+      QAfterFilterCondition> parentContainerUUIDBetween(
+    String lower,
+    String upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'parentUUID',
+        property: r'parentContainerUUID',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -538,13 +515,13 @@ extension ContainerRelationshipQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<ContainerRelationship, ContainerRelationship,
-      QAfterFilterCondition> parentUUIDStartsWith(
+      QAfterFilterCondition> parentContainerUUIDStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'parentUUID',
+        property: r'parentContainerUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -552,13 +529,13 @@ extension ContainerRelationshipQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<ContainerRelationship, ContainerRelationship,
-      QAfterFilterCondition> parentUUIDEndsWith(
+      QAfterFilterCondition> parentContainerUUIDEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'parentUUID',
+        property: r'parentContainerUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -567,10 +544,10 @@ extension ContainerRelationshipQueryFilter on QueryBuilder<
 
   QueryBuilder<ContainerRelationship, ContainerRelationship,
           QAfterFilterCondition>
-      parentUUIDContains(String value, {bool caseSensitive = true}) {
+      parentContainerUUIDContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'parentUUID',
+        property: r'parentContainerUUID',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -579,10 +556,10 @@ extension ContainerRelationshipQueryFilter on QueryBuilder<
 
   QueryBuilder<ContainerRelationship, ContainerRelationship,
           QAfterFilterCondition>
-      parentUUIDMatches(String pattern, {bool caseSensitive = true}) {
+      parentContainerUUIDMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'parentUUID',
+        property: r'parentContainerUUID',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
@@ -590,20 +567,20 @@ extension ContainerRelationshipQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<ContainerRelationship, ContainerRelationship,
-      QAfterFilterCondition> parentUUIDIsEmpty() {
+      QAfterFilterCondition> parentContainerUUIDIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'parentUUID',
+        property: r'parentContainerUUID',
         value: '',
       ));
     });
   }
 
   QueryBuilder<ContainerRelationship, ContainerRelationship,
-      QAfterFilterCondition> parentUUIDIsNotEmpty() {
+      QAfterFilterCondition> parentContainerUUIDIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'parentUUID',
+        property: r'parentContainerUUID',
         value: '',
       ));
     });
@@ -647,16 +624,16 @@ extension ContainerRelationshipQuerySortBy
   }
 
   QueryBuilder<ContainerRelationship, ContainerRelationship, QAfterSortBy>
-      sortByParentUUID() {
+      sortByParentContainerUUID() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'parentUUID', Sort.asc);
+      return query.addSortBy(r'parentContainerUUID', Sort.asc);
     });
   }
 
   QueryBuilder<ContainerRelationship, ContainerRelationship, QAfterSortBy>
-      sortByParentUUIDDesc() {
+      sortByParentContainerUUIDDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'parentUUID', Sort.desc);
+      return query.addSortBy(r'parentContainerUUID', Sort.desc);
     });
   }
 }
@@ -706,16 +683,16 @@ extension ContainerRelationshipQuerySortThenBy
   }
 
   QueryBuilder<ContainerRelationship, ContainerRelationship, QAfterSortBy>
-      thenByParentUUID() {
+      thenByParentContainerUUID() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'parentUUID', Sort.asc);
+      return query.addSortBy(r'parentContainerUUID', Sort.asc);
     });
   }
 
   QueryBuilder<ContainerRelationship, ContainerRelationship, QAfterSortBy>
-      thenByParentUUIDDesc() {
+      thenByParentContainerUUIDDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'parentUUID', Sort.desc);
+      return query.addSortBy(r'parentContainerUUID', Sort.desc);
     });
   }
 }
@@ -738,9 +715,10 @@ extension ContainerRelationshipQueryWhereDistinct
   }
 
   QueryBuilder<ContainerRelationship, ContainerRelationship, QDistinct>
-      distinctByParentUUID({bool caseSensitive = true}) {
+      distinctByParentContainerUUID({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'parentUUID', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'parentContainerUUID',
+          caseSensitive: caseSensitive);
     });
   }
 }
@@ -767,10 +745,10 @@ extension ContainerRelationshipQueryProperty on QueryBuilder<
     });
   }
 
-  QueryBuilder<ContainerRelationship, String?, QQueryOperations>
-      parentUUIDProperty() {
+  QueryBuilder<ContainerRelationship, String, QQueryOperations>
+      parentContainerUUIDProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'parentUUID');
+      return query.addPropertyName(r'parentContainerUUID');
     });
   }
 }

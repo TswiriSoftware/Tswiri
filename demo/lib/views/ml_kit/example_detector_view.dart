@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 
-import 'camera_view.dart';
+import 'camera_views/example_camera_view.dart';
 
 class DetectorView extends StatefulWidget {
   final String title;

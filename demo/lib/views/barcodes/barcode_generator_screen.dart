@@ -6,20 +6,20 @@ import 'package:tswiri/enumerations.dart';
 import 'package:tswiri/providers.dart';
 import 'package:tswiri/routes.dart';
 import 'package:tswiri/views/abstract_screen.dart';
-import 'package:tswiri/widgets/qr_code_batch_setup.dart';
+import 'package:tswiri/widgets/barcode_batch_setup_widget.dart';
 import 'package:tswiri_database/collections/collections_export.dart';
 import 'package:uuid/uuid.dart';
 
-class QrCodeGeneratorScreen extends ConsumerStatefulWidget {
-  const QrCodeGeneratorScreen({super.key});
+class BarcodeGeneratorScreen extends ConsumerStatefulWidget {
+  const BarcodeGeneratorScreen({super.key});
 
   @override
-  AbstractScreen<QrCodeGeneratorScreen> createState() =>
-      _QrCodeGeneratorScreenState();
+  AbstractScreen<BarcodeGeneratorScreen> createState() =>
+      _BarcodeGeneratorScreenState();
 }
 
-class _QrCodeGeneratorScreenState
-    extends AbstractScreen<QrCodeGeneratorScreen> {
+class _BarcodeGeneratorScreenState
+    extends AbstractScreen<BarcodeGeneratorScreen> {
   int numberOfBarcodes = 20;
   bool isEditing = false;
 
@@ -27,33 +27,42 @@ class _QrCodeGeneratorScreenState
   late Size size = initialBarcodeSize.size;
 
   List<BarcodeBatch> get barcodeBatches =>
-      isar.barcodeBatchs.where().findAllSync();
+      db.barcodeBatchs.where().findAllSync();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('QR Code Generator'),
+        title: const Text('Barcode Generator'),
       ),
-      body: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          QRCodeBatchSetup(
-            numberOfBarcodes: numberOfBarcodes,
-            onNumberOfBarcodesChanged: (value) {
-              setState(() {
-                numberOfBarcodes = value;
-              });
-            },
-            initialBarcodeSize: initialBarcodeSize,
-            onBarcodeSizeChanged: (value) {
-              setState(() {
-                size = value;
-              });
-            },
-            onGenerate: _generateBarcodeBatch,
+      body: Card(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 12.0, bottom: 8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              BarcodeBatchSetupWidget(
+                numberOfBarcodes: numberOfBarcodes,
+                onNumberOfBarcodesChanged: (value) {
+                  setState(() {
+                    numberOfBarcodes = value;
+                  });
+                },
+                initialBarcodeSize: initialBarcodeSize,
+                onBarcodeSizeChanged: (value) {
+                  setState(() {
+                    size = value;
+                  });
+                },
+              ),
+              const Divider(),
+              FilledButton.tonal(
+                onPressed: _generateBarcodeBatch,
+                child: const Text('Generate'),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -89,15 +98,15 @@ class _QrCodeGeneratorScreenState
         ..batchUUID = batchUuid;
     }).toList();
 
-    isar.writeTxnSync(() {
-      isar.barcodeBatchs.putSync(barcodeBatch);
-      isar.catalogedBarcodes.putAllSync(catalogedBarcodes);
+    db.writeTxnSync(() {
+      db.barcodeBatchs.putSync(barcodeBatch);
+      db.catalogedBarcodes.putAllSync(catalogedBarcodes);
     });
 
     final barcodeSize = max(size.width, size.height);
 
     await Navigator.of(context).pushNamed(
-      Routes.qrCodePDF,
+      Routes.barcodePdf,
       arguments: (barcodeSize, barcodeUUIDs),
     );
 

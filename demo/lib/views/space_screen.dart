@@ -13,18 +13,21 @@ class SpaceScreen extends ConsumerStatefulWidget {
 }
 
 class _AddScreenState extends AbstractScreen<SpaceScreen> {
+  bool _isSearching = false;
+  String _searchQuery = '';
+
   /// Returns a list of all [ContainerRelationship]s.
-  Future<List<ContainerRelationship>> containerRelationships() async {
-    return isar.containerRelationships.where().findAll();
+  Future<List<CatalogedContainer>> catalogedContainers() async {
+    return db.catalogedContainers.where().findAll();
   }
 
   @override
   Widget build(BuildContext context) {
     final body = StreamBuilder(
-      stream: isar.containerRelationships.watchLazy(),
+      stream: db.catalogedContainers.watchLazy(),
       builder: (context, snapshot) {
-        return FutureBuilder<List<ContainerRelationship>>(
-          future: containerRelationships(),
+        return FutureBuilder<List<CatalogedContainer>>(
+          future: catalogedContainers(),
           initialData: null,
           builder: (context, snapshot) {
             // If there is an error, display a message on the screen.
@@ -41,10 +44,64 @@ class _AddScreenState extends AbstractScreen<SpaceScreen> {
 
             // If there is data, display a list of items.
             if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-              return ListView.builder(
+              final items = snapshot.data!;
+              return GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                ),
+                itemCount: items.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text('Item $index'),
+                  const contentPadding = EdgeInsets.symmetric(
+                    vertical: 0,
+                    horizontal: 16,
+                  );
+
+                  final item = items[index];
+                  final containerType = dbUtils.getContainerType(item.typeUUID);
+                  final name = Text(item.name.toString());
+                  final description =
+                      item.description != null && item.description!.isNotEmpty
+                          ? Text(item.description.toString())
+                          : null;
+                  final leading = Icon(
+                    containerType?.iconData.iconData,
+                    color: containerType?.color.color,
+                  );
+
+                  return Card(
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          Routes.container,
+                          arguments: item,
+                        );
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ListTile(
+                            contentPadding: contentPadding,
+                            leading: leading,
+                            title: name,
+                            subtitle: description,
+                          ),
+                          ListTile(
+                            contentPadding: contentPadding,
+                            leading: const Icon(Icons.qr_code),
+                            title: Text(
+                              item.barcodeUUID.toString(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 },
               );
@@ -59,10 +116,12 @@ class _AddScreenState extends AbstractScreen<SpaceScreen> {
       },
     );
 
+    final appbar = AppBar(
+      title: TextField(),
+    );
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Space'),
-      ),
+      appBar: AppBar(),
       body: body,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(

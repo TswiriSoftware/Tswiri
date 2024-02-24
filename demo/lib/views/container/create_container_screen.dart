@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:isar/isar.dart';
 import 'package:tswiri/providers.dart';
 import 'package:tswiri/views/abstract_screen.dart';
 import 'package:tswiri/widgets/form_fields/container_type_form_field.dart';
 import 'package:tswiri/widgets/form_fields/scanner_form_field.dart';
 import 'package:tswiri_database/collections/collections_export.dart';
+import 'package:uuid/uuid.dart';
 
 class CreateContainerScreen extends ConsumerStatefulWidget {
   final CatalogedContainer? _parentContainer;
@@ -23,7 +25,7 @@ class _CreateContainerScreenState
   late CatalogedContainer? _parentContainer;
   late ContainerType _containerType;
   late List<ContainerType> _validContainerTypes;
-  CatalogedBarcode? _barcode = null;
+  CatalogedBarcode? _barcode;
 
   final _formKey = GlobalKey<FormState>();
   late final Map<String, dynamic> _initialState;
@@ -33,15 +35,14 @@ class _CreateContainerScreenState
 
   final _nameFocusNode = FocusNode();
   final _descriptionFocusNode = FocusNode();
-  final _barcodeFocusNode = FocusNode();
 
   ContainerType? get parentContainerType {
-    return getContainerType(_parentContainer?.typeUUID);
+    return dbUtils.getContainerType(_parentContainer?.typeUUID);
   }
 
   ContainerType get preferredContainerType {
-    return getContainerType(parentContainerType?.preferredChild) ??
-        containerTypes.first;
+    return dbUtils.getContainerType(parentContainerType?.preferredChild) ??
+        dbUtils.containerTypes.first;
   }
 
   bool get hasChanged {
@@ -57,7 +58,7 @@ class _CreateContainerScreenState
     super.initState();
     _parentContainer = widget._parentContainer;
     _containerType = preferredContainerType;
-    _validContainerTypes = containerTypes.where((type) {
+    _validContainerTypes = dbUtils.containerTypes.where((type) {
       return parentContainerType?.canContain.contains(type.uuid) ?? true;
     }).toList();
 
@@ -94,6 +95,7 @@ class _CreateContainerScreenState
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
           child: Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -133,9 +135,25 @@ class _CreateContainerScreenState
                     _descriptionFocusNode.requestFocus();
                   },
                   autocorrect: true,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Name',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                      child: IconButton.outlined(
+                        tooltip: 'Generate a name',
+                        visualDensity: VisualDensity.compact,
+                        onPressed: () {
+                          setState(() {
+                            _nameController.text = _generateName();
+                          });
+                        },
+                        icon: const Icon(Icons.generating_tokens_outlined),
+                      ),
+                    ),
                   ),
                 ),
                 spacer,
@@ -143,50 +161,77 @@ class _CreateContainerScreenState
                   focusNode: _descriptionFocusNode,
                   controller: _descriptionController,
                   autocorrect: true,
-                  onFieldSubmitted: (value) {
-                    _barcodeFocusNode.requestFocus();
-                  },
                   decoration: const InputDecoration(
                     labelText: 'Description',
                     border: OutlineInputBorder(),
                   ),
                 ),
                 spacer,
-                ScannerFormField<CatalogedBarcode>(
-                  focusNode: _barcodeFocusNode,
-                  validator: (value) {
-                    if (value == null) {
+                ScannerFormField(
+                  validator: (barcodeUUID) {
+                    if (barcodeUUID == null) {
                       return 'Please scan a barcode';
                     }
+
+                    final linkedContainer = dbUtils.getCatalogedContainer(
+                      barcodeUUID: barcodeUUID,
+                    );
+                    if (linkedContainer != null) {
+                      return 'Barcode already in use';
+                    }
+
+                    final barcode = dbUtils.getCatalogedBarcode(barcodeUUID);
+                    if (barcode == null) {
+                      return 'Barcode not found';
+                    }
+
                     return null;
                   },
                   decoration: const InputDecoration(
                     labelText: 'Barcode',
                     border: OutlineInputBorder(),
                   ),
-                  onSaved: (newValue) {
-                    // TODO: implement this.
+                  onSaved: (barcodeUUID) {
+                    if (barcodeUUID == null) return;
+                    setState(() {
+                      _barcode = dbUtils.getCatalogedBarcode(barcodeUUID);
+                    });
                   },
                 ),
                 spacer,
-                ScannerFormField<CatalogedBarcode>(
-                  focusNode: _barcodeFocusNode,
-                  validator: (value) {
-                    if (value == null && _containerType.moveable) {
+                ScannerFormField(
+                  validator: (barcodeUUID) {
+                    if (barcodeUUID == null && _containerType.moveable) {
                       return 'Please scan a parent container';
                     }
+
+                    if (barcodeUUID == _barcode?.batchUUID &&
+                        barcodeUUID != null) {
+                      return 'Parent container cannot be the same as the barcode';
+                    }
+
+                    if (barcodeUUID != null) {
+                      final parentContainer = dbUtils.getCatalogedContainer(
+                        barcodeUUID: barcodeUUID,
+                      );
+                      if (parentContainer == null) {
+                        return 'Parent container not found';
+                      }
+                    }
+
                     return null;
                   },
                   decoration: const InputDecoration(
                     labelText: 'Parent',
                     border: OutlineInputBorder(),
                   ),
-                  onSaved: (newValue) {
-                    if (newValue == null) return;
-
-                    // setState(() {
-                    //   parentContainer = newValue;
-                    // });
+                  onSaved: (barcodeUUID) {
+                    if (barcodeUUID == null) return;
+                    setState(() {
+                      _parentContainer = dbUtils.getCatalogedContainer(
+                        barcodeUUID: barcodeUUID,
+                      );
+                    });
                   },
                 ),
               ],
@@ -195,14 +240,15 @@ class _CreateContainerScreenState
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
+        onPressed: () async {
           if (_formKey.currentState!.validate()) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Created')),
-            );
-          }
+            await _createContainer();
 
-          // TODO: Save to db.
+            if (mounted) {
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop();
+            }
+          }
         },
         label: const Text('Create'),
         icon: const Icon(Icons.save),
@@ -210,8 +256,68 @@ class _CreateContainerScreenState
     );
   }
 
+  String _generateName() {
+    final count = db.catalogedContainers
+        .filter()
+        .typeUUIDEqualTo(_containerType.uuid)
+        .countSync();
+    final name = '${_containerType.name} ${count + 1}';
+    return name;
+  }
+
+  Future<void> _createContainer() async {
+    assert(_barcode != null, 'Barcode is required');
+    assert(_nameController.text.isNotEmpty, 'Name is required');
+
+    final barcodeUUID = _barcode!.barcodeUUID;
+    final containerUUID = const Uuid().v1();
+    final name = _nameController.text;
+    final description = _descriptionController.text;
+    final typeUUID = _containerType.uuid;
+
+    final newContainer = CatalogedContainer()
+      ..barcodeUUID = barcodeUUID
+      ..containerUUID = containerUUID
+      ..name = name
+      ..description = description
+      ..typeUUID = typeUUID
+      ..containerUUID;
+
+    final parentContainerUUID = _parentContainer?.containerUUID;
+
+    ContainerRelationship? relationship;
+    if (parentContainerUUID != null) {
+      relationship = ContainerRelationship()
+        ..parentContainerUUID = parentContainerUUID
+        ..containerUUID = containerUUID;
+    }
+
+    final createMarker = !_containerType.enclosing && !_containerType.moveable;
+    Marker? marker;
+    if (createMarker) {
+      marker = Marker()
+        ..barcodeUUID = barcodeUUID
+        ..containerUUID = containerUUID;
+    }
+
+    await db.writeTxn(() async {
+      db.catalogedContainers.put(newContainer);
+      if (relationship != null) {
+        db.containerRelationships.put(relationship);
+      }
+      if (marker != null) {
+        db.markers.put(marker);
+      }
+    });
+
+    // ignore: use_build_context_synchronously
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Created'), showCloseIcon: true),
+    );
+  }
+
   Future<void> _showDiscardChangesDialog() async {
-    await showDialog(
+    final discard = await showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -222,14 +328,13 @@ class _CreateContainerScreenState
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(false);
               },
               child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(true);
               },
               child: const Text('Discard'),
             ),
@@ -237,5 +342,10 @@ class _CreateContainerScreenState
         );
       },
     );
+
+    if (discard) {
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
+    }
   }
 }

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:tswiri/views/ml_kit/barcode_selector_view.dart';
+import 'package:tswiri/routes.dart';
 
-class ScannerFormField<T> extends FormField<T> {
+class ScannerFormField extends FormField {
   ScannerFormField({
     super.key,
     super.validator,
     super.autovalidateMode,
     super.initialValue,
     super.onSaved,
-    void Function(T)? onChanged,
+    void Function(String?)? onChanged,
     FocusNode? focusNode,
     InputDecoration decoration = const InputDecoration(),
   }) : super(
@@ -26,6 +26,36 @@ class ScannerFormField<T> extends FormField<T> {
                   )
                   .applyDefaults(theme.inputDecorationTheme);
 
+              final hasValue = state.value != null;
+
+              final Widget iconButton;
+              if (hasValue) {
+                iconButton = IconButton(
+                  onPressed: () {
+                    state.didChange(null);
+                    onSaved?.call(null);
+                    onChanged?.call(null);
+                  },
+                  icon: const Icon(Icons.clear),
+                );
+              } else {
+                iconButton = OutlinedButton.icon(
+                  onPressed: () async {
+                    final barcodeUUID = await Navigator.of(context).pushNamed(
+                      Routes.barcodeSelector,
+                    );
+
+                    if (barcodeUUID != null && barcodeUUID is String) {
+                      state.didChange(barcodeUUID);
+                      onSaved?.call(barcodeUUID);
+                      onChanged?.call(barcodeUUID);
+                    }
+                  },
+                  icon: const Icon(Icons.qr_code_scanner),
+                  label: const Text('Scan'),
+                );
+              }
+
               return InputDecorator(
                 decoration: inputDecoration,
                 isFocused: focusNode?.hasFocus ?? false,
@@ -33,24 +63,11 @@ class ScannerFormField<T> extends FormField<T> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    state.value != null
-                        ? Text(
-                            state.value.toString(),
-                            style: theme.textTheme.titleMedium,
-                          )
-                        : const SizedBox(),
-                    OutlinedButton.icon(
-                      onPressed: () async {
-                        await Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => const BarcodeSelectorView()));
-
-                        // final scannedBarcode = await scanBarcode();
-
-                        // state.didChange(value);
-                      },
-                      icon: const Icon(Icons.qr_code_scanner),
-                      label: const Text('Scan'),
+                    Text(
+                      hasValue ? state.value.toString() : '',
+                      style: theme.textTheme.titleMedium,
                     ),
+                    iconButton,
                   ],
                 ),
               );

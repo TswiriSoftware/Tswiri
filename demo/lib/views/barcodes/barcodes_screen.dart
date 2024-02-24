@@ -4,23 +4,23 @@ import 'package:tswiri/providers.dart';
 import 'package:tswiri/views/abstract_screen.dart';
 import 'package:tswiri_database/collections/collections_export.dart';
 
-class QrCodesScreen extends ConsumerStatefulWidget {
+class BarcodesScreen extends ConsumerStatefulWidget {
   final BarcodeBatch _barcodeBatch;
 
-  const QrCodesScreen({
+  const BarcodesScreen({
     super.key,
     required BarcodeBatch barcodeBatch,
   }) : _barcodeBatch = barcodeBatch;
 
   @override
-  AbstractScreen<QrCodesScreen> createState() => _QrCodesScreenState();
+  AbstractScreen<BarcodesScreen> createState() => _BarcodesScreenState();
 }
 
-class _QrCodesScreenState extends AbstractScreen<QrCodesScreen> {
+class _BarcodesScreenState extends AbstractScreen<BarcodesScreen> {
   BarcodeBatch get batch => widget._barcodeBatch;
 
   Stream<List<CatalogedBarcode>> get qrCodesStream {
-    return isar.catalogedBarcodes
+    return db.catalogedBarcodes
         .filter()
         .batchUUIDEqualTo(batch.uuid)
         .watch(fireImmediately: true);
@@ -53,7 +53,7 @@ class _QrCodesScreenState extends AbstractScreen<QrCodesScreen> {
             itemBuilder: (context, index) {
               final qrCode = qrCodes[index];
 
-              final linkedContainerFuture = isar.catalogedContainers
+              final linkedContainerFuture = db.catalogedContainers
                   .filter()
                   .barcodeUUIDEqualTo(qrCode.barcodeUUID)
                   .findFirst();

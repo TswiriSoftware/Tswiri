@@ -8,19 +8,20 @@ import 'package:tswiri/routes.dart';
 import 'package:tswiri/views/abstract_screen.dart';
 import 'package:tswiri_database/collections/collections_export.dart';
 
-class QrCodeBatchScreen extends ConsumerStatefulWidget {
+class BarcodeBatchScreen extends ConsumerStatefulWidget {
   final BarcodeBatch _barcodeBatch;
 
-  const QrCodeBatchScreen({
+  const BarcodeBatchScreen({
     super.key,
     required BarcodeBatch barcodeBatch,
   }) : _barcodeBatch = barcodeBatch;
 
   @override
-  AbstractScreen<QrCodeBatchScreen> createState() => _QrCodeBatchScreenState();
+  AbstractScreen<BarcodeBatchScreen> createState() =>
+      _BarcodeBatchScreenState();
 }
 
-class _QrCodeBatchScreenState extends AbstractScreen<QrCodeBatchScreen> {
+class _BarcodeBatchScreenState extends AbstractScreen<BarcodeBatchScreen> {
   BarcodeBatch get batch => widget._barcodeBatch;
 
   @override
@@ -65,7 +66,7 @@ class _QrCodeBatchScreenState extends AbstractScreen<QrCodeBatchScreen> {
               title: Text('${batch.amount} Barcodes'),
               onTap: () {
                 Navigator.of(context).pushNamed(
-                  Routes.qrCodesScreen,
+                  Routes.barcode,
                   arguments: batch,
                 );
               },
@@ -85,7 +86,7 @@ class _QrCodeBatchScreenState extends AbstractScreen<QrCodeBatchScreen> {
                   batch.width!,
                 );
 
-                final barcodeUUIDs = isar.catalogedBarcodes
+                final barcodeUUIDs = db.catalogedBarcodes
                     .filter()
                     .batchUUIDEqualTo(batch.uuid)
                     .findAllSync()
@@ -93,7 +94,7 @@ class _QrCodeBatchScreenState extends AbstractScreen<QrCodeBatchScreen> {
                     .toList();
 
                 await Navigator.of(context).pushNamed(
-                  Routes.qrCodePDF,
+                  Routes.barcodePdf,
                   arguments: (barcodeSize, barcodeUUIDs),
                 );
               },

@@ -48,9 +48,9 @@ int _markerEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.barcodeUID.length * 3;
+  bytesCount += 3 + object.barcodeUUID.length * 3;
   {
-    final value = object.containerUID;
+    final value = object.containerUUID;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -64,8 +64,8 @@ void _markerSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.barcodeUID);
-  writer.writeString(offsets[1], object.containerUID);
+  writer.writeString(offsets[0], object.barcodeUUID);
+  writer.writeString(offsets[1], object.containerUUID);
 }
 
 Marker _markerDeserialize(
@@ -75,8 +75,8 @@ Marker _markerDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Marker();
-  object.barcodeUID = reader.readString(offsets[0]);
-  object.containerUID = reader.readStringOrNull(offsets[1]);
+  object.barcodeUUID = reader.readString(offsets[0]);
+  object.containerUUID = reader.readStringOrNull(offsets[1]);
   object.id = id;
   return object;
 }

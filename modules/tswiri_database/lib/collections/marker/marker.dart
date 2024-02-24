@@ -9,14 +9,14 @@ class Marker {
 
   //Generation Time.
   @Name("containerUID")
-  late String? containerUID;
+  late String? containerUUID;
 
   ///Range Start.
   @Name("barcodeUID")
-  late String barcodeUID;
+  late String barcodeUUID;
 
   @override
   String toString() {
-    return '\nparentContainerUID: $containerUID, barcodeUID: $barcodeUID';
+    return '\nparentContainerUID: $containerUUID, barcodeUID: $barcodeUUID';
   }
 }

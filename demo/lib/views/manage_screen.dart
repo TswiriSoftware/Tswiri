@@ -16,7 +16,7 @@ class _ManageScreenState extends AbstractScreen<ManageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Manage'),
+        title: const Text('Manage'),
       ),
       body: GridView.count(
         crossAxisCount: 2,
@@ -24,8 +24,8 @@ class _ManageScreenState extends AbstractScreen<ManageScreen> {
             const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 8.0, right: 8.0),
         children: const [
           NavigationCard(
-            label: 'QR Codes',
-            target: Routes.qrCodeBatches,
+            label: 'Barcodes',
+            target: Routes.barcodeBatches,
             icon: Icons.qr_code,
           ),
         ],

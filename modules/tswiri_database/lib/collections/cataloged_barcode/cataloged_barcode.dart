@@ -14,6 +14,7 @@ part 'cataloged_barcode.g.dart';
 class CatalogedBarcode {
   Id id = Isar.autoIncrement;
 
+  @Index(unique: true)
   late String barcodeUUID;
   late String batchUUID;
   late double width; // (mm)
@@ -30,7 +31,7 @@ class CatalogedBarcode {
 
   @override
   String toString() {
-    return 'UID: $barcodeUUID, h: $height, w: $width mm \n';
+    return 'UUID: $barcodeUUID, h: $height, w: $width mm \n';
   }
 
   Map toJson() => {

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:tswiri_database/collections/collections_export.dart';
 import 'package:tswiri_database/defaults/default_container_types.dart';
+import 'package:tswiri_database/utils.dart';
 
 final schemas = [
   BarcodeBatchSchema,

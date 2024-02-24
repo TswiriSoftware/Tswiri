@@ -17,10 +17,8 @@ part 'container_relationship.g.dart';
 class ContainerRelationship {
   Id id = Isar.autoIncrement;
 
+  late String parentContainerUUID;
   late String containerUUID;
-
-  /// Parent container UUID if this is empty then this container is a root container.
-  late String? parentUUID;
 
   @override
   bool operator ==(Object other) {
@@ -28,25 +26,25 @@ class ContainerRelationship {
         id == other.id &&
         containerUUID == other.containerUUID &&
         containerUUID == other.containerUUID &&
-        parentUUID == other.parentUUID;
+        parentContainerUUID == other.parentContainerUUID;
   }
 
   @override
   String toString() {
-    return '\ncontainerUID: $containerUUID, parentUID: $parentUUID';
+    return '\ncontainerUID: $containerUUID, parentUID: $parentContainerUUID';
   }
 
   Map toJson() => {
         'id': id,
         'containerUID': containerUUID,
-        'parentUID': parentUUID,
+        'parentUID': parentContainerUUID,
       };
 
   ContainerRelationship fromJson(Map<String, dynamic> json) {
     return ContainerRelationship()
       ..id = json['id']
       ..containerUUID = json['containerUID']
-      ..parentUUID = json['parentUID'];
+      ..parentContainerUUID = json['parentUID'];
   }
 
   @override

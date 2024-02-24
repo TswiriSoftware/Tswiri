@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Find',
           ),
           NavigationDestination(
-            icon: Icon(Icons.layers),
+            icon: Icon(Icons.account_tree_sharp),
             label: 'Space',
           ),
           NavigationDestination(

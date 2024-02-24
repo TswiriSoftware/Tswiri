@@ -1,8 +1,8 @@
 import 'package:isar/isar.dart';
 import 'package:tswiri/providers.dart';
 import 'package:tswiri/settings/settings.dart';
-import 'package:tswiri_database/collections/collections_export.dart';
 import 'package:tswiri_database/space.dart';
+import 'package:tswiri_database/utils.dart';
 
 abstract class AbstractScreen<T extends ConsumerStatefulWidget>
     extends ConsumerState<T> {
@@ -12,7 +12,7 @@ abstract class AbstractScreen<T extends ConsumerStatefulWidget>
   Space get space => ref.read(spaceProvider);
 
   /// The Isar instance for the current space.
-  Isar get isar {
+  Isar get db {
     assert(
       space.isLoaded,
       'Space is not loaded',
@@ -20,14 +20,8 @@ abstract class AbstractScreen<T extends ConsumerStatefulWidget>
     return space.db!;
   }
 
-  /// The list of all container types in the current space.
-  List<ContainerType> get containerTypes {
-    return isar.containerTypes.where().findAllSync();
-  }
-
-  /// Get the container type with the given UUID.
-  ContainerType? getContainerType(String? typeUUID) {
-    if (typeUUID == null) return null;
-    return isar.containerTypes.filter().uuidMatches(typeUUID).findFirstSync();
+  /// Utility class to find objects in the database.
+  Utils get dbUtils {
+    return Utils(db);
   }
 }

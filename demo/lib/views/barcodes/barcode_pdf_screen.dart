@@ -6,21 +6,21 @@ import 'package:printing/printing.dart';
 import 'package:tswiri/extensions.dart';
 import 'package:tswiri/functions/barcode_pdf_generator.dart';
 
-class QrCodePDFView extends StatefulWidget {
+class BarcodePdfScreen extends StatefulWidget {
   final List<String> barcodeUUIDs;
   final double size;
 
-  const QrCodePDFView({
+  const BarcodePdfScreen({
     super.key,
     required this.barcodeUUIDs,
     required this.size,
   });
 
   @override
-  State<QrCodePDFView> createState() => _QrCodePDFViewState();
+  State<BarcodePdfScreen> createState() => _BarcodesPdfScreenState();
 }
 
-class _QrCodePDFViewState extends State<QrCodePDFView> {
+class _BarcodesPdfScreenState extends State<BarcodePdfScreen> {
   late Future<Uint8List> future;
   late int start;
   late int end;

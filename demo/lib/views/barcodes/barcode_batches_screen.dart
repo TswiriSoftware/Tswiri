@@ -6,24 +6,24 @@ import 'package:tswiri/routes.dart';
 import 'package:tswiri/views/abstract_screen.dart';
 import 'package:tswiri_database/collections/collections_export.dart';
 
-class QrCodeBatchesScreen extends ConsumerStatefulWidget {
-  const QrCodeBatchesScreen({super.key});
+class BarcodeBatchesScreen extends ConsumerStatefulWidget {
+  const BarcodeBatchesScreen({super.key});
 
   @override
-  AbstractScreen<QrCodeBatchesScreen> createState() =>
-      _QrCodeBatchesScreenState();
+  AbstractScreen<BarcodeBatchesScreen> createState() =>
+      _BarcodesBatchesScreenState();
 }
 
-class _QrCodeBatchesScreenState extends AbstractScreen<QrCodeBatchesScreen> {
+class _BarcodesBatchesScreenState extends AbstractScreen<BarcodeBatchesScreen> {
   Stream<List<BarcodeBatch>> get barcodeBatchesStream {
-    return isar.barcodeBatchs.where().watch(fireImmediately: true);
+    return db.barcodeBatchs.where().watch(fireImmediately: true);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('QR Code Batches'),
+        title: const Text('Barcode Batches'),
       ),
       body: StreamBuilder(
         stream: barcodeBatchesStream,
@@ -62,7 +62,7 @@ class _QrCodeBatchesScreenState extends AbstractScreen<QrCodeBatchesScreen> {
                   ),
                   onTap: () async {
                     await Navigator.of(context).pushNamed(
-                      Routes.qrCodeBatch,
+                      Routes.barcodeBatch,
                       arguments: batch,
                     );
                   },
@@ -73,12 +73,26 @@ class _QrCodeBatchesScreenState extends AbstractScreen<QrCodeBatchesScreen> {
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.of(context).pushNamed(Routes.qrCodeGenerator);
-        },
-        icon: const Icon(Icons.add),
-        label: const Text('Generate QR Codes'),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          FloatingActionButton.extended(
+            heroTag: Object(),
+            onPressed: () {
+              Navigator.of(context).pushNamed(Routes.barcodeImport);
+            },
+            icon: const Icon(Icons.qr_code_scanner_outlined),
+            label: const Text('Import'),
+          ),
+          FloatingActionButton.extended(
+            heroTag: Object(),
+            onPressed: () {
+              Navigator.of(context).pushNamed(Routes.barcodeGenerator);
+            },
+            icon: const Icon(Icons.add),
+            label: const Text('Generate'),
+          ),
+        ],
       ),
     );
   }

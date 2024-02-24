@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 
 abstract class AbstractCamera<T extends StatefulWidget> extends State<T> {
-  Widget get customPaint;
+  CustomPaint? get customPaint;
   CameraLensDirection? get initialCameraLensDirection;
   bool get enableZoom;
 
@@ -26,6 +26,10 @@ abstract class AbstractCamera<T extends StatefulWidget> extends State<T> {
   bool _changingCameraLens = false;
   double _currentScale = 1.0;
 
+  static const iconButtonHeight = 50.0;
+  static const iconButtonWidth = 50.0;
+  static const padding = 8.0;
+
   final _orientations = {
     DeviceOrientation.portraitUp: 0,
     DeviceOrientation.landscapeLeft: 90,
@@ -36,8 +40,13 @@ abstract class AbstractCamera<T extends StatefulWidget> extends State<T> {
   @override
   void initState() {
     super.initState();
-
     _initialize();
+  }
+
+  @override
+  void dispose() {
+    _stopLiveFeed();
+    super.dispose();
   }
 
   void _initialize() async {
@@ -55,6 +64,13 @@ abstract class AbstractCamera<T extends StatefulWidget> extends State<T> {
     }
   }
 
+  Future _stopLiveFeed() async {
+    await _controller?.stopImageStream();
+    await _controller?.dispose();
+    _controller = null;
+  }
+
+  /// The live feed from the camera.
   Widget liveFeedBody() {
     if (_cameras.isEmpty) return Container();
     if (_controller == null) return Container();
@@ -77,23 +93,196 @@ abstract class AbstractCamera<T extends StatefulWidget> extends State<T> {
     );
   }
 
-  Widget backButton() => Positioned(
-        top: 40,
-        left: 8,
-        child: SizedBox(
-          height: 50.0,
-          width: 50.0,
-          child: FloatingActionButton(
-            heroTag: Object(),
-            onPressed: () => Navigator.of(context).pop(),
-            backgroundColor: Colors.black54,
-            child: const Icon(
-              Icons.arrow_back_ios_outlined,
-              size: 20,
-            ),
+  /// A back button position at the top left of the screen.
+  Widget backButton() {
+    return Positioned(
+      top: 40,
+      left: 8,
+      child: SizedBox(
+        height: iconButtonHeight,
+        width: iconButtonWidth,
+        child: FloatingActionButton(
+          heroTag: Object(),
+          onPressed: () => Navigator.of(context).pop(),
+          backgroundColor: Colors.black54,
+          child: const Icon(
+            Icons.arrow_back_ios_outlined,
+            size: 20,
           ),
         ),
-      );
+      ),
+    );
+  }
+
+  /// An info button positioned next to the back button.
+  Widget infoButton({
+    String? title,
+    required String infoText,
+    Widget? infoIcon,
+  }) {
+    return Positioned(
+      top: 40,
+      left: 8 + iconButtonWidth + padding,
+      child: SizedBox(
+        height: iconButtonHeight,
+        width: iconButtonWidth,
+        child: FloatingActionButton(
+          heroTag: Object(),
+          onPressed: () => showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Info'),
+              content: Text(infoText),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Close'),
+                ),
+              ],
+            ),
+          ),
+          backgroundColor: Colors.black54,
+          child: infoIcon ??
+              const Icon(
+                Icons.info,
+                size: 20,
+              ),
+        ),
+      ),
+    );
+  }
+
+  Widget actionButton(Widget widget) {
+    return Positioned(
+      bottom: padding,
+      right: padding,
+      child: widget,
+    );
+  }
+
+  Widget exposureControl() {
+    return Positioned(
+      top: 40,
+      right: 8,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxHeight: 250,
+        ),
+        child: Column(children: [
+          Container(
+            width: 55,
+            decoration: BoxDecoration(
+              color: Colors.black54,
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Text(
+                  '${_currentExposureOffset.toStringAsFixed(1)}x',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: RotatedBox(
+              quarterTurns: 3,
+              child: SizedBox(
+                height: 30,
+                child: Slider(
+                  value: _currentExposureOffset,
+                  min: _minAvailableExposureOffset,
+                  max: _maxAvailableExposureOffset,
+                  activeColor: Colors.white,
+                  inactiveColor: Colors.white30,
+                  onChanged: (value) async {
+                    setState(() {
+                      _currentExposureOffset = value;
+                    });
+                    await _controller?.setExposureOffset(value);
+                  },
+                ),
+              ),
+            ),
+          )
+        ]),
+      ),
+    );
+  }
+
+  Widget zoomControl() {
+    return Positioned(
+      bottom: 16,
+      left: 0,
+      right: 0,
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: SizedBox(
+          width: 250,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Slider(
+                  value: _currentZoomLevel,
+                  min: _minAvailableZoom,
+                  max: _maxAvailableZoom,
+                  activeColor: Colors.white,
+                  inactiveColor: Colors.white30,
+                  onChanged: (value) async {
+                    setState(() {
+                      _currentZoomLevel = value;
+                    });
+                    await _controller?.setZoomLevel(value);
+                  },
+                ),
+              ),
+              Container(
+                width: 50,
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+                    child: Text(
+                      '${_currentZoomLevel.toStringAsFixed(1)}x',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget switchLiveCameraToggle() {
+    return Positioned(
+      bottom: padding,
+      left: padding,
+      child: SizedBox(
+        height: iconButtonHeight,
+        width: iconButtonWidth,
+        child: FloatingActionButton(
+          heroTag: Object(),
+          onPressed: _switchLiveCamera,
+          backgroundColor: Colors.black54,
+          child: Icon(
+            Platform.isIOS
+                ? Icons.flip_camera_ios_outlined
+                : Icons.flip_camera_android_outlined,
+            size: 25,
+          ),
+        ),
+      ),
+    );
+  }
 
   void _onScaleStart(ScaleStartDetails details) {
     _currentScale = 1.0;
@@ -114,6 +303,12 @@ abstract class AbstractCamera<T extends StatefulWidget> extends State<T> {
     await _controller?.setZoomLevel(_currentZoomLevel);
 
     _currentScale = details.scale;
+  }
+
+  void _processCameraImage(CameraImage image) {
+    final inputImage = _inputImageFromCameraImage(image);
+    if (inputImage == null) return;
+    onImage(inputImage);
   }
 
   Future _startLiveFeed() async {
@@ -157,10 +352,13 @@ abstract class AbstractCamera<T extends StatefulWidget> extends State<T> {
     });
   }
 
-  void _processCameraImage(CameraImage image) {
-    final inputImage = _inputImageFromCameraImage(image);
-    if (inputImage == null) return;
-    onImage(inputImage);
+  Future _switchLiveCamera() async {
+    setState(() => _changingCameraLens = true);
+    _cameraIndex = (_cameraIndex + 1) % _cameras.length;
+
+    await _stopLiveFeed();
+    await _startLiveFeed();
+    setState(() => _changingCameraLens = false);
   }
 
   InputImage? _inputImageFromCameraImage(CameraImage image) {
