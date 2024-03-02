@@ -5,7 +5,8 @@ enum DefaultContainerType {
   area(
     uuid: 'default_area_uuid',
     name: 'Area',
-    description: "- An Area is a stationary container with a marker.\n- which can contain all other types of containers.\n- It is part of the children's grid.",
+    description:
+        "- An Area is a stationary container with a marker.\n- which can contain all other types of containers.\n- It is part of the children's grid.",
     moveable: false,
     enclosing: false,
     canContain: [
@@ -20,7 +21,8 @@ enum DefaultContainerType {
   shelf(
     uuid: 'default_shelf_uuid',
     name: 'Shelf',
-    description: "- A Shelf is a stationary container with a marker.\n- which can contain Boxes and/or Drawers.\n- It is part of the children's grid.",
+    description:
+        "- A Shelf is a stationary container with a marker.\n- which can contain Boxes and/or Drawers.\n- It is part of the children's grid.",
     moveable: false,
     enclosing: false,
     canContain: [
@@ -34,7 +36,8 @@ enum DefaultContainerType {
   drawer(
     uuid: 'default_drawer_uuid',
     name: 'Drawer',
-    description: "- A Drawer is a stationary container.\n- which can contain boxes.\n- It does not form part of the children's grid.",
+    description:
+        "- A Drawer is a stationary container.\n- which can contain boxes.\n- It does not form part of the children's grid.",
     moveable: false,
     enclosing: true,
     canContain: [
@@ -50,7 +53,9 @@ enum DefaultContainerType {
     description: "A box is a movable container.",
     moveable: true,
     enclosing: true,
-    canContain: [],
+    canContain: [
+      boxUUID,
+    ],
     preferredChild: '',
     color: Color(0xFFF98866),
     iconData: Icons.inventory_2_outlined,
