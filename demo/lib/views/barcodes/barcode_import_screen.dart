@@ -5,6 +5,7 @@ import 'package:tswiri/routes.dart';
 import 'package:tswiri/views/abstract_screen.dart';
 import 'package:tswiri/widgets/barcode_batch_setup_widget.dart';
 import 'package:tswiri_database/collections/collections_export.dart';
+import 'package:tswiri_database/utils.dart';
 import 'package:uuid/uuid.dart';
 
 class BarcodeImportScreen extends ConsumerStatefulWidget {
@@ -154,7 +155,7 @@ class _BarcodeImportScreenState extends AbstractScreen<BarcodeImportScreen> {
       });
 
       for (var uuid in barcodeUUIDs) {
-        final barcode = dbUtils.getCatalogedBarcode(uuid);
+        final barcode = space.getCatalogedBarcode(uuid);
 
         if (barcode == null) {
           _validUUIDs.add(uuid);

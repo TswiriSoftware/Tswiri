@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tswiri/views/barcodes/debug_barcode_selector_screen.dart';
 
 import 'package:tswiri/views/home_screen.dart';
 import 'package:tswiri/views/container/container_screen.dart';
@@ -46,6 +47,9 @@ class Routes {
 
   /// [BarcodePdfScreen]
   static const barcodePdf = '/barcodes/pdf';
+
+  /// [DebugBarcodeSelectorScreen]
+  static const debugBarcodeSelector = '/barcodes/debug_barcode_selector';
 
   //////////////
   /// ML Kit ///
@@ -99,6 +103,9 @@ class Routes {
     Routes.barcodeGenerator: (context) => const BarcodeGeneratorScreen(),
     Routes.barcodeImport: (context) => const BarcodeImportScreen(),
     Routes.barcodeBatches: (context) => const BarcodeBatchesScreen(),
+    Routes.debugBarcodeSelector: (context) {
+      return const DebugBarcodeSelectorScreen();
+    },
     Routes.barcodePdf: (context) {
       var (size, barcodeUUIDs) =
           ModalRoute.of(context)!.settings.arguments as (double, List<String>);

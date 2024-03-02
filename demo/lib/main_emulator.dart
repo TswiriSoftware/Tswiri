@@ -11,7 +11,10 @@ void main() async {
 
   final prefs = await SharedPreferences.getInstance();
 
-  final settings = Settings(prefs: prefs);
+  final settings = Settings(
+    prefs: prefs,
+    testing: true,
+  );
   await settings.loadSettings();
 
   settingsProvider = ChangeNotifierProvider<Settings>(

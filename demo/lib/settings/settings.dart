@@ -8,11 +8,14 @@ import 'package:path_provider/path_provider.dart';
 class Settings with ChangeNotifier {
   Settings({
     required this.prefs,
+    bool testing = false,
   }) {
+    _testing = testing;
     loadSettings();
   }
 
   SharedPreferences prefs;
+  late final bool _testing;
 
   static const _spacePathPref = 'databasePathPref';
   late String spacePath;
@@ -22,7 +25,8 @@ class Settings with ChangeNotifier {
     notifyListeners();
   }
 
-  late final bool _deviceHasCameras;
+  late bool _deviceHasCameras = false;
+  bool get deviceHasCameras => _deviceHasCameras;
 
   Future<void> loadSettings() async {
     log('loading settings', name: 'Settings');
@@ -33,11 +37,14 @@ class Settings with ChangeNotifier {
     prefs.setString(_spacePathPref, spacePath);
     log('spacePath: $spacePath', name: 'Settings');
 
-    var hasCameras;
-    try {
-      hasCameras = (await availableCameras()).isNotEmpty;
-    } catch (e) {
-      hasCameras = false;
+    if (_testing) {
+      _deviceHasCameras = false;
+    } else {
+      try {
+        _deviceHasCameras = (await availableCameras()).isNotEmpty;
+      } catch (e) {
+        _deviceHasCameras = false;
+      }
     }
   }
 }
