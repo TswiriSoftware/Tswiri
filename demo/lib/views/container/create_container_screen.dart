@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:isar/isar.dart';
 import 'package:tswiri/providers.dart';
 import 'package:tswiri/views/abstract_screen.dart';
-import 'package:tswiri/widgets/form_fields/container_type_form_field.dart';
-import 'package:tswiri/widgets/form_fields/scanner_form_field.dart';
+import 'package:tswiri/widgets/container_fields/container_barcode_field.dart';
+import 'package:tswiri/widgets/container_fields/container_description_field.dart';
+import 'package:tswiri/widgets/container_fields/container_name_field.dart';
+import 'package:tswiri/widgets/container_fields/container_parent_field.dart';
+import 'package:tswiri/widgets/container_fields/container_type_field.dart';
 import 'package:tswiri_database/collections/collections_export.dart';
+import 'package:tswiri_database/utils.dart';
 import 'package:uuid/uuid.dart';
 
 class CreateContainerScreen extends ConsumerStatefulWidget {
@@ -37,12 +40,12 @@ class _CreateContainerScreenState
   final _descriptionFocusNode = FocusNode();
 
   ContainerType? get parentContainerType {
-    return dbUtils.getContainerType(_parentContainer?.typeUUID);
+    return space.getContainerType(_parentContainer?.typeUUID);
   }
 
   ContainerType get preferredContainerType {
-    return dbUtils.getContainerType(parentContainerType?.preferredChild) ??
-        dbUtils.containerTypes.first;
+    return space.getContainerType(parentContainerType?.preferredChild) ??
+        space.containerTypes.first;
   }
 
   bool get hasChanged {
@@ -58,7 +61,7 @@ class _CreateContainerScreenState
     super.initState();
     _parentContainer = widget._parentContainer;
     _containerType = preferredContainerType;
-    _validContainerTypes = dbUtils.containerTypes.where((type) {
+    _validContainerTypes = space.containerTypes.where((type) {
       return parentContainerType?.canContain.contains(type.uuid) ?? true;
     }).toList();
 
@@ -73,186 +76,132 @@ class _CreateContainerScreenState
 
   @override
   Widget build(BuildContext context) {
+    final appBar = AppBar(
+      title: const Text('Create Container'),
+      leading: IconButton(
+        icon: const Icon(Icons.close),
+        onPressed: () async {
+          if (hasChanged) {
+            await _showDiscardChangesDialog();
+          } else {
+            Navigator.of(context).pop();
+          }
+        },
+      ),
+    );
+
+    final floatingActionButton = FloatingActionButton.extended(
+      onPressed: () async {
+        if (_formKey.currentState!.validate()) {
+          await _createContainer();
+
+          if (mounted) {
+            // ignore: use_build_context_synchronously
+            Navigator.of(context).pop();
+          }
+        }
+      },
+      label: const Text('Create'),
+      icon: const Icon(Icons.save),
+    );
+
+    final containerType = ContainerTypeField(
+      containerTypes: _validContainerTypes,
+      initialValue: _containerType,
+      onSaved: (newValue) {
+        if (newValue == null) return;
+        setState(() {
+          _containerType = newValue;
+        });
+      },
+      onChanged: (newValue) {
+        setState(() {
+          _containerType = newValue;
+        });
+      },
+    );
+
+    final generateName = Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 4,
+      ),
+      child: IconButton.outlined(
+        tooltip: 'Generate a name',
+        visualDensity: VisualDensity.compact,
+        onPressed: () => setState(
+          () => _nameController.text = _generateName(),
+        ),
+        icon: const Icon(Icons.generating_tokens_outlined),
+      ),
+    );
+
+    final containerName = ContainerNameField(
+      controller: _nameController,
+      focusNode: _nameFocusNode,
+      onFieldSubmitted: (value) {
+        _descriptionFocusNode.requestFocus();
+      },
+      suffixIcon: generateName,
+    );
+
+    final descriptionField = ContainerDescriptionField(
+      controller: _descriptionController,
+      focusNode: _descriptionFocusNode,
+    );
+
+    final barcodeField = ContainerBarcodeField(
+      onSaved: (barcode) {
+        if (barcode == null) return;
+        setState(() {
+          _barcode = barcode;
+        });
+      },
+    );
+
+    final parentField = ContainerParentField(
+      barcodeUUID: _barcode?.barcodeUUID,
+      containerType: _containerType,
+      initialValue: _parentContainer,
+      onSaved: (value) {
+        setState(() {
+          _parentContainer = value;
+        });
+      },
+      canClear: true,
+    );
+
     const spacer = SizedBox(height: 12);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Container'),
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () async {
-            if (hasChanged) {
-              await _showDiscardChangesDialog();
-            } else {
-              Navigator.of(context).pop();
-            }
-          },
-        ),
-      ),
+      appBar: appBar,
       resizeToAvoidBottomInset: true,
       body: Card(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
           child: Form(
             key: _formKey,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ContainerTypeFormField(
-                  containerTypes: _validContainerTypes,
-                  initialValue: _containerType,
-                  onSaved: (newValue) {
-                    if (newValue == null) return;
-                    setState(() {
-                      _containerType = newValue;
-                    });
-                  },
-                  onChanged: (newValue) {
-                    setState(() {
-                      _containerType = newValue;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Please select a container type';
-                    }
-                    return null;
-                  },
-                ),
-                spacer,
-                TextFormField(
-                  focusNode: _nameFocusNode,
-                  controller: _nameController,
-                  onSaved: (newValue) {},
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a name';
-                    }
-                    return null;
-                  },
-                  onFieldSubmitted: (value) {
-                    _descriptionFocusNode.requestFocus();
-                  },
-                  autocorrect: true,
-                  decoration: InputDecoration(
-                    labelText: 'Name',
-                    border: const OutlineInputBorder(),
-                    suffixIcon: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
-                      ),
-                      child: IconButton.outlined(
-                        tooltip: 'Generate a name',
-                        visualDensity: VisualDensity.compact,
-                        onPressed: () {
-                          setState(() {
-                            _nameController.text = _generateName();
-                          });
-                        },
-                        icon: const Icon(Icons.generating_tokens_outlined),
-                      ),
-                    ),
-                  ),
-                ),
-                spacer,
-                TextFormField(
-                  focusNode: _descriptionFocusNode,
-                  controller: _descriptionController,
-                  autocorrect: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Description',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                spacer,
-                ScannerFormField(
-                  validator: (barcodeUUID) {
-                    if (barcodeUUID == null) {
-                      return 'Please scan a barcode';
-                    }
-
-                    final linkedContainer = dbUtils.getCatalogedContainer(
-                      barcodeUUID: barcodeUUID,
-                    );
-                    if (linkedContainer != null) {
-                      return 'Barcode already in use';
-                    }
-
-                    final barcode = dbUtils.getCatalogedBarcode(barcodeUUID);
-                    if (barcode == null) {
-                      return 'Barcode not found';
-                    }
-
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    labelText: 'Barcode',
-                    border: OutlineInputBorder(),
-                  ),
-                  onSaved: (barcodeUUID) {
-                    if (barcodeUUID == null) return;
-                    setState(() {
-                      _barcode = dbUtils.getCatalogedBarcode(barcodeUUID);
-                    });
-                  },
-                ),
-                spacer,
-                ScannerFormField(
-                  validator: (barcodeUUID) {
-                    if (barcodeUUID == null && _containerType.moveable) {
-                      return 'Please scan a parent container';
-                    }
-
-                    if (barcodeUUID == _barcode?.batchUUID &&
-                        barcodeUUID != null) {
-                      return 'Parent container cannot be the same as the barcode';
-                    }
-
-                    if (barcodeUUID != null) {
-                      final parentContainer = dbUtils.getCatalogedContainer(
-                        barcodeUUID: barcodeUUID,
-                      );
-                      if (parentContainer == null) {
-                        return 'Parent container not found';
-                      }
-                    }
-
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    labelText: 'Parent',
-                    border: OutlineInputBorder(),
-                  ),
-                  onSaved: (barcodeUUID) {
-                    if (barcodeUUID == null) return;
-                    setState(() {
-                      _parentContainer = dbUtils.getCatalogedContainer(
-                        barcodeUUID: barcodeUUID,
-                      );
-                    });
-                  },
-                ),
-              ],
+            autovalidateMode: AutovalidateMode.always,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  containerType,
+                  spacer,
+                  containerName,
+                  spacer,
+                  descriptionField,
+                  spacer,
+                  barcodeField,
+                  spacer,
+                  parentField,
+                ],
+              ),
             ),
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          if (_formKey.currentState!.validate()) {
-            await _createContainer();
-
-            if (mounted) {
-              // ignore: use_build_context_synchronously
-              Navigator.of(context).pop();
-            }
-          }
-        },
-        label: const Text('Create'),
-        icon: const Icon(Icons.save),
-      ),
+      floatingActionButton: floatingActionButton,
     );
   }
 
@@ -317,30 +266,11 @@ class _CreateContainerScreenState
   }
 
   Future<void> _showDiscardChangesDialog() async {
-    final discard = await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Discard changes?'),
-          content: const Text(
-            'Are you sure you want to discard your changes?',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-              child: const Text('Discard'),
-            ),
-          ],
-        );
-      },
+    final discard = await showConfirmDialog(
+      title: 'Discard changes?',
+      content: 'Are you sure you want to discard your changes?',
+      positive: 'Yes',
+      negative: 'No',
     );
 
     if (discard) {
