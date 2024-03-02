@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tswiri/views/space_screen.dart';
+import 'package:tswiri/views/containers_screen.dart';
 import 'package:tswiri/views/find_screen.dart';
 import 'package:tswiri/views/manage_screen.dart';
 import 'package:tswiri/views/settings_screen.dart';
@@ -16,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Widget> pages = const [
     FindScreen(),
-    SpaceScreen(),
+    ContainersScreen(),
     ManageScreen(),
     SettingsScreen(),
   ];
@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           NavigationDestination(
             icon: Icon(Icons.account_tree_sharp),
-            label: 'Space',
+            label: 'Containers',
           ),
           NavigationDestination(
             icon: Icon(Icons.build_sharp),

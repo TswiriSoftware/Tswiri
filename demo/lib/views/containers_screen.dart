@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:isar/isar.dart';
 import 'package:tswiri/providers.dart';
 import 'package:tswiri/routes.dart';
 import 'package:tswiri/views/abstract_screen.dart';
 import 'package:tswiri_database/collections/collections_export.dart';
+import 'package:tswiri_database/utils.dart';
 
-class SpaceScreen extends ConsumerStatefulWidget {
-  const SpaceScreen({super.key});
+class ContainersScreen extends ConsumerStatefulWidget {
+  const ContainersScreen({super.key});
 
   @override
-  ConsumerState<SpaceScreen> createState() => _AddScreenState();
+  ConsumerState<ContainersScreen> createState() => _ContainersScreenState();
 }
 
-class _AddScreenState extends AbstractScreen<SpaceScreen> {
+class _ContainersScreenState extends AbstractScreen<ContainersScreen> {
   bool _isSearching = false;
   String _searchQuery = '';
 
@@ -30,42 +30,39 @@ class _AddScreenState extends AbstractScreen<SpaceScreen> {
           future: catalogedContainers(),
           initialData: null,
           builder: (context, snapshot) {
-            // If there is an error, display a message on the screen.
             if (snapshot.hasError) {
+              // If there is an error, display a message on the screen.
               return Center(
                 child: Text('Error: ${snapshot.error}'),
               );
-            }
-
-            // If the snapshot is still loading, display a loading indicator.
-            if (!snapshot.hasData) {
+            } else if (!snapshot.hasData) {
+              // If the snapshot is still loading, display a loading indicator.
               return const Center(child: CircularProgressIndicator());
-            }
-
-            // If there is data, display a list of items.
-            if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+            } else if (snapshot.data!.isEmpty) {
+              // If there is no data, display a message on the screen.
+              return const Center(
+                child: Text('No Containers found'),
+              );
+            } else {
+              // If there is data, display a list of items.
               final items = snapshot.data!;
-              return GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                ),
+
+              return ListView.builder(
                 itemCount: items.length,
                 itemBuilder: (context, index) {
-                  const contentPadding = EdgeInsets.symmetric(
-                    vertical: 0,
-                    horizontal: 16,
-                  );
-
                   final item = items[index];
-                  final containerType = dbUtils.getContainerType(item.typeUUID);
+                  final containerType = space.getContainerType(item.typeUUID);
                   final name = Text(item.name.toString());
                   final description =
                       item.description != null && item.description!.isNotEmpty
                           ? Text(item.description.toString())
                           : null;
-                  final leading = Icon(
-                    containerType?.iconData.iconData,
-                    color: containerType?.color.color,
+                  final leading = Tooltip(
+                    message: containerType?.name,
+                    child: Icon(
+                      containerType?.iconData.iconData,
+                      color: containerType?.color.color,
+                    ),
                   );
 
                   return Card(
@@ -84,19 +81,16 @@ class _AddScreenState extends AbstractScreen<SpaceScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           ListTile(
-                            contentPadding: contentPadding,
                             leading: leading,
                             title: name,
                             subtitle: description,
                           ),
                           ListTile(
-                            contentPadding: contentPadding,
                             leading: const Icon(Icons.qr_code),
                             title: Text(
                               item.barcodeUUID.toString(),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ),
                         ],
@@ -104,11 +98,6 @@ class _AddScreenState extends AbstractScreen<SpaceScreen> {
                     ),
                   );
                 },
-              );
-            } else {
-              // If there is no data, display a message on the screen.
-              return const Center(
-                child: Text('No Containers found'),
               );
             }
           },
@@ -121,7 +110,7 @@ class _AddScreenState extends AbstractScreen<SpaceScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: appbar,
       body: body,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
