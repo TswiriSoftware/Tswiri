@@ -44,4 +44,28 @@ class CatalogedContainer {
       ..description = json['description']
       ..barcodeUUID = json['barcodeUID'];
   }
+
+  CatalogedContainer clone() {
+    return CatalogedContainer()
+      ..id = id
+      ..containerUUID = containerUUID
+      ..typeUUID = typeUUID
+      ..name = name
+      ..description = description
+      ..barcodeUUID = barcodeUUID;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CatalogedContainer && hashCode == other.hashCode;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        containerUUID,
+        typeUUID,
+        name,
+        description,
+        barcodeUUID,
+      );
 }

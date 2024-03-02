@@ -47,6 +47,13 @@ class ContainerRelationship {
       ..parentContainerUUID = json['parentUID'];
   }
 
+  ContainerRelationship clone() {
+    return ContainerRelationship()
+      ..id = id
+      ..containerUUID = containerUUID
+      ..parentContainerUUID = parentContainerUUID;
+  }
+
   @override
   int get hashCode => id.hashCode;
 }
