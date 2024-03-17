@@ -296,7 +296,7 @@ class _CameraCalibrationViewState extends State<CameraCalibrationView> {
       elevation: 5,
       shadowColor: Colors.black26,
       shape: RoundedRectangleBorder(
-        side: const BorderSide(color: tswiriOrange, width: 1.5),
+        side: BorderSide(color: tswiriOrange, width: 1.5),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Padding(

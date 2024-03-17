@@ -1,5 +1,5 @@
 import 'package:tswiri/views/utilities/barcode_generator/generator_view.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide SearchBar;
 import 'package:tswiri_database/export.dart';
 import 'package:tswiri_database/models/settings/global_settings.dart';
 import 'package:tswiri_widgets/colors/colors.dart';

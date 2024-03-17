@@ -537,9 +537,9 @@ class _ContainerViewState extends State<ContainerView> {
             alignment: AlignmentDirectional.bottomStart,
             children: [
               Image.file(
+                File(photo.getPhotoThumbnailPath()),
                 width: 150,
                 height: 250,
-                File(photo.getPhotoThumbnailPath()),
                 fit: BoxFit.cover,
               ),
               Card(
@@ -599,7 +599,7 @@ class _ContainerViewState extends State<ContainerView> {
       },
       child: Card(
         shape: RoundedRectangleBorder(
-          side: const BorderSide(
+          side: BorderSide(
             color: tswiriOrange,
             width: 0.5,
           ),
@@ -753,7 +753,7 @@ class _ContainerViewState extends State<ContainerView> {
               onPressed: () {
                 //TODO: implement help screen.
               },
-              child: const Text(
+              child: Text(
                 'Help',
                 style: TextStyle(color: tswiriOrange, fontSize: 16),
               ),

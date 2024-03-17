@@ -509,7 +509,7 @@ class _SettingsViewState extends State<SettingsView> {
             'Manage Backup',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
-          trailing: const Icon(
+          trailing: Icon(
             Icons.backup,
             color: tswiriOrange,
             size: 30,
@@ -532,7 +532,7 @@ class _SettingsViewState extends State<SettingsView> {
             'App info',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
-          trailing: const Icon(
+          trailing: Icon(
             Icons.info,
             color: tswiriOrange,
             size: 30,
@@ -554,7 +554,7 @@ class _SettingsViewState extends State<SettingsView> {
             'Spaces (WIP)',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          trailing: const Icon(
+          trailing: Icon(
             Icons.space_dashboard_sharp,
             color: tswiriOrange,
             size: 30,

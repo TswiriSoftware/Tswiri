@@ -150,7 +150,7 @@ class _NewContainerViewState extends State<NewContainerView> {
           _descriptionNode.requestFocus();
         },
         textCapitalization: TextCapitalization.sentences,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           filled: true,
           fillColor: Colors.white10,
           contentPadding: EdgeInsets.symmetric(horizontal: 10),
@@ -172,7 +172,7 @@ class _NewContainerViewState extends State<NewContainerView> {
         controller: _descriptionController,
         focusNode: _descriptionNode,
         textCapitalization: TextCapitalization.sentences,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           filled: true,
           fillColor: Colors.white10,
           contentPadding: EdgeInsets.symmetric(horizontal: 10),

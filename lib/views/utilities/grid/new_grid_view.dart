@@ -61,7 +61,7 @@ class _NewGridViewState extends State<NewGridView> {
     return Card(
       shape: RoundedRectangleBorder(
         side: originBarcodeUID == null
-            ? const BorderSide(
+            ? BorderSide(
                 color: tswiriOrange,
                 width: 1,
               )
@@ -158,7 +158,7 @@ class _NewGridViewState extends State<NewGridView> {
     return Card(
       shape: RoundedRectangleBorder(
         side: parentBarcodeUID == null
-            ? const BorderSide(
+            ? BorderSide(
                 color: tswiriOrange,
                 width: 1,
               )
@@ -228,7 +228,7 @@ class _NewGridViewState extends State<NewGridView> {
       ),
       labelStyle: Theme.of(context).textTheme.titleMedium,
       labelPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-      shape: const StadiumBorder(
+      shape: StadiumBorder(
         side: BorderSide(
           color: tswiriOrange,
         ),

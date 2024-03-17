@@ -57,7 +57,7 @@ class _AppInfoViewState extends State<AppInfoView> {
           await _launchUrl(Uri.parse('https://www.tswiri.com/'));
         },
         child: ListTile(
-          leading: const ImageIcon(
+          leading: ImageIcon(
             AssetImage("assets/icons/launcher_icon.png"),
             color: tswiriOrange,
             size: 24,

@@ -58,7 +58,7 @@ class _SpacesViewState extends State<SpacesView> {
     return Card(
       child: ListTile(
         leading: directory.path == isarDirectory!.path
-            ? const Icon(
+            ? Icon(
                 Icons.square,
                 color: tswiriOrange,
               )
@@ -102,9 +102,9 @@ class _SpacesViewState extends State<SpacesView> {
                         labelText: 'name',
                         labelStyle:
                             const TextStyle(fontSize: 15, color: Colors.white),
-                        border: const OutlineInputBorder(
+                        border: OutlineInputBorder(
                             borderSide: BorderSide(color: tswiriOrange)),
-                        focusedBorder: const OutlineInputBorder(
+                        focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: tswiriOrange)),
                       ),
                       controller: _textFieldController,

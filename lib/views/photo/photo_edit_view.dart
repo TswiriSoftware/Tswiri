@@ -238,7 +238,7 @@ class PhotoEditViewState extends State<PhotoEditView> {
             });
           },
           selected: false,
-          avatar: const Icon(
+          avatar: Icon(
             Icons.smart_toy,
             color: onbackground,
           ),
@@ -599,7 +599,7 @@ class PhotoEditViewState extends State<PhotoEditView> {
                     onPressed: () {
                       widget.onLeft();
                     },
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.chevron_left,
                       color: tswiriOrange,
                     ),
@@ -612,7 +612,7 @@ class PhotoEditViewState extends State<PhotoEditView> {
                     onPressed: () {
                       widget.onRight();
                     },
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.chevron_right,
                       color: tswiriOrange,
                     ),

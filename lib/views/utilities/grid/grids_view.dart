@@ -124,7 +124,7 @@ class _GridsViewState extends State<GridsView> {
       child: Card(
         shape: selectedGrids.contains(gridUID)
             ? RoundedRectangleBorder(
-                side: const BorderSide(
+                side: BorderSide(
                   color: tswiriOrange,
                   width: 0.5,
                 ),
